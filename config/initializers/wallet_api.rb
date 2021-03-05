@@ -1,3 +1,5 @@
+require 'peatio/owhdwallet/wallet'
+require 'peatio/opendax_cloud/wallet'
 Peatio::Wallet.registry[:bitcoind] = Bitcoin::Wallet
 Peatio::Wallet.registry[:geth] = Ethereum::Wallet
 Peatio::Wallet.registry[:parity] = Ethereum::Wallet
