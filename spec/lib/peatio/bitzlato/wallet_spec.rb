@@ -66,6 +66,7 @@ describe Bitzlato::Wallet do
       result = wallet.create_deposit_intention!(account_id: 'uid12312', amount: 123)
 
       expect(result[:id]).to eq 21
+      expect(result[:amount]).to eq 1.1
       expect(result[:links]).to be_a(Hash)
       expect(result[:expires_at]).to be_a(Time)
     end

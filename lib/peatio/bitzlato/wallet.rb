@@ -29,6 +29,7 @@ module Bitzlato
         })
 
       {
+        amount: response['amount'].to_d,
         id: response['id'],
         links: response['link'].symbolize_keys,
         expires_at: Time.at(response['expiryAt']/1000)
