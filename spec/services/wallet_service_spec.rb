@@ -26,6 +26,27 @@ describe WalletService do
     Blockchain.any_instance.stubs(:blockchain_api).returns(BlockchainService.new(blockchain))
   end
 
+  context :create_deposit_intention! do
+    let(:member) { create(:member) }
+    let(:amount) { 1.12 }
+    let(:intention) { { id: 123, amount: amount, links: { web: 'somelink', telegram: 'somelink' }, expires_at: 3.days.ago } }
+    before do
+      service.adapter.expects(:create_deposit_intention!).returns(intention)
+    end
+
+    subject do
+      service.create_deposit_intention!(member, amount)
+    end
+
+    fit 'creates depotion intention' do
+      expect(subject).to be_a(Deposit)
+    end
+
+    fit 'deposit amount equals to requested' do
+      expect(subject.amount).to eq amount
+    end
+  end
+
   context :create_address! do
     let(:account) { create(:member, :level_3, :barong).get_account(currency)  }
     let(:blockchain_address) do
@@ -740,7 +761,7 @@ describe WalletService do
     let(:fake_wallet_adapter) { FakeWallet.new }
     let(:service) { WalletService.new(fee_wallet) }
 
-    let(:spread_deposit) do 
+    let(:spread_deposit) do
       [Peatio::Transaction.new(to_address: 'fake-cold',
                                amount: '2.0',
                                currency_id: currency.id)]
