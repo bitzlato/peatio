@@ -6,6 +6,7 @@ class Deposit < ApplicationRecord
 
   serialize :spread, Array
   serialize :from_addresses, Array
+  serialize :data, JSON unless Rails.configuration.database_support_json
 
   include AASM
   include AASM::Locking
