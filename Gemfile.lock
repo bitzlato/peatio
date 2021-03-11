@@ -14,6 +14,12 @@ GIT
       guard (~> 2.1)
       guard-compat (~> 1.1)
 
+GIT
+  remote: https://github.com/jwt/ruby-jwt
+  revision: 2cea14fdae439773fafc59640178e5cf7a0af8a4
+  specs:
+    jwt (2.3.0.dev)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -83,6 +89,10 @@ GEM
     better-faraday (1.0.8)
       activesupport (>= 4.0, < 6.0)
       faraday (~> 0.12)
+    bitzlato (0.1.2)
+      faraday (>= 0.17)
+      json (~> 2.0)
+      jwt (~> 2.3.0.dev)
     bootsnap (1.7.3)
       msgpack (~> 1.0)
     builder (3.2.4)
@@ -225,7 +235,7 @@ GEM
       faraday_middleware (~> 0.13.1)
       faye (~> 1.2)
       peatio (>= 2.4.2)
-    jwt (2.2.2)
+    json (2.5.1)
     jwt-multisig (1.0.5)
       activesupport (>= 4.0)
       jwt (~> 2.2)
@@ -492,6 +502,7 @@ DEPENDENCIES
   annotate (~> 3.1.0)
   arel-is-blank (~> 1.0.0)
   better-faraday (~> 1.0.5)
+  bitzlato (~> 0.1.2)
   bootsnap (>= 1.1.0)
   bullet (~> 5.9)
   bump (~> 0.7)
@@ -526,7 +537,7 @@ DEPENDENCIES
   influxdb (~> 0.7.0)
   irb
   irix (~> 2.6.0)
-  jwt (~> 2.2.0)
+  jwt!
   jwt-multisig (~> 1.0.0)
   jwt-rack (~> 0.1.0)
   kaminari (~> 1.2.1)
@@ -571,4 +582,4 @@ RUBY VERSION
    ruby 2.6.6p146
 
 BUNDLED WITH
-   2.1.4
+   2.2.15

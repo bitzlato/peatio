@@ -12,6 +12,18 @@ describe API::V2::Account::Deposits, type: :request do
     Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Deposit', 'PaymentAddress']}})
   end
 
+  describe 'POST /api/v2/account/deposits' do
+    it 'requires authentication' do
+      api_post '/api/v2/account/deposits', params: { amount: 123 }
+      expect(response.code).to eq '401'
+    end
+
+    it 'returns with auth token deposits' do
+      api_post '/api/v2/account/deposits', token: token, params: { currency: :btc, amount: 123 }
+      expect(response).to be_successful
+    end
+  end
+
   describe 'GET /api/v2/account/deposits' do
     before do
       create(:deposit_btc, member: member, updated_at: 5.days.ago)
