@@ -32,17 +32,18 @@ describe WalletService do
     let(:intention) { { id: 123, amount: amount, links: { web: 'somelink', telegram: 'somelink' }, expires_at: 3.days.ago } }
     before do
       service.adapter.expects(:create_deposit_intention!).returns(intention)
+      service.adapter.expects(:generate_unique_id).returns('123')
     end
 
     subject do
       service.create_deposit_intention!(member, amount)
     end
 
-    fit 'creates depotion intention' do
+    it 'creates depotion intention' do
       expect(subject).to be_a(Deposit)
     end
 
-    fit 'deposit amount equals to requested' do
+    it 'deposit amount equals to requested' do
       expect(subject.amount).to eq amount
     end
   end

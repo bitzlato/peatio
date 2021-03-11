@@ -12,15 +12,23 @@ describe API::V2::Account::Deposits, type: :request do
     Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Deposit', 'PaymentAddress']}})
   end
 
-  describe 'POST /api/v2/account/deposits' do
+  describe 'POST /api/v2/account/deposits/intention' do
+    let(:wallet) { Wallet.deposit.joins(:currencies).find_by(currencies: { id: currency }) }
+    let(:amount) { 12.1231 }
     it 'requires authentication' do
-      api_post '/api/v2/account/deposits', params: { amount: 123 }
+      api_post '/api/v2/account/deposits/intention', params: { amount: 123 }
       expect(response.code).to eq '401'
     end
 
-    it 'returns with auth token deposits' do
-      api_post '/api/v2/account/deposits', token: token, params: { currency: :btc, amount: 123 }
+    fit 'returns with auth token deposits' do
+      Wallet.any_instance.stubs(:gateway).returns(:bitzlato)
+      Wallet.any_instance.stubs(:settings).returns({ key: {}, uid: :some_acount_id, uri: 'uri' })
+      Bitzlato::Wallet.any_instance.stubs(:create_deposit_intention!).returns({ amount: amount, id: :unique_intention_id, links: {}})
+      api_post '/api/v2/account/deposits/intention', token: token, params: { currency: :btc, amount: amount }
+
       expect(response).to be_successful
+      result = JSON.parse(response.body)
+      expect(result['amount']).to eq amount.to_s
     end
   end
 

@@ -10,6 +10,39 @@ module API
 
         before { deposits_must_be_permitted! }
 
+
+        desc 'Create deposit intention',
+          success: API::V2::Entities::Deposit
+        params do
+          requires :currency,
+                   type: String,
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
+                   desc: 'Currency code'
+          requires :amount,
+                   type: BigDecimal,
+                   desc: 'The deposit amount.'
+        end
+
+        post '/deposits/intention' do
+          currency = Currency.find(params[:currency])
+
+          unless currency.deposit_enabled?
+            error!({ errors: ['management.currency.deposit_disabled'] }, 422)
+          end
+
+          wallet = Wallet.deposit_wallet(currency.id)
+
+          unless wallet.present?
+            error!({ errors: ['account.wallet.not_found'] }, 422)
+          end
+
+          deposit = WalletService
+            .new(wallet)
+            .create_deposit_intention!(current_user, params[:amount])
+
+          present deposit, with: API::V2::Entities::Deposit
+        end
+
         desc 'Get your deposits history.',
           is_array: true,
           success: API::V2::Entities::Deposit

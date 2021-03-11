@@ -20,6 +20,10 @@ module Bitzlato
       end.slice(:id)
     end
 
+    def generate_unique_id(id)
+      [self.class.name, @wallet[:uid], id].join('-')
+    end
+
     def create_deposit_intention!(account_id: , amount: )
       response = client
         .post('/api/gate/v1/invoices', {

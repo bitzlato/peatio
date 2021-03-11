@@ -11,6 +11,7 @@ class WalletService
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                        currency: { id: currency.id })
 
+    # TODO save links
     intention = @adapter.create_deposit_intention!(account_id: member.id, amount: amount)
     Deposit.create!(
       type: Deposit.name,
@@ -18,7 +19,7 @@ class WalletService
       currency: currency,
       amount: intention[:amount],
       transfer_type: currency.type == 'fiat' ? 'fiat' : 'crypto',
-      tid: [@adapter.class, intention[:id]].join('#'),
+      tid: @adapter.generate_unique_id(intention[:id])
     )
   end
 
