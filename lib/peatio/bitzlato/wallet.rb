@@ -40,6 +40,11 @@ module Bitzlato
       }
     end
 
+    def poll_intentions
+      client
+        .get('/api/gate/v1/invoices/')['data']
+    end
+
     private
 
     def currency_id
