@@ -15,12 +15,36 @@ class WalletService
     Deposit.create!(
       type: Deposit.name,
       member: member,
-      data: intention.slice(:links),
+      data: intention.slice(:links, :expires_at),
       currency: currency,
       amount: intention[:amount],
       transfer_type: currency.type == 'fiat' ? 'fiat' : 'crypto',
-      tid: @adapter.generate_unique_id(intention[:id])
+      intention_id: intention[:id]
     )
+  end
+
+  def poll_intentions
+    currency = @wallet.currencies.first
+    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
+                       currency: { id: currency.id })
+    @adapter.poll_intentions.each do |intention|
+      deposit = Deposit.find_by(currency: currency, intention_id: intention[:id])
+      if deposit.present?
+        if deposit.amount==intention[:amount]
+          deposit.with_lock do
+            if deposit.submitted?
+              deposit.accept!
+            else
+              Rails.logger.warn("Deposit #{deposit.id} has wrong status (#{deposit.aasm_state})") unless deposit.accepted?
+            end
+          end
+        else
+          Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
+        end
+      else
+        Rails.logger.warn("No such deposit intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
+      end
+    end
   end
 
   def create_address!(uid, pa_details)
