@@ -23,7 +23,11 @@ class WalletService
     )
   end
 
-  def poll_intentions
+  def support_polling?
+    @adapter.respond_to?(:poll_intentions) && @wallet.settings['allow_polling']
+  end
+
+  def poll_intentions!
     currency = @wallet.currencies.first
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                        currency: { id: currency.id })
