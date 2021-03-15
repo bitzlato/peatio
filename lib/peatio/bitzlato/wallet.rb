@@ -20,13 +20,9 @@ module Bitzlato
       end.slice(:id)
     end
 
-    def generate_unique_id(id)
-      [self.class.name, @wallet[:uid], id].join('-')
-    end
-
     def create_deposit_intention!(account_id: , amount: )
       response = client
-        .post('/api/gate/v1/invoices', {
+        .post('/api/gate/v1/invoices/', {
         cryptocurrency: currency_id.to_s.upcase,
         amount: amount,
         comment: "Exchange service deposit for account #{account_id}"
@@ -42,7 +38,14 @@ module Bitzlato
 
     def poll_intentions
       client
-        .get('/api/gate/v1/invoices/')['data']
+        .get('/api/gate/v1/invoices/transactions/')['data']
+        .map do |transaction|
+        {
+          id: transaction['invoiceId'],
+          amount: transaction['amount'].to_d,
+          cryptocurrency: transaction['cryptocurrency']
+        }
+      end
     end
 
     private
