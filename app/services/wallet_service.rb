@@ -18,7 +18,6 @@ class WalletService
       data: intention.slice(:links, :expires_at),
       currency: currency,
       amount: intention[:amount],
-      transfer_type: currency.type == 'fiat' ? 'fiat' : 'crypto',
       intention_id: intention[:id]
     )
   end

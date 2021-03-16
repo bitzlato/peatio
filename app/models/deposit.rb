@@ -123,6 +123,13 @@ class Deposit < ApplicationRecord
     true
   end
 
+  def transfer_links
+    # TODO rename data['links'] to transfer_links
+    # TODO rename data['expires_at'] to expires_at
+    # TODO Use txid instead of intention_id
+    data['links']
+  end
+
   def blockchain_api
     currency.blockchain_api
   end
