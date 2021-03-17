@@ -76,7 +76,7 @@ module API
         expose(
           :transfer_links,
           documentation: {
-            type: String,
+            type: JSON,
             desc: 'Links to p2p page to make deposit trasnfer',
             example: -> {
               { telegram: 'https://t.me/BTC_STAGE_BOT?start=b_0f8c3db61f223ea9df072fd37e0b6315', web: 'https://s-www.lgk.one/p2p/?start=b_0f8c3db61f223ea9df072fd37e0b6315' }
