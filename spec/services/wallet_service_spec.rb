@@ -47,6 +47,27 @@ describe WalletService do
     end
   end
 
+  context :poll_intentions! do
+    let(:member) { create(:member) }
+    let(:amount) { 1.12 }
+    let(:intention_id) { 12 }
+    let(:username) { 'ivan' }
+
+    let(:intentions) { [
+      { id: intention_id, amount: amount, username: username }
+    ] }
+    let!(:deposit) { create :deposit_btc, amount: amount, currency: wallet.currencies.first, intention_id: intention_id }
+
+    before do
+      service.adapter.expects(:poll_intentions).returns(intentions)
+    end
+
+    it 'accepts deposit' do
+      service.poll_intentions!
+      expect(deposit.reload).to be_accepted
+    end
+  end
+
   context :create_address! do
     let(:account) { create(:member, :level_3, :barong).get_account(currency)  }
     let(:blockchain_address) do

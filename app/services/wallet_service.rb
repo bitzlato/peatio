@@ -37,6 +37,7 @@ class WalletService
           deposit.with_lock do
             if deposit.submitted?
               deposit.accept!
+              deposit.account.update remote_usernames: (deposit.account.remote_usernames << intention[:username]).uniq
             else
               Rails.logger.warn("Deposit #{deposit.id} has wrong status (#{deposit.aasm_state})") unless deposit.accepted?
             end
