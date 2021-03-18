@@ -20,6 +20,24 @@ module Bitzlato
       end.slice(:id)
     end
 
+    def create_transaction!(transaction, options = {})
+      voucher = client.post(
+        '/api/p2p/vouchers/',
+        {'cryptocurrency': transaction.currency_id.upcase, 'amount': transaction.amount, 'method':'crypto','currency': 'USD'}
+      )
+
+      transaction.options = transaction.options.merge voucher: voucher
+      transaction.txout = voucher['deepLinkCode']
+      transaction.hash = voucher['deepLinkCode']
+      transaction
+    rescue Bitzlato::Client::Error => e
+      raise Peatio::Wallet::ClientError, e
+    end
+
+    def load_balance!
+      999_999_999 # Yeah!
+    end
+
     def create_deposit_intention!(account_id: , amount: )
       response = client
         .post('/api/gate/v1/invoices/', {
