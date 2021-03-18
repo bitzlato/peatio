@@ -26,6 +26,43 @@ class WalletService
     @adapter.respond_to?(:poll_intentions) && @wallet.settings['allow_polling']
   end
 
+  def poll_transfers!
+    poll_intentions!
+    poll_withdraws!
+  end
+
+  def poll_withdraws!
+    currency = @wallet.currencies.first
+    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
+                       currency: { id: currency.id })
+    @adapter.poll_vouchers.each do |voucher|
+      withdraw = Withdraw.find_by(txid: voucher[:id], currency_id: voucher[:currency])
+      if withdraw.present?
+        if withdraw.amount==voucher[:amount]
+          withdraw.with_lock do
+            case voucher[:status]
+            when 'cashed'
+              if withdraw.confirming?
+                Rails.logger.info("Withdraw #{withdraw.id} successed")
+                withdraw.success!
+              else
+                Rails.logger.warn("Withdraw #{withdraw.id} has wrong status (#{withdraw.aasm_state})")
+              end
+            when 'active'
+              # do nothing
+            else
+              Rails.logger.error("Voucher #{voucher[:id]} has unknown status (#{voucher[:status]})")
+            end
+          end
+        else
+          Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{voucher[:amount]} with voucher ##{voucher[:id]} for #{currency.id} in wallet #{@wallet.name}")
+        end
+      else
+        Rails.logger.warn("No such withdraw voucher ##{voucher[:id]} for #{currency.id} in wallet #{@wallet.name}")
+      end
+    end
+  end
+
   def poll_intentions!
     currency = @wallet.currencies.first
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,

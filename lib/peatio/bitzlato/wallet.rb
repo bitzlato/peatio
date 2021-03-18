@@ -74,6 +74,19 @@ module Bitzlato
       end
     end
 
+    def poll_vouchers
+      client
+        .get('/api/p2p/vouchers/')['data']
+        .map do |voucher|
+        {
+          id: voucher['deepLinkCode'],
+          status: voucher['status'],
+          amount: voucher.dig('cryptocurrency', 'amount').to_d,
+          currency: voucher.dig('cryptocurrency', 'code').downcase
+        }
+      end
+    end
+
     private
 
     def currency_id

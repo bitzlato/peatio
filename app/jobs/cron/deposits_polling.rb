@@ -1,14 +1,16 @@
 # Run polling process for supported gateways
 module Jobs
   module Cron
+    # TODO rename to transfer polling
     module DepositsPolling
       def self.process
         Wallet.active.find_each do |w|
-          ws = WalletService.new(w)
-          ws.poll_intentions! if ws.support_polling?
+          next unless ws.support_polling?
+          WalletService
+            .new(w)
+            .poll_transfers!
         rescue StandardError => e
           report_exception_to_screen(e)
-          next
         end
         sleep 10
       end
