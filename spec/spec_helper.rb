@@ -9,6 +9,10 @@ ENV['RAILS_ENV'] ||= 'test'
 ENV['EVENT_API_JWT_PRIVATE_KEY'] ||= Base64.urlsafe_encode64(OpenSSL::PKey::RSA.generate(2048).to_pem)
 ENV['PEATIO_JWT_PRIVATE_KEY'] ||= Base64.urlsafe_encode64(OpenSSL::PKey::RSA.generate(2048).to_pem)
 ENV['WITHDRAW_ADMIN_APPROVE'] = 'true'
+ENV['MINIMUM_MEMBER_LEVEL_FOR_DEPOSIT']='3'
+ENV['MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW']='3'
+ENV['MINIMUM_MEMBER_LEVEL_FOR_TRADING']='3'
+ENV['JWT_PUBLIC_KEY']=nil
 
 # We remove lib/peatio.rb from LOAD_PATH because of conflict with peatio gem.
 # lib/peatio.rb is added to LOAD_PATH later after requiring gems.
