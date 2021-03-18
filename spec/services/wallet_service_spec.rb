@@ -52,6 +52,7 @@ describe WalletService do
     let(:amount) { 1.12 }
     let(:intention_id) { 12 }
     let(:username) { 'ivan' }
+    let(:wallet) { create(:wallet, :fake_hot, settings: { 'save_beneficiary' => true } ) }
 
     let(:intentions) { [
       { id: intention_id, amount: amount, username: username }
@@ -65,6 +66,11 @@ describe WalletService do
     it 'accepts deposit' do
       service.poll_intentions!
       expect(deposit.reload).to be_accepted
+    end
+
+    it 'creates beneficiary' do
+      service.poll_intentions!
+      expect(deposit.account.member.beneficiaries.count).to eq(1)
     end
   end
 
