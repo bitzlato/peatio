@@ -127,7 +127,7 @@ class Deposit < ApplicationRecord
     # TODO rename data['links'] to transfer_links
     # TODO rename data['expires_at'] to expires_at
     # TODO Use txid instead of intention_id
-    data&.fetch 'links'
+    data&.fetch 'links', []
   end
 
   def blockchain_api

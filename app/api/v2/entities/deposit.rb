@@ -77,9 +77,12 @@ module API
           :transfer_links,
           documentation: {
             type: JSON,
-            desc: 'Links to p2p page to make deposit trasnfer',
+            desc: 'Links to p2p page to make deposit transfer',
             example: -> {
-              { telegram: 'https://t.me/BTC_STAGE_BOT?start=b_0f8c3db61f223ea9df072fd37e0b6315', web: 'https://s-www.lgk.one/p2p/?start=b_0f8c3db61f223ea9df072fd37e0b6315' }
+              [
+                { title: 'telegram', url: 'https://t.me/BTC_STAGE_BOT?start=b_0f8c3db61f223ea9df072fd37e0b6315' },
+                { title: 'web', url: 'https://s-www.lgk.one/p2p/?start=b_0f8c3db61f223ea9df072fd37e0b6315' }
+              ]
             }
           },
           if: ->(deposit) { deposit.transfer_links.present? }

@@ -26,7 +26,13 @@ module Bitzlato
         {'cryptocurrency': transaction.currency_id.upcase, 'amount': transaction.amount, 'method':'crypto','currency': 'USD'}
       )
 
-      transaction.options = transaction.options.merge 'voucher' => voucher, 'links' => voucher['links']
+      transaction.options = transaction
+        .options
+        .merge(
+          'voucher' => voucher,
+          'links' => voucher['links'].map { |link| { 'title' => link['type'], 'url' => link['url'] } }
+      )
+
       transaction.txout = voucher['deepLinkCode']
       transaction.hash = voucher['deepLinkCode']
       transaction
@@ -35,6 +41,7 @@ module Bitzlato
     end
 
     def load_balance!
+      # TODO fetch actual balance
       999_999_999 # Yeah!
     end
 
@@ -50,7 +57,7 @@ module Bitzlato
         amount: response['amount'].to_d,
         username: response['username'],
         id: response['id'],
-        links: response['link'].symbolize_keys,
+        links: response['link'].each_with_object([]) { |e, a| a << { 'title' => e.first, 'url' => e.second } },
         expires_at: Time.at(response['expiryAt']/1000)
       }
     end

@@ -71,7 +71,7 @@ class WalletService
 
     withdrawal.with_lock do
       save_transaction(transaction.as_json.merge(from_address: @wallet.address), withdrawal) if transaction.present?
-      withdrawal.update metadata: withdrawal.metadata.merge( 'links' => transaction.options['links'] ) if transaction.options.has_key? 'links'
+      withdrawal.update metadata: withdrawal.metadata.merge( 'links' => transaction.options['links'] ) if transaction.options&.has_key? 'links'
       transaction
     end
   end

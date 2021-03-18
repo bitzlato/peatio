@@ -117,6 +117,23 @@ module API
             desc: 'The datetime when withdraw was completed'
           }
         )
+
+        expose(
+          :transfer_links,
+          if: ->(withdraw) { withdraw.metadata.has_key? 'links' },
+          documentation: {
+            type: JSON,
+            desc: 'Links to confirm withdraw on external resource',
+            example: -> {
+              [
+                { title: 'telegram', url: 'https://t.me/BTC_STAGE_BOT?start=b_0f8c3db61f223ea9df072fd37e0b6315' },
+                { title: 'web', url: 'https://s-www.lgk.one/p2p/?start=b_0f8c3db61f223ea9df072fd37e0b6315' }
+              ]
+            }
+          }
+        ) do |withdraw|
+          withdraw.metadata['links']
+        end
       end
     end
   end
