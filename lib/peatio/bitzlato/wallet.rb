@@ -57,9 +57,9 @@ module Bitzlato
 
     def client
       @client ||= Bitzlato::Client
-        .new(home_url: @wallet.fetch(:uri),
-             key: @wallet.fetch(:key),
-             uid: @wallet.fetch(:uid),
+        .new(home_url: ENV.fetch('BITZLATO_API_URL', @wallet.fetch(:uri)),
+             key: ENV.fetch('BITZLATO_API_KEY', @wallet.fetch(:key)).yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key },
+             uid: ENV.fetch('BITZLATO_API_CLIENT_UID', @wallet.fetch(:uid)).to_i,
              logger: Rails.env.development?)
     end
   end
