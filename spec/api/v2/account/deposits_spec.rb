@@ -20,7 +20,7 @@ describe API::V2::Account::Deposits, type: :request do
       expect(response.code).to eq '401'
     end
 
-    fit 'returns with auth token deposits' do
+    it 'returns with auth token deposits' do
       Wallet.any_instance.stubs(:gateway).returns(:bitzlato)
       Wallet.any_instance.stubs(:settings).returns({ key: {}, uid: :some_acount_id, uri: 'uri' })
       Bitzlato::Wallet.any_instance.stubs(:create_deposit_intention!).returns({ amount: amount, id: :unique_intention_id, links: {}})
