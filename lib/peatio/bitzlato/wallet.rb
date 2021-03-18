@@ -26,7 +26,7 @@ module Bitzlato
         {'cryptocurrency': transaction.currency_id.upcase, 'amount': transaction.amount, 'method':'crypto','currency': 'USD'}
       )
 
-      transaction.options = transaction.options.merge voucher: voucher
+      transaction.options = transaction.options.merge 'voucher' => voucher
       transaction.txout = voucher['deepLinkCode']
       transaction.hash = voucher['deepLinkCode']
       transaction
