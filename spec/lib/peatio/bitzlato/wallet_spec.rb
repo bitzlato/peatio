@@ -81,6 +81,7 @@ describe Bitzlato::Wallet do
         expect(transaction.txout).to be_present
         expect(transaction.hash).to be_present
         expect(transaction.options['voucher']).to be_present
+        expect(transaction.options['links']).to be_present
       end
     end
 

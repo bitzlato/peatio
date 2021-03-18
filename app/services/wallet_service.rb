@@ -66,9 +66,14 @@ class WalletService
                                           amount:     withdrawal.amount,
                                           currency_id: withdrawal.currency_id,
                                           options: { tid: withdrawal.tid })
+
     transaction = @adapter.create_transaction!(transaction)
-    save_transaction(transaction.as_json.merge(from_address: @wallet.address), withdrawal) if transaction.present?
-    transaction
+
+    withdrawal.with_lock do
+      save_transaction(transaction.as_json.merge(from_address: @wallet.address), withdrawal) if transaction.present?
+      withdrawal.update metadata: withdrawal.metadata.merge( 'links' => transaction.options['links'] ) if transaction.options.has_key? 'links'
+      transaction
+    end
   end
 
   def spread_deposit(deposit)
