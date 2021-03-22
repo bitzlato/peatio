@@ -5,6 +5,10 @@ module Bitzlato
     class WithdrawInfo
       attr_accessor :is_done, :id, :currency, :amount
     end
+
+    WITHDRAW_METHODS = %w[voucher payment]
+    WITHDRAW_POLLING_METHODS = %w[vouchers payments]
+
     def initialize(features = {})
       @features = features
       @settings = {}
@@ -18,7 +22,13 @@ module Bitzlato
 
       @wallet = @settings.fetch(:wallet) do
         raise Peatio::Wallet::MissingSettingError, :wallet
-      end.slice(:uri, :key, :uid, :withdraw_polling_methods)
+      end.slice(:uri, :key, :uid)
+
+      @withdraw_polling_methods = @settings.dig(:wallet, :withdraw_polling_methods)
+      raise Peatio::Wallet::MissingSettingError, 'wallet.withdraw_polling_methods' unless @withdraw_polling_methods.present? && (@withdraw_polling_methods - WITHDRAW_POLLING_METHODS).empty?
+
+      @withdraw_method = @settings.dig(:wallet, :withdraw_method)
+      raise Peatio::Wallet::MissingSettingError, 'wallet.withdraw_method' unless WITHDRAW_METHODS.include? @withdraw_method
 
       @currency = @settings.fetch(:currency) do
        raise Peatio::Wallet::MissingSettingError, :currency
@@ -26,9 +36,32 @@ module Bitzlato
     end
 
     def create_transaction!(transaction, options = {})
+      case @withdraw_method
+      when 'voucher'
+        create_voucher! transaction, options
+      when 'payment'
+        create_payment! transaction, options
+      else
+        raise Peatio::Wallet::ClientError, "Unknown withdraw_polling_method specified (#{@withdraw_method})"
+      end
+    end
+
+    def create_payment!(transaction, options = {})
+      client.post(
+        '/api/gate/v1/payments/create',
+        { client: transaction.to_address, cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, payedBefore: true }
+      )
+      transaction.txout = 'unknown'
+      transaction.hash = 'unknown'
+      transaction
+    rescue Bitzlato::Client::Error => e
+      raise Peatio::Wallet::ClientError, e
+    end
+
+    def create_voucher!(transaction, options = {})
       voucher = client.post(
         '/api/p2p/vouchers/',
-        {'cryptocurrency': transaction.currency_id.upcase, 'amount': transaction.amount, 'method':'crypto','currency': 'USD'}
+        { cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, method: 'crypto', currency: 'USD'}
       )
 
       transaction.options = transaction
@@ -80,14 +113,9 @@ module Bitzlato
     end
 
     def poll_withdraws
-      if @wallet[:withdraw_polling_methods].blank?
-        Rails.logger.error("No withdraw_polling_methods key in settings for bitzlato wallet")
-        return
-      end
-
       withdraws = []
 
-      @wallet[:withdraw_polling_methods].each do |method|
+      @withdraw_polling_methods.each do |method|
         case method
         when 'vouchers'
           withdraws += poll_vouchers

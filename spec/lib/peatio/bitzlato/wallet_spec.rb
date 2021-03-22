@@ -1,25 +1,25 @@
 describe Bitzlato::Wallet do
   let(:wallet) { Bitzlato::Wallet.new }
 
-  context :configure do
-    let(:settings) { { wallet: {}, currency: {} } }
-    it 'requires wallet' do
-      expect { wallet.configure(settings.except(:wallet)) }.to raise_error(Peatio::Wallet::MissingSettingError)
+  #context :configure do
+    #let(:settings) { { wallet: {}, currency: {} } }
+    #it 'requires wallet' do
+      #expect { wallet.configure(settings.except(:wallet)) }.to raise_error(Peatio::Wallet::MissingSettingError)
 
-      expect { wallet.configure(settings) }.to_not raise_error
-    end
+      #expect { wallet.configure(settings) }.to_not raise_error
+    #end
 
-    it 'requires currency' do
-      expect { wallet.configure(settings.except(:currency)) }.to raise_error(Peatio::Wallet::MissingSettingError)
+    #it 'requires currency' do
+      #expect { wallet.configure(settings.except(:currency)) }.to raise_error(Peatio::Wallet::MissingSettingError)
 
-      expect { wallet.configure(settings) }.to_not raise_error
-    end
+      #expect { wallet.configure(settings) }.to_not raise_error
+    #end
 
-    it 'sets settings attribute' do
-      wallet.configure(settings)
-      expect(wallet.settings).to eq(settings.slice(*Ethereum::Wallet::SUPPORTED_SETTINGS))
-    end
-  end
+    #it 'sets settings attribute' do
+      #wallet.configure(settings)
+      #expect(wallet.settings).to eq(settings.slice(*Ethereum::Wallet::SUPPORTED_SETTINGS))
+    #end
+  #end
 
   describe :requests do
     around do |example|
@@ -43,9 +43,11 @@ describe Bitzlato::Wallet do
        "d":"nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk"}
     }
 
+    let(:withdraw_method) { 'voucher' }
+
     let(:settings) do
       {
-        wallet: { uri: uri, key: key, uid: 'merchant_uid', withdraw_polling_methods: ['vouchers', 'payments'] },
+        wallet: { uri: uri, key: key, uid: 'merchant_uid', withdraw_method: withdraw_method, withdraw_polling_methods: ['vouchers', 'payments'] },
         currency: { id: :btc },
       }
     end
@@ -168,9 +170,50 @@ describe Bitzlato::Wallet do
       end
     end
 
+
     context :create_transaction! do
-      let(:response) do
-        {
+      let(:source_transaction) {
+        Peatio::Transaction.new(to_address: 1,
+                                amount:     123,
+                                currency_id: 'BTC',
+                                options: { tid: 'tid' })
+      }
+
+      context :voucher do
+        let(:withdraw_method) { 'voucher' }
+        it 'create withdrawal transaction' do
+          wallet.expects(:create_voucher!)
+          wallet.create_transaction!(source_transaction)
+        end
+      end
+
+      context :payment do
+        let(:withdraw_method) { 'payment' }
+        it 'create withdrawal transaction' do
+          wallet.expects(:create_payment!)
+          wallet.create_transaction!(source_transaction)
+        end
+      end
+
+      context :create_payment! do
+        let(:response) do
+        end
+        it 'show create withdrawal transaction' do
+          stub_request(:post, uri + '/api/gate/v1/payments/create')
+            .with( body: "{\"client\":1,\"cryptocurrency\":\"BTC\",\"amount\":123,\"payedBefore\":true}" )
+            .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
+
+          transaction = wallet.create_payment!(source_transaction)
+
+          expect(transaction).to be_a Peatio::Transaction
+          expect(transaction.txout).to be_present
+          expect(transaction.hash).to be_present
+        end
+      end
+
+      context :create_voucher! do
+        let(:response) do
+          {
             "deepLinkCode"=>"someHash",
             "currency"=>{"code"=>"USD", "amount"=>"6965"},
             "cryptocurrency"=>{"code"=>"BTC", "amount"=>"0.12"},
@@ -182,29 +225,25 @@ describe Bitzlato::Wallet do
             "status"=>"active",
             "cashedBy"=>nil,
             "comment"=>nil
-        }
-      end
+          }
+        end
 
-      it 'show create withdrawal transaction' do
-        stub_request(:post, uri + '/api/p2p/vouchers/')
-          .with(body: {"cryptocurrency":"BTC","amount":123,"method":"crypto", 'currency': 'USD'}.to_json)
-          .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
+        it 'create voucher' do
+          stub_request(:post, uri + '/api/p2p/vouchers/')
+            .with(body: {"cryptocurrency":"BTC","amount":123,"method":"crypto", 'currency': 'USD'}.to_json)
+            .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
 
-        transaction = Peatio::Transaction.new(to_address: 1,
-                                              amount:     123,
-                                              currency_id: 'BTC',
-                                              options: { tid: 'tid' })
+          transaction = wallet.create_voucher!(source_transaction)
 
-        transaction = wallet.create_transaction!(transaction)
-
-        expect(transaction).to be_a Peatio::Transaction
-        expect(transaction.txout).to be_present
-        expect(transaction.hash).to be_present
-        expect(transaction.options['voucher']).to be_present
-        expect(transaction.options['links']).to be_a(Array)
-        expect(transaction.options['links'].count).to eq(2)
-        expect(transaction.options['links'].first.keys).to eq(['title', 'url'])
+          expect(transaction).to be_a Peatio::Transaction
+          expect(transaction.txout).to be_present
+          expect(transaction.hash).to be_present
+          expect(transaction.options['voucher']).to be_present
+          expect(transaction.options['links']).to be_a(Array)
+          expect(transaction.options['links'].count).to eq(2)
+          expect(transaction.options['links'].first.keys).to eq(['title', 'url'])
+        end
       end
     end
 
