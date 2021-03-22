@@ -62,7 +62,7 @@ module Bitzlato
       }
     end
 
-    def poll_intentions
+    def poll_deposits
       client
         .get('/api/gate/v1/invoices/transactions/')['data']
         .map do |transaction|

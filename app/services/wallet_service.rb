@@ -22,13 +22,12 @@ class WalletService
     )
   end
 
-  def support_polling?
-    @adapter.respond_to?(:poll_intentions) && @wallet.settings['allow_polling']
+  def support_deposits_polling?
+    @adapter.respond_to?(:poll_deposits) && @wallet.settings['allow_deposits_polling']
   end
 
-  def poll_transfers!
-    poll_intentions!
-    poll_withdraws!
+  def support_withdraws_polling?
+    @adapter.respond_to?(:poll_withdraws) && @wallet.settings['allow_withdraws_polling']
   end
 
   def poll_withdraws!
@@ -63,11 +62,11 @@ class WalletService
     end
   end
 
-  def poll_intentions!
+  def poll_deposits!
     currency = @wallet.currencies.first
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                        currency: { id: currency.id })
-    @adapter.poll_intentions.each do |intention|
+    @adapter.poll_deposits.each do |intention|
       deposit = Deposit.find_by(currency: currency, intention_id: intention[:id])
       if deposit.present?
         if deposit.amount==intention[:amount]

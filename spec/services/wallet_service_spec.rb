@@ -47,7 +47,7 @@ describe WalletService do
     end
   end
 
-  context :poll_intentions! do
+  context :poll_deposits! do
     let(:member) { create(:member) }
     let(:amount) { 1.12 }
     let(:intention_id) { 12 }
@@ -60,16 +60,16 @@ describe WalletService do
     let!(:deposit) { create :deposit_btc, amount: amount, currency: wallet.currencies.first, intention_id: intention_id }
 
     before do
-      service.adapter.expects(:poll_intentions).returns(intentions)
+      service.adapter.expects(:poll_deposits).returns(intentions)
     end
 
     it 'accepts deposit' do
-      service.poll_intentions!
+      service.poll_deposits!
       expect(deposit.reload).to be_accepted
     end
 
     it 'creates beneficiary' do
-      service.poll_intentions!
+      service.poll_deposits!
       expect(deposit.account.member.beneficiaries.count).to eq(1)
     end
   end
