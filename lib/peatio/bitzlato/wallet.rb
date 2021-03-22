@@ -24,19 +24,16 @@ module Bitzlato
         raise Peatio::Wallet::MissingSettingError, :wallet
       end.slice(:uri, :key, :uid)
 
-      @withdraw_polling_methods = @settings.dig(:wallet, :withdraw_polling_methods)
-      raise Peatio::Wallet::MissingSettingError, 'wallet.withdraw_polling_methods' unless @withdraw_polling_methods.present? && (@withdraw_polling_methods - WITHDRAW_POLLING_METHODS).empty?
-
-      @withdraw_method = @settings.dig(:wallet, :withdraw_method)
-      raise Peatio::Wallet::MissingSettingError, 'wallet.withdraw_method' unless WITHDRAW_METHODS.include? @withdraw_method
-
       @currency = @settings.fetch(:currency) do
        raise Peatio::Wallet::MissingSettingError, :currency
       end.slice(:id)
     end
 
     def create_transaction!(transaction, options = {})
-      case @withdraw_method
+      withdraw_method = @settings.dig(:wallet, :withdraw_method)
+      raise Peatio::Wallet::MissingSettingError, 'wallet.withdraw_method' unless WITHDRAW_METHODS.include? withdraw_method
+
+      case withdraw_method
       when 'voucher'
         create_voucher! transaction, options
       when 'payment'
@@ -115,7 +112,10 @@ module Bitzlato
     def poll_withdraws
       withdraws = []
 
-      @withdraw_polling_methods.each do |method|
+      withdraw_polling_methods = @settings.dig(:wallet, :withdraw_polling_methods)
+      raise Peatio::Wallet::MissingSettingError, 'wallet.withdraw_polling_methods' unless withdraw_polling_methods.present? && (withdraw_polling_methods - WITHDRAW_POLLING_METHODS).empty?
+
+      withdraw_polling_methods.each do |method|
         case method
         when 'vouchers'
           withdraws += poll_vouchers
@@ -165,9 +165,9 @@ module Bitzlato
     def client
       @client ||= Bitzlato::Client
         .new(home_url: ENV.fetch('BITZLATO_API_URL', @wallet.fetch(:uri)),
-             key: ENV.fetch('BITZLATO_API_KEY', @wallet.fetch(:key)).yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key },
+             key: ENV.fetch('BITZLATO_API_KEY', @wallet.fetch(:key)).yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym),
              uid: ENV.fetch('BITZLATO_API_CLIENT_UID', @wallet.fetch(:uid)).to_i,
-             logger: Rails.env.development?)
+             logger: ENV.true?('BITZLATO_API_LOGGER'))
     end
   end
 end

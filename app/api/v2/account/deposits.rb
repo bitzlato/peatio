@@ -41,6 +41,8 @@ module API
             .create_deposit_intention!(current_user, params[:amount])
 
           present deposit, with: API::V2::Entities::Deposit
+        rescue => err
+          binding.pry
         end
 
         desc 'Get your deposits history.',

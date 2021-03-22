@@ -15,6 +15,16 @@ GIT
       guard-compat (~> 1.1)
 
 GIT
+  remote: https://github.com/finfex/bitzlato
+  revision: ab4466933259f9e4e4f385786fdad81df324ced1
+  branch: main
+  specs:
+    bitzlato (0.1.7)
+      faraday (>= 0.17)
+      json (~> 2.0)
+      jwt (~> 2.3.0.dev)
+
+GIT
   remote: https://github.com/jwt/ruby-jwt
   revision: 2cea14fdae439773fafc59640178e5cf7a0af8a4
   specs:
@@ -89,10 +99,6 @@ GEM
     better-faraday (1.0.8)
       activesupport (>= 4.0, < 6.0)
       faraday (~> 0.12)
-    bitzlato (0.1.6)
-      faraday (>= 0.17)
-      json (~> 2.0)
-      jwt (~> 2.3.0.dev)
     bootsnap (1.7.3)
       msgpack (~> 1.0)
     builder (3.2.4)
@@ -502,7 +508,7 @@ DEPENDENCIES
   annotate (~> 3.1.0)
   arel-is-blank (~> 1.0.0)
   better-faraday (~> 1.0.5)
-  bitzlato (~> 0.1.6)
+  bitzlato!
   bootsnap (>= 1.1.0)
   bullet (~> 5.9)
   bump (~> 0.7)

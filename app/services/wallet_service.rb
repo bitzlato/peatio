@@ -36,10 +36,10 @@ class WalletService
                        currency: { id: currency.id })
 
     @adapter.poll_withdraws.each do |withdraw_info|
-      next unless withdraw_info[:is_done]
+      next unless withdraw_info.is_done
       withdraw = Withdraw.find_by(txid: withdraw_info.id, currency_id: withdraw_info.currency)
       if withdraw.nil?
-        Rails.logger.warn("No such withdraw withdraw_info ##{withdraw.id} for #{currency.id} in wallet #{@wallet.name}")
+        Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.id} for #{currency.id} in wallet #{@wallet.name}")
         next
       end
       if withdraw.amount!=withdraw_info.amount
