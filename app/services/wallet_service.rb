@@ -34,31 +34,25 @@ class WalletService
     currency = @wallet.currencies.first
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                        currency: { id: currency.id })
-    @adapter.poll_vouchers.each do |voucher|
-      withdraw = Withdraw.find_by(txid: voucher[:id], currency_id: voucher[:currency])
-      if withdraw.present?
-        if withdraw.amount==voucher[:amount]
-          withdraw.with_lock do
-            case voucher[:status]
-            when 'cashed'
-              if withdraw.confirming?
-                Rails.logger.info("Withdraw #{withdraw.id} successed")
-                withdraw.success!
-              else
-                Rails.logger.warn("Withdraw #{withdraw.id} has wrong status (#{withdraw.aasm_state})")
-              end
-            when 'active'
-              # do nothing
-            else
-              Rails.logger.error("Voucher #{voucher[:id]} has unknown status (#{voucher[:status]})")
-            end
-          end
-        else
-          Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{voucher[:amount]} with voucher ##{voucher[:id]} for #{currency.id} in wallet #{@wallet.name}")
-        end
-      else
-        Rails.logger.warn("No such withdraw voucher ##{voucher[:id]} for #{currency.id} in wallet #{@wallet.name}")
+
+    @adapter.poll_withdraws.each do |withdraw_info|
+      next unless withdraw_info[:is_done]
+      withdraw = Withdraw.find_by(txid: withdraw_info.id, currency_id: withdraw_info.currency)
+      if withdraw.nil?
+        Rails.logger.warn("No such withdraw withdraw_info ##{withdraw.id} for #{currency.id} in wallet #{@wallet.name}")
+        next
       end
+      if withdraw.amount!=withdraw_info.amount
+        Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.id} for #{currency.id} in wallet #{@wallet.name}")
+        next
+      end
+      unless withdraw.confirming?
+        Rails.logger.warn("Withdraw #{withdraw.id} has wrong status (#{withdraw.aasm_state})")
+        next
+      end
+
+      Rails.logger.info("Withdraw #{withdraw.id} successed")
+      withdraw.success!
     end
   end
 

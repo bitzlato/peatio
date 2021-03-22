@@ -37,14 +37,135 @@ describe Bitzlato::Wallet do
 
     let(:uri) { 'http://127.0.0.1:8000' }
     let(:key) {
-      {"kty":"EC","alg":"ES256","crv":"P-256","x":"wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus","y":"OL-0AqcTNoaCBVAEpDNsU1bpZA7eQ9CtGPZGmEEg5QI","d":"nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk"}
+      {"kty":"EC","alg":"ES256","crv":"P-256",
+       "x":"wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus",
+       "y":"OL-0AqcTNoaCBVAEpDNsU1bpZA7eQ9CtGPZGmEEg5QI",
+       "d":"nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk"}
     }
 
     let(:settings) do
       {
-        wallet: { uri: uri, key: key, uid: 'merchant_uid' },
-        currency: { id: :btc }
+        wallet: { uri: uri, key: key, uid: 'merchant_uid', withdraw_polling_methods: ['vouchers', 'payments'] },
+        currency: { id: :btc },
       }
+    end
+
+    context :poll_payments do
+      let(:response) do
+          [
+            {
+              "publicName": "dapi",
+              "links": nil,
+              "amount": 0.21,
+              "cryptocurrency": "BTC",
+              "type": "auto",
+              "status": "done",
+              "date": 1616396531426
+            },
+            {
+              "publicName": "dapi",
+              "links": nil,
+              "amount": 0.2,
+              "cryptocurrency": "BTC",
+              "type": "auto",
+              "status": "done",
+              "date": 1616396505639
+            },
+            {
+              "publicName": "dapi",
+              "links": nil,
+              "amount": 0.19,
+              "cryptocurrency": "BTC",
+              "type": "auto",
+              "status": "done",
+              "date": 1616396365270
+            }
+          ]
+      end
+
+      it do
+        stub_request(:get, "http://127.0.0.1:8000/api/gate/v1/payments/list/")
+          .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
+        payments = wallet.send :poll_payments
+        expect(payments.count).to eq 3
+        expect(payments.second.is_done).to be_truthy
+      end
+    end
+
+    context :poll_vouchers do
+      let(:response) do
+        {
+          "total": 2,
+          "data": [
+            {
+              "deepLinkCode": "c_c8e8f34d2fff9f5dbc222939feeefbe5",
+              "currency": {
+                "code": "USD",
+                "amount": "5385"
+              },
+              "cryptocurrency": {
+                "code": "BTC",
+                "amount": "1"
+              },
+              "createdAt": 1616127762606,
+              "links": [
+                {
+                  "type": "telegram bot @BTC_STAGE_BOT",
+                  "url": "https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                },
+                {
+                  "type": "web exchange",
+                  "url": "https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                }
+              ],
+              "status": "none",
+              "cashedBy": "EasySammieFrey"
+            },
+            {
+              "deepLinkCode": "c_c8e8f34d2fff9f5dbc222939feeefbe5",
+              "currency": {
+                "code": "USD",
+                "amount": "5385"
+              },
+              "cryptocurrency": {
+                "code": "BTC",
+                "amount": "0.0931216"
+              },
+              "createdAt": 1616127762606,
+              "links": [
+                {
+                  "type": "telegram bot @BTC_STAGE_BOT",
+                  "url": "https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                },
+                {
+                  "type": "web exchange",
+                  "url": "https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                }
+              ],
+              "status": "cashed",
+              "cashedBy": "EasySammieFrey"
+            },
+          ] }
+      end
+
+      it do
+        stub_request(:get, "http://127.0.0.1:8000/api/p2p/vouchers/")
+          .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
+        vouchers = wallet.send :poll_vouchers
+        expect(vouchers.count).to eq 2
+        expect(vouchers.first.is_done).to be_falsey
+        expect(vouchers.second.is_done).to be_truthy
+      end
+    end
+
+    context :poll_withdraws do
+      it do
+        wallet.expects(:poll_vouchers).returns []
+        wallet.expects(:poll_payments).returns []
+        withdraws = wallet.poll_withdraws
+
+        expect(withdraws).to be_a Array
+      end
     end
 
     context :create_transaction! do

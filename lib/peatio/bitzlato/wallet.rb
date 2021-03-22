@@ -1,5 +1,10 @@
+require 'digest'
+
 module Bitzlato
   class Wallet < Peatio::Wallet::Abstract
+    class WithdrawInfo
+      attr_accessor :is_done, :id, :currency, :amount
+    end
     def initialize(features = {})
       @features = features
       @settings = {}
@@ -13,7 +18,7 @@ module Bitzlato
 
       @wallet = @settings.fetch(:wallet) do
         raise Peatio::Wallet::MissingSettingError, :wallet
-      end.slice(:uri, :key, :uid)
+      end.slice(:uri, :key, :uid, :withdraw_polling_methods)
 
       @currency = @settings.fetch(:currency) do
        raise Peatio::Wallet::MissingSettingError, :currency
@@ -74,20 +79,56 @@ module Bitzlato
       end
     end
 
+    def poll_withdraws
+      if @wallet[:withdraw_polling_methods].blank?
+        Rails.logger.error("No withdraw_polling_methods key in settings for bitzlato wallet")
+        return
+      end
+
+      withdraws = []
+
+      @wallet[:withdraw_polling_methods].each do |method|
+        case method
+        when 'vouchers'
+          withdraws += poll_vouchers
+        when 'payments'
+          withdraws += poll_payments
+        else
+          Rails.logger.error("Unknown withdraw_polling_methods (#{method})")
+          next
+        end
+      end
+
+      withdraws
+    end
+
+    private
+
+    def poll_payments
+      client
+        .get('/api/gate/v1/payments/list/')
+        .map do |payment|
+        WithdrawInfo.new.tap do |w|
+          w.id = Digest::MD5.hexdigest payment.slice('publicName', 'amount', 'cryptocurrency', 'date').values.map(&:to_s).sort.join
+          w.is_done = payment['status'] == 'done'
+          w.amount = payment['amount'].to_d
+          w.currency = payment['cryptocurrency']
+        end
+      end
+    end
+
     def poll_vouchers
       client
         .get('/api/p2p/vouchers/')['data']
         .map do |voucher|
-        {
-          id: voucher['deepLinkCode'],
-          status: voucher['status'],
-          amount: voucher.dig('cryptocurrency', 'amount').to_d,
-          currency: voucher.dig('cryptocurrency', 'code').downcase
-        }
+        WithdrawInfo.new.tap do |w|
+          w.id = voucher['deepLinkCode']
+          w.is_done = voucher['status'] == 'cashed'
+          w.amount = voucher.dig('cryptocurrency', 'amount').to_d
+          w.currency = voucher.dig('cryptocurrency', 'code').downcase
+        end
       end
     end
-
-    private
 
     def currency_id
       @currency.fetch(:id)
