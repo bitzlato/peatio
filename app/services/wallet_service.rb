@@ -67,9 +67,13 @@ class WalletService
           deposit.with_lock do
             if deposit.submitted?
               deposit.accept!
-              deposit.account.member.beneficiaries
-                .create_with(data: { address: intention[:username] })
-                .find_or_create_by!(name: intention[:username], currency: currency) if @wallet.settings['save_beneficiary']
+
+              # Save beneficiary for future withdraws
+              if @wallet.settings['save_beneficiary'] && intention[:address].present?
+                deposit.account.member.beneficiaries
+                  .create_with(data: { address: intention[:address] }, state: :active)
+                  .find_or_create_by!(name: [@wallet.settings['beneficiary_prefix'], intention[:address]].compact.join(':'), currency: currency)
+              end
             else
               Rails.logger.warn("Deposit #{deposit.id} has wrong status (#{deposit.aasm_state})") unless deposit.accepted?
             end

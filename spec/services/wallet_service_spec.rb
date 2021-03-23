@@ -55,7 +55,7 @@ describe WalletService do
     let(:wallet) { create(:wallet, :fake_hot, settings: { 'save_beneficiary' => true } ) }
 
     let(:intentions) { [
-      { id: intention_id, amount: amount, username: username }
+      { id: intention_id, amount: amount, address: username }
     ] }
     let!(:deposit) { create :deposit_btc, amount: amount, currency: wallet.currencies.first, intention_id: intention_id }
 

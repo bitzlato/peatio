@@ -102,9 +102,10 @@ module Bitzlato
         .get('/api/gate/v1/invoices/transactions/')['data']
         .map do |transaction|
         {
+          address: transaction['username'],
           id: transaction['invoiceId'],
           amount: transaction['amount'].to_d,
-          cryptocurrency: transaction['cryptocurrency']
+          currency: transaction['cryptocurrency']
         }
       end
     end
