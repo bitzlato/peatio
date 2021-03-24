@@ -50,6 +50,7 @@ module Bitzlato
       )
       transaction.txout = 'unknown'
       transaction.hash = 'unknown'
+      transaction.options.merge( 'completed' => true )
       transaction
     rescue Bitzlato::Client::Error => e
       raise Peatio::Wallet::ClientError, e
@@ -61,11 +62,9 @@ module Bitzlato
         { cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, method: 'crypto', currency: 'USD'}
       )
 
-      transaction.options = transaction
-        .options
-        .merge(
-          'voucher' => voucher,
-          'links' => voucher['links'].map { |link| { 'title' => link['type'], 'url' => link['url'] } }
+      transaction.options.merge!(
+        'voucher' => voucher,
+        'links' => voucher['links'].map { |link| { 'title' => link['type'], 'url' => link['url'] } }
       )
 
       transaction.txout = voucher['deepLinkCode']
