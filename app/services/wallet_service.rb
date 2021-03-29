@@ -30,63 +30,66 @@ class WalletService
   end
 
   def poll_withdraws!
-    currency = @wallet.currencies.first
-    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: { id: currency.id })
+    @wallet.currencies.each do |currency|
+      @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
+                         currency: { id: currency.id })
 
-    @adapter.poll_withdraws.each do |withdraw_info|
-      next unless withdraw_info.is_done
-      withdraw = Withdraw.find_by(txid: withdraw_info.id, currency_id: withdraw_info.currency)
-      if withdraw.nil?
-        Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.id} for #{currency.id} in wallet #{@wallet.name}")
-        next
-      end
-      if withdraw.amount!=withdraw_info.amount
-        Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.id} for #{currency.id} in wallet #{@wallet.name}")
-        next
-      end
-      unless withdraw.confirming?
-        Rails.logger.warn("Withdraw #{withdraw.id} has wrong status (#{withdraw.aasm_state})")
-        next
-      end
+      @adapter.poll_withdraws.each do |withdraw_info|
+        next unless withdraw_info.is_done
+        withdraw = Withdraw.find_by(txid: withdraw_info.id, currency_id: withdraw_info.currency)
+        if withdraw.nil?
+          Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.id} for #{currency.id} in wallet #{@wallet.name}")
+          next
+        end
+        if withdraw.amount!=withdraw_info.amount
+          Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.id} for #{currency.id} in wallet #{@wallet.name}")
+          next
+        end
+        unless withdraw.confirming?
+          Rails.logger.warn("Withdraw #{withdraw.id} has wrong status (#{withdraw.aasm_state})")
+          next
+        end
 
-      Rails.logger.info("Withdraw #{withdraw.id} successed")
-      withdraw.success!
+        Rails.logger.info("Withdraw #{withdraw.id} successed")
+        withdraw.success!
+      end
     end
   end
 
   def poll_deposits!
-    currency = @wallet.currencies.first
-    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: { id: currency.id })
-    @adapter.poll_deposits.each do |intention|
-      deposit = Deposit.find_by(currency: currency, intention_id: intention[:id])
-      if deposit.present?
-        if deposit.amount==intention[:amount]
-          deposit.with_lock do
-            if deposit.submitted?
-              deposit.accept!
+    @wallet.currencies.each do |currency|
+      @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
+                         currency: { id: currency.id })
 
-              # Save beneficiary for future withdraws
-              if @wallet.settings['save_beneficiary']
-                if intention[:address].present?
-                  Rails.logger.info("Save #{intention[:address]} as beneficiary for #{deposit.account.id}")
-                  deposit.account.member.beneficiaries
-                    .create_with(data: { address: intention[:address] }, state: :active)
-                    .find_or_create_by!(name: [@wallet.settings['beneficiary_prefix'], intention[:address]].compact.join(':'), currency: currency)
-                else
-                  Rails.logger.warn("Deposit #{deposit.id} has no address to save to beneficiaries")
+      @adapter.poll_deposits.each do |intention|
+        deposit = Deposit.find_by(currency: currency, intention_id: intention[:id])
+        if deposit.present?
+          if deposit.amount==intention[:amount]
+            deposit.with_lock do
+              if deposit.submitted?
+                deposit.accept!
+
+                # Save beneficiary for future withdraws
+                if @wallet.settings['save_beneficiary']
+                  if intention[:address].present?
+                    Rails.logger.info("Save #{intention[:address]} as beneficiary for #{deposit.account.id}")
+                    deposit.account.member.beneficiaries
+                      .create_with(data: { address: intention[:address] }, state: :active)
+                      .find_or_create_by!(name: [@wallet.settings['beneficiary_prefix'], intention[:address]].compact.join(':'), currency: currency)
+                  else
+                    Rails.logger.warn("Deposit #{deposit.id} has no address to save to beneficiaries")
+                  end
                 end
+              else
+                Rails.logger.warn("Deposit #{deposit.id} has wrong status (#{deposit.aasm_state})") unless deposit.accepted?
               end
-            else
-              Rails.logger.warn("Deposit #{deposit.id} has wrong status (#{deposit.aasm_state})") unless deposit.accepted?
             end
+          else
+            Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
           end
         else
-          Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
+          Rails.logger.warn("No such deposit intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
         end
-      else
-        Rails.logger.warn("No such deposit intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
       end
     end
   end
