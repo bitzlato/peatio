@@ -228,4 +228,3 @@ Peatio is released under the terms of the [MIT license](http://peatio.mit-licens
 
 [Peatio](http://en.wikipedia.org/wiki/Pixiu) (Chinese: 貔貅) is a Chinese mythical hybrid creature
 considered to be a very powerful protector to practitioners of Feng Shui.
-
