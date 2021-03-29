@@ -18,8 +18,12 @@ namespace :seed do
   task currencies: :environment do
     Currency.transaction do
       YAML.load_file(Rails.root.join('config/seed/currencies.yml')).each do |hash|
-        next if Currency.exists?(id: hash.fetch('id'))
-        Currency.create!(hash)
+        currency = Currency.find_by(id: hash.fetch('id'))
+        if currency.present?
+          currency.update! hash
+        else
+          Currency.create!(hash)
+        end
       end
     end
   end
