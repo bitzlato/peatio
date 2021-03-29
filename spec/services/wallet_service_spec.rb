@@ -35,7 +35,7 @@ describe WalletService do
     end
 
     subject do
-      service.create_deposit_intention!(member, amount)
+      service.create_deposit_intention!(member, currency, amount)
     end
 
     it 'creates depotion intention' do

@@ -6,8 +6,7 @@ class WalletService
     @adapter = Peatio::Wallet.registry[wallet.gateway.to_sym].new(wallet.settings.symbolize_keys)
   end
 
-  def create_deposit_intention!(member, amount)
-    currency = @wallet.currencies.first
+  def create_deposit_intention!(member, currency, amount)
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                        currency: { id: currency.id })
 
