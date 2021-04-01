@@ -48,8 +48,9 @@ module Bitzlato
         '/api/gate/v1/payments/create',
         { client: transaction.to_address, cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, payedBefore: true }
       )
-      transaction.txout = 'unknown'
-      transaction.hash = 'unknown'
+      transaction.txout = 'unknown' # TODO put payment_id
+      # Future txid
+      transaction.hash = Time.now.to_i.to_s # TODO put payment_id
       transaction.options.merge( 'completed' => true )
       transaction
     rescue Bitzlato::Client::Error => e
