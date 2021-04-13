@@ -51,7 +51,7 @@ module Bitzlato
       transaction.txout = 'unknown' # TODO put payment_id
       # Future txid
       transaction.hash = Time.now.to_i.to_s # TODO put payment_id
-      transaction.options.merge( 'completed' => true )
+      transaction.status = 'succeed'
       transaction
     rescue Bitzlato::Client::Error => e
       raise Peatio::Wallet::ClientError, e
