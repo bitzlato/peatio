@@ -180,7 +180,7 @@ class Order < ApplicationRecord
                                          compute_locked
                                        end
 
-    raise ::Account::AccountError unless member_balance >= locked
+    raise ::Account::AccountError, "member_balance > locked = #{member_balance}>#{locked}" unless member_balance >= locked
 
     return trigger_third_party_creation unless market.engine.peatio_engine?
 
