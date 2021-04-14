@@ -16,7 +16,7 @@ GIT
 
 GIT
   remote: https://github.com/finfex/bitzlato
-  revision: 4481878a52c14d85ade8f58cdd598b2b8a9e193b
+  revision: 53b9c814a0be82f7d39c36abc4b9f37770bff405
   branch: main
   specs:
     bitzlato (0.1.8)
