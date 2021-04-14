@@ -16,10 +16,10 @@ GIT
 
 GIT
   remote: https://github.com/finfex/bitzlato
-  revision: ab4466933259f9e4e4f385786fdad81df324ced1
+  revision: 4481878a52c14d85ade8f58cdd598b2b8a9e193b
   branch: main
   specs:
-    bitzlato (0.1.7)
+    bitzlato (0.1.8)
       faraday (>= 0.17)
       json (~> 2.0)
       jwt (~> 2.3.0.dev)

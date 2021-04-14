@@ -44,13 +44,12 @@ module Bitzlato
     end
 
     def create_payment!(transaction, options = {})
-      client.post(
+      response = client.post(
         '/api/gate/v1/payments/create',
         { client: transaction.to_address, cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, payedBefore: true }
       )
-      transaction.txout = 'unknown' # TODO put payment_id
-      # Future txid
-      transaction.hash = Time.now.to_i.to_s # TODO put payment_id
+      payment_id = response['paymentId'] || raise("No payment ID in response")
+      transaction.hash = transaction.txout = [client.uid, payment_id] * ':'
       transaction.status = 'succeed'
       transaction
     rescue Bitzlato::Client::Error => e
