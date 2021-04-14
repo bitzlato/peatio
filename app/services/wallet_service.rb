@@ -36,7 +36,8 @@ class WalletService
 
       @adapter.poll_withdraws.each do |withdraw_info|
         next unless withdraw_info.is_done
-        withdraw = Withdraw.find_by(txid: withdraw_info.id, currency_id: withdraw_info.currency)
+        next if withdraw_info.withdraw_id.nil?
+        withdraw = Withdraw.find_by(id: withdraw_info.withdraw_id)
         if withdraw.nil?
           Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.id} for #{currency.id} in wallet #{@wallet.name}")
           next
@@ -106,7 +107,7 @@ class WalletService
     transaction = Peatio::Transaction.new(to_address: withdrawal.rid,
                                           amount:     withdrawal.amount,
                                           currency_id: withdrawal.currency_id,
-                                          options: { tid: withdrawal.tid })
+                                          options: { tid: withdrawal.tid, withdrawal_id: withdrawal.id })
 
     transaction = @adapter.create_transaction!(transaction)
 

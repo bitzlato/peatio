@@ -3,7 +3,7 @@ require 'digest'
 module Bitzlato
   class Wallet < Peatio::Wallet::Abstract
     class WithdrawInfo
-      attr_accessor :is_done, :id, :currency, :amount
+      attr_accessor :is_done, :withdraw_id, :currency, :amount
     end
 
     WITHDRAW_METHODS = %w[voucher payment]
@@ -44,12 +44,14 @@ module Bitzlato
     end
 
     def create_payment!(transaction, options = {})
+      key = transaction.options[:withdrawal_id] || raise("No withdrawal ID")
       response = client.post(
         '/api/gate/v1/payments/create',
-        { client: transaction.to_address, cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, payedBefore: true }
+        { clientProvidedId: key, client: transaction.to_address, cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, payedBefore: true }
       )
       payment_id = response['paymentId'] || raise("No payment ID in response")
-      transaction.hash = transaction.txout = [client.uid, payment_id] * ':'
+      transaction.hash = transaction.txout = generate_transaction_id payment_id
+      transaction.options.merge! payment_id: payment_id
       transaction.status = 'succeed'
       transaction
     rescue Bitzlato::Client::Error => e
@@ -137,7 +139,7 @@ module Bitzlato
         .get('/api/gate/v1/payments/list/')
         .map do |payment|
         WithdrawInfo.new.tap do |w|
-          w.id = Digest::MD5.hexdigest payment.slice('publicName', 'amount', 'cryptocurrency', 'date').values.map(&:to_s).sort.join
+          w.withdraw_id = payment['clientProvidedId']
           w.is_done = payment['status'] == 'done'
           w.amount = payment['amount'].to_d
           w.currency = payment['cryptocurrency']
@@ -160,6 +162,10 @@ module Bitzlato
 
     def currency_id
       @currency.fetch(:id)
+    end
+
+    def generate_transaction_id id
+      [client.uid, id] * ':'
     end
 
     def client
