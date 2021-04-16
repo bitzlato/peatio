@@ -50,7 +50,7 @@ module Bitzlato
         { clientProvidedId: key, client: transaction.to_address, cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, payedBefore: true }
       )
       payment_id = response['paymentId'] || raise("No payment ID in response")
-      transaction.hash = transaction.txout = generate_transaction_id payment_id
+      transaction.hash = transaction.txout = generate_id payment_id
       transaction.options.merge! payment_id: payment_id
       transaction.status = 'succeed'
       transaction
@@ -92,7 +92,7 @@ module Bitzlato
       {
         amount: response['amount'].to_d,
         username: response['username'],
-        id: response['id'],
+        id: generate_id(response['id']),
         links: response['link'].each_with_object([]) { |e, a| a << { 'title' => e.first, 'url' => e.second } },
         expires_at: Time.at(response['expiryAt']/1000)
       }
@@ -104,7 +104,7 @@ module Bitzlato
         .map do |transaction|
         {
           address: transaction['username'],
-          id: transaction['invoiceId'],
+          id: generate_id(transaction['invoiceId']),
           amount: transaction['amount'].to_d,
           currency: transaction['cryptocurrency']
         }
@@ -164,7 +164,7 @@ module Bitzlato
       @currency.fetch(:id)
     end
 
-    def generate_transaction_id id
+    def generate_id id
       [client.uid, id] * ':'
     end
 
