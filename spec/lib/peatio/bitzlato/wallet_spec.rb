@@ -1,26 +1,6 @@
 describe Bitzlato::Wallet do
   let(:wallet) { Bitzlato::Wallet.new }
 
-  #context :configure do
-    #let(:settings) { { wallet: {}, currency: {} } }
-    #it 'requires wallet' do
-      #expect { wallet.configure(settings.except(:wallet)) }.to raise_error(Peatio::Wallet::MissingSettingError)
-
-      #expect { wallet.configure(settings) }.to_not raise_error
-    #end
-
-    #it 'requires currency' do
-      #expect { wallet.configure(settings.except(:currency)) }.to raise_error(Peatio::Wallet::MissingSettingError)
-
-      #expect { wallet.configure(settings) }.to_not raise_error
-    #end
-
-    #it 'sets settings attribute' do
-      #wallet.configure(settings)
-      #expect(wallet.settings).to eq(settings.slice(*Ethereum::Wallet::SUPPORTED_SETTINGS))
-    #end
-  #end
-
   describe :requests do
     around do |example|
       WebMock.disable_net_connect!
@@ -176,7 +156,7 @@ describe Bitzlato::Wallet do
         Peatio::Transaction.new(to_address: 1,
                                 amount:     123,
                                 currency_id: 'BTC',
-                                options: { tid: 'tid' })
+                                options: { withdrawal_id: 12, tid: 'tid' })
       }
 
       context :voucher do
@@ -196,11 +176,10 @@ describe Bitzlato::Wallet do
       end
 
       context :create_payment! do
-        let(:response) do
-        end
+        let(:response) { { paymentId: 12 }}
         it 'show create withdrawal transaction' do
           stub_request(:post, uri + '/api/gate/v1/payments/create')
-            .with( body: "{\"client\":1,\"cryptocurrency\":\"BTC\",\"amount\":123,\"payedBefore\":true}" )
+            .with( body: "{\"clientProvidedId\":12,\"client\":1,\"cryptocurrency\":\"BTC\",\"amount\":123,\"payedBefore\":true}" )
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
           transaction = wallet.create_payment!(source_transaction)
@@ -269,7 +248,7 @@ describe Bitzlato::Wallet do
 
         result = wallet.create_deposit_intention!(account_id: 'uid12312', amount: 123)
 
-        expect(result[:id]).to eq 21
+        expect(result[:id]).to eq '0:21'
         expect(result[:amount]).to eq 1.1
         expect(result[:links]).to be_a(Array)
         expect(result[:links].count).to eq(2)

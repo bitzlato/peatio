@@ -152,7 +152,7 @@ module Bitzlato
         .get('/api/p2p/vouchers/')['data']
         .map do |voucher|
         WithdrawInfo.new.tap do |w|
-          w.id = voucher['deepLinkCode']
+          w.withdraw_id = voucher['deepLinkCode']
           w.is_done = voucher['status'] == 'cashed'
           w.amount = voucher.dig('cryptocurrency', 'amount').to_d
           w.currency = voucher.dig('cryptocurrency', 'code').downcase
