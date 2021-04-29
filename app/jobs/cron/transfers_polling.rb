@@ -14,13 +14,13 @@ module Jobs
       def self.poll_withdraws(ws)
         ws.poll_withdraws!
       rescue StandardError => e
-        report_exception_to_screen(e)
+        report_exception(e)
       end
 
       def self.poll_deposits(ws)
         ws.poll_deposits!
       rescue StandardError => e
-        report_exception_to_screen(e)
+        report_exception(e)
       end
     end
   end
