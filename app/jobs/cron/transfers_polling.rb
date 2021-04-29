@@ -9,6 +9,8 @@ module Jobs
           poll_withdraws ws if ws.support_withdraws_polling?
         end
         sleep 10
+      rescue StandardError => e
+        report_exception(e)
       end
 
       def self.poll_withdraws(ws)
