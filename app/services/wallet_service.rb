@@ -85,8 +85,16 @@ class WalletService
 
   # TODO: We don't need deposit_spread anymore.
   def deposit_collection_fees!(deposit, deposit_spread)
-    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: deposit.currency.to_blockchain_api_settings)
+    configs = {
+      wallet:   @wallet.to_wallet_api_settings,
+      currency: deposit.currency.to_blockchain_api_settings
+    }
+
+    if deposit.currency.parent_id?
+      configs.merge!(parent_currency: deposit.currency.parent.to_blockchain_api_settings)
+    end
+
+    @adapter.configure(configs)
     deposit_transaction = Peatio::Transaction.new(hash:         deposit.txid,
                                                   txout:        deposit.txout,
                                                   to_address:   deposit.address,

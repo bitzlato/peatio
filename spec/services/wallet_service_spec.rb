@@ -740,7 +740,7 @@ describe WalletService do
     let(:fake_wallet_adapter) { FakeWallet.new }
     let(:service) { WalletService.new(fee_wallet) }
 
-    let(:spread_deposit) do 
+    let(:spread_deposit) do
       [Peatio::Transaction.new(to_address: 'fake-cold',
                                amount: '2.0',
                                currency_id: currency.id)]
@@ -757,6 +757,23 @@ describe WalletService do
     subject { service.deposit_collection_fees!(deposit, spread_deposit) }
 
     context 'Adapter collect fees for transaction' do
+      before do
+        deposit.update!(spread: spread_deposit.map(&:as_json))
+        service.adapter.expects(:prepare_deposit_collection!).returns(transactions)
+      end
+
+      it 'returns transaction' do
+        expect(subject).to contain_exactly(*transactions)
+        expect(subject).to all(be_a(Peatio::Transaction))
+        deposit.spread.map { |s| s.key?(:options) }
+      end
+    end
+
+    context 'Adapter collect fees for erc20 transaction with parent_id configuration' do
+      let(:currency) { Currency.find('trst') }
+
+      subject { service.deposit_collection_fees!(deposit, spread_deposit) }
+
       before do
         deposit.update!(spread: spread_deposit.map(&:as_json))
         service.adapter.expects(:prepare_deposit_collection!).returns(transactions)

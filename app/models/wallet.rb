@@ -138,7 +138,7 @@ class Wallet < ApplicationRecord
   end
 
   def generate_settings
-    results = service.create_address!('peatio', {})
+    results = service.create_address!("#{id}_#{kind}_wallet", {})
     {
       address: results[:address],
       secret: results[:secret]
