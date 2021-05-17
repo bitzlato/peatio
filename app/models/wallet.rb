@@ -117,6 +117,14 @@ class Wallet < ApplicationRecord
     def active_deposit_wallet(currency_id)
       Wallet.active.deposit.joins(:currencies).find_by(currencies: { id: currency_id })
     end
+
+    def uniq(array)
+      if ActiveRecord::Base.connection.adapter_name == "PostgreSQL"
+        array.select("DISTINCT ON (wallets.id) wallets.*")
+      else
+        array.distinct
+      end
+    end
   end
 
   def current_balance(currency = nil)

@@ -139,8 +139,10 @@ class WalletService
   end
 
   def trigger_webhook_event(event)
+    # If there are erc20 currencies we should configure parent currency here
+    currency = @wallet.currencies.find { |e| e.parent_id == nil }
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: @wallet.currencies.first.to_blockchain_api_settings)
+                       currency: currency.to_blockchain_api_settings)
     @adapter.trigger_webhook_event(event)
   end
 
