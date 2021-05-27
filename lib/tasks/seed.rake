@@ -54,7 +54,7 @@ namespace :seed do
       YAML.load_file(Rails.root.join('config/seed/markets.yml'))
         .map(&:symbolize_keys)
         .each do |hash|
-          next if Market.exists?(id: hash.fetch(:id))
+          next if Market.exists?(symbol: hash.fetch(:id))
           # For compatibility with old markets.yml
           # If state is not defined set it from enabled.
           enabled = hash.delete(:enabled)
@@ -69,7 +69,8 @@ namespace :seed do
                                    min_ask_price:  :min_price,
                                    max_bid_price:  :max_price,
                                    min_ask_amount: :min_amount,
-                                   min_bid_amount: :min_amount }
+                                   min_bid_amount: :min_amount,
+                                   symbol: :id }
 
           legacy_keys_mappings.each do |old_key, new_key|
             legacy_key_value = hash.delete(old_key)
