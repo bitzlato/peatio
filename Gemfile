@@ -6,6 +6,7 @@ git_source(:github) { |repo_slug| "https://github.com/#{repo_slug}" }
 
 ruby '~> 2.6'
 
+gem 'dotenv-rails'
 gem 'ransack', '~> 2.3.2'
 gem 'rails', '~> 5.2.4.5'
 gem 'puma', '~> 3.12.2'
