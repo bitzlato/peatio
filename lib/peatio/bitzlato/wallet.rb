@@ -23,10 +23,6 @@ module Bitzlato
       @wallet = @settings.fetch(:wallet) do
         raise Peatio::Wallet::MissingSettingError, :wallet
       end.slice(:uri, :key, :uid)
-
-      @currency = @settings.fetch(:currency) do
-       raise Peatio::Wallet::MissingSettingError, :currency
-      end.slice(:id)
     end
 
     def create_transaction!(transaction, options = {})

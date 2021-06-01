@@ -2,13 +2,14 @@
 module Jobs
   module Cron
     module TransfersPolling
+      TIMEOUT = 60
       def self.process
         Wallet.active.find_each do |w|
-          ws = WalletService .new(w)
+          ws = WalletService.new(w)
           poll_deposits ws if ws.support_deposits_polling?
           poll_withdraws ws if ws.support_withdraws_polling?
         end
-        sleep 10
+        sleep TIMEOUT
       rescue StandardError => e
         report_exception(e)
       end

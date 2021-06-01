@@ -33,30 +33,27 @@ class WalletService
   end
 
   def poll_withdraws!
-    @wallet.currencies.each do |currency|
-      @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                         currency: { id: currency.id })
+    @adapter.configure(wallet:   @wallet.to_wallet_api_settings)
 
-      @adapter.poll_withdraws.each do |withdraw_info|
-        next unless withdraw_info.is_done
-        next if withdraw_info.withdraw_id.nil?
-        withdraw = Withdraw.find_by(id: withdraw_info.withdraw_id)
-        if withdraw.nil?
-          Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.id} for #{currency.id} in wallet #{@wallet.name}")
-          next
-        end
-        if withdraw.amount!=withdraw_info.amount
-          Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.id} for #{currency.id} in wallet #{@wallet.name}")
-          next
-        end
-        unless withdraw.confirming?
-          Rails.logger.warn("Withdraw #{withdraw.id} has wrong status (#{withdraw.aasm_state})")
-          next
-        end
-
-        Rails.logger.info("Withdraw #{withdraw.id} successed")
-        withdraw.success!
+    @adapter.poll_withdraws.each do |withdraw_info|
+      next unless withdraw_info.is_done
+      next if withdraw_info.withdraw_id.nil?
+      withdraw = Withdraw.find_by(id: withdraw_info.withdraw_id)
+      if withdraw.nil?
+        Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.id} in wallet #{@wallet.name}")
+        next
       end
+      if withdraw.amount!=withdraw_info.amount
+        Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.id} in wallet #{@wallet.name}")
+        next
+      end
+      unless withdraw.confirming?
+        Rails.logger.warn("Withdraw #{withdraw.id} has wrong status (#{withdraw.aasm_state})")
+        next
+      end
+
+      Rails.logger.info("Withdraw #{withdraw.id} successed")
+      withdraw.success!
     end
   end
 
