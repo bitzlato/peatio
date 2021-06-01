@@ -100,3 +100,5 @@ end
 gem "pg", "~> 1.2"
 
 gem "http_accept_language", "~> 2.1"
+
+gem "semver2", "~> 3.4"
