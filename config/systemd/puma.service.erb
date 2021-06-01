@@ -3,7 +3,7 @@ Description = <%= fetch(:application) %> (<%= fetch(:stage) %>) application serv
 After=syslog.target network.target
 
 [Service]
-WatchdogSec=20
+WatchdogSec=10
 Type=notify
 Environment=RACK_ENV=<%= fetch(:rails_env) %>
 Environment=RAILS_ENV=<%= fetch(:rails_env) %>

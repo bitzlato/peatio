@@ -45,7 +45,7 @@ set :puma_daemonize, false
 set :puma_preload_app, false
 set :puma_prune_bundler, true
 set :puma_init_active_record, true
-set :puma_workers, 2
+set :puma_workers, 0
 set :puma_bind, %w(tcp://0.0.0.0:9200)
 set :puma_start_task, 'systemd:puma:start'
 
@@ -61,5 +61,5 @@ before 'deploy:starting', 'sentry:validate_config'
 after 'deploy:published', 'sentry:notice_deployment'
 
 after 'deploy:publishing', 'systemd:puma:reload-or-restart'
-after 'deploy:publishing', 'systemd:daemon:reload-or-restart'
-after 'deploy:publishing', 'systemd:amqp_daemon:reload-or-restart'
+# after 'deploy:publishing', 'systemd:daemon:reload-or-restart'
+# after 'deploy:publishing', 'systemd:amqp_daemon:reload-or-restart'
