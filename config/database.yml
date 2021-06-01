@@ -1,5 +1,5 @@
 default: &default
-  adapter: <%= ENV.fetch('DATABASE_ADAPTER', 'mysql2') %>
+  adapter: <%= ENV.fetch('DATABASE_ADAPTER', 'postgresql') %>
   encoding: utf8
   support_json: <%= ENV.fetch('DATABASE_SUPPORT_JSON', 'true') %>
   collation: <%= ENV.fetch('DATABASE_COLLATION', 'utf8_general_ci') %>
