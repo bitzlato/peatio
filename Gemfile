@@ -117,3 +117,5 @@ group :deploy do
   gem 'capistrano-sentry', require: false
 end
 
+
+gem "dotenv-rails", "~> 2.7"
