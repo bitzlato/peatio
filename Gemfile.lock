@@ -78,6 +78,8 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
+    airbrussh (1.4.0)
+      sshkit (>= 1.6.1, != 1.7.0)
     amq-protocol (2.3.2)
     amqp (1.8.0)
       amq-protocol (>= 2.2.0)
@@ -110,6 +112,33 @@ GEM
       amq-protocol (~> 2.3, >= 2.3.0)
     byebug (11.1.3)
     cancancan (3.1.0)
+    capistrano (3.16.0)
+      airbrussh (>= 1.0.0)
+      i18n
+      rake (>= 10.0.0)
+      sshkit (>= 1.9.0)
+    capistrano-bundler (2.0.1)
+      capistrano (~> 3.1)
+    capistrano-db-tasks (0.6)
+      capistrano (>= 3.0.0)
+    capistrano-dotenv-tasks (0.1.5)
+      capistrano (~> 3.0)
+    capistrano-git-with-submodules (2.0.4)
+      capistrano (~> 3.7)
+    capistrano-rails (1.6.1)
+      capistrano (~> 3.1)
+      capistrano-bundler (>= 1.1, < 3)
+    capistrano-rbenv (2.2.0)
+      capistrano (~> 3.1)
+      sshkit (~> 1.3)
+    capistrano-sentry (0.4.2)
+      capistrano (~> 3.1)
+    capistrano-shell (0.2.0)
+      capistrano (~> 3.1)
+    capistrano3-puma (3.1.1)
+      capistrano (~> 3.7)
+      capistrano-bundler
+      puma (~> 3.4)
     cash-addr (0.2.0)
       base58 (~> 0.2.2)
     clamp (1.3.2)
@@ -294,6 +323,9 @@ GEM
     nenv (0.3.0)
     net-http-persistent (3.0.1)
       connection_pool (~> 2.2)
+    net-scp (3.0.0)
+      net-ssh (>= 2.6.5, < 7.0.0)
+    net-ssh (6.1.0)
     nio4r (2.5.7)
     nokogiri (1.11.2)
       mini_portile2 (~> 2.5.0)
@@ -476,6 +508,9 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    sshkit (1.21.2)
+      net-scp (>= 1.1.2)
+      net-ssh (>= 2.8.0)
     thin (1.8.0)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
@@ -516,6 +551,16 @@ DEPENDENCIES
   bump (~> 0.7)
   bunny (~> 2.14.1)
   cancancan (~> 3.1.0)
+  capistrano
+  capistrano-bundler
+  capistrano-db-tasks
+  capistrano-dotenv-tasks
+  capistrano-git-with-submodules
+  capistrano-rails
+  capistrano-rbenv
+  capistrano-sentry
+  capistrano-shell
+  capistrano3-puma
   cash-addr (~> 0.2.0)
   database_cleaner (~> 1.7)
   digest-sha3 (~> 1.1.0)
@@ -554,7 +599,6 @@ DEPENDENCIES
   memoist (~> 0.16.0)
   method-not-implemented (~> 1.0.1)
   mocha (~> 1.8)
-  mysql2 (~> 0.5.2)
   net-http-persistent (~> 3.0.1)
   peatio (~> 2.6.3)
   peatio-bitcoincash (~> 2.6.1)
@@ -592,4 +636,4 @@ RUBY VERSION
    ruby 2.6.6p146
 
 BUNDLED WITH
-   2.2.15
+   2.2.17
