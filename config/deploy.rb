@@ -61,5 +61,5 @@ before 'deploy:starting', 'sentry:validate_config'
 after 'deploy:published', 'sentry:notice_deployment'
 
 after 'deploy:publishing', 'systemd:puma:reload-or-restart'
-# after 'deploy:publishing', 'systemd:daemon:reload-or-restart'
-# after 'deploy:publishing', 'systemd:amqp_daemon:reload-or-restart'
+after 'deploy:publishing', 'systemd:daemon:reload-or-restart'
+after 'deploy:publishing', 'systemd:amqp_daemon:reload-or-restart'
