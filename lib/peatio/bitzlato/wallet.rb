@@ -81,12 +81,12 @@ module Bitzlato
       999_999_999 # Yeah!
     end
 
-    def create_deposit_intention!(account_id: , amount: )
+    def create_deposit_intention!(amount: , comment:)
       response = client
         .post('/api/gate/v1/invoices/', {
         cryptocurrency: currency_id.to_s.upcase,
         amount: amount,
-        comment: "Exchange service deposit for account #{account_id}"
+        comment: comment
         })
 
       {

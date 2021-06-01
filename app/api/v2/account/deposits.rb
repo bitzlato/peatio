@@ -7,9 +7,7 @@ module API
   module V2
     module Account
       class Deposits < Grape::API
-
         before { deposits_must_be_permitted! }
-
 
         desc 'Create deposit intention',
           success: API::V2::Entities::Deposit

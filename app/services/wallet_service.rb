@@ -10,7 +10,10 @@ class WalletService
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                        currency: { id: currency.id })
 
-    intention = @adapter.create_deposit_intention!(account_id: member.uid, amount: amount)
+    intention = @adapter.create_deposit_intention!(
+      amount: amount,
+      comment: I18n.t('deposit_comment', account_id: member.uid)
+    )
     Deposit.create!(
       type: Deposit.name,
       member: member,

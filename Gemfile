@@ -98,3 +98,5 @@ Dir.glob File.expand_path('../Gemfile.plugin', __FILE__) do |file|
 end
 
 gem "pg", "~> 1.2"
+
+gem "http_accept_language", "~> 2.1"
