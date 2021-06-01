@@ -1,0 +1,24 @@
+[Unit]
+Description = <%= fetch(:application) %> (<%= fetch(:stage) %>) daemon (%i)
+After=syslog.target network.target
+
+[Service]
+Type=simple
+Environment=RAILS_ENV=<%= fetch(:rails_env) %>
+Environment=PWD=<%= current_path %>
+EnvironmentFile=<%= current_path %>/.env
+# Helpful for debugging socket activation, etc.
+WorkingDirectory=<%= current_path %>
+ExecStart=/home/<%= fetch(:user) %>/.rbenv/bin/rbenv exec bundle exec ruby ./lib/daemons/daemon.rb ./%i.rb
+ExecStop=/bin/kill -TERM $MAINPID
+
+KillMode=mixed
+Restart=always
+RestartSec=1
+SyslogIdentifier=daemon
+
+[Install]
+# Use default.target to autoboot user service
+# https://superuser.com/questions/1025091/start-a-systemd-user-service-at-boot
+# WantedBy = multi-user.target
+WantedBy=default.target
