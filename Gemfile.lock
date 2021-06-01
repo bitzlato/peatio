@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/brandymint/capistrano-tasks
-  revision: e0b695a5f2389920baabfb3647af5243def98d03
+  revision: ed94c975c36a7ba41a173bddf6dba46034ca41e2
   specs:
     capistrano-tasks (0.0.1)
 

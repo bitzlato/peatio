@@ -67,9 +67,10 @@ after 'deploy:publishing', 'systemd:amqp_daemon:reload-or-restart'
 if defined? Slackistrano
   set :slackistrano,
       klass: Slackistrano::CustomMessaging,
-      channel: '#exchange_deploy',
+      channel: ENV['SLACKISTRANO_CHANNEL'],
       webhook: ENV['SLACKISTRANO_WEBHOOK']
 
   # best when 75px by 75px.
-  set :slackistrano_thumb_url, 'https://cdn4.iconfinder.com/data/icons/set-hotel-services/100/hotel_service_26-512.png'
+  set :slackistrano_thumb_url, 'https://bitzlato.com/wp-content/uploads/2020/12/logo.svg'
+  set :slackistrano_footer_icon, 'https://github.githubassets.com/images/modules/logos_page/Octocat.png'
 end
