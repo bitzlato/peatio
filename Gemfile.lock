@@ -25,24 +25,6 @@ GIT
       jwt (~> 2.3.0.dev)
 
 GIT
-  remote: https://github.com/finfex/peatio-core
-  revision: fefcf9628cbf2ff3d53e51094f793d429704fb30
-  specs:
-    peatio (2.6.4)
-      activemodel (> 5.2, <= 6.0.0)
-      amqp
-      bunny
-      clamp
-      em-synchrony (~> 1.0)
-      em-websocket
-      eventmachine
-      faraday_middleware (~> 0.13.1)
-      faye (~> 1.2)
-      jwt
-      prometheus-client
-      thin
-
-GIT
   remote: https://github.com/jwt/ruby-jwt
   revision: 9a5bc6451f5e686c783f8860d3f104088823fbd3
   specs:
@@ -171,10 +153,6 @@ GEM
     database_cleaner (1.99.0)
     diff-lcs (1.4.4)
     digest-sha3 (1.1.0)
-    dotenv (2.7.6)
-    dotenv-rails (2.7.6)
-      dotenv (= 2.7.6)
-      railties (>= 3.2)
     dry-configurable (0.12.1)
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.5, >= 0.5.0)
@@ -341,6 +319,7 @@ GEM
       ruby2_keywords (~> 0.0.1)
     mustermann-grape (1.0.1)
       mustermann (>= 1.0.0)
+    mysql2 (0.5.3)
     nenv (0.3.0)
     net-http-persistent (3.0.1)
       connection_pool (~> 2.2)
@@ -357,6 +336,20 @@ GEM
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
+    peatio (2.6.4)
+      activemodel (> 5.2, <= 6.0.0)
+      amqp
+      bunny
+      clamp
+      em-synchrony (~> 1.0)
+      em-websocket
+      eventmachine
+      faraday_middleware (~> 0.13.1)
+      faye (~> 1.2)
+      jwt
+      mysql2
+      prometheus-client
+      thin
     peatio-bitcoincash (2.6.1)
       activesupport (~> 5.2.3)
       better-faraday (~> 1.0.5)
@@ -571,7 +564,6 @@ DEPENDENCIES
   cash-addr (~> 0.2.0)
   database_cleaner (~> 1.7)
   digest-sha3 (~> 1.1.0)
-  dotenv-rails
   em-synchrony (~> 1.0)
   email_validator (~> 1.6.0)
   enumerize (~> 2.2.2)
@@ -608,7 +600,7 @@ DEPENDENCIES
   method-not-implemented (~> 1.0.1)
   mocha (~> 1.8)
   net-http-persistent (~> 3.0.1)
-  peatio!
+  peatio (~> 2.6.3)
   peatio-bitcoincash (~> 2.6.1)
   peatio-bitgo (~> 2.6.6)
   peatio-dash (~> 2.6.1)
