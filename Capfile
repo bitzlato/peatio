@@ -27,11 +27,12 @@ require 'capistrano/rails/migrations'
 require 'capistrano/dotenv/tasks'
 require 'capistrano/sentry'
 
-# require 'capistrano/puma'
-# install_plugin Capistrano::Puma
+require 'capistrano/puma'
+install_plugin Capistrano::Puma
 
 # require 'capistrano/rails/console'
 # require 'capistrano/master_key'
-# require 'capistrano/systemd/multiservice'
-# install_plugin Capistrano::Systemd::MultiService.new_service('puma', service_type: 'user')
-# install_plugin Capistrano::Systemd::MultiService.new_service('sidekiq', service_type: 'user')
+require 'capistrano/systemd/multiservice'
+install_plugin Capistrano::Systemd::MultiService.new_service('puma', service_type: 'user')
+install_plugin Capistrano::Systemd::MultiService.new_service('daemon', service_type: 'user')
+install_plugin Capistrano::Systemd::MultiService.new_service('amqp_daemon', service_type: 'user')

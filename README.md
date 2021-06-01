@@ -186,6 +186,12 @@ You can interact with Peatio through API:
 * Websocket API
 * Event API (AMQP)
 
+## Deployment with capistrano
+
+```
+bundle exec cap production systemd:puma:setup systemd:daemon:setup systemd:amqp_daemon:setup puma:config
+```
+
 ## Getting Involved
 We want to make it super-easy for Peatio users and contributors to talk to us and connect with each other, to share ideas, solve problems and help make Peatio awesome. Here are the main channels we're running currently, we'd love to hear from you on one of them:
 
