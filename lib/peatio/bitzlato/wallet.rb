@@ -156,8 +156,14 @@ module Bitzlato
       end
     end
 
+    def currency
+      @settings.fetch(:currency) do
+       raise Peatio::Wallet::MissingSettingError, :currency
+      end.slice(:id)
+    end
+
     def currency_id
-      @currency.fetch(:id)
+      currency.fetch(:id)
     end
 
     def generate_id id
