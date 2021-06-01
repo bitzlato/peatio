@@ -63,3 +63,20 @@ after 'deploy:published', 'sentry:notice_deployment'
 after 'deploy:publishing', 'systemd:puma:reload-or-restart'
 after 'deploy:publishing', 'systemd:daemon:reload-or-restart'
 after 'deploy:publishing', 'systemd:amqp_daemon:reload-or-restart'
+
+if defined? Slackistrano
+  set :slackistrano,
+      klass: Slackistrano::CustomMessaging,
+      channel: '#exchange_deploy',
+      webhook: ENV['MATTERMOST_WEBHOOK']
+
+  # best when 75px by 75px.
+  set :slackistrano_thumb_url, 'https://bitzlato.com/wp-content/uploads/2020/12/logo.svg'
+end
+
+#set :changelog, -> {
+  #range = "#{fetch(:previous_revision)}..#{fetch(:current_revision)}"
+  #changelog = capture(:git, 'log', '--oneline', range).force_encoding(Encoding::UTF_8)
+  #changelog = "No changes between revisions #{range}" if changelog.empty?
+  #changelog
+#}

@@ -23,6 +23,11 @@ require 'capistrano/bundler'
 require 'capistrano-db-tasks'
 require 'capistrano/shell'
 
+require 'slackistrano/capistrano'
+require 'capistrano/tasks'
+require 'capistrano/my'
+install_plugin Capistrano::My
+require 'capistrano/slackistrano' # My Custom Message
 require 'capistrano/rails/migrations'
 require 'capistrano/dotenv/tasks'
 require 'capistrano/sentry'

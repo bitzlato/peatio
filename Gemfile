@@ -111,12 +111,13 @@ group :deploy do
   gem 'capistrano-bundler', require: false
   gem 'capistrano-shell', require: false
   gem 'capistrano-db-tasks', require: false
+  gem 'capistrano-tasks', github: 'brandymint/capistrano-tasks', require: false
   gem 'capistrano-systemd-multiservice', github: 'groovenauts/capistrano-systemd-multiservice', require: false
   # gem 'capistrano-master-key', require: false, github: 'virgoproz/capistrano-master-key'
   gem 'capistrano-git-with-submodules'
   gem 'capistrano-sentry', require: false
+  gem 'slackistrano', require: false
 end
-
 
 gem "dotenv-rails", "~> 2.7"
 
