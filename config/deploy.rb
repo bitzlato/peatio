@@ -49,6 +49,8 @@ set :puma_workers, 0
 set :puma_bind, %w(tcp://0.0.0.0:9200)
 set :puma_start_task, 'systemd:puma:start'
 
+set :assets_roles, []
+
 set :init_system, :systemd
 
 set :systemd_daemon_role, :app
@@ -65,6 +67,7 @@ after 'deploy:publishing', 'systemd:daemon:reload-or-restart'
 after 'deploy:publishing', 'systemd:amqp_daemon:reload-or-restart'
 
 if defined? Slackistrano
+  Rake::Task['deploy:starting'].prerequisites.delete('slack:deploy:starting')
   set :slackistrano,
       klass: Slackistrano::CustomMessaging,
       channel: ENV['SLACKISTRANO_CHANNEL'],

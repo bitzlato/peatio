@@ -23,6 +23,8 @@ require 'capistrano/bundler'
 require 'capistrano-db-tasks'
 require 'capistrano/shell'
 
+require 'capistrano/rails/console'
+
 require 'slackistrano/capistrano'
 require 'capistrano/tasks'
 require 'capistrano/my'
