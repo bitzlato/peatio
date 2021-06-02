@@ -37,7 +37,6 @@ require 'capistrano/sentry'
 require 'capistrano/puma'
 install_plugin Capistrano::Puma
 
-# require 'capistrano/rails/console'
 # require 'capistrano/master_key'
 require 'capistrano/systemd/multiservice'
 install_plugin Capistrano::Systemd::MultiService.new_service('puma', service_type: 'user')
