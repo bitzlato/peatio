@@ -120,6 +120,4 @@ group :deploy do
   gem 'slackistrano', require: false
 end
 
-gem "dotenv-rails", "~> 2.7"
-
 gem "sd_notify", "~> 0.1.1"
