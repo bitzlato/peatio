@@ -20,10 +20,9 @@ describe API::V2::Account::Deposits, type: :request do
       expect(response.code).to eq '401'
     end
 
-    it 'returns with auth token deposits' do
-      Wallet.any_instance.stubs(:gateway).returns(:bitzlato)
-      Wallet.any_instance.stubs(:settings).returns({ key: {}, uid: :some_acount_id, uri: 'uri' })
-      Bitzlato::Wallet.any_instance.stubs(:create_deposit_intention!).returns({ amount: amount, id: :unique_intention_id, links: {}})
+    fit 'returns with auth token deposits' do
+
+      AMQP::Queue.expects(:enqueue).with(:deposit_intention,  { deposit_id: 1 }, { persistent: true }).once
       api_post '/api/v2/account/deposits/intention', token: token, params: { currency: :btc, amount: amount }
 
       expect(response).to be_successful

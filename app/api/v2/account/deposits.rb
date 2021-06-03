@@ -34,9 +34,14 @@ module API
             error!({ errors: ['account.wallet.not_found'] }, 422)
           end
 
-          deposit = WalletService
-            .new(wallet)
-            .create_deposit_intention!(current_user, currency, params[:amount])
+          deposit = Deposit.create!(
+            type: Deposit.name,
+            member: current_user,
+            currency: currency,
+            amount: params[:amount]
+          )
+
+          AMQP::Queue.enqueue(:deposit_intention, { deposit_id: deposit.id }, { persistent: true })
 
           present deposit, with: API::V2::Entities::Deposit
         end
