@@ -49,7 +49,7 @@ end
 # == Schema Information
 # Schema version: 20201125134745
 #
-# Table name: blockchains
+# Table   serverwaname: blockchains
 #
 #  id                   :integer          not null, primary key
 #  key                  :string(255)      not null

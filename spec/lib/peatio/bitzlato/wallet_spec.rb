@@ -226,7 +226,7 @@ describe Bitzlato::Wallet do
       end
     end
 
-    context :create_deposit_intention! do
+    context :create_invoice! do
       let(:response) do
         {
           "id"=>21,
@@ -246,7 +246,7 @@ describe Bitzlato::Wallet do
           .with(body: {"cryptocurrency":"BTC","amount":123,"comment":"Exchange service deposit for account uid12312"}.to_json)
           .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
-        result = wallet.create_deposit_intention!(comment: 'Exchange service deposit for account uid12312', amount: 123)
+        result = wallet.create_invoice!(comment: 'Exchange service deposit for account uid12312', amount: 123)
 
         expect(result[:id]).to eq '0:21'
         expect(result[:amount]).to eq 1.1

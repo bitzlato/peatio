@@ -6,22 +6,22 @@ class WalletService
     @adapter = Peatio::Wallet.registry[wallet.gateway.to_sym].new(wallet.settings.symbolize_keys)
   end
 
-  def create_deposit_intention!(member, currency, amount)
+  def create_invoice!(deposit)
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: { id: currency.id })
+                       currency: { id: deposit.currency.id })
 
-    intention = @adapter.create_deposit_intention!(
-      amount: amount,
-      comment: I18n.t('deposit_comment', account_id: member.uid)
-    )
-    Deposit.create!(
-      type: Deposit.name,
-      member: member,
-      data: intention.slice(:links, :expires_at),
-      currency: currency,
-      amount: intention[:amount],
-      intention_id: intention[:id]
-    )
+    deposit.with_lock do
+      raise "Depost has wrong state #{deposit.aasm_state}. Must be submitted" unless deposit.submitted?
+      intention = @adapter.create_invoice!(
+        amount: deposit.amount,
+        comment: I18n.t('deposit_comment', account_id: deposit.member.uid)
+      )
+      deposit.update!(
+        data: intention.slice(:links, :expires_at),
+        intention_id: intention[:id]
+      )
+      deposit.invoice!
+    end
   end
 
   def support_deposits_polling?
@@ -64,32 +64,32 @@ class WalletService
 
       @adapter.poll_deposits.each do |intention|
         deposit = Deposit.find_by(currency: currency, intention_id: intention[:id])
-        if deposit.present?
-          if deposit.amount==intention[:amount]
-            deposit.with_lock do
-              if deposit.submitted?
-                deposit.accept!
-
-                # Save beneficiary for future withdraws
-                if @wallet.settings['save_beneficiary']
-                  if intention[:address].present?
-                    Rails.logger.info("Save #{intention[:address]} as beneficiary for #{deposit.account.id}")
-                    deposit.account.member.beneficiaries
-                      .create_with(data: { address: intention[:address] }, state: :active)
-                      .find_or_create_by!(name: [@wallet.settings['beneficiary_prefix'], intention[:address]].compact.join(':'), currency: currency)
-                  else
-                    Rails.logger.warn("Deposit #{deposit.id} has no address to save to beneficiaries")
-                  end
-                end
-              else
-                Rails.logger.warn("Deposit #{deposit.id} has wrong status (#{deposit.aasm_state})") unless deposit.accepted?
-              end
-            end
-          else
-            Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
-          end
-        else
+        unless deposit.present?
           Rails.logger.warn("No such deposit intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
+          next
+        end
+        deposit.with_lock do
+          next if deposit.accepted?
+          unless deposit.amount==intention[:amount]
+            Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
+            next
+          end
+          unless deposit.invoiced?
+            Rails.logger.warn("Deposit #{deposit.id} has wrong status (#{deposit.aasm_state})")
+            next
+          end
+          deposit.accept!
+
+          next unless @wallet.settings['save_beneficiary']
+          # Save beneficiary for future withdraws
+          unless intention[:address].present?
+            Rails.logger.warn("Deposit #{deposit.id} has no address to save beneficiaries")
+            next
+          end
+          Rails.logger.info("Save #{intention[:address]} as beneficiary for #{deposit.account.id}")
+          deposit.account.member.beneficiaries
+            .create_with(data: { address: intention[:address] }, state: :active)
+            .find_or_create_by!(name: [@wallet.settings['beneficiary_prefix'], intention[:address]].compact.join(':'), currency: currency)
         end
       end
     end

@@ -20,9 +20,9 @@ describe API::V2::Account::Deposits, type: :request do
       expect(response.code).to eq '401'
     end
 
-    fit 'returns with auth token deposits' do
+    it 'returns with auth token deposits' do
 
-      AMQP::Queue.expects(:enqueue).with(:deposit_intention,  { deposit_id: 1 }, { persistent: true }).once
+      AMQP::Queue.expects(:enqueue).with(:deposit_intention,  anything, { persistent: true }).once
       api_post '/api/v2/account/deposits/intention', token: token, params: { currency: :btc, amount: amount }
 
       expect(response).to be_successful

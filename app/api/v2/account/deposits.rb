@@ -28,12 +28,6 @@ module API
             error!({ errors: ['management.currency.deposit_disabled'] }, 422)
           end
 
-          wallet = Wallet.deposit_wallet(currency.id)
-
-          unless wallet.present?
-            error!({ errors: ['account.wallet.not_found'] }, 422)
-          end
-
           deposit = Deposit.create!(
             type: Deposit.name,
             member: current_user,

@@ -77,7 +77,7 @@ module Bitzlato
       999_999_999 # Yeah!
     end
 
-    def create_deposit_intention!(amount: , comment:)
+    def create_invoice!(amount: , comment:)
       response = client
         .post('/api/gate/v1/invoices/', {
         cryptocurrency: currency_id.to_s.upcase,

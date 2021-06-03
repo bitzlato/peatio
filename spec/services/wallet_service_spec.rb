@@ -26,24 +26,20 @@ describe WalletService do
     Blockchain.any_instance.stubs(:blockchain_api).returns(BlockchainService.new(blockchain))
   end
 
-  context :create_deposit_intention! do
-    let(:member) { create(:member) }
-    let(:amount) { 1.12 }
-    let(:intention) { { id: 123, amount: amount, links: { web: 'somelink', telegram: 'somelink' }, expires_at: 3.days.ago } }
+  context :create_invoice! do
+    let(:deposit) { create :deposit_btc }
+    let(:intention_id) { 123 }
+    let(:wallet) { create :wallet, :fake_hot }
+    let(:fake_wallet_adapter) { Bitzlato::Wallet.new }
     before do
-      service.adapter.expects(:create_deposit_intention!).returns(intention)
+      Bitzlato::Wallet.any_instance.stubs(:create_invoice!).returns({ amount: deposit.amount, id: intention_id, links: {}})
+      Wallet.any_instance.stubs(:settings).returns({ key: {}, uid: :some_acount_id, uri: 'uri' })
     end
 
-    subject do
-      service.create_deposit_intention!(member, currency, amount)
-    end
-
-    it 'creates depotion intention' do
-      expect(subject).to be_a(Deposit)
-    end
-
-    it 'deposit amount equals to requested' do
-      expect(subject.amount).to eq amount
+    it 'calls extrenal service and save intention_id' do
+      service.create_invoice! deposit
+      expect(deposit.intention_id).to eq intention_id.to_s
+      expect(deposit).to be_invoiced
     end
   end
 
@@ -57,7 +53,7 @@ describe WalletService do
     let(:intentions) { [
       { id: intention_id, amount: amount, address: username }
     ] }
-    let!(:deposit) { create :deposit_btc, amount: amount, currency: wallet.currencies.first, intention_id: intention_id }
+    let!(:deposit) { create :deposit_btc, amount: amount, currency: wallet.currencies.first, intention_id: intention_id, aasm_state: :invoiced }
 
     before do
       service.adapter.expects(:poll_deposits).returns(intentions)

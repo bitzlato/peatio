@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Deposit < ApplicationRecord
-  STATES = %i[submitted canceled rejected accepted collected skipped processing fee_processing].freeze
+  STATES = %i[submitted invoiced canceled rejected accepted collected skipped processing fee_processing].freeze
 
   serialize :spread, Array
   serialize :from_addresses, Array
@@ -38,6 +38,7 @@ class Deposit < ApplicationRecord
 
   aasm whiny_transitions: false do
     state :submitted, initial: true
+    state :invoiced
     state :canceled
     state :rejected
     state :accepted
@@ -50,7 +51,7 @@ class Deposit < ApplicationRecord
     event(:cancel) { transitions from: :submitted, to: :canceled }
     event(:reject) { transitions from: :submitted, to: :rejected }
     event :accept do
-      transitions from: :submitted, to: :accepted
+      transitions from: %i[submitted invoiced], to: :accepted
       after do
         if currency.coin? && Peatio::App.config.deposit_funds_locked
           account.plus_locked_funds(amount)
@@ -62,6 +63,10 @@ class Deposit < ApplicationRecord
     end
     event :skip do
       transitions from: :processing, to: :skipped
+    end
+
+    event :invoice do
+      transitions from: :submitted, to: :invoiced
     end
 
     event :process do
