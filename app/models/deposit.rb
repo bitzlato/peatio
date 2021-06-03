@@ -193,6 +193,10 @@ class Deposit < ApplicationRecord
     !submitted?
   end
 
+  def enqueue_deposit_intention!
+    AMQP::Queue.enqueue(:deposit_intention, { deposit_id: id }, { persistent: true })
+  end
+
   private
 
   # Creates dependant operations for deposit.

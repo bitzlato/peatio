@@ -34,8 +34,8 @@ module API
             currency: currency,
             amount: params[:amount]
           )
+          deposit.enqueue_deposit_intention!
 
-          AMQP::Queue.enqueue(:deposit_intention, { deposit_id: deposit.id }, { persistent: true })
 
           present deposit, with: API::V2::Entities::Deposit
         end

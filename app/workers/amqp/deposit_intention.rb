@@ -28,8 +28,14 @@ module Workers
         end
 
 
+        Rails.logger.info("Create invoice for #{deposit.id}")
         wallet_service = WalletService.new(wallet)
         wallet_service.create_invoice! deposit
+
+        # Repeat again
+      rescue Bitzlato::Client::WrongResponse => e
+        report_exception(e)
+        raise e
       rescue StandardError => e
         raise e if is_db_connection_error?(e)
 
