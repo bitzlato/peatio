@@ -8,6 +8,7 @@ Environment=RAILS_ENV=<%= fetch(:rails_env) %>
 Environment=RAILS_ROOT=<%= current_path %>
 Environment=PWD=<%= current_path %>
 EnvironmentFile=<%= current_path %>/.env
+EnvironmentFile=<%= current_path %>/.env.daemons
 # Helpful for debugging socket activation, etc.
 WorkingDirectory=<%= current_path %>
 ExecStart=/home/<%= fetch(:user) %>/.rbenv/bin/rbenv exec bundle exec ruby ./lib/daemons/amqp_daemon.rb %i
