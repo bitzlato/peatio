@@ -34,7 +34,7 @@ module API
 
         expose(
           :deposit_address,
-          if: ->(account, _options) { account.currency.coin? && !Wallet.deposit_wallet(account.currency_id)&.settings&.fetch('enable_intention', false) },
+          if: ->(account, _options) { account.currency.coin? && !Wallet.deposit_wallet(account.currency_id)&.enable_invoice },
           using: API::V2::Entities::PaymentAddress,
           documentation: {
             desc: 'User deposit address',
@@ -47,7 +47,7 @@ module API
 
         expose(
           :enable_intention,
-          if: ->(account, _options) { Wallet.deposit_wallet(account.currency_id)&.settings&.fetch('enable_intention', false) },
+          if: ->(account, _options) { Wallet.deposit_wallet(account.currency_id)&.enable_invoice },
           documentation: {
             desc: 'Show intention form instead of payment address generation',
             type: JSON
