@@ -17,11 +17,17 @@ module Workers
       ].freeze
 
       def run
-        JOBS.map { |j| Thread.new { process(j) } }.map(&:join)
+        @threads = JOBS.map { |j| Thread.new { process(j) } }
+        @threads.map(&:join)
       end
 
       def process(service)
         service.process while running
+      end
+
+      def stop
+        super
+        Array(@threads).each { |t| Thread.kill t }
       end
     end
   end
