@@ -63,7 +63,10 @@ module API
             type: String,
             desc: 'Deposit state.'
           }
-        )
+        ) do |deposit, options|
+          # TODO Remove after update baseapp to support invoiced status
+          deposit.aasm_state.to_s == 'invoiced' ? 'submitted' : deposit.aasm_state
+        end
 
         expose(
           :transfer_type,
