@@ -60,6 +60,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'net-http-persistent', '~> 3.0.1'
 gem 'influxdb', '~> 0.7.0'
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
+gem 'dotenv'
 
 group :development, :test do
   gem 'irb'
