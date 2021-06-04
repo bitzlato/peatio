@@ -71,6 +71,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'foreman'
   gem 'annotate',   '~> 3.1.0'
   gem 'ruby-prof',  '~> 0.17.0', require: false
   gem 'listen',     '>= 3.0.5', '< 3.2'
