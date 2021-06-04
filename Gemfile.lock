@@ -143,6 +143,8 @@ GEM
       capistrano (~> 3.1)
     capistrano-db-tasks (0.6)
       capistrano (>= 3.0.0)
+    capistrano-dotenv (0.0.5)
+      capistrano (>= 3.5.0, < 4.0.0)
     capistrano-dotenv-tasks (0.1.5)
       capistrano (~> 3.0)
     capistrano-git-with-submodules (2.0.4)
@@ -583,6 +585,7 @@ DEPENDENCIES
   capistrano
   capistrano-bundler
   capistrano-db-tasks
+  capistrano-dotenv
   capistrano-dotenv-tasks
   capistrano-git-with-submodules
   capistrano-rails

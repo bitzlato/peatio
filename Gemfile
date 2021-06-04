@@ -105,6 +105,7 @@ gem "http_accept_language", "~> 2.1"
 gem "semver2", "~> 3.4"
 
 group :deploy do
+  gem 'capistrano-dotenv'
   gem 'capistrano-dotenv-tasks'
   gem 'capistrano3-puma', github: 'seuros/capistrano-puma'
   gem 'capistrano', require: false

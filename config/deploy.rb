@@ -77,3 +77,12 @@ if defined? Slackistrano
   set :slackistrano_thumb_url, 'https://bitzlato.com/wp-content/uploads/2020/12/logo.svg'
   set :slackistrano_footer_icon, 'https://github.githubassets.com/images/modules/logos_page/Octocat.png'
 end
+
+# Removed rake, bundle, gem
+# Added rails.
+# rake has its own dotenv requirement in Rakefile
+set :dotenv_hook_commands, %w{rails ruby}
+
+Capistrano::DSL.stages.each do |stage|
+  after stage, 'dotenv:hook'
+end

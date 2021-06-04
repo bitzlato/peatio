@@ -32,6 +32,7 @@ install_plugin Capistrano::My
 require 'capistrano/slackistrano' # My Custom Message
 require 'capistrano/rails/migrations'
 require 'capistrano/dotenv/tasks'
+require 'capistrano/dotenv'
 require 'capistrano/sentry'
 
 require 'capistrano/puma'
