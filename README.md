@@ -189,7 +189,7 @@ You can interact with Peatio through API:
 ## Deployment with capistrano
 
 ```
-bundle exec cap production systemd:puma:setup systemd:daemon:setup systemd:amqp_daemon:setup puma:config
+bundle exec cap production deploy:check systemd:puma:setup systemd:daemon:setup systemd:amqp_daemon:setup puma:config
 ```
 
 ## Getting Involved
