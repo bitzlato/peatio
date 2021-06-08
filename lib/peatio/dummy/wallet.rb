@@ -9,7 +9,7 @@ module Dummy
       # do nothing
     end
 
-    def load_balance!(_currency)
+    def load_balance!
       # do nothing
     end
   end
