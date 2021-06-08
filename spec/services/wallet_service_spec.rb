@@ -26,6 +26,23 @@ describe WalletService do
     Blockchain.any_instance.stubs(:blockchain_api).returns(BlockchainService.new(blockchain))
   end
 
+  context :create_incentive_deposit! do
+    let(:wallet) { create :wallet, :fake_hot }
+    let(:amount) { 123 }
+
+    before do
+      # TODO Fix  undefined method `stub_const'
+      # stub_const('WalletService::ALLOWED_INCENTIVE_GATEWAY','fake')
+      WalletService::ALLOWED_INCENTIVE_GATEWAY = 'fake'
+    end
+
+    it 'created accepted deposit' do
+      expect(
+        service.create_incentive_deposit!(member: member, amount: amount, currency: currency)
+      ).to be_accepted
+    end
+  end
+
   context :create_invoice! do
     let(:deposit) { create :deposit_btc }
     let(:intention_id) { 123 }

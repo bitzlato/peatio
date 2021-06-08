@@ -1,6 +1,8 @@
 class WalletService
   attr_reader :wallet, :adapter
 
+  ALLOWED_INCENTIVE_GATEWAY='dummy'
+
   def initialize(wallet)
     @wallet = wallet
     @adapter = Peatio::Wallet.registry[wallet.gateway.to_sym].new(wallet.settings.symbolize_keys)
@@ -55,6 +57,16 @@ class WalletService
       Rails.logger.info("Withdraw #{withdraw.id} successed")
       withdraw.success!
     end
+  end
+
+  def create_incentive_deposit!(member:, currency:, amount:)
+    raise "Can't create incentive deposit for non dummy wallets" unless wallet.gateway == ALLOWED_INCENTIVE_GATEWAY
+    Deposit.create!(
+      type: Deposit.name,
+      member: member,
+      currency: currency,
+      amount: amount
+    ).tap(&:accept!)
   end
 
   def poll_deposits!
