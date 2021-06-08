@@ -141,12 +141,10 @@ module Matching
       return if @initializing
 
       # Publish snapshot if:
-      # increment_count < 20 and last snapshot time > 1 min
+      # last snapshot time > 1 min
       # increment_count > 20 and last snapshot time > 10 second
-      if @increment_count < MIN_INCREMENT_COUNT_TO_SNAPSHOT && @snapshot_time <= Time.now - MAX_PERIOD_TO_SNAPSHOT
-        publish_snapshot
-        @increment_count = 0
-      elsif @increment_count >= MIN_INCREMENT_COUNT_TO_SNAPSHOT && @snapshot_time < Time.now - MIN_PERIOD_TO_SNAPSHOT
+      if (Time.now - @snapshot_time > MAX_PERIOD_TO_SNAPSHOT) ||
+          (@increment_count >= MIN_INCREMENT_COUNT_TO_SNAPSHOT && (Time.now - @snapshot_time > MIN_PERIOD_TO_SNAPSHOT))
         publish_snapshot
         @increment_count = 0
       end
