@@ -17,7 +17,7 @@ ExecStop=/bin/kill -TERM $MAINPID
 KillMode=mixed
 Restart=always
 RestartSec=1
-SyslogIdentifier=amqp_daemon-%i
+SyslogIdentifier=<%= fetch(:application) %>-amqp_daemon-%i
 
 [Install]
 # Use default.target to autoboot user service
