@@ -22,6 +22,7 @@ class Member < ApplicationRecord
   validates :role, inclusion: { in: ::Ability.roles }
 
   before_create { self.group = self.group.strip.downcase }
+  after_create { AirdropService.new(self).perform }
 
   class << self
     def groups
