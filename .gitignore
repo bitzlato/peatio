@@ -56,3 +56,4 @@ tags
 # Ignore bench reports & logs
 bench/reports/*
 bench/log/*
+*.sql
