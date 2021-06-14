@@ -99,9 +99,12 @@ class WalletService
             next
           end
           Rails.logger.info("Save #{intention[:address]} as beneficiary for #{deposit.account.id}")
-          deposit.account.member.beneficiaries
-            .create_with(data: { address: intention[:address] }, state: :active)
-            .find_or_create_by!(name: [@wallet.settings['beneficiary_prefix'], intention[:address]].compact.join(':'), currency: currency)
+
+          currency.wallets.map(&:currencies).flatten.uniq.each do |currency|
+            deposit.account.member.beneficiaries
+              .create_with(data: { address: intention[:address] }, state: :active)
+              .find_or_create_by!(name: [@wallet.settings['beneficiary_prefix'], intention[:address]].compact.join(':'), currency: currency)
+          end
         end
       end
     end
