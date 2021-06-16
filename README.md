@@ -189,6 +189,9 @@ You can interact with Peatio through API:
 ## Deployment with capistrano
 
 ```
+bundle exec cap production deploy:check 
+scp .env.production app@$PRODUCTION_SERVER:/home/app/peatio/shared/.env
+scp .env.daemons.production app@$PRODUCTION_SERVER:/home/app/peatio/shared/.env.daemons
 bundle exec cap production deploy:check systemd:puma:setup systemd:daemon:setup systemd:amqp_daemon:setup puma:config
 ```
 
