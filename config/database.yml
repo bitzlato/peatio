@@ -17,6 +17,10 @@ test:
   <<: *default
   database: peatio_test
 
+staging:
+  <<: *default
+  database: <%= ENV.fetch('DATABASE_NAME', 'peatio_staging') %>
+
 production:
   <<: *default
   database: <%= ENV.fetch('DATABASE_NAME', 'peatio_production') %>
