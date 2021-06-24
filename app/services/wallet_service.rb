@@ -46,7 +46,7 @@ class WalletService
         next
       end
       if withdraw.amount!=withdraw_info.amount
-        Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.id} in wallet #{@wallet.name}")
+        Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.withdraw_id} in wallet #{@wallet.name}")
         next
       end
       unless withdraw.confirming?
