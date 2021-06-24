@@ -22,12 +22,6 @@ module Peatio
     #   lib/peatio/aasm/locking.rb => AASM::Locking
     config.eager_load_paths += Dir[Rails.root.join('lib/peatio')]
 
-    # Configure Sentry as early as possible.
-    if ENV['SENTRY_DSN_BACKEND'].present?
-      require 'sentry-raven'
-      Raven.configure { |config| config.dsn = ENV['SENTRY_DSN_BACKEND'] }
-    end
-
     # Require Scout.
     require 'scout_apm' if Rails.env.in?(ENV['SCOUT_ENV'].to_s.split(',').map(&:squish))
 

@@ -15,9 +15,7 @@ module API
         end
 
         def set_ets_context!
-          Raven.tags_context(
-            peatio_version: Peatio::Application::VERSION
-          ) if defined?(Raven)
+          # to nothing
         end
 
         private
