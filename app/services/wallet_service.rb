@@ -42,7 +42,7 @@ class WalletService
       next if withdraw_info.withdraw_id.nil?
       withdraw = Withdraw.find_by(id: withdraw_info.withdraw_id)
       if withdraw.nil?
-        Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.id} in wallet #{@wallet.name}")
+        Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.withdraw_id} in wallet #{@wallet.name}")
         next
       end
       if withdraw.amount!=withdraw_info.amount
