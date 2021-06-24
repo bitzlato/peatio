@@ -31,10 +31,10 @@ Signal.trap("TERM", &terminate)
 workers = []
 ARGV.each do |id|
   worker = AMQP::Config.binding_worker(id)
-  queue  = ch.queue *AMQP::Config.binding_queue(id)
+  queue  = ch.queue(*AMQP::Config.binding_queue(id))
 
   if args = AMQP::Config.binding_exchange(id)
-    x = ch.send *args
+    x = ch.send(*args)
 
     case args.first
     when 'direct'
