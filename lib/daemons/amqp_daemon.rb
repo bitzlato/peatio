@@ -54,6 +54,9 @@ ARGV.each do |id|
   # Enable manual acknowledge mode by setting manual_ack: true.
   queue.subscribe manual_ack: true do |delivery_info, metadata, payload|
     logger.info { "Received: #{payload}" }
+    Sentry.configure_scope do |scope|
+      scope.set_context('amqp_message', { payload: payload, metadata: metadata, delivery_info: delivery_info })
+    end if defined? Sentry
     begin
 
       # Invoke Worker#process with floating number of arguments.
