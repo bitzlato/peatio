@@ -122,7 +122,7 @@ module API
                    desc: -> { API::V2::Admin::Entities::Refund.documentation[:address][:desc] }
         end
         post '/deposits/:id/refund' do
-          admin_authorize! :wrrie, ::Deposit
+          admin_authorize! :write, ::Deposit
 
           deposit = Deposit.find(params[:id])
 
