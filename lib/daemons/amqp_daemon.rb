@@ -33,6 +33,10 @@ ARGV.each do |id|
   worker = AMQP::Config.binding_worker(id)
   queue  = ch.queue(*AMQP::Config.binding_queue(id))
 
+  Sentry.configure_scope do |scope|
+    scope.set_tags(amqp_worker: worker.class)
+  end if defined? Sentry
+
   if args = AMQP::Config.binding_exchange(id)
     x = ch.send(*args)
 
