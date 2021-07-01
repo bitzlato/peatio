@@ -1,2 +1,2 @@
 ru:
-  deposit_comment: Пополнение биржевого счёта %{account_id}
+  deposit_comment: "Пополнение #%{deposit_id} биржевого счёта %{account_id}"

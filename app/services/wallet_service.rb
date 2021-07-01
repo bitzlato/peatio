@@ -16,7 +16,7 @@ class WalletService
       raise "Depost has wrong state #{deposit.aasm_state}. Must be submitted" unless deposit.submitted?
       intention = @adapter.create_invoice!(
         amount: deposit.amount,
-        comment: I18n.t('deposit_comment', account_id: deposit.member.uid)
+        comment: I18n.t('deposit_comment', account_id: deposit.member.uid, deposit_id: deposit.id)
       )
       deposit.update!(
         data: intention.slice(:links, :expires_at),

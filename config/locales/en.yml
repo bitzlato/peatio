@@ -1,2 +1,2 @@
 en:
-  deposit_comment: Excange service deposit for account %{account_id}
+  deposit_comment: "Excange service deposit #%{deposit_id} for account %{account_id}"
