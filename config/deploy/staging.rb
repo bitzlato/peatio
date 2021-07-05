@@ -7,5 +7,5 @@ fetch(:default_env)[:rails_env] = :staging
 server ENV['STAGING_SERVER'],
        user: fetch(:user),
        port: '22',
-       roles: %w[app db].freeze,
+       roles: %w[app db daemons].freeze,
        ssh_options: { forward_agent: true }
