@@ -73,8 +73,25 @@ module Bitzlato
     end
 
     def load_balance!
-      # TODO fetch actual balance
-      999_999_999 # Yeah!
+      response = client
+        .get('/api/p2p/wallets/v2/')
+
+      # [
+        #{
+          #"cryptocurrency": "BTC",
+          #"balance": "0.03844557",
+          #"holdBalance": "0",
+          #"address": null,
+          #"createdAt": 1622456228000,
+          #"worth": {
+            #"currency": "USD",
+            #"value": "1324",
+            #"holdValue": "0"
+          #}
+        #},
+      response
+        .find { |r| r['cryptocurrency'] == currency_id.upcase }
+        .fetch('balance')
     end
 
     def create_invoice!(amount: , comment:)
