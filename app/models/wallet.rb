@@ -105,7 +105,11 @@ class Wallet < ApplicationRecord
     end
 
     def deposit_wallet(currency_id)
-      Wallet.active.deposit.joins(:currencies).find_by(currencies: { id: currency_id })
+      Wallet.active.deposit.with_currency currency_id
+    end
+
+    def withdraw_wallet(currency_id)
+      Wallet.active.withdraw.with_currency currency_id
     end
   end
 
