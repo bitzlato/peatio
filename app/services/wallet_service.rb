@@ -88,7 +88,7 @@ class WalletService
             Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
             next
           end
-          unless deposit.invoiced?
+          unless deposit.invoiced? || deposit.submitted?
             Rails.logger.debug("Deposit #{deposit.id} has skippable status (#{deposit.aasm_state})")
             next
           end
