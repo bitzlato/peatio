@@ -92,6 +92,7 @@ module Bitzlato
       response
         .find { |r| r['cryptocurrency'] == currency_id.upcase }
         .fetch('balance')
+        .to_d
     end
 
     def create_invoice!(amount: , comment:)
