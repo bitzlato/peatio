@@ -2,7 +2,7 @@
 module Jobs
   module Cron
     module TransfersPolling
-      TIMEOUT = 60
+      TIMEOUT = 10
       def self.process
         Wallet.active.find_each do |w|
           ws = WalletService.new(w)
