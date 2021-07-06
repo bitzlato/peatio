@@ -46,11 +46,11 @@ class WalletService
         next
       end
       if withdraw.amount!=withdraw_info.amount
-        Rails.logger.error("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.withdraw_id} in wallet #{@wallet.name}")
+        Rails.logger.warn("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.withdraw_id} in wallet #{@wallet.name}")
         next
       end
       unless withdraw.confirming?
-        Rails.logger.warn("Withdraw #{withdraw.id} has wrong status (#{withdraw.aasm_state})")
+        Rails.logger.debug("Withdraw #{withdraw.id} has skippable status (#{withdraw.aasm_state})")
         next
       end
 
@@ -87,7 +87,7 @@ class WalletService
             next
           end
           unless deposit.invoiced?
-            Rails.logger.warn("Deposit #{deposit.id} has wrong status (#{deposit.aasm_state})")
+            Rails.logger.debug("Deposit #{deposit.id} has skippable status (#{deposit.aasm_state})")
             next
           end
           deposit.accept!
