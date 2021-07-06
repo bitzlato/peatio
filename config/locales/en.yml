@@ -1,2 +1,2 @@
 en:
-  deposit_comment: "Market deposit %{deposit_id} for account %{account_id}"
+  deposit_comment: "Market deposit N%{deposit_id} for account %{email} (%{account_id})"
