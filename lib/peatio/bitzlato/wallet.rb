@@ -120,7 +120,7 @@ module Bitzlato
           address: transaction['username'],
           id: generate_id(transaction['invoiceId']),
           amount: transaction['amount'].to_d,
-          currency: transaction['cryptocurrency']
+          currency: transaction['cryptocurrency'].downcase
         }
       end
     end

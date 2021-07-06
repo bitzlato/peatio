@@ -74,8 +74,10 @@ class WalletService
       @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                          currency: { id: currency.id })
 
+      # TODO poll deposits for all currency in one time
       @adapter.poll_deposits.each do |intention|
-        deposit = Deposit.find_by(currency: currency, intention_id: intention[:id])
+        next unless intention[:currency] == currency.id
+        deposit = Deposit.find_by(currency: intention[:currency], intention_id: intention[:id])
         unless deposit.present?
           Rails.logger.warn("No such deposit intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
           next
