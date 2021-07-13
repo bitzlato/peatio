@@ -2,7 +2,7 @@ default: &default
   adapter: <%= ENV.fetch('DATABASE_ADAPTER', 'postgresql') %>
   encoding: utf8
   support_json: <%= ENV.fetch('DATABASE_SUPPORT_JSON', 'true') %>
-  collation: <%= ENV.fetch('DATABASE_COLLATION', 'utf8_general_ci') %>
+  collation: <%= ENV.fetch('DATABASE_COLLATION', 'en_US.UTF-8') %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS", 8).to_i * ENV.fetch("WEB_CONCURRENCY", 1).to_i %>
   host: <%= ENV.fetch('DATABASE_HOST', '127.0.0.1') %>
   port: <%= ENV.fetch('DATABASE_PORT', 5432) %>
