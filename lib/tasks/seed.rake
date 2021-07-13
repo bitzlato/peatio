@@ -70,7 +70,7 @@ namespace :seed do
                                    max_bid_price:  :max_price,
                                    min_ask_amount: :min_amount,
                                    min_bid_amount: :min_amount,
-                                   symbol: :id }
+                                   id: :symbol }
 
           legacy_keys_mappings.each do |old_key, new_key|
             legacy_key_value = hash.delete(old_key)
