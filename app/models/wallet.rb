@@ -20,7 +20,7 @@ class Wallet < ApplicationRecord
   ENUMERIZED_KINDS = { deposit: 100, fee: 200, hot: 310, warm: 320, cold: 330, standalone: 400 }.freeze
   enumerize :kind, in: ENUMERIZED_KINDS, scope: true
 
-  SETTING_ATTRIBUTES = %i[ uri secret ].freeze
+  SETTING_ATTRIBUTES = %i[ uri secret save_beneficiary beneficiary_prefix enable_invoice].freeze
 
   SETTING_ATTRIBUTES.each do |attribute|
     define_method attribute do
