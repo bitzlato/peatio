@@ -27,11 +27,11 @@ class WalletService
   end
 
   def support_deposits_polling?
-    @adapter.respond_to?(:poll_deposits) && @wallet.settings['allow_deposits_polling']
+    @adapter.respond_to?(:poll_deposits)
   end
 
   def support_withdraws_polling?
-    @adapter.respond_to?(:poll_withdraws) && @wallet.settings['allow_withdraws_polling']
+    @adapter.respond_to?(:poll_withdraws)
   end
 
   def poll_withdraws!
