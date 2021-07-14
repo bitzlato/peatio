@@ -2,9 +2,8 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-git_source(:github) { |repo_slug| "https://github.com/#{repo_slug}" }
 
-ruby '~> 2.6'
+ruby File.read('.ruby-version')
 
 gem 'ransack', '~> 2.3.2'
 gem 'rails', '~> 5.2.4.5'
