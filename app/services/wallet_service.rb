@@ -76,9 +76,12 @@ class WalletService
 
       # TODO poll deposits for all currency in one time
       @adapter.poll_deposits.each do |intention|
-        next unless intention[:currency] == currency.id
-        deposit = Deposit.find_by(currency: intention[:currency], intention_id: intention[:id])
-        unless deposit.present?
+        unless intention[:currency] == currency.id
+          Rails.logger.debug("Intention has wrong currency #{intention[:currency]}<>#{currency.id}")
+          next
+        end
+        deposit = Deposit.find_by(currency_id: intention[:currency], intention_id: intention[:id])
+        if deposit.nil?
           Rails.logger.warn("No such deposit intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
           next
         end
@@ -94,19 +97,7 @@ class WalletService
           end
           deposit.accept!
 
-          next unless @wallet.settings['save_beneficiary']
-          # Save beneficiary for future withdraws
-          unless intention[:address].present?
-            Rails.logger.warn("Deposit #{deposit.id} has no address to save beneficiaries")
-            next
-          end
-          Rails.logger.info("Save #{intention[:address]} as beneficiary for #{deposit.account.id}")
-
-          currency.wallets.map(&:currencies).flatten.uniq.each do |currency|
-            deposit.account.member.beneficiaries
-              .create_with(data: { address: intention[:address] }, state: :active)
-              .find_or_create_by!(name: [@wallet.settings['beneficiary_prefix'], intention[:address]].compact.join(':'), currency: currency)
-          end
+          save_beneficiary currency, deposit, intention[:address] if @wallet.save_beneficiary
         end
       end
     end
@@ -307,6 +298,26 @@ class WalletService
       unless sp.map(&:amount).sum == original_amount
         raise Error, "Deposit spread failed deposit.amount != collection_spread.values.sum"
       end
+    end
+  end
+
+  # Save beneficiary for future withdraws
+  def save_beneficiary(currency, deposit, address)
+    unless address.present?
+      Rails.logger.warn("Deposit #{deposit.id} has no address to save beneficiaries")
+      return
+    end
+    Rails.logger.info("Save #{address} as beneficiary for #{deposit.account.id}")
+
+    beneficiary_name = [@wallet.settings['beneficiary_prefix'], address].compact.join(':')
+
+    currency.wallets.map(&:currencies).flatten.uniq.each do |currency|
+      deposit.account.member.beneficiaries
+        .create_with(data: { address: address }, state: :active)
+        .find_or_create_by!(
+          name: beneficiary_name,
+          currency: currency
+      )
     end
   end
 

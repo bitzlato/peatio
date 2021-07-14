@@ -185,7 +185,7 @@ FactoryBot.define do
 
     trait :fake_hot do
       after(:create) do |w|
-        CurrencyWallet.create(currency_id: 'fake', wallet_id: w.id)
+        CurrencyWallet.create!(currency_id: 'fake', wallet_id: w.id)
       end
       blockchain_key    { 'fake-testnet' }
       name              { 'Fake Currency Hot Wallet' }

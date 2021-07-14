@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/bitzlato/peatio-core
+  remote: https://github.com/bitzlato/peatio-core.git
   revision: 9c62876448c7d002f581383d0c5d84473421a31c
   specs:
     peatio (2.6.4)
@@ -17,13 +17,13 @@ GIT
       thin
 
 GIT
-  remote: https://github.com/brandymint/capistrano-tasks
+  remote: https://github.com/brandymint/capistrano-tasks.git
   revision: ed94c975c36a7ba41a173bddf6dba46034ca41e2
   specs:
     capistrano-tasks (0.0.1)
 
 GIT
-  remote: https://github.com/caspark/guard-rspec
+  remote: https://github.com/caspark/guard-rspec.git
   revision: 407ef8c62f3abad575bb66d53c02ba062a5ee8af
   specs:
     guard-rspec (4.7.3)
@@ -31,17 +31,17 @@ GIT
       guard-compat (~> 1.1)
 
 GIT
-  remote: https://github.com/finfex/bitzlato
-  revision: 53b9c814a0be82f7d39c36abc4b9f37770bff405
+  remote: https://github.com/finfex/bitzlato.git
+  revision: 5ff62d1464529f539fa9a1cec6ba8f92711d46d5
   branch: main
   specs:
-    bitzlato (0.1.8)
+    bitzlato (0.1.9)
       faraday (>= 0.17)
       json (~> 2.0)
       jwt (~> 2.3.0.dev)
 
 GIT
-  remote: https://github.com/finfex/vault-rails
+  remote: https://github.com/finfex/vault-rails.git
   revision: 6b85d4a9eb448ff8d54e1b3b06d3ca08bbf38289
   specs:
     vault-rails (0.6.0)
@@ -49,20 +49,20 @@ GIT
       vault (~> 0.14)
 
 GIT
-  remote: https://github.com/groovenauts/capistrano-systemd-multiservice
+  remote: https://github.com/groovenauts/capistrano-systemd-multiservice.git
   revision: 955b99cc7588521ddc26ccd523ebba306e16fa0a
   specs:
     capistrano-systemd-multiservice (0.1.0.beta12)
       capistrano (>= 3.7.0, < 3.17.0)
 
 GIT
-  remote: https://github.com/jwt/ruby-jwt
-  revision: 7ca147efe4215bccb34d2c7e8122658b9d8cd798
+  remote: https://github.com/jwt/ruby-jwt.git
+  revision: dbf9bfd62cce23f15fb4be7236f5099aec85c302
   specs:
     jwt (2.3.0.dev)
 
 GIT
-  remote: https://github.com/seuros/capistrano-puma
+  remote: https://github.com/seuros/capistrano-puma.git
   revision: 285b45f51d0662e760cc5e75f15614589a2be170
   specs:
     capistrano3-puma (5.0.4)
@@ -116,7 +116,7 @@ GEM
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
@@ -441,7 +441,7 @@ GEM
     regexp_parser (2.1.1)
     reline (0.2.4)
       io-console (~> 0.5)
-    rexml (3.2.4)
+    rexml (3.2.5)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -544,6 +544,7 @@ PLATFORMS
 
 DEPENDENCIES
   aasm (~> 5.0.8)
+  addressable (>= 2.8.0)
   annotate (~> 3.1.0)
   arel-is-blank (~> 1.0.0)
   bitzlato!
@@ -616,6 +617,7 @@ DEPENDENCIES
   ransack (~> 2.3.2)
   rbtree (~> 0.4.2)
   redis (~> 4.1.2)
+  rexml (>= 3.2.5)
   rspec
   rspec-rails (~> 3.8, >= 3.8.2)
   rspec-retry (~> 0.6)
@@ -636,7 +638,7 @@ DEPENDENCIES
   webmock (~> 3.5)
 
 RUBY VERSION
-   ruby 2.6.6p146
+   ruby 2.7.3p183
 
 BUNDLED WITH
    2.2.17

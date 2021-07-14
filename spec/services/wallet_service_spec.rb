@@ -65,12 +65,12 @@ describe WalletService do
     let(:amount) { 1.12 }
     let(:intention_id) { 12 }
     let(:username) { 'ivan' }
-    let(:wallet) { create(:wallet, :fake_hot, settings: { 'save_beneficiary' => true } ) }
+    let(:wallet) { create :wallet, :fake_hot, save_beneficiary: true }
+    let!(:deposit) { create :deposit_btc, amount: amount, currency: currency, intention_id: intention_id, aasm_state: :invoiced }
 
     let(:intentions) { [
-      { id: intention_id, amount: amount, address: username }
+      { id: intention_id, amount: amount, address: username, currency: currency.id }
     ] }
-    let!(:deposit) { create :deposit_btc, amount: amount, currency: wallet.currencies.first, intention_id: intention_id, aasm_state: :invoiced }
 
     before do
       service.adapter.expects(:poll_deposits).returns(intentions)

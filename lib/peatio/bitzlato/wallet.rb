@@ -8,7 +8,6 @@ module Bitzlato
 
     WITHDRAW_METHODS = %w[payment voucher]
     WITHDRAW_METHOD = ENV.fetch('BITZLATO_WITHDRAW_METHOD', WITHDRAW_METHODS.first)
-    WITHDRAW_POLLING_METHODS = ENV.fetch('BITZLATO_WITHDRAW_POLLING_METHODS', WITHDRAW_METHOD).split(',')
 
     def initialize(features = {})
       @features = features
@@ -18,12 +17,7 @@ module Bitzlato
     def configure(settings = {})
       # Clean client state during configure.
       @client = nil
-
       @settings = settings
-
-      @wallet = @settings.fetch(:wallet) do
-        raise Peatio::Wallet::MissingSettingError, :wallet
-      end.slice(:uri, :key, :uid)
     end
 
     def create_transaction!(transaction, options = {})
@@ -124,7 +118,7 @@ module Bitzlato
     end
 
     def poll_withdraws
-      WITHDRAW_POLLING_METHODS.map do |method|
+      withdraw_polling_methods.map do |method|
         case method
         when 'voucher'
           poll_vouchers
@@ -142,6 +136,10 @@ module Bitzlato
     end
 
     private
+
+    def withdraw_polling_methods
+      ENV.fetch('BITZLATO_WITHDRAW_POLLING_METHODS', WITHDRAW_METHOD).split(',')
+    end
 
     def poll_payments
       client
@@ -185,9 +183,9 @@ module Bitzlato
 
     def client
       @client ||= Bitzlato::Client
-        .new(home_url: ENV.fetch('BITZLATO_API_URL', @wallet.fetch(:uri)),
-             key: ENV.fetch('BITZLATO_API_KEY', @wallet.fetch(:key)).yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym),
-             uid: ENV.fetch('BITZLATO_API_CLIENT_UID', @wallet.fetch(:uid)).to_i,
+        .new(home_url: ENV.fetch('BITZLATO_API_URL'),
+             key: ENV.fetch('BITZLATO_API_KEY').yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym),
+             uid: ENV.fetch('BITZLATO_API_CLIENT_UID').to_i,
              logger: ENV.true?('BITZLATO_API_LOGGER'))
     end
   end
