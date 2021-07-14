@@ -29,7 +29,7 @@ module API
 
       def process_deposit_event(request)
         # For deposit events we use only Deposit wallets.
-        Wallet.where(status: :active, kind: :deposit, gateway: request.params[:adapter]).each do |w|
+        Wallet.where(status: :active, kind: [:deposit, :standalone], gateway: request.params[:adapter]).each do |w|
           service = w.service
 
           next unless service.adapter.respond_to?(:trigger_webhook_event)

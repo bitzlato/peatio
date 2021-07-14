@@ -20,6 +20,11 @@ module Bitzlato
       @settings = settings
     end
 
+    def trigger_webhook_event(request)
+      # curl -XPOST https://dapi.bitzlato.bz/direct/api/v2/peatio/public/webhooks/bitzlato/deposit
+      binding.pry
+    end
+
     def create_transaction!(transaction, options = {})
       case WITHDRAW_METHOD
       when 'voucher'
