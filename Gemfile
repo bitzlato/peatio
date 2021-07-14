@@ -60,6 +60,10 @@ gem 'influxdb', '~> 0.7.0'
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
 gem 'dotenv'
 
+# Security versions of deep dependencies
+gem "addressable", ">= 2.8.0"
+gem "rexml", ">= 3.2.5"
+
 group :development, :test do
   gem 'irb'
   gem 'bump',         '~> 0.7'

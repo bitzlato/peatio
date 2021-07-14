@@ -116,7 +116,7 @@ GEM
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
@@ -441,7 +441,7 @@ GEM
     regexp_parser (2.1.1)
     reline (0.2.4)
       io-console (~> 0.5)
-    rexml (3.2.4)
+    rexml (3.2.5)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -544,6 +544,7 @@ PLATFORMS
 
 DEPENDENCIES
   aasm (~> 5.0.8)
+  addressable (>= 2.8.0)
   annotate (~> 3.1.0)
   arel-is-blank (~> 1.0.0)
   bitzlato!
@@ -616,6 +617,7 @@ DEPENDENCIES
   ransack (~> 2.3.2)
   rbtree (~> 0.4.2)
   redis (~> 4.1.2)
+  rexml (>= 3.2.5)
   rspec
   rspec-rails (~> 3.8, >= 3.8.2)
   rspec-retry (~> 0.6)
