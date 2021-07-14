@@ -327,26 +327,6 @@ CREATE TABLE public.currencies (
 
 
 --
--- Name: currencies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.currencies_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: currencies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.currencies_id_seq OWNED BY public.currencies.id;
-
-
---
 -- Name: currencies_wallets; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1321,13 +1301,6 @@ ALTER TABLE ONLY public.beneficiaries ALTER COLUMN id SET DEFAULT nextval('publi
 --
 
 ALTER TABLE ONLY public.blockchains ALTER COLUMN id SET DEFAULT nextval('public.blockchains_id_seq'::regclass);
-
-
---
--- Name: currencies id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.currencies ALTER COLUMN id SET DEFAULT nextval('public.currencies_id_seq'::regclass);
 
 
 --
@@ -2558,6 +2531,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210311145918'),
 ('20210317141836'),
 ('20210416125059'),
-('20210604053235');
+('20210604053235'),
+('20210714075758');
 
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_04_053235) do
+ActiveRecord::Schema.define(version: 2021_07_14_075758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -90,7 +90,7 @@ ActiveRecord::Schema.define(version: 2021_06_04_053235) do
     t.index ["status"], name: "index_blockchains_on_status"
   end
 
-  create_table "currencies", id: :serial, limit: 10, force: :cascade do |t|
+  create_table "currencies", id: :string, limit: 10, force: :cascade do |t|
     t.string "type", limit: 30, default: "coin", null: false
     t.decimal "withdraw_limit_24h", precision: 32, scale: 16, default: "0.0", null: false
     t.json "options"
