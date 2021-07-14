@@ -3,7 +3,7 @@ default: &default
   encoding: utf8
   support_json: <%= ENV.fetch('DATABASE_SUPPORT_JSON', 'true') %>
   <% if ENV.key?('DATABASE_COLLATION') %>
-  collation: <%= ENV.fetch('DATABASE_COLLATION', 'C') %>
+  collation: <%= ENV.fetch('DATABASE_COLLATION', 'en_US.utf8') %>
   <% end %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS", 8).to_i * ENV.fetch("WEB_CONCURRENCY", 1).to_i %>
   <% if ENV.key?('DATABASE_HOST') %>

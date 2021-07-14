@@ -27,6 +27,7 @@ describe 'job.rake' do
       counter = Operations::Liability.where("LOWER(reference_type) = LOWER('Order') AND created_at BETWEEN '#{min}' AND '#{max}'").count
       result = ActiveRecord::Base.connection.query("SELECT NULL, code, currency_id, member_id, SUM(debit), SUM(credit) FROM liabilities WHERE (LOWER(reference_type) = LOWER('Order') AND created_at BETWEEN '#{min}' AND '#{max}') GROUP BY code, member_id, currency_id, DATE(created_at)")
       subject.invoke
+      expect(job.error_message).to be_blank
       expect(job.name).to eq('compact_orders')
       expect(job.counter).to eq(counter)
       expect(job.error_code).to eq(0)
@@ -40,6 +41,7 @@ describe 'job.rake' do
       counter = Operations::Liability.where("LOWER(reference_type) = LOWER('Order') AND created_at BETWEEN '#{min}' AND '#{max}'").count
       result = ActiveRecord::Base.connection.query("SELECT NULL, code, currency_id, member_id, SUM(debit), SUM(credit) FROM liabilities WHERE (LOWER(reference_type) = LOWER('Order') AND created_at BETWEEN '#{min}' AND '#{max}') GROUP BY code, member_id, currency_id, DATE(created_at)")
       subject.invoke(min, max)
+      expect(job.error_message).to be_blank
       expect(job.name).to eq('compact_orders')
       expect(job.counter).to eq(counter)
       expect(job.error_code).to eq(0)
