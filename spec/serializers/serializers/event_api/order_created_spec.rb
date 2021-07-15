@@ -55,6 +55,7 @@ describe Serializers::EventAPI::OrderCreated do
       trades_count:           0,
       created_at:             created_at.iso8601
     }).once
+    EventAPI.expects(:enqueue_event).with("private.#{buyer.uid}.account", anything)
   end
 
   after do

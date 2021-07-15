@@ -61,6 +61,7 @@ describe Serializers::EventAPI::OrderUpdated, OrderAsk do
       created_at:              created_at.iso8601,
       updated_at:              updated_at.iso8601
     }).once
+    EventAPI.expects(:enqueue_event).with("private.#{seller.uid}.account", anything)
   end
 
   after do
@@ -138,6 +139,7 @@ describe Serializers::EventAPI::OrderUpdated, OrderBid do
       created_at:              created_at.iso8601,
       updated_at:              updated_at.iso8601
     }).once
+    EventAPI.expects(:enqueue_event).with("private.#{buyer.uid}.account", anything)
   end
 
   after do

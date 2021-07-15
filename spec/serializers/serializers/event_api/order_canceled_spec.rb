@@ -59,6 +59,7 @@ describe Serializers::EventAPI::OrderCanceled do
       created_at:              created_at.iso8601,
       canceled_at:             canceled_at.iso8601
     }).once
+    EventAPI.expects(:enqueue_event).with("private.#{seller.uid}.account", anything)
   end
 
   after do

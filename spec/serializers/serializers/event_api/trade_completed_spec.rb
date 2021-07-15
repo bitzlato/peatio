@@ -125,6 +125,8 @@ describe Serializers::EventAPI::TradeCompleted, 'Event API' do
         taker_outcome_fee:      '0.0',
         completed_at:           completed_at.iso8601
       }).once
+      EventAPI.expects(:enqueue_event).with("private.#{maker.uid}.account", anything)
+      EventAPI.expects(:enqueue_event).with("private.#{taker.uid}.account", anything)
     end
 
     after do
@@ -195,6 +197,8 @@ describe Serializers::EventAPI::TradeCompleted, 'Event API' do
         taker_outcome_fee:      '0.0',
         completed_at:           completed_at.iso8601
       }).once
+      EventAPI.expects(:enqueue_event).with("private.#{maker.uid}.account", anything)
+      EventAPI.expects(:enqueue_event).with("private.#{taker.uid}.account", anything)
     end
 
     after do

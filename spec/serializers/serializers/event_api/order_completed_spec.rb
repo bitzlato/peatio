@@ -61,6 +61,7 @@ describe Serializers::EventAPI::OrderCompleted do
       created_at:              created_at.iso8601,
       completed_at:            completed_at.iso8601
     }).once
+    EventAPI.expects(:enqueue_event).with("private.#{seller.uid}.account", anything)
   end
 
   after do
