@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Serializers::EventAPI::OrderCanceled do
@@ -7,17 +6,17 @@ describe Serializers::EventAPI::OrderCanceled do
   let :order_ask do
     # Sell 100 BTC for 3 USD (0.03 USD per BTC).
     create :order_ask, \
-      bid:           :usd,
-      ask:           :btc,
-      market:        Market.find_spot_by_symbol(:btcusd),
-      state:         :wait,
-      ord_type:      :limit,
-      price:         '0.03'.to_d,
-      volume:        '100.0',
-      origin_volume: '100.0',
-      locked:        '100.0',
-      origin_locked: '100.0',
-      member:        seller
+           bid: :usd,
+           ask: :btc,
+           market: Market.find_spot_by_symbol(:btcusd),
+           state: :wait,
+           ord_type: :limit,
+           price: '0.03'.to_d,
+           volume: '100.0',
+           origin_volume: '100.0',
+           locked: '100.0',
+           origin_locked: '100.0',
+           member: seller
   end
 
   subject { order_ask }
@@ -37,28 +36,29 @@ describe Serializers::EventAPI::OrderCanceled do
     DatabaseCleaner.clean
     EventAPI.expects(:notify).with('market.btcusd.order_created', anything).once
     EventAPI.expects(:notify).with('market.btcusd.order_canceled', {
-      id:                       1,
-      market:                  'btcusd',
-      type:                    'sell',
-      trader_uid:              seller.uid,
-      income_unit:             'usd',
-      income_fee_type:         'relative',
-      income_maker_fee_value:  '0.0015',
-      income_taker_fee_value:  '0.0015',
-      outcome_unit:            'btc',
-      outcome_fee_type:        'relative',
-      outcome_fee_value:       '0.0',
-      initial_income_amount:   '3.0',
-      current_income_amount:   '3.0',
-      initial_outcome_amount:  '100.0',
-      current_outcome_amount:  '100.0',
-      strategy:                'limit',
-      price:                   '0.03',
-      state:                   'canceled',
-      trades_count:            0,
-      created_at:              created_at.iso8601,
-      canceled_at:             canceled_at.iso8601
-    }).once
+                                     id: 1,
+                                     market: 'btcusd',
+                                     type: 'sell',
+                                     trader_uid: seller.uid,
+                                     income_unit: 'usd',
+                                     income_fee_type: 'relative',
+                                     income_maker_fee_value: '0.0015',
+                                     income_taker_fee_value: '0.0015',
+                                     outcome_unit: 'btc',
+                                     outcome_fee_type: 'relative',
+                                     outcome_fee_value: '0.0',
+                                     initial_income_amount: '3.0',
+                                     current_income_amount: '3.0',
+                                     initial_outcome_amount: '100.0',
+                                     current_outcome_amount: '100.0',
+                                     strategy: 'limit',
+                                     price: '0.03',
+                                     state: 'canceled',
+                                     trades_count: 0,
+                                     created_at: created_at.iso8601,
+                                     canceled_at: canceled_at.iso8601
+                                   }).once
+    EventAPI.expects(:enqueue_event).with("private.#{seller.uid}.account", anything)
   end
 
   after do

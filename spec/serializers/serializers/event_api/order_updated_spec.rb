@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Serializers::EventAPI::OrderUpdated, OrderAsk do
@@ -7,17 +6,17 @@ describe Serializers::EventAPI::OrderUpdated, OrderAsk do
   let :order_ask do
     # Sell 100 BTC for 3 USD (0.03 USD per BTC).
     create :order_ask, \
-      bid:           :usd,
-      ask:           :btc,
-      market:        Market.find_spot_by_symbol(:btcusd),
-      state:         :wait,
-      ord_type:      :limit,
-      price:         '0.03'.to_d,
-      volume:        '100.0',
-      origin_volume: '100.0',
-      locked:        '100.0',
-      origin_locked: '100.0',
-      member:        seller
+           bid: :usd,
+           ask: :btc,
+           market: Market.find_spot_by_symbol(:btcusd),
+           state: :wait,
+           ord_type: :limit,
+           price: '0.03'.to_d,
+           volume: '100.0',
+           origin_volume: '100.0',
+           locked: '100.0',
+           origin_locked: '100.0',
+           member: seller
   end
 
   subject { order_ask }
@@ -37,30 +36,31 @@ describe Serializers::EventAPI::OrderUpdated, OrderAsk do
     DatabaseCleaner.clean
     EventAPI.expects(:notify).with('market.btcusd.order_created', anything)
     EventAPI.expects(:notify).with('market.btcusd.order_updated', {
-      id:                      1,
-      market:                  'btcusd',
-      type:                    'sell',
-      trader_uid:              seller.uid,
-      income_unit:             'usd',
-      income_fee_type:         'relative',
-      income_maker_fee_value:  '0.0015',
-      income_taker_fee_value:  '0.0015',
-      outcome_unit:            'btc',
-      outcome_fee_type:        'relative',
-      outcome_fee_value:       '0.0',
-      initial_income_amount:   '3.0',
-      current_income_amount:   '2.4',
-      previous_income_amount:  '3.0',
-      initial_outcome_amount:  '100.0',
-      current_outcome_amount:  '80.0',
-      previous_outcome_amount: '100.0',
-      strategy:                'limit',
-      price:                   '0.03',
-      state:                   'open',
-      trades_count:            1,
-      created_at:              created_at.iso8601,
-      updated_at:              updated_at.iso8601
-    }).once
+                                     id: 1,
+                                     market: 'btcusd',
+                                     type: 'sell',
+                                     trader_uid: seller.uid,
+                                     income_unit: 'usd',
+                                     income_fee_type: 'relative',
+                                     income_maker_fee_value: '0.0015',
+                                     income_taker_fee_value: '0.0015',
+                                     outcome_unit: 'btc',
+                                     outcome_fee_type: 'relative',
+                                     outcome_fee_value: '0.0',
+                                     initial_income_amount: '3.0',
+                                     current_income_amount: '2.4',
+                                     previous_income_amount: '3.0',
+                                     initial_outcome_amount: '100.0',
+                                     current_outcome_amount: '80.0',
+                                     previous_outcome_amount: '100.0',
+                                     strategy: 'limit',
+                                     price: '0.03',
+                                     state: 'open',
+                                     trades_count: 1,
+                                     created_at: created_at.iso8601,
+                                     updated_at: updated_at.iso8601
+                                   }).once
+    EventAPI.expects(:enqueue_event).with("private.#{seller.uid}.account", anything)
   end
 
   after do
@@ -70,10 +70,10 @@ describe Serializers::EventAPI::OrderUpdated, OrderAsk do
   it 'publishes event', clean_database_with_truncation: true do
     subject.transaction do
       subject.update! \
-        volume:         80,
-        locked:         80,
+        volume: 80,
+        locked: 80,
         funds_received: 20,
-        trades_count:   1
+        trades_count: 1
     end
   end
 end
@@ -84,17 +84,17 @@ describe Serializers::EventAPI::OrderUpdated, OrderBid do
   let :order_bid do
     # Buy 14 BTC for 0.42 USD (0.03 USD per BTC).
     create :order_bid, \
-      bid:           :usd,
-      ask:           :btc,
-      market:        Market.find_spot_by_symbol(:btcusd),
-      state:         :wait,
-      ord_type:      :limit,
-      price:         '0.03'.to_d,
-      volume:        '14.0',
-      origin_volume: '14.0',
-      locked:        '0.42',
-      origin_locked: '0.42',
-      member:        buyer
+           bid: :usd,
+           ask: :btc,
+           market: Market.find_spot_by_symbol(:btcusd),
+           state: :wait,
+           ord_type: :limit,
+           price: '0.03'.to_d,
+           volume: '14.0',
+           origin_volume: '14.0',
+           locked: '0.42',
+           origin_locked: '0.42',
+           member: buyer
   end
 
   subject { order_bid }
@@ -114,30 +114,31 @@ describe Serializers::EventAPI::OrderUpdated, OrderBid do
     DatabaseCleaner.clean
     EventAPI.expects(:notify).with('market.btcusd.order_created', anything)
     EventAPI.expects(:notify).with('market.btcusd.order_updated', {
-      id:                      1,
-      market:                  'btcusd',
-      type:                    'buy',
-      trader_uid:              buyer.uid,
-      income_unit:             'btc',
-      income_fee_type:         'relative',
-      income_maker_fee_value:  '0.0015',
-      income_taker_fee_value:  '0.0015',
-      outcome_unit:            'usd',
-      outcome_fee_type:        'relative',
-      outcome_fee_value:       '0.0',
-      initial_income_amount:   '14.0',
-      current_income_amount:   '12.0',
-      previous_income_amount:  '14.0',
-      initial_outcome_amount:  '0.42',
-      current_outcome_amount:  '0.36',
-      previous_outcome_amount: '0.42',
-      strategy:                'limit',
-      price:                   '0.03',
-      state:                   'open',
-      trades_count:            1,
-      created_at:              created_at.iso8601,
-      updated_at:              updated_at.iso8601
-    }).once
+                                     id: 1,
+                                     market: 'btcusd',
+                                     type: 'buy',
+                                     trader_uid: buyer.uid,
+                                     income_unit: 'btc',
+                                     income_fee_type: 'relative',
+                                     income_maker_fee_value: '0.0015',
+                                     income_taker_fee_value: '0.0015',
+                                     outcome_unit: 'usd',
+                                     outcome_fee_type: 'relative',
+                                     outcome_fee_value: '0.0',
+                                     initial_income_amount: '14.0',
+                                     current_income_amount: '12.0',
+                                     previous_income_amount: '14.0',
+                                     initial_outcome_amount: '0.42',
+                                     current_outcome_amount: '0.36',
+                                     previous_outcome_amount: '0.42',
+                                     strategy: 'limit',
+                                     price: '0.03',
+                                     state: 'open',
+                                     trades_count: 1,
+                                     created_at: created_at.iso8601,
+                                     updated_at: updated_at.iso8601
+                                   }).once
+    EventAPI.expects(:enqueue_event).with("private.#{buyer.uid}.account", anything)
   end
 
   after do
@@ -147,10 +148,10 @@ describe Serializers::EventAPI::OrderUpdated, OrderBid do
   it 'publishes event', clean_database_with_truncation: true do
     subject.transaction do
       subject.update! \
-        volume:         12,
-        locked:         0.36,
+        volume: 12,
+        locked: 0.36,
         funds_received: 2,
-        trades_count:   1
+        trades_count: 1
     end
   end
 end
