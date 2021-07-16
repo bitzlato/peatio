@@ -36,7 +36,8 @@ class Blockchain < ApplicationRecord
 
   def blockchain_api
     BlockchainService.new(self)
-  rescue StandardError
+  rescue StandardError => err
+    report_exception err
     return
   end
 
