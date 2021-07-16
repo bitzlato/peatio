@@ -3,13 +3,13 @@ version: '3'
 services:
 
   db:
-    image: mysql:5.7
+    image: postgres:13.3
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
     ports:
-      - "3306:3306"
+      - "5432:5432"
 
   influxdb:
     image: influxdb:1.7.8
