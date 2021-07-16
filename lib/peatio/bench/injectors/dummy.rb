@@ -16,7 +16,7 @@ module Bench
       private
 
       def construct_order
-        market = @markets.sample
+        market = @markets.sample || raise("No markets to sample")
         type = config.fetch(:side) { %w[OrderBid OrderAsk].sample }
         { type:     type,
           state:    Order::PENDING,
