@@ -29,9 +29,19 @@ namespace :clear do
     ).present?
       raise SecurityError.new(
         "The following markets associated with given currencies found:\n\n\t" +
-        extra_associated_markets.map{|m| m.symbol}.inspect +
-        "\n\nAborting task!\n\n" +
-        "Please consider implementing additional task to remove multiple markets."
+        extra_associated_markets.map{|m| m.as_json.slice("id", "symbol")}.pretty_inspect +
+        "\nAborting task!\n" +
+        "Please consider implementing additional task to remove multiple markets.\n" +
+        "SQL requests to fetch the mentioned markets reads as follows:\n\n" +
+        extra_associated_markets.map do |m|
+          Market \
+          .where(id: m.id) \
+          .limit(1) \
+          .explain \
+          .split(/^.*QUERY PLAN/) \
+          .first
+        end.join("\n") + 
+        "\n\nTask aborted!\n\n"
       ) 
     end
 
