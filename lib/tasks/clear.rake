@@ -28,8 +28,10 @@ namespace :clear do
       extra_associated_markets = associated_markets - [market]
     ).present?
       raise SecurityError.new(
-        "The following markets associated with given currencies found:\n\t" +
-        extra_associated_markets.map{|m| m.symbol}.inspect
+        "The following markets associated with given currencies found:\n\n\t" +
+        extra_associated_markets.map{|m| m.symbol}.inspect +
+        "\n\nAborting task!\n\n" +
+        "Please consider implementing additional task to remove multiple markets."
       ) 
     end
 
