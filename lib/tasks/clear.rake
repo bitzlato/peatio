@@ -16,6 +16,22 @@ namespace :clear do
       #Currency.find \
       market.send(unit_side)
     end
+    associated_markets = currencies.map do |currency_id|
+      Market.spot.where(
+        'base_unit = ? OR quote_unit = ?',
+        currency_id, 
+        currency_id
+      )
+    end.flatten.uniq
+
+    if (
+      extra_associated_markets = associated_markets - [market]
+    ).present?
+      raise SecurityError.new(
+        "The following markets associated with given currencies found:\n\t" +
+        extra_associated_markets.map{|m| m.symbol}.inspect
+      ) 
+    end
 
     loop_entity_paginated = lambda do |before_action_message, entity, &block|
       Kernel.puts before_action_message
@@ -64,29 +80,29 @@ namespace :clear do
       Withdraw.where(currency_id: currencies)
     ){|withdraws| withdraws.delete_all}
 
-    # loop_entity_paginated.call(
-    #   "Dropping adjustments for the currencies #{currencies} ...",
-    #   Adjustment.where(currency_id: currencies)
-    # ){|adjustments| adjustments.delete_all}
+    loop_entity_paginated.call(
+      "Dropping adjustments for the currencies #{currencies} ...",
+      Adjustment.where(currency_id: currencies)
+    ){|adjustments| adjustments.delete_all}
 
-    # loop_entity_paginated.call(
-    #   "Dropping beneficiaries for the currencies #{currencies} ...",
-    #   Beneficiary.where(currency_id: currencies)
-    # ){|beneficiaries| beneficiaries.delete_all}
+    loop_entity_paginated.call(
+      "Dropping beneficiaries for the currencies #{currencies} ...",
+      Beneficiary.where(currency_id: currencies)
+    ){|beneficiaries| beneficiaries.delete_all}
 
-    # loop_entity_paginated.call(
-    #   "Dropping internal_transfers for the currencies #{currencies} ...",
-    #   InternalTransfer.where(currency_id: currencies)
-    # ){|internal_transfers| internal_transfers.delete_all}
+    loop_entity_paginated.call(
+      "Dropping internal_transfers for the currencies #{currencies} ...",
+      InternalTransfer.where(currency_id: currencies)
+    ){|internal_transfers| internal_transfers.delete_all}
 
-    # loop_entity_paginated.call(
-    #   "Dropping operations for the currencies #{currencies} ...",
-    #   Operation.where(currency_id: currencies)
-    # ){|operations| operations.delete_all}
+    loop_entity_paginated.call(
+      "Dropping operations for the currencies #{currencies} ...",
+      Operation.where(currency_id: currencies)
+    ){|operations| operations.delete_all}
 
-    # loop_entity_paginated.call(
-    #   "Dropping transactions for the currencies #{currencies} ...",
-    #   Transaction.where(currency_id: currencies)
-    # ){|transactions| transactions.delete_all}
+    loop_entity_paginated.call(
+      "Dropping transactions for the currencies #{currencies} ...",
+      Transaction.where(currency_id: currencies)
+    ){|transactions| transactions.delete_all}
   end
 end
