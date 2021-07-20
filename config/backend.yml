@@ -63,16 +63,22 @@ services:
       - auth
     volumes:
       - ./gateway:/ambassador/ambassador-config/:ro
-    entrypoint:
-      - sh
-      - -exc
-      - |
-        # Allow accessing host's 0.0.0.0 so we can connect to a local peatio
-        # from the gateway container
-        ip -4 route list match 0/0 | awk '{print $$3" peatio.local"}' >> /etc/hosts
-        ip -4 route list match 0/0 | awk '{print $$3" ws.local"}' >> /etc/hosts
-        # Continue with the default entrypoint
-        ./entrypoint.sh
+
+    # Good idea. But it does not work on macos because of https://docs.docker.com/docker-for-mac/networking/#there-is-no-docker0-bridge-on-macos
+    # The better way it to set peatio.local and ws.local in /etc/hosts manualy
+    #
+    # Uncomment to have auto host setup in linux
+    #
+    # entrypoint:
+    #  - sh
+    #  - -exc
+    #  - |
+    #    # Allow accessing host's 0.0.0.0 so we can connect to a local peatio
+    #    # from the gateway container
+    #    ip -4 route list match 0/0 | awk '{print $$3" peatio.local"}' >> /etc/hosts
+    #    ip -4 route list match 0/0 | awk '{print $$3" ws.local"}' >> /etc/hosts
+    #    # Continue with the default entrypoint
+    #    ./entrypoint.sh
 
   vault:
     image: vault:1.0.1
