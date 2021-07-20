@@ -30,6 +30,14 @@ describe Bitzlato::Wallet do
       }
     end
 
+    # curl -XPOST https://dapi.bitzlato.bz/direct/api/v2/peatio/public/webhooks/bitzlato/deposit
+    context :trigger_event_webhook do
+      it 'trigger deposit' do
+      end
+      it 'trigger withdrawal' do
+      end
+    end
+
     context :poll_payments do
       let(:response) do
           [

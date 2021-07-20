@@ -47,7 +47,7 @@ module API
 
       def process_withdraw_event(request)
         # For withdraw events we use only Withdraw events.
-        Wallet.where(status: :active, kind: :hot, gateway: request.params[:adapter]).each do |w|
+        Wallet.where(status: :active, kind: [:hot, :standalone], gateway: request.params[:adapter]).each do |w|
           service = w.service
 
           next unless service.adapter.respond_to?(:trigger_webhook_event)

@@ -21,8 +21,20 @@ module Bitzlato
     end
 
     def trigger_webhook_event(request)
-      # curl -XPOST https://dapi.bitzlato.bz/direct/api/v2/peatio/public/webhooks/bitzlato/deposit
       binding.pry
+      if request.params[:event] == 'deposit'
+        process_deposit_event(request)
+      elsif request.params[:event] == 'withdraw'
+        process_withdraw_event(request)
+      else
+        raise 'Unknown trigger event'
+      end
+    end
+
+    def process_withdraw_event
+    end
+
+    def process_deposit_event
     end
 
     def create_transaction!(transaction, options = {})
