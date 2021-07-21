@@ -235,7 +235,7 @@ ActiveRecord::Schema.define(version: 2021_05_26_072124) do
 
   create_table "members", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "uid", limit: 32, null: false
-    t.string "email", null: false
+    t.string "email"
     t.integer "level", null: false
     t.string "role", limit: 16, null: false
     t.string "group", limit: 32, default: "vip-0", null: false
