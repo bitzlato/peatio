@@ -53,6 +53,8 @@ class Wallet < ApplicationRecord
   scope :fee,      -> { where(kind: kinds(fee: true, values: true)) }
   scope :withdraw, -> { where(kind: kinds(withdraw: true, values: true)) }
   scope :with_currency, ->(currency) { joins(:currencies).where(currencies: { id: currency }) }
+  scope :with_withdraw_currency, ->(currency) { joins(:currencies).where(currencies: { id: currency, enable_withdraw: true }) }
+  scope :with_deposit_currency, ->(currency) { joins(:currencies).where(currencies: { id: currency, enable_deposit: true }) }
   scope :ordered, -> { order(kind: :asc) }
 
   before_validation(on: :create) do
@@ -108,11 +110,11 @@ class Wallet < ApplicationRecord
     end
 
     def deposit_wallet(currency_id)
-      Wallet.active.deposit.with_currency(currency_id).take
+      Wallet.active.deposit.with_deposit_currency(currency_id).take
     end
 
     def withdraw_wallet(currency_id)
-      Wallet.active.withdraw.with_currency(currency_id).take
+      Wallet.active.withdraw.with_withdraw_currency(currency_id).take
     end
   end
 
