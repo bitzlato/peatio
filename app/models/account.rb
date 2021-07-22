@@ -16,8 +16,6 @@ class Account < ApplicationRecord
   scope :visible, -> { joins(:currency).merge(Currency.where(visible: true)) }
   scope :ordered, -> { joins(:currency).order(position: :asc) }
 
-  after_commit :trigger_event, on: %i[create update]
-
   def as_json_for_event_api
     {
       id: id,
@@ -57,7 +55,9 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_plus_locked_funds!(amount)
-    raise AccountError, "Cannot add funds (account id: #{id}, amount: #{amount}, locked: #{locked})." if amount <= ZERO
+    if amount <= ZERO
+      raise AccountError, "Cannot add funds (account id: #{id}, amount: #{amount}, locked: #{locked})."
+    end
 
     { locked: locked + amount }
   end
@@ -132,10 +132,6 @@ class Account < ApplicationRecord
 
   def amount
     balance + locked
-  end
-
-  def trigger_event
-    ::AMQP::Queue.enqueue_event('private', member&.uid, :account, as_json_for_event_api)
   end
 end
 
