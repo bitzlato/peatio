@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.integer "wallet_id"
     t.boolean "enable_deposit", default: true, null: false
     t.boolean "enable_withdraw", default: true, null: false
+    t.boolean "use_in_balance", default: true, null: false
     t.index ["currency_id", "wallet_id"], name: "index_currencies_wallets_on_currency_id_and_wallet_id", unique: true
     t.index ["currency_id"], name: "index_currencies_wallets_on_currency_id"
     t.index ["wallet_id"], name: "index_currencies_wallets_on_wallet_id"

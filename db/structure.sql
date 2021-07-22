@@ -334,7 +334,8 @@ CREATE TABLE public.currencies_wallets (
     currency_id character varying,
     wallet_id integer,
     enable_deposit boolean DEFAULT true NOT NULL,
-    enable_withdraw boolean DEFAULT true NOT NULL
+    enable_withdraw boolean DEFAULT true NOT NULL,
+    use_in_balance boolean DEFAULT true NOT NULL
 );
 
 
