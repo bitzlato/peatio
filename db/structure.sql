@@ -332,7 +332,10 @@ CREATE TABLE public.currencies (
 
 CREATE TABLE public.currencies_wallets (
     currency_id character varying,
-    wallet_id integer
+    wallet_id integer,
+    enable_deposit boolean DEFAULT true NOT NULL,
+    enable_withdraw boolean DEFAULT true NOT NULL,
+    use_in_balance boolean DEFAULT true NOT NULL
 );
 
 
@@ -2532,6 +2535,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210317141836'),
 ('20210416125059'),
 ('20210604053235'),
-('20210714075758');
+('20210714075758'),
+('20210722125206');
 
 

@@ -5,6 +5,7 @@ class CurrencyWallet < ApplicationRecord
 
   belongs_to :currency
   belongs_to :wallet
+
   validates :currency_id, uniqueness: { scope: :wallet_id }
 end
 
