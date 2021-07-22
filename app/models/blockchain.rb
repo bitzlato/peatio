@@ -34,6 +34,10 @@ class Blockchain < ApplicationRecord
     super&.inquiry
   end
 
+  def dummy?
+    client == 'dummy'
+  end
+
   def blockchain_api
     BlockchainService.new(self)
   rescue StandardError => err

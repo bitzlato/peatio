@@ -222,7 +222,7 @@ class WalletService
     @adapter.load_balance!
   rescue Peatio::Wallet::Error => e
     report_exception(e)
-    BlockchainService.new(wallet.blockchain).load_balance!(@wallet.address, currency.id)
+    BlockchainService.new(wallet.blockchain).load_balance!(@wallet.address, currency.id) unless wallet.blockchain.dummy?
   end
 
   def register_webhooks!(url)

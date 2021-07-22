@@ -110,8 +110,12 @@ class Wallet < ApplicationRecord
         end
     end
 
+    def deposit_wallets(currency_id)
+      Wallet.active.deposit.with_deposit_currency(currency_id)
+    end
+
     def deposit_wallet(currency_id)
-      Wallet.active.deposit.with_deposit_currency(currency_id).take
+      deposit_wallets(currency_id).take
     end
 
     def withdraw_wallet(currency_id)
