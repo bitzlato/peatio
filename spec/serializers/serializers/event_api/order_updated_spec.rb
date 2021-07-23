@@ -36,6 +36,10 @@ describe Serializers::EventAPI::OrderUpdated, OrderAsk do
   before do
     DatabaseCleaner.clean
     EventAPI.expects(:notify).with('market.btcusd.order_created', anything)
+    AMQP::Queue.expects(:enqueue_event).with("private", seller.uid, "order", anything)
+    # side effect, publish account updated state
+    AMQP::Queue.expects(:enqueue_event).with("private", seller.uid, "account", anything)
+
     EventAPI.expects(:notify).with('market.btcusd.order_updated', {
       id:                      1,
       market:                  'btcusd',
@@ -61,7 +65,9 @@ describe Serializers::EventAPI::OrderUpdated, OrderAsk do
       created_at:              created_at.iso8601,
       updated_at:              updated_at.iso8601
     }).once
-    EventAPI.expects(:enqueue_event).with("private.#{seller.uid}.account", anything)
+    AMQP::Queue.expects(:enqueue_event).with("private", seller.uid, "order", anything)
+    # side effect, publish account updated state
+    AMQP::Queue.expects(:enqueue_event).with("private", seller.uid, "account", anything)
   end
 
   after do
@@ -113,7 +119,12 @@ describe Serializers::EventAPI::OrderUpdated, OrderBid do
 
   before do
     DatabaseCleaner.clean
+    EventAPI.expects(:notify).with('model.account.created', anything).once
     EventAPI.expects(:notify).with('market.btcusd.order_created', anything)
+    AMQP::Queue.expects(:enqueue_event).with("private", buyer.uid, "order", anything)
+    # side effect, publish account updated state
+    AMQP::Queue.expects(:enqueue_event).with("private", buyer.uid, "account", anything)
+
     EventAPI.expects(:notify).with('market.btcusd.order_updated', {
       id:                      1,
       market:                  'btcusd',
@@ -139,7 +150,9 @@ describe Serializers::EventAPI::OrderUpdated, OrderBid do
       created_at:              created_at.iso8601,
       updated_at:              updated_at.iso8601
     }).once
-    EventAPI.expects(:enqueue_event).with("private.#{buyer.uid}.account", anything)
+    AMQP::Queue.expects(:enqueue_event).with("private", buyer.uid, "order", anything)
+    # side effect, publish account updated state
+    AMQP::Queue.expects(:enqueue_event).with("private", buyer.uid, "account", anything)
   end
 
   after do

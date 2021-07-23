@@ -226,7 +226,6 @@ describe Serializers::EventAPI::TradeCompleted, 'Event API' do
         taker_outcome_fee:      '0.0',
         completed_at:           completed_at.iso8601
       }).once
-      # AMQP::Queue.expects(:enqueue_event).at_most 
       AMQP::Queue.expects(:enqueue_event).with("public", 'btcusd', "trades", anything)
       AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "trade", anything)
       AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "trade", anything)

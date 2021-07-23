@@ -33,6 +33,7 @@ describe Serializers::EventAPI::OrderCreated do
 
   before do
     DatabaseCleaner.clean
+    EventAPI.expects(:notify).with('model.account.created', anything).once
     EventAPI.expects(:notify).with('market.btcusd.order_created', {
       id:                     1,
       market:                 'btcusd',
@@ -55,7 +56,9 @@ describe Serializers::EventAPI::OrderCreated do
       trades_count:           0,
       created_at:             created_at.iso8601
     }).once
-    EventAPI.expects(:enqueue_event).with("private.#{buyer.uid}.account", anything)
+    AMQP::Queue.expects(:enqueue_event).with("private", buyer.uid, "order", anything)
+    # side effect, publish account updated state
+    AMQP::Queue.expects(:enqueue_event).with("private", buyer.uid, "account", anything)
   end
 
   after do
