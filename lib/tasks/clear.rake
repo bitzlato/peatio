@@ -81,7 +81,7 @@ namespace :clear do
       Order.with_market(market)
     ){|orders| orders.delete_all}
 
-    [Deposit, Withdraw, Adjustment, Beneficiary, InternalTransfer, Transaction, Operations::Revenue, Operations::Expense, Operations::Liability, Operations::Asset].each do |model_class|
+    [Account, Deposit, Withdraw, Adjustment, Beneficiary, InternalTransfer, Transaction, Operations::Revenue, Operations::Expense, Operations::Liability, Operations::Asset].each do |model_class|
       loop_entity_paginated.call(
         "Dropping #{model_class} for the currencies #{currencies} ...",
         model_class.where(currency_id: currencies)
