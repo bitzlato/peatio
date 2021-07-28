@@ -1,0 +1,65 @@
+- name:             Bitzlato Deposit Wallet
+  blockchain_key:   bitzlato
+  currency_ids:     btc,eth,mcr,usdt
+  # Address where deposits will be collected to.
+  address:          '2N4qYjye5yENLEkz4UkLFxzPaxJatF3kRwf'  # IMPORTANT: Always wrap this value in quotes!
+  kind:             deposit   # Wallet kind (deposit, hot, warm, cold or fee).
+  max_balance:      0.0
+  status:           active
+  gateway:          bitzlato  # Gateway client name.
+  enable_invoice:   true
+  settings:
+    key:
+      kty: EC
+      alg: ES256
+      crv: P-256
+      x: LxixlKHOxO5qdfJYPsGdCRdSV9TCwX-RWCrx4YfD2_c
+      y: 7eT0XrSvSwGG3xJPtp4XkLjToJ1tNfEW3kpv-eYq_ZY
+      d: Gsn5E-tcdDl9U-DYp7J8ZFohIEFp80B-QGBjHXo42WU
+    uri: "https://s-www.lgk.one"
+    uid: 1313883389
+    allow_deposits_polling: true
+    allow_withdraws_polling: true
+    withdraw_method: payment
+    withdraw_polling_methods:
+      - vouchers
+      - payments
+    save_beneficiary: true
+    beneficiary_prefix: bitzlato
+- name:             Bitzlato Withdraw Wallet
+  blockchain_key:   bitzlato
+  currency_ids:     btc,eth,mcr,usdt
+  # Address where deposits will be collected to.
+  address:          '2N4qYjye5yENLEkz4UkLFxzPaxJatF3kRwf'  # IMPORTANT: Always wrap this value in quotes!
+  kind:             hot   
+  max_balance:      0.0
+  status:           active
+  gateway:          bitzlato
+  enable_invoice: true
+  settings:
+    key:
+      kty: EC
+      alg: ES256
+      crv: P-256
+      x: LxixlKHOxO5qdfJYPsGdCRdSV9TCwX-RWCrx4YfD2_c
+      y: 7eT0XrSvSwGG3xJPtp4XkLjToJ1tNfEW3kpv-eYq_ZY
+      d: Gsn5E-tcdDl9U-DYp7J8ZFohIEFp80B-QGBjHXo42WU
+    uri: "https://s-www.lgk.one"
+    uid: 1313883389
+    allow_deposits_polling: true
+    allow_withdraws_polling: true
+    withdraw_method: payment
+    withdraw_polling_methods:
+      - vouchers
+      - payments
+    save_beneficiary: true
+    beneficiary_prefix: bitzlato
+- name:             Dummy Wallet
+  blockchain_key:   dummy
+  currency_ids:     bbb,uuu
+  # Address where deposits will be collected to.
+  address:          '2N4qYjye5yENLEkz4UkLFxzPaxJatF3kRwf'  # IMPORTANT: Always wrap this value in quotes!
+  kind:             hot   
+  max_balance:      0.0
+  status:           active
+  gateway:          dummy
