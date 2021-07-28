@@ -35,7 +35,7 @@
   withdraw_limit_72h:     0.5
   deposit_fee:            0
   withdraw_fee:           0
-  position:               3
+  position:               4
   options:
     # ETH tx fees configurations.
     #
@@ -76,6 +76,7 @@
     #
     # ERC20 configuration.
     erc20_contract_address: '0x0000000000000000000000000000000000000000' # Always wrap this value in quotes!
+
 - id:                     usdt
   name:                   Tether
   blockchain_key:         btc-testnet
@@ -97,6 +98,7 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               5
+
 - id:                     mcr
   name:                   Mcr Stablecoin
   blockchain_key:         btc-testnet
@@ -118,45 +120,631 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               6
-- id:                     dai
-  name:                   dai
-  blockchain_key:         btc-testnet
+
+  
+- id:                     usdc
+  name:                   USD Coin
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
   type:                   coin
-  precision:              8
+  precision:              6
   base_factor:            1_000_000 # IMPORTANT: Don't forget to update this variable according
                                     # to your ERC20-based currency requirements
                                     # (usually can be found on the official website).
   visible:                false
-  deposit_enabled:        true
-  withdrawal_enabled:     true
+  deposit_enabled:        false
+  withdrawal_enabled:     false
   # Deposits with less amount are skipped during blockchain synchronization.
   # We advise to set value 10 times bigger than the network fee to prevent losses.
   # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
-  min_deposit_amount:     2
-  min_collection_amount:  2
-  withdraw_limit_24h:     3000
-  withdraw_limit_72h:     6000
+  min_deposit_amount:     45.0
+  min_collection_amount:  135.0
+  withdraw_limit_24h:     7000.0
+  withdraw_limit_72h:     13500.0
   deposit_fee:            0
   withdraw_fee:           0
   position:               7
-- id:                     mdt
-  name:                   Monolith
-  blockchain_key:         btc-testnet
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' # Always wrap this value in quotes!
+  
+- id:                     uni
+  name:                   Uniswap
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
   type:                   coin
-  precision:              8
-  base_factor:            1_000_000 # IMPORTANT: Don't forget to update this variable according
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
                                     # to your ERC20-based currency requirements
                                     # (usually can be found on the official website).
   visible:                false
-  deposit_enabled:        true
-  withdrawal_enabled:     true
+  deposit_enabled:        false
+  withdrawal_enabled:     false
   # Deposits with less amount are skipped during blockchain synchronization.
   # We advise to set value 10 times bigger than the network fee to prevent losses.
   # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
-  min_deposit_amount:     2
-  min_collection_amount:  2
-  withdraw_limit_24h:     3000
-  withdraw_limit_72h:     6000
+  min_deposit_amount:     2.5
+  min_collection_amount:  7.0
+  withdraw_limit_24h:     375.0
+  withdraw_limit_72h:     750.0
   deposit_fee:            0
   withdraw_fee:           0
   position:               8
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984' # Always wrap this value in quotes!
+  
+- id:                     busd
+  name:                   Binance USD
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     45.0
+  min_collection_amount:  135.0
+  withdraw_limit_24h:     7000.0
+  withdraw_limit_72h:     13500.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               9
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x4fabb145d64652a948d72533023f6e7a623c7c53' # Always wrap this value in quotes!
+  
+- id:                     link
+  name:                   ChainLink
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     3.0
+  min_collection_amount:  9.0
+  withdraw_limit_24h:     450.0
+  withdraw_limit_72h:     900.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               10
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x514910771af9ca656af840dff83e8264ecf986ca' # Always wrap this value in quotes!
+  
+- id:                     wbtc
+  name:                   Wrapped BTC
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            100_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     5.0e-05
+  min_collection_amount:  0.00015
+  withdraw_limit_24h:     0.0075
+  withdraw_limit_72h:     0.015
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               11
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599' # Always wrap this value in quotes!
+  
+- id:                     dai
+  name:                   DAI Stablecoin
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     45.0
+  min_collection_amount:  135.0
+  withdraw_limit_24h:     7000.0
+  withdraw_limit_72h:     13500.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               12
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x6b175474e89094c44da98b954eedeac495271d0f' # Always wrap this value in quotes!
+  
+- id:                     luna
+  name:                   Wrapped Luna
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     5.0
+  min_collection_amount:  15.0
+  withdraw_limit_24h:     750.0
+  withdraw_limit_72h:     1500.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               13
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0xd2877702675e6ceb975b4a1dff9fb7baf4c91ea9' # Always wrap this value in quotes!
+  
+- id:                     mkr
+  name:                   Maker
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     0.005
+  min_collection_amount:  0.015
+  withdraw_limit_24h:     0.75
+  withdraw_limit_72h:     1.5
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               14
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2' # Always wrap this value in quotes!
+  
+- id:                     comp
+  name:                   Compound
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     0.1
+  min_collection_amount:  0.3
+  withdraw_limit_24h:     15.0
+  withdraw_limit_72h:     30.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               15
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0xc00e94cb662c3520282e6f5717214004a7f26888' # Always wrap this value in quotes!
+  
+- id:                     tusd
+  name:                   TrueUSD
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     45.0
+  min_collection_amount:  135.0
+  withdraw_limit_24h:     7000.0
+  withdraw_limit_72h:     13500.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               16
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x0000000000085d4780B73119b644AE5ecd22b376' # Always wrap this value in quotes!
+  
+- id:                     snx
+  name:                   Synthetix Network
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     4.0
+  min_collection_amount:  12.0
+  withdraw_limit_24h:     600.0
+  withdraw_limit_72h:     1200.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               17
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f' # Always wrap this value in quotes!
+  
+- id:                     yfi
+  name:                   yearn.finance
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     0.0001
+  min_collection_amount:  0.0003
+  withdraw_limit_24h:     0.015
+  withdraw_limit_72h:     0.03
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               18
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e' # Always wrap this value in quotes!
+  
+- id:                     sushi
+  name:                   SushiToken
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     4.0
+  min_collection_amount:  12.0
+  withdraw_limit_24h:     600.0
+  withdraw_limit_72h:     1200.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               19
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2' # Always wrap this value in quotes!
+  
+- id:                     pax
+  name:                   Paxos Standard
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     45.0
+  min_collection_amount:  135.0
+  withdraw_limit_24h:     7000.0
+  withdraw_limit_72h:     13500.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               20
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x8e870d67f660d95d5be530380d0ec0bd388289e1' # Always wrap this value in quotes!
+  
+- id:                     bnt
+  name:                   Bancor
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     20.0
+  min_collection_amount:  60.0
+  withdraw_limit_24h:     3000.0
+  withdraw_limit_72h:     6000.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               21
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c' # Always wrap this value in quotes!
+  
+- id:                     crv
+  name:                   Curve DAO
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     20.0
+  min_collection_amount:  60.0
+  withdraw_limit_24h:     3000.0
+  withdraw_limit_72h:     6000.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               22
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0xD533a949740bb3306d119CC777fa900bA034cd52' # Always wrap this value in quotes!
+  
+- id:                     zrx
+  name:                   ZRX Token
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     50.0
+  min_collection_amount:  150.0
+  withdraw_limit_24h:     7500.0
+  withdraw_limit_72h:     15000.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               23
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0xe41d2489571d322189246dafa5ebde1f4699f498' # Always wrap this value in quotes!
+  
+- id:                     1inch
+  name:                   1INCH Token
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     20.0
+  min_collection_amount:  60.0
+  withdraw_limit_24h:     3000.0
+  withdraw_limit_72h:     6000.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               24
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x111111111117dc0aa78b770fa6a738034120c302' # Always wrap this value in quotes!
+  
+- id:                     mdt
+  name:                   MonolithosDAO governance token
+  blockchain_key:         eth-mainnet
+  parent_id:              eth
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        false
+  withdrawal_enabled:     false
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     25.0
+  min_collection_amount:  75.0
+  withdraw_limit_24h:     3750.0
+  withdraw_limit_72h:     7500.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               25
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 42_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x4dfd148b532e934a2a26ea65689cf6268753e130' # Always wrap this value in quotes!
