@@ -1,0 +1,20 @@
+- name:             Bitzlato Deposit Wallet
+  blockchain_key:   bitzlato
+  currency_ids:     btc,eth,mcr,usdt
+  # Address where deposits will be collected to.
+  address:          '2N4qYjye5yENLEkz4UkLFxzPaxJatF3kRwf'  # IMPORTANT: Always wrap this value in quotes!
+  kind:             deposit   # Wallet kind (deposit, hot, warm, cold or fee).
+  max_balance:      0.0
+  status:           active
+  gateway:          bitzlato  # Gateway client name.
+  enable_invoice:   true
+- name:             Bitzlato Withdraw Wallet
+  blockchain_key:   bitzlato
+  currency_ids:     btc,eth,mcr,usdt
+  # Address where deposits will be collected to.
+  address:          '2N4qYjye5yENLEkz4UkLFxzPaxJatF3kRwf'  # IMPORTANT: Always wrap this value in quotes!
+  kind:             hot   
+  max_balance:      0.0
+  status:           active
+  gateway:          bitzlato
+  enable_invoice: true
