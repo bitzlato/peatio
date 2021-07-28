@@ -135,7 +135,7 @@ class Currency < ApplicationRecord
 
   # == Instance Methods =====================================================
 
-  delegate :explorer_transaction, :blockchain_api, :explorer_address, to: :blockchain
+  delegate :explorer_transaction, :blockchain_api, :explorer_address, :symbol_suffix, to: :blockchain
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
 

@@ -61,6 +61,13 @@ module API
         )
 
         expose(
+          :symbol_suffix,
+          documentation: {
+            desc: 'Symbol suffix'
+          }
+        )
+
+        expose(
           :explorer_transaction,
           documentation: {
             desc: 'Currency transaction exprorer url template',
