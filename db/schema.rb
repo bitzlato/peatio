@@ -86,7 +86,7 @@ ActiveRecord::Schema.define(version: 2021_07_28_142039) do
     t.string "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "symbol_suffix", null: false
+    t.string "scope", null: false
     t.index ["key"], name: "index_blockchains_on_key", unique: true
     t.index ["status"], name: "index_blockchains_on_status"
   end
@@ -117,7 +117,7 @@ ActiveRecord::Schema.define(version: 2021_07_28_142039) do
     t.decimal "price", precision: 32, scale: 16, default: "1.0", null: false
     t.string "parent_id"
     t.string "code", null: false
-    t.string "blockchain_scope", null: false
+    t.string "blockchain_scope"
     t.index ["code", "blockchain_scope"], name: "index_currencies_on_code_and_blockchain_scope", unique: true
     t.index ["parent_id"], name: "index_currencies_on_parent_id"
     t.index ["position"], name: "index_currencies_on_position"

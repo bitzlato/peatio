@@ -24,6 +24,8 @@ namespace :seed do
         else
           Currency.create!(hash)
         end
+      rescue => err
+        binding.pry
       end
     end
   end

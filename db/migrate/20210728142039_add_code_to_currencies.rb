@@ -6,7 +6,6 @@ class AddCodeToCurrencies < ActiveRecord::Migration[5.2]
       c.update code: c.id, blockchain_scope: c.blockchain.scope
     end
     change_column_null :currencies, :code, false
-    change_column_null :currencies, :blockchain_scope, false
     add_index :currencies, [:code, :blockchain_scope], unique: true
   end
 
