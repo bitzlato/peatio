@@ -35,7 +35,7 @@ module Bitzlato
       key = transaction.options[:withdrawal_id] || raise("No withdrawal ID")
       response = client.post(
         '/api/gate/v1/payments/create',
-        { clientProvidedId: key, client: transaction.to_address, cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, payedBefore: true }
+        { clientProvidedId: key, client: transaction.to_address, cryptocurrency: transaction.currency_code.upcase, amount: transaction.amount, payedBefore: true }
       )
       payment_id = response['paymentId'] || raise("No payment ID in response")
       transaction.hash = transaction.txout = generate_id payment_id
@@ -49,7 +49,7 @@ module Bitzlato
     def create_voucher!(transaction, options = {})
       voucher = client.post(
         '/api/p2p/vouchers/',
-        { cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, method: 'crypto', currency: 'USD'}
+        { cryptocurrency: transaction.currency_code.upcase, amount: transaction.amount, method: 'crypto', currency: 'USD'}
       )
 
       transaction.options.merge!(
@@ -82,7 +82,7 @@ module Bitzlato
           #}
         #},
       response
-        .find { |r| r['cryptocurrency'] == currency_id.upcase }
+        .find { |r| r['cryptocurrency'] == currency_code.upcase }
         .fetch('balance')
         .to_d
     end
@@ -90,7 +90,7 @@ module Bitzlato
     def create_invoice!(amount: , comment:)
       response = client
         .post('/api/gate/v1/invoices/', {
-        cryptocurrency: currency_id.to_s.upcase,
+        cryptocurrency: currency_code.to_s.upcase,
         amount: amount,
         comment: comment
         })
@@ -173,8 +173,8 @@ module Bitzlato
       end.slice(:id)
     end
 
-    def currency_id
-      currency.fetch(:id)
+    def currency_code
+      currency.fetch(:code)
     end
 
     def generate_id id

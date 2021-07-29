@@ -6,6 +6,10 @@ class Blockchain < ApplicationRecord
   has_many :wallets, foreign_key: :blockchain_key, primary_key: :key
   has_many :whitelisted_smart_contracts, foreign_key: :blockchain_key, primary_key: :key
 
+  before_validation on: :create, if: :key do
+    self.scope ||= key.to_s.split('-').first
+  end
+
   validates :key, :name, :client, presence: true
   validates :key, uniqueness: true
   validates :status, inclusion: { in: %w[active disabled] }
@@ -14,9 +18,9 @@ class Blockchain < ApplicationRecord
             numericality: { greater_than_or_equal_to: 1, only_integer: true }
   validates :server, url: { allow_blank: true }
   validates :client, inclusion: { in: -> (_) { clients.map(&:to_s) } }
+  validates :scope, presence: true
 
   before_create { self.key = self.key.strip.downcase }
-  before_create { self.suffix_prefix ||= self.key.split('-').first }
 
   scope :active,   -> { where(status: :active) }
 

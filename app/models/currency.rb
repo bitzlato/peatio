@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 class Currency < ApplicationRecord
-
   # == Constants ============================================================
 
   OPTIONS_ATTRIBUTES = %i[erc20_contract_address gas_limit gas_price].freeze
@@ -13,10 +12,6 @@ class Currency < ApplicationRecord
   attr_readonly :id,
                 :type,
                 :base_factor
-
-  # Code is aliased to id because it's more user-friendly primary key.
-  # It's preferred to use code where this attributes are equal.
-  alias_attribute :code, :id
 
   # == Extensions ===========================================================
 
@@ -49,6 +44,11 @@ class Currency < ApplicationRecord
     end
   end
 
+  before_validation on: :create, if: :blockchain do
+    self.blockchain_scope ||= self.blockchain.scope
+  end
+
+  validates :blockchain_scope, presence: true, inclusion: { in: ->(_) { Blockchain.pluck(:scope).uniq } }
   validates :code, presence: true, uniqueness: { case_sensitive: false }
 
   validates :position,
@@ -135,7 +135,7 @@ class Currency < ApplicationRecord
 
   # == Instance Methods =====================================================
 
-  delegate :explorer_transaction, :blockchain_api, :explorer_address, :symbol_suffix, to: :blockchain
+  delegate :explorer_transaction, :blockchain_api, :explorer_address, to: :blockchain
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
 
@@ -149,6 +149,10 @@ class Currency < ApplicationRecord
 
   def initialize_defaults
     self.options = {} if options.blank?
+  end
+
+  def title
+    code + ' (' + blockchain_scope + ')'
   end
 
   def link_wallets

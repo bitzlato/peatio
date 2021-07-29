@@ -45,7 +45,7 @@ module Ethereum
           next if invalid_eth_transaction?(tx)
         else
           next if @erc20.find do |c|
-            # Check `to` and `input` options to find erc-20 smart contract contract 
+            # Check `to` and `input` options to find erc-20 smart contract contract
             c.dig(:options, :erc20_contract_address) == normalize_address(tx.fetch('to')) ||
             c.dig(:options, :erc20_contract_address) == '0x' + tx.fetch('input')[34...74].to_s ||
             # Check if `to` in whitelisted smart contracts
@@ -158,7 +158,7 @@ module Ethereum
           to_address:     normalize_address(block_txn['to']),
           txout:          block_txn.fetch('transactionIndex').to_i(16),
           block_number:   block_txn.fetch('blockNumber').to_i(16),
-          currency_id:    currency.fetch(:id),
+          currency_id:    currency.fetch(:code),
           status:         transaction_status(block_txn) }
       end
     end
@@ -187,7 +187,7 @@ module Ethereum
                              to_address:      destination_address,
                              txout:           log['logIndex'].to_i(16),
                              block_number:    txn_receipt.fetch('blockNumber').to_i(16),
-                             currency_id:     currency.fetch(:id),
+                             currency_id:     currency.fetch(:code),
                              status:          transaction_status(txn_receipt) }
         end
       end
@@ -200,7 +200,7 @@ module Ethereum
       currencies.each_with_object([]) do |currency, invalid_txs|
         invalid_txs << { hash:         normalize_txid(txn_receipt.fetch('transactionHash')),
                          block_number: txn_receipt.fetch('blockNumber').to_i(16),
-                         currency_id:  currency.fetch(:id),
+                         currency_id:  currency.fetch(:code),
                          status:       transaction_status(txn_receipt) }
       end
     end

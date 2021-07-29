@@ -61,9 +61,21 @@ module API
         )
 
         expose(
-          :symbol_suffix,
+          :blockchain_scope,
           documentation: {
-            desc: 'Symbol suffix'
+            desc: 'Blockchain scope',
+            type: String,
+            values: -> { ::Blockchain.active.pluck(:scope).uniq },
+            example: -> { ::Blockchain.active.first.try(:scope) }
+          }
+        )
+
+        expose(
+          :title,
+          documentation: {
+            desc: 'Humanized currency title',
+            type: String,
+            example: -> { 'Tether ERC20 (USDT)' }
           }
         )
 

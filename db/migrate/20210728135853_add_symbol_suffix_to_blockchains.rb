@@ -1,9 +1,13 @@
 class AddSymbolSuffixToBlockchains < ActiveRecord::Migration[5.2]
-  def change
-    add_column :blockchains, :symbol_suffix, :string
+  def up
+    add_column :blockchains, :scope, :string
     Blockchain.find_each do |b|
-      b.update symbol_suffix: b.key.split('-').first
+      b.update scope: b.key.split('-').first
     end
-    change_column_null :blockchains, :symbol_suffix, false
+    change_column_null :blockchains, :scope, false
+  end
+
+  def down
+    remove_column :blockchains, :scope
   end
 end
