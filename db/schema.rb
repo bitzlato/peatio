@@ -86,7 +86,7 @@ ActiveRecord::Schema.define(version: 2021_07_28_142039) do
     t.string "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "scope", null: false
+    t.string "symbol_suffix", null: false
     t.index ["key"], name: "index_blockchains_on_key", unique: true
     t.index ["status"], name: "index_blockchains_on_status"
   end

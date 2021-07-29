@@ -47,6 +47,9 @@ class Currency < ApplicationRecord
   before_validation on: :create, if: :blockchain do
     self.blockchain_scope ||= self.blockchain.scope
   end
+  before_validation on: :create do
+    self.code ||= self.id
+  end
 
   validates :blockchain_scope, presence: true, inclusion: { in: ->(_) { Blockchain.pluck(:scope).uniq } }
   validates :code, presence: true, uniqueness: { case_sensitive: false }
