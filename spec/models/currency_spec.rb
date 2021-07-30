@@ -104,7 +104,7 @@ describe Currency do
   end
 
   context 'read only attributes' do
-    let!(:fake_currency) { create(:currency, :btc, id: 'fake') }
+    let!(:fake_currency) { create(:currency, :btc, code: 'fake', id: 'fake') }
 
     it 'should not update the base factor' do
       fake_currency.update_attributes :base_factor => 8
@@ -118,7 +118,7 @@ describe Currency do
   end
 
   context 'subunits' do
-    let!(:fake_currency) { create(:currency, :btc, id: 'fake', base_factor: 100) }
+    let!(:fake_currency) { create(:currency, :btc, code: 'fake', id: 'fake', base_factor: 100) }
 
     it 'return currency subunits' do
       expect(fake_currency.subunits).to eq(2)

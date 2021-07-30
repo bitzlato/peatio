@@ -71,15 +71,6 @@ module API
         )
 
         expose(
-          :title,
-          documentation: {
-            desc: 'Humanized currency title',
-            type: String,
-            example: -> { 'Tether ERC20 (USDT)' }
-          }
-        )
-
-        expose(
           :explorer_transaction,
           documentation: {
             desc: 'Currency transaction exprorer url template',

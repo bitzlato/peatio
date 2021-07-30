@@ -12,6 +12,7 @@ describe Blockchain do
 
     it 'validates presence of key' do
       subject.key = nil
+      subject.scope = 'btc'
       expect(subject).to_not be_valid
       expect(subject.errors.full_messages).to eq ["Key can't be blank"]
     end

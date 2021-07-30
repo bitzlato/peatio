@@ -45,7 +45,7 @@ class Currency < ApplicationRecord
   end
 
   before_validation on: :create, if: :coin? do
-    self.blockchain_scope ||= self.blockchain.scope
+    self.blockchain_scope ||= self.blockchain.try(:scope)
   end
   before_validation on: :create do
     self.code ||= self.id if id.present?
@@ -153,10 +153,6 @@ class Currency < ApplicationRecord
 
   def initialize_defaults
     self.options = {} if options.blank?
-  end
-
-  def title
-    code + ' (' + blockchain_scope + ')'
   end
 
   def link_wallets
