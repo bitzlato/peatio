@@ -200,6 +200,7 @@ class Currency < ApplicationRecord
     # compatibility with Wallet#to_wallet_api_settings.
     opt = options.compact.deep_symbolize_keys
     opt.deep_symbolize_keys.merge(id:          id,
+                                  code:        code,
                                   base_factor: base_factor,
                                   options:     opt)
   end
