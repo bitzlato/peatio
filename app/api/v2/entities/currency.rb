@@ -8,10 +8,18 @@ module API
         expose(
           :id,
           documentation: {
-            desc: 'Currency code.',
+            desc: 'Currency ID (local ticker name).',
             type: String,
-            values: -> { ::Currency.visible.codes },
-            example: -> { ::Currency.visible.first.id }
+          }
+        )
+
+        expose(
+          :code,
+          documentation: {
+            desc: 'Currency code used in blockchain.',
+            type: String,
+            values: -> { ::Currency.visible.code },
+            example: -> { ::Currency.visible.first.try(:code) }
           }
         )
 
