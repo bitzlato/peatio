@@ -2,11 +2,12 @@
 # frozen_string_literal: true
 
 class Deposit < ApplicationRecord
-  STATES = %i[submitted canceled rejected accepted collected skipped processing fee_processing].freeze
+  STATES = %i[submitted invoiced canceled rejected accepted collected skipped processing fee_processing].freeze
 
   serialize :error, JSON unless Rails.configuration.database_support_json
   serialize :spread, Array
   serialize :from_addresses, Array
+  serialize :data, JSON unless Rails.configuration.database_support_json
 
   include AASM
   include AASM::Locking
@@ -38,6 +39,7 @@ class Deposit < ApplicationRecord
 
   aasm whiny_transitions: false do
     state :submitted, initial: true
+    state :invoiced
     state :canceled
     state :rejected
     state :accepted
@@ -52,8 +54,7 @@ class Deposit < ApplicationRecord
     event(:cancel) { transitions from: :submitted, to: :canceled }
     event(:reject) { transitions from: :submitted, to: :rejected }
     event :accept do
-      transitions from: :submitted, to: :accepted
-
+      transitions from: %i[submitted invoiced], to: :accepted
       after do
         if currency.coin? && (Peatio::App.config.deposit_funds_locked ||
                               Peatio::AML.adapter.present? ||
@@ -67,6 +68,10 @@ class Deposit < ApplicationRecord
     end
     event :skip do
       transitions from: :processing, to: :skipped
+    end
+
+    event :invoice do
+      transitions from: :submitted, to: :invoiced
     end
 
     event :process do
@@ -149,6 +154,13 @@ class Deposit < ApplicationRecord
     true
   end
 
+  def transfer_links
+    # TODO rename data['links'] to transfer_links
+    # TODO rename data['expires_at'] to expires_at
+    # TODO Use txid instead of intention_id
+    data&.fetch 'links', []
+  end
+
   def blockchain_api
     currency.blockchain_api
   end
@@ -224,6 +236,10 @@ class Deposit < ApplicationRecord
 
   def completed?
     !submitted?
+  end
+
+  def enqueue_deposit_intention!
+    AMQP::Queue.enqueue(:deposit_intention, { deposit_id: id }, { persistent: true })
   end
 
   private

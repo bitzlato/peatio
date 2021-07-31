@@ -1,10 +1,74 @@
 GIT
-  remote: http://github.com/rubykube/vault-rails
-  revision: 167283b25c34ba8a61ce2ad505f68dced3189f43
+  remote: https://github.com/bitzlato/peatio-core.git
+  revision: 9c62876448c7d002f581383d0c5d84473421a31c
+  specs:
+    peatio (2.6.4)
+      activemodel (> 5.2, <= 6.0.0)
+      amqp
+      bunny
+      clamp
+      em-synchrony (~> 1.0)
+      em-websocket
+      eventmachine
+      faraday_middleware (~> 1.0)
+      faye (~> 1.2)
+      jwt
+      prometheus-client
+      thin
+
+GIT
+  remote: https://github.com/brandymint/capistrano-tasks.git
+  revision: ed94c975c36a7ba41a173bddf6dba46034ca41e2
+  specs:
+    capistrano-tasks (0.0.1)
+
+GIT
+  remote: https://github.com/caspark/guard-rspec.git
+  revision: 407ef8c62f3abad575bb66d53c02ba062a5ee8af
+  specs:
+    guard-rspec (4.7.3)
+      guard (~> 2.1)
+      guard-compat (~> 1.1)
+
+GIT
+  remote: https://github.com/finfex/bitzlato.git
+  revision: 76760712d4e91654214191d9a1cb652d47c1e03f
+  branch: main
+  specs:
+    bitzlato (0.1.9)
+      faraday (>= 0.17)
+      json (~> 2.0)
+      jwt (~> 2.3.0.dev)
+
+GIT
+  remote: https://github.com/finfex/vault-rails.git
+  revision: 6b85d4a9eb448ff8d54e1b3b06d3ca08bbf38289
   specs:
     vault-rails (0.6.0)
       rails (>= 4.1)
       vault (~> 0.14)
+
+GIT
+  remote: https://github.com/groovenauts/capistrano-systemd-multiservice.git
+  revision: 955b99cc7588521ddc26ccd523ebba306e16fa0a
+  specs:
+    capistrano-systemd-multiservice (0.1.0.beta12)
+      capistrano (>= 3.7.0, < 3.17.0)
+
+GIT
+  remote: https://github.com/jwt/ruby-jwt.git
+  revision: 3b4a1abf9f26a01de81fa8b81d4e62cc540212cd
+  specs:
+    jwt (2.3.0.dev)
+
+GIT
+  remote: https://github.com/seuros/capistrano-puma.git
+  revision: 285b45f51d0662e760cc5e75f15614589a2be170
+  specs:
+    capistrano3-puma (5.0.4)
+      capistrano (~> 3.7)
+      capistrano-bundler
+      puma (>= 4.0, < 6.0)
 
 GEM
   remote: https://rubygems.org/
@@ -52,8 +116,10 @@ GEM
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
+    airbrussh (1.4.0)
+      sshkit (>= 1.6.1, != 1.7.0)
     amq-protocol (2.3.2)
     amqp (1.8.0)
       amq-protocol (>= 2.2.0)
@@ -72,9 +138,6 @@ GEM
     aws-sigv4 (1.2.3)
       aws-eventstream (~> 1, >= 1.0.2)
     base58 (0.2.3)
-    better-faraday (1.0.8)
-      activesupport (>= 4.0, < 6.0)
-      faraday (~> 0.12)
     bootsnap (1.7.3)
       msgpack (~> 1.0)
     builder (3.2.4)
@@ -86,6 +149,34 @@ GEM
       amq-protocol (~> 2.3, >= 2.3.0)
     byebug (11.1.3)
     cancancan (3.1.0)
+    capistrano (3.16.0)
+      airbrussh (>= 1.0.0)
+      i18n
+      rake (>= 10.0.0)
+      sshkit (>= 1.9.0)
+    capistrano-bundler (2.0.1)
+      capistrano (~> 3.1)
+    capistrano-db-tasks (0.6)
+      capistrano (>= 3.0.0)
+    capistrano-dotenv (0.0.5)
+      capistrano (>= 3.5.0, < 4.0.0)
+    capistrano-dotenv-tasks (0.1.5)
+      capistrano (~> 3.0)
+    capistrano-git-with-submodules (2.0.4)
+      capistrano (~> 3.7)
+    capistrano-rails (1.6.1)
+      capistrano (~> 3.1)
+      capistrano-bundler (>= 1.1, < 3)
+    capistrano-rails-console (2.3.0)
+      capistrano (>= 3.5.0, < 4.0.0)
+      sshkit-interactive (~> 0.3.0)
+    capistrano-rbenv (2.2.0)
+      capistrano (~> 3.1)
+      sshkit (~> 1.3)
+    capistrano-sentry (0.4.2)
+      capistrano (~> 3.1)
+    capistrano-shell (0.2.0)
+      capistrano (~> 3.1)
     cash-addr (0.2.0)
       base58 (~> 0.2.2)
     clamp (1.3.2)
@@ -98,10 +189,11 @@ GEM
     crack (0.4.5)
       rexml
     crass (1.0.6)
-    daemons (1.3.1)
+    daemons (1.4.0)
     database_cleaner (1.99.0)
     diff-lcs (1.4.4)
     digest-sha3 (1.1.0)
+    dotenv (2.7.6)
     dry-configurable (0.12.1)
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.5, >= 0.5.0)
@@ -148,10 +240,25 @@ GEM
       railties (>= 4.2.0)
     faker (1.9.6)
       i18n (>= 0.7)
-    faraday (0.17.4)
+    faraday (1.5.1)
+      faraday-em_http (~> 1.0)
+      faraday-em_synchrony (~> 1.0)
+      faraday-excon (~> 1.1)
+      faraday-httpclient (~> 1.0.1)
+      faraday-net_http (~> 1.0)
+      faraday-net_http_persistent (~> 1.1)
+      faraday-patron (~> 1.0)
       multipart-post (>= 1.2, < 3)
-    faraday_middleware (0.13.1)
-      faraday (>= 0.7.4, < 1.0)
+      ruby2_keywords (>= 0.0.4)
+    faraday-em_http (1.0.0)
+    faraday-em_synchrony (1.0.0)
+    faraday-excon (1.1.0)
+    faraday-httpclient (1.0.1)
+    faraday-net_http (1.0.1)
+    faraday-net_http_persistent (1.2.0)
+    faraday-patron (1.0.0)
+    faraday_middleware (1.1.0)
+      faraday (~> 1.0)
     faye (1.4.0)
       cookiejar (>= 0.3.0)
       em-http-request (>= 1.1.6)
@@ -166,6 +273,8 @@ GEM
     ffi (1.15.0)
     figaro (1.1.1)
       thor (~> 0.14)
+    foreman (0.87.2)
+    formatador (0.3.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     god (0.13.7)
@@ -191,9 +300,20 @@ GEM
       rack
     grape_on_rails_routes (0.3.2)
       rails (>= 3.1.1)
+    guard (2.18.0)
+      formatador (>= 0.2.4)
+      listen (>= 2.7, < 4.0)
+      lumberjack (>= 1.0.12, < 2.0)
+      nenv (~> 0.1)
+      notiffany (~> 0.0)
+      pry (>= 0.13.0)
+      shellany (~> 0.0)
+      thor (>= 0.18.1)
+    guard-compat (1.2.1)
     hashdiff (1.0.1)
     hashie (3.6.0)
     hiredis (0.6.3)
+    http_accept_language (2.1.1)
     http_parser.rb (0.6.0)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
@@ -201,14 +321,7 @@ GEM
     io-console (0.5.9)
     irb (1.3.4)
       reline (>= 0.1.5)
-    irix (2.6.0)
-      em-synchrony (~> 1.0)
-      em-websocket
-      eventmachine
-      faraday_middleware (~> 0.13.1)
-      faye (~> 1.2)
-      peatio (>= 2.4.2)
-    jwt (2.2.2)
+    json (2.5.1)
     jwt-multisig (1.0.5)
       activesupport (>= 4.0)
       jwt (~> 2.2)
@@ -234,6 +347,7 @@ GEM
     loofah (2.9.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
+    lumberjack (1.2.8)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
     marcel (0.3.3)
@@ -255,71 +369,22 @@ GEM
       ruby2_keywords (~> 0.0.1)
     mustermann-grape (1.0.1)
       mustermann (>= 1.0.0)
-    mysql2 (0.5.3)
+    nenv (0.3.0)
     net-http-persistent (3.0.1)
       connection_pool (~> 2.2)
+    net-scp (3.0.0)
+      net-ssh (>= 2.6.5, < 7.0.0)
+    net-ssh (6.1.0)
     nio4r (2.5.7)
     nokogiri (1.11.2)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
+    notiffany (0.1.3)
+      nenv (~> 0.1)
+      shellany (~> 0.0)
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
-    peatio (2.6.3)
-      activemodel (> 5.2, <= 6.0.0)
-      amqp
-      bunny
-      clamp
-      em-synchrony (~> 1.0)
-      em-websocket
-      eventmachine
-      faraday_middleware (~> 0.13.1)
-      faye (~> 1.2)
-      jwt
-      mysql2
-      prometheus-client
-      thin
-    peatio-bitcoincash (2.6.1)
-      activesupport (~> 5.2.3)
-      better-faraday (~> 1.0.5)
-      cash-addr (~> 0.2.0)
-      faraday (~> 0.17)
-      memoist (~> 0.16.0)
-      net-http-persistent (~> 3.0.1)
-      peatio (>= 0.6.3)
-    peatio-bitgo (2.6.6)
-      activesupport (~> 5.2.3)
-      better-faraday (~> 1.0.5)
-      faraday (~> 0.17)
-      memoist (~> 0.16.0)
-      net-http-persistent (~> 3.0.1)
-      peatio (>= 0.6.3)
-    peatio-dash (2.6.1)
-      activesupport (~> 5.2.3)
-      better-faraday (~> 1.0.5)
-      faraday (~> 0.17)
-      memoist (~> 0.16.0)
-      net-http-persistent (~> 3.0.1)
-      peatio (>= 0.6.3)
-    peatio-electrum (2.6.2)
-      activesupport (~> 5.2.3)
-      faraday (~> 0.17)
-      net-http-persistent (~> 3.0.1)
-      peatio (>= 0.6.3)
-    peatio-litecoin (2.6.1)
-      activesupport (~> 5.2.3)
-      better-faraday (~> 1.0.5)
-      faraday (~> 0.17)
-      memoist (~> 0.16.0)
-      net-http-persistent (~> 3.0.1)
-      peatio (>= 0.6.3)
-    peatio-ripple (2.6.1)
-      activesupport (~> 5.2.3)
-      better-faraday (~> 1.0.5)
-      faraday (~> 0.17)
-      memoist (~> 0.16.0)
-      net-http-persistent (~> 3.0.1)
-      peatio (>= 0.6.3)
     pg (1.2.3)
     polyamorous (2.3.2)
       activerecord (>= 5.2.1)
@@ -331,7 +396,8 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     public_suffix (4.0.6)
-    puma (3.12.6)
+    puma (5.4.0)
+      nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
     rack-accept (0.4.5)
@@ -381,7 +447,11 @@ GEM
     regexp_parser (2.1.1)
     reline (0.2.4)
       io-console (~> 0.5)
-    rexml (3.2.4)
+    rexml (3.2.5)
+    rspec (3.9.0)
+      rspec-core (~> 3.9.0)
+      rspec-expectations (~> 3.9.0)
+      rspec-mocks (~> 3.9.0)
     rspec-core (3.9.0)
       rspec-support (~> 3.9.0)
     rspec-expectations (3.9.0)
@@ -422,8 +492,21 @@ GEM
     safe_yaml (1.0.5)
     scout_apm (2.6.10)
       parser
-    sentry-raven (2.9.0)
-      faraday (>= 0.7.6, < 1.0)
+    sd_notify (0.1.1)
+    semver2 (3.4.2)
+    sentry-rails (4.6.4)
+      railties (>= 5.0)
+      sentry-ruby-core (~> 4.6.0)
+    sentry-ruby (4.6.4)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      faraday (>= 1.0)
+      sentry-ruby-core (= 4.6.4)
+    sentry-ruby-core (4.6.4)
+      concurrent-ruby
+      faraday
+    shellany (0.0.1)
+    slackistrano (4.0.1)
+      capistrano (>= 3.8.1)
     sprockets (4.0.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -431,7 +514,12 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    thin (1.8.0)
+    sshkit (1.21.2)
+      net-scp (>= 1.1.2)
+      net-ssh (>= 2.8.0)
+    sshkit-interactive (0.3.0)
+      sshkit (~> 1.12)
+    thin (1.8.1)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
       rack (>= 1, < 3)
@@ -462,18 +550,34 @@ PLATFORMS
 
 DEPENDENCIES
   aasm (~> 5.0.8)
+  addressable (>= 2.8.0)
   annotate (~> 3.1.0)
   arel-is-blank (~> 1.0.0)
-  better-faraday (~> 1.0.5)
+  bitzlato!
   bootsnap (>= 1.1.0)
   bullet (~> 5.9)
   bump (~> 0.7)
   bunny (~> 2.14.1)
   cancancan (~> 3.1.0)
+  capistrano
+  capistrano-bundler
+  capistrano-db-tasks
+  capistrano-dotenv
+  capistrano-dotenv-tasks
+  capistrano-git-with-submodules
+  capistrano-rails
+  capistrano-rails-console
+  capistrano-rbenv
+  capistrano-sentry
+  capistrano-shell
+  capistrano-systemd-multiservice!
+  capistrano-tasks!
+  capistrano3-puma!
   cash-addr (~> 0.2.0)
   composite_primary_keys (~> 11.3.1)
   database_cleaner (~> 1.7)
   digest-sha3 (~> 1.1.0)
+  dotenv
   em-synchrony (~> 1.0)
   email_validator (~> 1.6.0)
   enumerize (~> 2.2.2)
@@ -481,10 +585,11 @@ DEPENDENCIES
   eventmachine (~> 1.2)
   factory_bot_rails (~> 5.0, >= 5.0.2)
   faker (~> 1.8)
-  faraday (~> 0.17)
-  faraday_middleware (~> 0.13.1)
+  faraday
+  faraday_middleware
   faye (~> 1.4)
   figaro (~> 1.1.1)
+  foreman
   god (~> 0.13.7)
   grape (~> 1.3.1)
   grape-entity (~> 0.7.1)
@@ -493,12 +598,14 @@ DEPENDENCIES
   grape-swagger-ui (~> 2.2.8)
   grape_logging (~> 1.8.0)
   grape_on_rails_routes (~> 0.3.2)
+  guard
+  guard-rspec!
   hashie (~> 3.6.0)
   hiredis (~> 0.6.0)
+  http_accept_language (~> 2.1)
   influxdb (~> 0.7.0)
   irb
-  irix (~> 2.6.0)
-  jwt (~> 2.2.0)
+  jwt!
   jwt-multisig (~> 1.0.0)
   jwt-rack (~> 0.1.0)
   kaminari (~> 1.2.1)
@@ -506,31 +613,30 @@ DEPENDENCIES
   memoist (~> 0.16.0)
   method-not-implemented (~> 1.0.1)
   mocha (~> 1.8)
-  mysql2 (~> 0.5.2)
   net-http-persistent (~> 3.0.1)
-  peatio (~> 2.6.3)
-  peatio-bitcoincash (~> 2.6.1)
-  peatio-bitgo (~> 2.6.6)
-  peatio-dash (~> 2.6.1)
-  peatio-electrum (~> 2.6.2)
-  peatio-litecoin (~> 2.6.1)
-  peatio-ripple (~> 2.6.1)
+  peatio!
   pg (~> 1.2)
   pry-byebug (~> 3.7)
-  puma (~> 3.12.2)
+  puma (~> 5.0)
   rack-attack (~> 5.4.2)
   rack-cors (~> 1.0.6)
   rails (~> 5.2.4.5)
   ransack (~> 2.3.2)
   rbtree (~> 0.4.2)
   redis (~> 4.1.2)
+  rexml (>= 3.2.5)
+  rspec
   rspec-rails (~> 3.8, >= 3.8.2)
   rspec-retry (~> 0.6)
   rubocop-rspec (~> 1.32)
   ruby-prof (~> 0.17.0)
   safe_yaml (~> 1.0.5)
   scout_apm (~> 2.4)
-  sentry-raven (~> 2.9.0)
+  sd_notify (~> 0.1.1)
+  semver2 (~> 3.4)
+  sentry-rails
+  sentry-ruby
+  slackistrano
   timecop (~> 0.9)
   validate_url (~> 1.0.4)
   validates_lengths_from_database (~> 0.7.0)
@@ -539,7 +645,7 @@ DEPENDENCIES
   webmock (~> 3.5)
 
 RUBY VERSION
-   ruby 2.6.6p146
+   ruby 2.7.4p191
 
 BUNDLED WITH
    2.1.4

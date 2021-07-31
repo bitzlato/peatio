@@ -40,8 +40,15 @@ class Blockchain < ApplicationRecord
     super&.inquiry
   end
 
+  def dummy?
+    client == 'dummy'
+  end
+
   def blockchain_api
     BlockchainService.new(self)
+  rescue StandardError => err
+    report_exception err
+    return
   end
 
   # The latest block which blockchain worker has processed
@@ -53,7 +60,7 @@ end
 # == Schema Information
 # Schema version: 20201125134745
 #
-# Table name: blockchains
+# Table   serverwaname: blockchains
 #
 #  id                   :integer          not null, primary key
 #  key                  :string(255)      not null

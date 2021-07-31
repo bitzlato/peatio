@@ -5,7 +5,7 @@ require 'vault/totp'
 require 'vault/rails'
 
 Vault::Rails.configure do |config|
-  config.enabled = Rails.env.production?
+  config.enabled = ENV.true?('VAULT_ENABLED') || Rails.env.production?
   config.address = ENV.fetch('VAULT_ADDR', 'http://127.0.0.1:8200')
   config.token = ENV['VAULT_TOKEN']
   config.ssl_verify = false

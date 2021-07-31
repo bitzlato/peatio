@@ -12,6 +12,25 @@ describe API::V2::Account::Deposits, type: :request do
     Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Deposit', 'PaymentAddress']}})
   end
 
+  describe 'POST /api/v2/account/deposits/intention' do
+    let(:wallet) { Wallet.deposit.joins(:currencies).find_by(currencies: { id: currency }) }
+    let(:amount) { 12.1231 }
+    it 'requires authentication' do
+      api_post '/api/v2/account/deposits/intention', params: { amount: 123 }
+      expect(response.code).to eq '401'
+    end
+
+    it 'returns with auth token deposits' do
+
+      AMQP::Queue.expects(:enqueue).with(:deposit_intention,  anything, { persistent: true }).once
+      api_post '/api/v2/account/deposits/intention', token: token, params: { currency: :btc, amount: amount }
+
+      expect(response).to be_successful
+      result = JSON.parse(response.body)
+      expect(result['amount']).to eq amount.to_s
+    end
+  end
+
   describe 'GET /api/v2/account/deposits' do
     before do
       create(:deposit_btc, member: member, updated_at: 5.days.ago)

@@ -15,10 +15,13 @@ class Wallet < ApplicationRecord
   # 1** - for deposit wallets.
   # 2** - for fee wallets.
   # 3** - for withdraw wallets (sorted by security hot < warm < cold).
-  ENUMERIZED_KINDS = { deposit: 100, fee: 200, hot: 310, warm: 320, cold: 330 }.freeze
+  #
+  # We use standalone wallet for deposits and withdraws for P2P
+  #
+  ENUMERIZED_KINDS = { deposit: 100, fee: 200, hot: 310, warm: 320, cold: 330, standalone: 400 }.freeze
   enumerize :kind, in: ENUMERIZED_KINDS, scope: true
 
-  SETTING_ATTRIBUTES = %i[ uri secret ].freeze
+  SETTING_ATTRIBUTES = %i[uri secret client_uid save_beneficiary beneficiary_prefix enable_invoice].freeze
   STATES = %w[active disabled retired].freeze
   # active - system use active wallets for all user transactions transfers.
   # retired - system use retired wallet only to accept deposits.
@@ -40,6 +43,7 @@ class Wallet < ApplicationRecord
 
   belongs_to :blockchain, foreign_key: :blockchain_key, primary_key: :key
   has_and_belongs_to_many :currencies
+  has_many :currency_wallets
 
   validates :name,    presence: true, uniqueness: true
   validates :address, presence: true
@@ -57,6 +61,8 @@ class Wallet < ApplicationRecord
   scope :fee,      -> { where(kind: kinds(fee: true, values: true)) }
   scope :withdraw, -> { where(kind: kinds(withdraw: true, values: true)) }
   scope :with_currency, ->(currency) { joins(:currencies).where(currencies: { id: currency }) }
+  scope :with_withdraw_currency, ->(currency) { with_currency(currency).joins(:currency_wallets).where(currencies_wallets: { enable_withdraw: true }) }
+  scope :with_deposit_currency, ->(currency) { with_currency(currency).joins(:currency_wallets).where(currencies_wallets: { enable_deposit: true }) }
   scope :ordered, -> { order(kind: :asc) }
 
   before_validation(on: :create) do
@@ -76,7 +82,7 @@ class Wallet < ApplicationRecord
   end
 
   before_validation do
-    next unless address? && blockchain.blockchain_api.supports_cash_addr_format?
+    next unless address? && blockchain.try(:blockchain_api).try(:supports_cash_addr_format?)
     self.address = CashAddr::Converter.to_cash_address(address)
   end
 
@@ -90,11 +96,11 @@ class Wallet < ApplicationRecord
         .yield_self do |kinds|
           case
           when options.fetch(:deposit, false)
-            kinds.select { |_k, v| v / 100 == 1 }
+            kinds.select { |_k, v| [1,4].include? v / 100 }
           when options.fetch(:fee, false)
             kinds.select { |_k, v| v / 100 == 2 }
           when options.fetch(:withdraw, false)
-            kinds.select { |_k, v| v / 100 == 3 }
+            kinds.select { |_k, v| [3,4].include? v / 100 }
           else
             kinds
           end
@@ -111,12 +117,20 @@ class Wallet < ApplicationRecord
         end
     end
 
+    def deposit_wallets(currency_id)
+      Wallet.active.deposit.with_deposit_currency(currency_id)
+    end
+
     def deposit_wallet(currency_id)
-      Wallet.active_retired.deposit.joins(:currencies).where(currencies: { id: currency_id })
+      deposit_wallets(currency_id).active_retired.take
     end
 
     def active_deposit_wallet(currency_id)
-      Wallet.active.deposit.joins(:currencies).find_by(currencies: { id: currency_id })
+      deposit_wallets(currency_id).take
+    end
+
+    def withdraw_wallet(currency_id)
+      Wallet.active.withdraw.with_withdraw_currency(currency_id).take
     end
 
     def uniq(array)

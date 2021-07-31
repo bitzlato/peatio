@@ -122,8 +122,8 @@ Otherwise we advice to use [microkube based environment](#local-development-envi
 3. Add this to your `/etc/hosts`:
 ```
 127.0.0.1 www.app.local
-127.0.0.1 peatio.app.local
-127.0.0.1 barong.app.local
+<YOUR_LOCAL_IP> peatio.local
+<YOUR_LOCAL_IP> ws.local
 ```
 4. Start rails server `JWT_PUBLIC_KEY=$(cat config/secrets/rsa-key.pub| base64 -w0) rails s -b 0.0.0.0` 
 (`base64 -b0` for macOS)
@@ -186,6 +186,15 @@ You can interact with Peatio through API:
 * Websocket API
 * Event API (AMQP)
 
+## Deployment with capistrano
+
+```
+bundle exec cap production deploy:check 
+scp .env.production app@$PRODUCTION_SERVER:/home/app/peatio/shared/.env
+scp .env.daemons.production app@$PRODUCTION_SERVER:/home/app/peatio/shared/.env.daemons
+bundle exec cap production deploy:check systemd:puma:setup systemd:daemon:setup systemd:amqp_daemon:setup puma:config
+```
+
 ## Getting Involved
 We want to make it super-easy for Peatio users and contributors to talk to us and connect with each other, to share ideas, solve problems and help make Peatio awesome. Here are the main channels we're running currently, we'd love to hear from you on one of them:
 
@@ -228,4 +237,3 @@ Peatio is released under the terms of the [MIT license](http://peatio.mit-licens
 
 [Peatio](http://en.wikipedia.org/wiki/Pixiu) (Chinese: 貔貅) is a Chinese mythical hybrid creature
 considered to be a very powerful protector to practitioners of Feng Shui.
-

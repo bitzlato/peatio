@@ -96,9 +96,9 @@ daemon 'daemon:blockchain',
        script:   'daemons.rb',
        arguments: %w[ blockchain ]
 
-daemon 'daemon:k',
+daemon 'daemon:cron_job',
        script:   'daemons.rb',
-       arguments: %w[ k ]
+       arguments: %w[ cron_job ]
 
 daemon 'daemon:global_state',
        script:   'daemons.rb',

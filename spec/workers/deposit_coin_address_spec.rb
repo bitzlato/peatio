@@ -15,11 +15,21 @@ describe Workers::AMQP::DepositCoinAddress do
 
   subject { member.payment_address(wallet.id).address }
 
+
   it 'raise error on databse connection error' do
-    Member.stubs(:find_by_id).raises(Mysql2::Error::ConnectionError.new(''))
-    expect {
-      Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
-    }.to raise_error Mysql2::Error::ConnectionError
+    if defined? Mysql2
+      Member.stubs(:find_by_id).raises(Mysql2::Error::ConnectionError.new(''))
+      expect {
+        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
+      }.to raise_error Mysql2::Error::ConnectionError
+    end
+
+    if defined? PG
+      Member.stubs(:find_by_id).raises(PG::Error.new(''))
+      expect {
+        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
+      }.to raise_error PG::Error
+    end
   end
 
   context 'wallet service' do

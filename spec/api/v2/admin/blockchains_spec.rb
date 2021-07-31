@@ -391,7 +391,6 @@ describe API::V2::Admin::Blockchains, type: :request do
           expect(Deposits::Coin.where(currency: currency).exists?).to be false
 
           api_post '/api/v2/admin/blockchains/process_block', token: token, params: { block_number: block_number, id: blockchain.id }
-          result = JSON.parse(response.body)
           expect(response).to be_successful
           expect(Deposits::Coin.where(currency: currency).exists?).to be true
         end

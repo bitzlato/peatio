@@ -34,18 +34,15 @@ module API
       end
 
       def set_ets_context!
-        return unless defined?(Raven)
+        return unless defined?(Sentry)
 
         if current_user
-          Raven.user_context(
+          Sentry.set_user(
             email: current_user.email,
             uid: current_user.uid,
             role: current_user.role
           )
         end
-        Raven.tags_context(
-          peatio_version: Peatio::Application::VERSION
-        )
       end
 
       def deposits_must_be_permitted!

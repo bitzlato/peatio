@@ -74,7 +74,7 @@ module API
             deposit.public_send("#{params[:action]}!")
             present deposit, with: API::V2::Admin::Entities::Deposit
           else
-            body errors: ["admin.depodit.cannot_#{params[:action]}"]
+            body errors: ["admin.deposit.cannot_#{params[:action]}"]
             status 422
           end
         end

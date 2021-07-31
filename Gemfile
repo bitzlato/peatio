@@ -3,12 +3,11 @@
 
 source 'https://rubygems.org'
 
-ruby '~> 2.6'
+ruby File.read('.ruby-version')
 
 gem 'ransack', '~> 2.3.2'
 gem 'rails', '~> 5.2.4.5'
-gem 'puma', '~> 3.12.2'
-gem 'mysql2', '~> 0.5.2'
+gem 'puma', '~> 5.0'
 gem 'redis', '~> 4.1.2', require: ['redis', 'redis/connection/hiredis']
 gem 'hiredis', '~> 0.6.0'
 gem 'figaro', '~> 1.1.1'
@@ -26,18 +25,22 @@ gem 'grape-swagger-ui', '~> 2.2.8'
 gem 'grape-swagger-entity', '~> 0.2.5'
 gem 'grape_logging', '~> 1.8.0'
 gem 'rack-attack', '~> 5.4.2'
-gem 'faraday', '~> 0.17'
-gem 'better-faraday', '~> 1.0.5'
-gem 'faraday_middleware', '~> 0.13.1'
+gem 'faraday'
+gem 'faraday_middleware'
 gem 'faye', '~> 1.4'
 gem 'eventmachine', '~> 1.2'
 gem 'em-synchrony', '~> 1.0'
-gem 'jwt', '~> 2.2.0'
+
+# We use 2.3.0.dev for bitzlato client
+# Fill free to update to rubygem version when it will be released
+gem 'jwt', github: 'jwt/ruby-jwt'
+
 gem 'email_validator', '~> 1.6.0'
 gem 'validate_url', '~> 1.0.4'
 gem 'god', '~> 0.13.7', require: false
 gem 'arel-is-blank', '~> 1.0.0'
-gem 'sentry-raven', '~> 2.9.0', require: false
+gem "sentry-ruby"
+gem "sentry-rails"
 gem 'memoist', '~> 0.16.0'
 gem 'method-not-implemented', '~> 1.0.1'
 gem 'validates_lengths_from_database', '~> 0.7.0'
@@ -45,18 +48,22 @@ gem 'jwt-multisig', '~> 1.0.0'
 gem 'cash-addr', '~> 0.2.0', require: 'cash_addr'
 gem 'digest-sha3', '~> 1.1.0'
 gem 'scout_apm', '~> 2.4', require: false
-gem 'peatio', '~> 2.6.3'
-gem 'irix', '~> 2.6.0'
+gem 'peatio', github: 'bitzlato/peatio-core'
 gem 'rack-cors', '~> 1.0.6', require: false
 gem 'jwt-rack', '~> 0.1.0', require: false
 gem 'env-tweaks', '~> 1.0.0'
 gem 'vault', '~> 0.12', require: false
-gem 'vault-rails', git: 'http://github.com/rubykube/vault-rails'
+gem 'vault-rails', github: 'finfex/vault-rails'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'net-http-persistent', '~> 3.0.1'
 gem 'influxdb', '~> 0.7.0'
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
 gem 'composite_primary_keys', '~> 11.3.1'
+gem 'dotenv'
+
+# Security versions of deep dependencies
+gem "addressable", ">= 2.8.0"
+gem "rexml", ">= 3.2.5"
 
 group :development, :test do
   gem 'irb'
@@ -68,9 +75,14 @@ group :development, :test do
 end
 
 group :development do
+  gem 'foreman'
   gem 'annotate',   '~> 3.1.0'
   gem 'ruby-prof',  '~> 0.17.0', require: false
   gem 'listen',     '>= 3.0.5', '< 3.2'
+
+  gem 'rspec'
+  gem 'guard'
+  gem 'guard-rspec', github: 'caspark/guard-rspec' # Use from github to remove rspec < 4.0 dependencies
 end
 
 group :test do
@@ -90,3 +102,28 @@ Dir.glob File.expand_path('../Gemfile.plugin', __FILE__) do |file|
 end
 
 gem "pg", "~> 1.2"
+
+gem "http_accept_language", "~> 2.1"
+
+gem "semver2", "~> 3.4"
+
+group :deploy do
+  gem 'capistrano-dotenv'
+  gem 'capistrano-dotenv-tasks'
+  gem 'capistrano3-puma', github: 'seuros/capistrano-puma'
+  gem 'capistrano', require: false
+  gem 'capistrano-rbenv', require: false
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano-shell', require: false
+  gem 'capistrano-db-tasks', require: false
+  gem 'capistrano-rails-console', require: false
+  gem 'capistrano-tasks', github: 'brandymint/capistrano-tasks', require: false
+  gem 'capistrano-systemd-multiservice', github: 'groovenauts/capistrano-systemd-multiservice', require: false
+  # gem 'capistrano-master-key', require: false, github: 'virgoproz/capistrano-master-key'
+  gem 'capistrano-git-with-submodules'
+  gem 'capistrano-sentry', require: false
+  gem 'slackistrano', require: false
+end
+
+gem "sd_notify", "~> 0.1.1"

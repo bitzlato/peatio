@@ -7,8 +7,38 @@ module API
   module V2
     module Account
       class Deposits < Grape::API
-
         before { deposits_must_be_permitted! }
+
+        desc 'Create deposit intention',
+          success: API::V2::Entities::Deposit
+        params do
+          requires :currency,
+                   type: String,
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
+                   desc: 'Currency code'
+          requires :amount,
+                   type: BigDecimal,
+                   desc: 'The deposit amount.'
+        end
+
+        post '/deposits/intention' do
+          currency = Currency.find(params[:currency])
+
+          unless currency.deposit_enabled?
+            error!({ errors: ['management.currency.deposit_disabled'] }, 422)
+          end
+
+          deposit = Deposit.create!(
+            type: Deposit.name,
+            member: current_user,
+            currency: currency,
+            amount: params[:amount]
+          )
+          deposit.enqueue_deposit_intention!
+
+
+          present deposit, with: API::V2::Entities::Deposit
+        end
 
         desc 'Get your deposits history.',
           is_array: true,

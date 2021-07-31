@@ -31,10 +31,14 @@ Signal.trap("TERM", &terminate)
 workers = []
 ARGV.each do |id|
   worker = AMQP::Config.binding_worker(id)
-  queue  = ch.queue *AMQP::Config.binding_queue(id)
+  queue  = ch.queue(*AMQP::Config.binding_queue(id))
+
+  Sentry.configure_scope do |scope|
+    scope.set_tags(amqp_worker: worker.class)
+  end if defined? Sentry
 
   if args = AMQP::Config.binding_exchange(id)
-    x = ch.send *args
+    x = ch.send(*args)
 
     case args.first
     when 'direct'
@@ -54,6 +58,9 @@ ARGV.each do |id|
   # Enable manual acknowledge mode by setting manual_ack: true.
   queue.subscribe manual_ack: true do |delivery_info, metadata, payload|
     logger.info { "Received: #{payload}" }
+    Sentry.configure_scope do |scope|
+      scope.set_context('amqp_message', { payload: payload, metadata: metadata, delivery_info: delivery_info })
+    end if defined? Sentry
     begin
 
       # Invoke Worker#process with floating number of arguments.

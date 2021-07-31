@@ -13,6 +13,11 @@ module API
       default_format :json
 
       helpers V2::Helpers
+      helpers V2::LocaleHelpers
+
+      before do
+        I18n.locale = request_locale || I18n.locale
+      end
 
       do_not_route_options!
 

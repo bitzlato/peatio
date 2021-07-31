@@ -27,6 +27,67 @@ describe WalletService do
     Blockchain.any_instance.stubs(:blockchain_api).returns(BlockchainService.new(blockchain))
   end
 
+  context :create_incentive_deposit! do
+    let(:wallet) { create :wallet, :fake_hot }
+    let(:amount) { 123 }
+
+    before do
+      # TODO Fix  undefined method `stub_const'
+      # stub_const('WalletService::ALLOWED_INCENTIVE_GATEWAY','fake')
+      WalletService::ALLOWED_INCENTIVE_GATEWAY = 'fake'
+    end
+
+    it 'created accepted deposit' do
+      expect(
+        service.create_incentive_deposit!(member: member, amount: amount, currency: currency)
+      ).to be_accepted
+    end
+  end
+
+  context :create_invoice! do
+    let(:deposit) { create :deposit_btc }
+    let(:intention_id) { 123 }
+    let(:wallet) { create :wallet, :fake_hot }
+    let(:fake_wallet_adapter) { Bitzlato::Wallet.new }
+    before do
+      Bitzlato::Wallet.any_instance.stubs(:create_invoice!).returns({ amount: deposit.amount, id: intention_id, links: {}})
+      Wallet.any_instance.stubs(:settings).returns({ key: {}, uid: :some_acount_id, uri: 'uri' })
+    end
+
+    it 'calls extrenal service and save intention_id' do
+      service.create_invoice! deposit
+      expect(deposit.intention_id).to eq intention_id.to_s
+      expect(deposit).to be_invoiced
+    end
+  end
+
+  context :poll_deposits! do
+    let(:member) { create(:member) }
+    let(:amount) { 1.12 }
+    let(:intention_id) { 12 }
+    let(:username) { 'ivan' }
+    let(:wallet) { create :wallet, :fake_hot, save_beneficiary: true }
+    let!(:deposit) { create :deposit_btc, amount: amount, currency: currency, intention_id: intention_id, aasm_state: :invoiced }
+
+    let(:intentions) { [
+      { id: intention_id, amount: amount, address: username, currency: currency.id }
+    ] }
+
+    before do
+      service.adapter.expects(:poll_deposits).returns(intentions)
+    end
+
+    it 'accepts deposit' do
+      service.poll_deposits!
+      expect(deposit.reload).to be_accepted
+    end
+
+    it 'creates beneficiary' do
+      service.poll_deposits!
+      expect(deposit.account.member.beneficiaries.count).to eq(1)
+    end
+  end
+
   context :create_address! do
     let(:account) { create(:member, :level_3, :barong).get_account(currency)  }
     let(:blockchain_address) do

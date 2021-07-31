@@ -19,7 +19,7 @@ module Bench
         @config = config
         @number = config[:number].to_i
         @step = config.fetch(:step, 10000).to_i
-        @markets = ::Market.where(id: config[:markets].split(',').map(&:squish).reject(&:blank?))
+        @markets = ::Market.where(symbol: config[:markets].split(',').map(&:squish).reject(&:blank?)).presence || raise("No markets found #{config[:markets]}")
       end
 
       def generate!(members = nil)

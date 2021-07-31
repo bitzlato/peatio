@@ -18,8 +18,12 @@ namespace :seed do
   task currencies: :environment do
     Currency.transaction do
       YAML.load_file(Rails.root.join('config/seed/currencies.yml')).each do |hash|
-        next if Currency.exists?(id: hash.fetch('id'))
-        Currency.create!(hash)
+        currency = Currency.find_by(id: hash.fetch('id'))
+        if currency.present?
+          currency.update! hash
+        else
+          Currency.create!(hash)
+        end
       end
     end
   end
@@ -50,7 +54,7 @@ namespace :seed do
       YAML.load_file(Rails.root.join('config/seed/markets.yml'))
         .map(&:symbolize_keys)
         .each do |hash|
-          next if Market.exists?(id: hash.fetch(:id))
+          next if Market.exists?(symbol: hash.fetch(:id))
           # For compatibility with old markets.yml
           # If state is not defined set it from enabled.
           enabled = hash.delete(:enabled)
@@ -65,7 +69,8 @@ namespace :seed do
                                    min_ask_price:  :min_price,
                                    max_bid_price:  :max_price,
                                    min_ask_amount: :min_amount,
-                                   min_bid_amount: :min_amount }
+                                   min_bid_amount: :min_amount,
+                                   id: :symbol }
 
           legacy_keys_mappings.each do |old_key, new_key|
             legacy_key_value = hash.delete(old_key)
@@ -89,11 +94,15 @@ namespace :seed do
   task wallets: :environment do
     Wallet.transaction do
       YAML.load_file(Rails.root.join('config/seed/wallets.yml')).each do |hash|
-        next if Wallet.exists?(name: hash.fetch('name'))
         if hash['currency_ids'].is_a?(String)
           hash['currency_ids'] = hash['currency_ids'].split(',')
         end
-        Wallet.create!(hash)
+        wallet = Wallet.find_by(name: hash.fetch('name'))
+        if wallet.present?
+          wallet.update! hash
+        else
+          Wallet.create!(hash)
+        end
       end
     end
   end
