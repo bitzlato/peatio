@@ -96,34 +96,13 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.accounts (
-    id integer NOT NULL,
-    member_id integer NOT NULL,
+    member_id bigint NOT NULL,
     currency_id character varying(10) NOT NULL,
     balance numeric(32,16) DEFAULT 0 NOT NULL,
     locked numeric(32,16) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
-
-
---
--- Name: accounts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.accounts_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: accounts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.accounts_id_seq OWNED BY public.accounts.id;
 
 
 --
@@ -183,11 +162,11 @@ CREATE TABLE public.ar_internal_metadata (
 --
 
 CREATE TABLE public.assets (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     code integer NOT NULL,
     currency_id character varying NOT NULL,
     reference_type character varying,
-    reference_id integer,
+    reference_id bigint,
     debit numeric(32,16) DEFAULT 0 NOT NULL,
     credit numeric(32,16) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -258,18 +237,18 @@ ALTER SEQUENCE public.beneficiaries_id_seq OWNED BY public.beneficiaries.id;
 --
 
 CREATE TABLE public.blockchains (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     key character varying NOT NULL,
     name character varying,
     client character varying NOT NULL,
-    server character varying,
     height bigint NOT NULL,
     explorer_address character varying,
     explorer_transaction character varying,
     min_confirmations integer DEFAULT 6 NOT NULL,
     status character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    server_encrypted character varying(1024)
 );
 
 
@@ -332,7 +311,7 @@ CREATE TABLE public.currencies (
 
 CREATE TABLE public.currencies_wallets (
     currency_id character varying,
-    wallet_id integer,
+    wallet_id bigint,
     enable_deposit boolean DEFAULT true NOT NULL,
     enable_withdraw boolean DEFAULT true NOT NULL,
     use_in_balance boolean DEFAULT true NOT NULL
@@ -344,8 +323,8 @@ CREATE TABLE public.currencies_wallets (
 --
 
 CREATE TABLE public.deposits (
-    id integer NOT NULL,
-    member_id integer NOT NULL,
+    id bigint NOT NULL,
+    member_id bigint NOT NULL,
     currency_id character varying(10) NOT NULL,
     amount numeric(32,16) NOT NULL,
     fee numeric(32,16) NOT NULL,
@@ -363,7 +342,8 @@ CREATE TABLE public.deposits (
     from_addresses text,
     transfer_type integer,
     data json,
-    intention_id character varying
+    intention_id character varying,
+    error json
 );
 
 
@@ -428,11 +408,11 @@ ALTER SEQUENCE public.engines_id_seq OWNED BY public.engines.id;
 --
 
 CREATE TABLE public.expenses (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     code integer NOT NULL,
     currency_id character varying NOT NULL,
     reference_type character varying,
-    reference_id integer,
+    reference_id bigint,
     debit numeric(32,16) DEFAULT 0 NOT NULL,
     credit numeric(32,16) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -536,12 +516,12 @@ ALTER SEQUENCE public.jobs_id_seq OWNED BY public.jobs.id;
 --
 
 CREATE TABLE public.liabilities (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     code integer NOT NULL,
     currency_id character varying NOT NULL,
-    member_id integer,
+    member_id bigint,
     reference_type character varying,
-    reference_id integer,
+    reference_id bigint,
     debit numeric(32,16) DEFAULT 0 NOT NULL,
     credit numeric(32,16) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -617,8 +597,8 @@ ALTER SEQUENCE public.markets_id_seq OWNED BY public.markets.id;
 --
 
 CREATE TABLE public.members (
-    id integer NOT NULL,
-    email character varying NOT NULL,
+    id bigint NOT NULL,
+    email character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     uid character varying(32) NOT NULL,
@@ -655,7 +635,7 @@ ALTER SEQUENCE public.members_id_seq OWNED BY public.members.id;
 --
 
 CREATE TABLE public.operations_accounts (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     code integer NOT NULL,
     type character varying(10) NOT NULL,
     kind character varying(30) NOT NULL,
@@ -692,7 +672,7 @@ ALTER SEQUENCE public.operations_accounts_id_seq OWNED BY public.operations_acco
 --
 
 CREATE TABLE public.orders (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     bid character varying(10) NOT NULL,
     ask character varying(10) NOT NULL,
     market_id character varying(20) NOT NULL,
@@ -701,7 +681,7 @@ CREATE TABLE public.orders (
     origin_volume numeric(32,16) NOT NULL,
     state integer NOT NULL,
     type character varying(8) NOT NULL,
-    member_id integer NOT NULL,
+    member_id bigint NOT NULL,
     created_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL,
     ord_type character varying(30) NOT NULL,
@@ -713,7 +693,9 @@ CREATE TABLE public.orders (
     taker_fee numeric(17,16) DEFAULT 0 NOT NULL,
     uuid uuid DEFAULT gen_random_uuid() NOT NULL,
     remote_id character varying,
-    market_type character varying DEFAULT 'spot'::character varying NOT NULL
+    market_type character varying DEFAULT 'spot'::character varying NOT NULL,
+    trigger_price numeric(32,16),
+    triggered_at timestamp without time zone
 );
 
 
@@ -742,7 +724,7 @@ ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
 --
 
 CREATE TABLE public.payment_addresses (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     address character varying(95),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
@@ -812,16 +794,16 @@ ALTER SEQUENCE public.refunds_id_seq OWNED BY public.refunds.id;
 --
 
 CREATE TABLE public.revenues (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     code integer NOT NULL,
     currency_id character varying NOT NULL,
     reference_type character varying,
-    reference_id integer,
+    reference_id bigint,
     debit numeric(32,16) DEFAULT 0 NOT NULL,
     credit numeric(32,16) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    member_id integer
+    member_id bigint
 );
 
 
@@ -860,7 +842,7 @@ CREATE TABLE public.schema_migrations (
 
 CREATE TABLE public.stats_member_pnl (
     id bigint NOT NULL,
-    member_id integer NOT NULL,
+    member_id bigint NOT NULL,
     pnl_currency_id character varying(10) NOT NULL,
     currency_id character varying(10) NOT NULL,
     total_credit numeric(48,16) DEFAULT 0,
@@ -934,16 +916,16 @@ ALTER SEQUENCE public.stats_member_pnl_idx_id_seq OWNED BY public.stats_member_p
 --
 
 CREATE TABLE public.trades (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     price numeric(32,16) NOT NULL,
     amount numeric(32,16) NOT NULL,
-    maker_order_id integer NOT NULL,
-    taker_order_id integer NOT NULL,
+    maker_order_id bigint NOT NULL,
+    taker_order_id bigint NOT NULL,
     market_id character varying(20) NOT NULL,
     created_at timestamp(3) without time zone NOT NULL,
     updated_at timestamp(3) without time zone NOT NULL,
-    maker_id integer NOT NULL,
-    taker_id integer NOT NULL,
+    maker_id bigint NOT NULL,
+    taker_id bigint NOT NULL,
     total numeric(32,16) DEFAULT 0 NOT NULL,
     taker_type character varying(20) DEFAULT ''::character varying NOT NULL,
     market_type character varying DEFAULT 'spot'::character varying NOT NULL
@@ -1051,7 +1033,7 @@ ALTER SEQUENCE public.transactions_id_seq OWNED BY public.transactions.id;
 --
 
 CREATE TABLE public.transfers (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     key character varying(30) NOT NULL,
     description character varying(255) DEFAULT ''::character varying,
     created_at timestamp(3) without time zone NOT NULL,
@@ -1081,45 +1063,11 @@ ALTER SEQUENCE public.transfers_id_seq OWNED BY public.transfers.id;
 
 
 --
--- Name: triggers; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.triggers (
-    id bigint NOT NULL,
-    order_id bigint NOT NULL,
-    order_type smallint NOT NULL,
-    value bytea NOT NULL,
-    state smallint DEFAULT 0 NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: triggers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.triggers_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: triggers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.triggers_id_seq OWNED BY public.triggers.id;
-
-
---
 -- Name: wallets; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.wallets (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying(64),
     address character varying NOT NULL,
     status character varying(32),
@@ -1131,6 +1079,7 @@ CREATE TABLE public.wallets (
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
+    plain_settings json,
     enable_invoice boolean DEFAULT false NOT NULL
 );
 
@@ -1228,8 +1177,8 @@ ALTER SEQUENCE public.withdraw_limits_id_seq OWNED BY public.withdraw_limits.id;
 --
 
 CREATE TABLE public.withdraws (
-    id integer NOT NULL,
-    member_id integer NOT NULL,
+    id bigint NOT NULL,
+    member_id bigint NOT NULL,
     currency_id character varying(10) NOT NULL,
     amount numeric(32,16) NOT NULL,
     fee numeric(32,16) NOT NULL,
@@ -1247,7 +1196,8 @@ CREATE TABLE public.withdraws (
     error json,
     beneficiary_id bigint,
     transfer_type integer,
-    metadata json
+    metadata json,
+    remote_id character varying
 );
 
 
@@ -1269,13 +1219,6 @@ CREATE SEQUENCE public.withdraws_id_seq
 --
 
 ALTER SEQUENCE public.withdraws_id_seq OWNED BY public.withdraws.id;
-
-
---
--- Name: accounts id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.accounts ALTER COLUMN id SET DEFAULT nextval('public.accounts_id_seq'::regclass);
 
 
 --
@@ -1440,13 +1383,6 @@ ALTER TABLE ONLY public.transfers ALTER COLUMN id SET DEFAULT nextval('public.tr
 
 
 --
--- Name: triggers id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.triggers ALTER COLUMN id SET DEFAULT nextval('public.triggers_id_seq'::regclass);
-
-
---
 -- Name: wallets id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1479,7 +1415,7 @@ ALTER TABLE ONLY public.withdraws ALTER COLUMN id SET DEFAULT nextval('public.wi
 --
 
 ALTER TABLE ONLY public.accounts
-    ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT accounts_pkey PRIMARY KEY (currency_id, member_id);
 
 
 --
@@ -1688,14 +1624,6 @@ ALTER TABLE ONLY public.transactions
 
 ALTER TABLE ONLY public.transfers
     ADD CONSTRAINT transfers_pkey PRIMARY KEY (id);
-
-
---
--- Name: triggers triggers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.triggers
-    ADD CONSTRAINT triggers_pkey PRIMARY KEY (id);
 
 
 --
@@ -2256,27 +2184,6 @@ CREATE UNIQUE INDEX index_transfers_on_key ON public.transfers USING btree (key)
 
 
 --
--- Name: index_triggers_on_order_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_triggers_on_order_id ON public.triggers USING btree (order_id);
-
-
---
--- Name: index_triggers_on_order_type; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_triggers_on_order_type ON public.triggers USING btree (order_type);
-
-
---
--- Name: index_triggers_on_state; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_triggers_on_state ON public.triggers USING btree (state);
-
-
---
 -- Name: index_wallets_on_kind; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2533,9 +2440,17 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210302120855'),
 ('20210311145918'),
 ('20210317141836'),
+('20210414105529'),
 ('20210416125059'),
+('20210417120111'),
+('20210426083359'),
+('20210502125244'),
+('20210512120717'),
+('20210526072124'),
 ('20210604053235'),
 ('20210714075758'),
-('20210722125206');
+('20210721093857'),
+('20210722125206'),
+('20210727101029');
 
 
