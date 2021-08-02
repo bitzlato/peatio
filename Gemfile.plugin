@@ -1,3 +1,4 @@
+source 'https://rubygems.org'
 # List your plugins here.
 
 # Commented gems we don't use

@@ -84,6 +84,7 @@ describe API::V2::Admin::Engines, type: :request do
         uid: 'UID123456',
         key: 'your_key',
         secret: 'your_secret',
+        state: Engine::STATES.values[0],
         data: { some_data: 'some data' }
       }
     end
@@ -94,6 +95,7 @@ describe API::V2::Admin::Engines, type: :request do
       expect(response).to be_successful
       expect(result['name']).to eq 'new-engine'
       expect(result['data'].blank?).to eq true
+      expect(result['state']).to eq 'online'
 
       api_post '/api/v2/admin/engines/new', token: token, params: valid_params
       expect(response).to have_http_status 422
@@ -131,6 +133,13 @@ describe API::V2::Admin::Engines, type: :request do
 
       expect(response).to be_successful
       expect(Engine.first.secret).to eq('my_secret')
+    end
+
+    it 'updates uid' do
+      api_post '/api/v2/admin/engines/update', params: { id: Engine.first.id, uid: 'ID871263897' }, token: token
+
+      expect(response).to be_successful
+      expect(Engine.first.uid).to eq('ID871263897')
     end
 
     it 'checkes required params' do

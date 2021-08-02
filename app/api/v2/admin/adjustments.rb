@@ -68,6 +68,7 @@ module API
                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:category][:desc] }
             requires :amount,
                     type: { value: BigDecimal, message: 'admin.adjustment.non_decimal_amount' },
+                    allow_blank: false,
                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:amount][:desc] }
             requires :currency_id,
                     type: String,
@@ -129,13 +130,13 @@ module API
             admin_authorize! :update, ::Adjustment
             adjustment = Adjustment.find(params[:id])
 
-            if adjustment.amount < 0
+            if adjustment.amount.negative?
               account_number_hash = ::Operations.split_account_number(account_number: adjustment.receiving_account_number)
               member = Member.find_by(uid: account_number_hash[:member_uid])
               if member.present?
                 balance = member.get_account(account_number_hash[:currency_id]).balance
 
-                if adjustment.amount.abs() > balance
+                if adjustment.amount.abs() > balance && params[:action] != 'reject'
                   error!({ errors: ['admin.adjustment.user_insufficient_balance'] }, 422)
                 end
               end
