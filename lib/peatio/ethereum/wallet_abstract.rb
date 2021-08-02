@@ -117,7 +117,7 @@ module Ethereum
 
       amount = convert_to_base_unit(transaction.amount)
 
-      if transaction.options.present?
+      if transaction.options.present? && transaction.options.dig(:gas_price).present?
         options[:gas_price] = transaction.options[:gas_price]
       else
         options[:gas_price] = calculate_gas_price(options)
