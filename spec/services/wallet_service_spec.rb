@@ -34,6 +34,7 @@ describe WalletService do
     before do
       # TODO Fix  undefined method `stub_const'
       # stub_const('WalletService::ALLOWED_INCENTIVE_GATEWAY','fake')
+      WalletService.send(:remove_const, :ALLOWED_INCENTIVE_GATEWAY)
       WalletService::ALLOWED_INCENTIVE_GATEWAY = 'fake'
     end
 
@@ -45,7 +46,7 @@ describe WalletService do
   end
 
   context :create_invoice! do
-    let(:deposit) { create :deposit_btc }
+    let(:deposit) { create :deposit_btc, address: 'fake' }
     let(:intention_id) { 123 }
     let(:wallet) { create :wallet, :fake_hot }
     let(:fake_wallet_adapter) { Bitzlato::Wallet.new }
@@ -67,7 +68,7 @@ describe WalletService do
     let(:intention_id) { 12 }
     let(:username) { 'ivan' }
     let(:wallet) { create :wallet, :fake_hot, save_beneficiary: true }
-    let!(:deposit) { create :deposit_btc, amount: amount, currency: currency, intention_id: intention_id, aasm_state: :invoiced }
+    let!(:deposit) { create :deposit_btc, amount: amount, address: 'fake', currency: currency, intention_id: intention_id, aasm_state: :invoiced }
 
     let(:intentions) { [
       { id: intention_id, amount: amount, address: username, currency: currency.id }
