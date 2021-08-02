@@ -212,8 +212,14 @@ class Deposit < ApplicationRecord
   def wallet_state
     if currency.coin?
       payment_address = PaymentAddress.find_by_address(address)
-      # In case when wallet was deleted and payment address still exists in DB
-      payment_address.wallet.present? ? payment_address.wallet.status : ''
+
+      if payment_address.present?
+        # In case when wallet was deleted and payment address still exists in DB
+        return payment_address.wallet.present? ? payment_address.wallet.status : ''
+      else
+        # Some kinds of gateways ('dummy' for example) does not create payment address
+        Wallet.active_deposit_wallet(currency_id)
+      end
     else
       ''
     end
