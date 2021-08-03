@@ -454,8 +454,8 @@ ActiveRecord::Schema.define(version: 2021_08_03_084921) do
     t.integer "kind", null: false
     t.string "settings_encrypted", limit: 1024
     t.jsonb "balance"
-    t.boolean "enable_invoice", default: false, null: false
     t.json "plain_settings"
+    t.boolean "enable_invoice", default: false, null: false
     t.index ["kind"], name: "index_wallets_on_kind"
     t.index ["status"], name: "index_wallets_on_status"
   end

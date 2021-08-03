@@ -180,6 +180,7 @@ describe Ethereum::Eth::Blockchain do
           :to_address=>"0xe3cb6897d83691a8eb8458140a1941ce1d6e6daa",
           :from_addresses=>['0xb3ebc7b5b631e8d145f383c8cd07f0f00dd56a30'],
           :txout=>26,
+          :fee => '0.000121',
           :block_number=>2621840,
           :status=>"pending",
           :currency_id=>eth.id}]
@@ -207,6 +208,7 @@ describe Ethereum::Eth::Blockchain do
           :from_addresses=>['0x31b98d14007bdee637298086988a0bbd31184523'],
           :txout=>13,
           :block_number=>2621842,
+          :fee => '0.000021',
           :status=>"pending",
           :currency_id=>eth.id},
          {:hash=>"0x826555325cec51c4d39b327e563ce3e8ee87e27be5911383f528724a62f0da5d",
@@ -239,6 +241,7 @@ describe Ethereum::Eth::Blockchain do
           :from_addresses=>['0x210169700dd7131df7fc4885804a0c92c45e63f6'],
           :txout=>131,
           :block_number=>8292243,
+          :fee => '0.000021',
           :status=>"pending",
           :currency_id=>eth.id},
          {:hash=>"0xeb92797eb91f53ce7bb68abaf3fd3198980d971dd42f9fcb6eb1272ef3ef2a0e",
@@ -291,7 +294,7 @@ describe Ethereum::Eth::Blockchain do
             :txout=>39,
             :block_number=>2621840,
             :status=>"success",
-            :currency_id=>trst.id
+            :currency_id=>trst.id,
           },
           {
             :hash=>"0xb60e22c6eed3dc8cd7bc5c7e38c50aa355c55debddbff5c1c4837b995b8ee96d",
@@ -300,6 +303,7 @@ describe Ethereum::Eth::Blockchain do
             :from_addresses=>['0xb3ebc7b5b631e8d145f383c8cd07f0f00dd56a30'],
             :txout=>26,
             :block_number=>2621840,
+            :fee => '0.000121',
             :status=>"pending",
             :currency_id=>eth.id
           }
@@ -327,6 +331,7 @@ describe Ethereum::Eth::Blockchain do
           :from_addresses=>['0xb3ebc7b5b631e8d145f383c8cd07f0f00dd56a30'],
           :txout=>26,
           :block_number=>2621840,
+          :fee => '0.000121',
           :status=>"pending",
           :currency_id=>eth.id}]
       end
@@ -359,6 +364,7 @@ describe Ethereum::Eth::Blockchain do
           :txout=>26,
           :amount=>1.to_d,
           :block_number=>2621840,
+          :fee => 0.000121,
           :currency_id=>eth.id,
           :status=>'pending'}]
       end
