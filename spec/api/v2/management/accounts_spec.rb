@@ -71,7 +71,7 @@ describe API::V2::Management::Accounts, type: :request do
 
     it 'contains the correct response data' do
       request
-      expect(JSON.parse(response.body).map { |x| x.fetch('balance').to_f }).to eq Account.pluck(:balance).map(&:to_f)
+      expect(JSON.parse(response.body).map { |x| x.fetch('balance').to_f }.sort).to eq Account.pluck(:balance).map(&:to_f).sort
     end
   end
 end
