@@ -200,7 +200,8 @@ module Ethereum
           txout:          block_txn.fetch('transactionIndex').to_i(16),
           block_number:   block_txn.fetch('blockNumber').to_i(16),
           currency_id:    @eth.fetch(:id),
-          status:         transaction_status(block_txn)
+          status:         transaction_status(block_txn),
+          fee:            convert_from_base_unit(block_txn['gasPrice'].hex*block_txn['gas'].hex, @eth)
         }
       ]
     end

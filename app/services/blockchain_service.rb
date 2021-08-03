@@ -69,7 +69,7 @@ class BlockchainService
 
   def update_fees!(block)
     block.each do |tx|
-      Transaction.where(currency_id: transaction.currency_id, txid: transaction.hash, fee: nil).update_all fee: transaction.fee if transaction.fee.present?
+      Transaction.where(currency_id: tx.currency_id, txid: tx.hash, fee: nil).update_all fee: tx.fee if tx.fee.present?
     end
   end
 
