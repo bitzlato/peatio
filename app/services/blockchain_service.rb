@@ -49,6 +49,8 @@ class BlockchainService
     block = @adapter.fetch_block!(block_number)
     deposits = filter_deposits(block)
     withdrawals = filter_withdrawals(block)
+
+    update_fees!(block)
     # TODO: Process Transactions with `pending` status
 
     accepted_deposits = []
@@ -63,6 +65,12 @@ class BlockchainService
   # Resets current cached state.
   def reset!
     @latest_block_number = nil
+  end
+
+  def update_fees!(block)
+    block.each do |tx|
+      Transaction.where(currency_id: transaction.currency_id, txid: transaction.hash, fee: nil).update_all fee: transaction.fee if transaction.fee.present?
+    end
   end
 
   def update_height(block_number)
