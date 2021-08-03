@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_03_084921) do
+ActiveRecord::Schema.define(version: 2021_08_03_134756) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -427,6 +427,8 @@ ActiveRecord::Schema.define(version: 2021_08_03_084921) do
     t.datetime "updated_at", null: false
     t.decimal "fee", precision: 32, scale: 16
     t.string "fee_currency_id"
+    t.bigint "deposit_id"
+    t.bigint "deposit_spread_id"
     t.index ["currency_id", "txid"], name: "index_transactions_on_currency_id_and_txid", unique: true
     t.index ["currency_id"], name: "index_transactions_on_currency_id"
     t.index ["reference_type", "reference_id"], name: "index_transactions_on_reference_type_and_reference_id"
