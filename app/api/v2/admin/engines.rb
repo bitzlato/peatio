@@ -49,6 +49,11 @@ module API
                    desc: -> { 'Credentials for remote engine' }
           optional :secret,
                    desc: -> { 'Credentials for remote engine' }
+          optional :state,
+                   type: { value: Integer, message: 'admin.engine.non_integer_state' },
+                   values: { value: ::Engine::STATES.values, message: 'admin.engine.invalid_state' },
+                   default: Engine::STATES[:online],
+                   desc: -> { API::V2::Admin::Entities::Engine.documentation[:state][:desc] }
           optional :data,
                    desc: -> { 'Metadata for engine' }
         end
@@ -75,6 +80,8 @@ module API
                    desc: -> { API::V2::Admin::Entities::Engine.documentation[:name][:desc] }
           optional :driver,
                    desc: -> { API::V2::Admin::Entities::Engine.documentation[:driver][:desc] }
+          optional :uid,
+                   desc: -> { API::V2::Admin::Entities::Engine.documentation[:uid][:desc] }
           optional :key,
                    desc: -> { 'Credentials for remote engine' }
           optional :secret,

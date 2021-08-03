@@ -23,6 +23,7 @@ describe WalletService do
                      .returns(fake_wallet_adapter.class)
                      .at_least_once
 
+
     Blockchain.any_instance.stubs(:blockchain_api).returns(BlockchainService.new(blockchain))
   end
 
@@ -33,6 +34,7 @@ describe WalletService do
     before do
       # TODO Fix  undefined method `stub_const'
       # stub_const('WalletService::ALLOWED_INCENTIVE_GATEWAY','fake')
+      WalletService.send(:remove_const, :ALLOWED_INCENTIVE_GATEWAY)
       WalletService::ALLOWED_INCENTIVE_GATEWAY = 'fake'
     end
 
@@ -44,7 +46,7 @@ describe WalletService do
   end
 
   context :create_invoice! do
-    let(:deposit) { create :deposit_btc }
+    let(:deposit) { create :deposit_btc, address: 'fake' }
     let(:intention_id) { 123 }
     let(:wallet) { create :wallet, :fake_hot }
     let(:fake_wallet_adapter) { Bitzlato::Wallet.new }
@@ -66,7 +68,7 @@ describe WalletService do
     let(:intention_id) { 12 }
     let(:username) { 'ivan' }
     let(:wallet) { create :wallet, :fake_hot, save_beneficiary: true }
-    let!(:deposit) { create :deposit_btc, amount: amount, currency: currency, intention_id: intention_id, aasm_state: :invoiced }
+    let!(:deposit) { create :deposit_btc, amount: amount, address: 'fake', currency: currency, intention_id: intention_id, aasm_state: :invoiced }
 
     let(:intentions) { [
       { id: intention_id, amount: amount, address: username, currency: currency.id }
@@ -151,14 +153,16 @@ describe WalletService do
           [{ address: 'destination-wallet-1',
             balance: 8.8,
             max_balance: 10,
-            min_collection_amount: 1 }]
+            min_collection_amount: 1,
+            plain_settings: { external_wallet_id: 1 }}]
         end
 
         let(:expected_spread) do
           [{ to_address: 'destination-wallet-1',
              status: 'pending',
              amount: deposit.amount,
-             currency_id: currency.id }.as_json].map(&:symbolize_keys)
+             currency_id: currency.id,
+             options: { external_wallet_id: 1 } }.as_json].map(&:symbolize_keys)
         end
 
         subject { service.send(:spread_between_wallets, deposit, destination_wallets) }
@@ -584,6 +588,13 @@ describe WalletService do
   end
 
   context :spread_deposit do
+    before do
+      Peatio::Blockchain.registry.expects(:[])
+                        .with(:bitcoin)
+                        .returns(fake_blockchain_adapter.class)
+                        .at_least_once
+    end
+
     let!(:deposit_wallet) { create(:wallet, :fake_deposit) }
     let!(:hot_wallet) { create(:wallet, :fake_hot) }
     let!(:cold_wallet) { create(:wallet, :fake_cold) }
@@ -609,7 +620,7 @@ describe WalletService do
       end
 
       it 'spreads everything to cold wallet' do
-        expect(Wallet.active.withdraw.joins(:currencies).where(currencies: { id: deposit.currency_id }).count).to eq 2
+        expect(Wallet.active_retired.withdraw.joins(:currencies).where(currencies: { id: deposit.currency_id }).count).to eq 2
 
         expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
         expect(subject).to all(be_a(Peatio::Transaction))
@@ -624,7 +635,7 @@ describe WalletService do
       end
 
       it 'skips warm wallet and spreads everything to cold wallet' do
-        expect(Wallet.active.withdraw.joins(:currencies).where(currencies: { id: deposit.currency_id }).count).to eq 3
+        expect(Wallet.active_retired.withdraw.joins(:currencies).where(currencies: { id: deposit.currency_id }).count).to eq 3
 
         expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
         expect(subject).to all(be_a(Peatio::Transaction))
@@ -716,6 +727,13 @@ describe WalletService do
   end
 
   context :collect_deposit do
+    before do
+      Peatio::Blockchain.registry.expects(:[])
+                        .with(:bitcoin)
+                        .returns(fake_blockchain_adapter.class)
+                        .at_least_once
+    end
+
     let!(:deposit_wallet) { create(:wallet, :fake_deposit) }
     let!(:hot_wallet) { create(:wallet, :fake_hot) }
     let!(:cold_wallet) { create(:wallet, :fake_cold) }
@@ -792,6 +810,13 @@ describe WalletService do
   end
 
   context :deposit_collection_fees do
+    before do
+      Peatio::Blockchain.registry.expects(:[])
+                        .with(:bitcoin)
+                        .returns(fake_blockchain_adapter.class)
+                        .at_least_once
+    end
+
     let!(:fee_wallet) { create(:wallet, :fake_fee) }
     let!(:deposit_wallet) { create(:wallet, :fake_deposit) }
 
@@ -804,7 +829,8 @@ describe WalletService do
     let(:spread_deposit) do
       [Peatio::Transaction.new(to_address: 'fake-cold',
                                amount: '2.0',
-                               currency_id: currency.id)]
+                               currency_id: currency.id,
+                               options: { external_wallet_id: 1})]
     end
 
     let(:transactions) do
@@ -827,6 +853,24 @@ describe WalletService do
         expect(subject).to contain_exactly(*transactions)
         expect(subject).to all(be_a(Peatio::Transaction))
         deposit.spread.map { |s| s.key?(:options) }
+        expect(deposit.spread[0].fetch(:options)).to include :external_wallet_id
+      end
+    end
+
+    context 'Adapter collect fees for erc20 transaction with parent_id configuration' do
+      let(:currency) { Currency.find('trst') }
+
+      subject { service.deposit_collection_fees!(deposit, spread_deposit) }
+
+      before do
+        deposit.update!(spread: spread_deposit.map(&:as_json))
+        service.adapter.expects(:prepare_deposit_collection!).returns(transactions)
+      end
+
+      it 'returns transaction' do
+        expect(subject).to contain_exactly(*transactions)
+        expect(subject).to all(be_a(Peatio::Transaction))
+        deposit.spread.map { |s| s.key?(:options) }
       end
     end
 
@@ -835,6 +879,44 @@ describe WalletService do
       it 'retunrs empty array' do
         expect(subject.blank?).to be true
       end
+    end
+  end
+
+  context :refund do
+    before do
+      Peatio::Blockchain.registry.expects(:[])
+                        .with(:bitcoin)
+                        .returns(fake_blockchain_adapter.class)
+                        .at_least_once
+    end
+
+    let!(:deposit_wallet) { create(:wallet, :fake_deposit) }
+
+    let(:amount) { 2 }
+    let(:refund_deposit) { create(:deposit_btc, amount: amount, currency: currency) }
+
+    let(:fake_wallet_adapter) { FakeWallet.new }
+    let(:service) { WalletService.new(deposit_wallet) }
+
+    let(:transaction) do
+      Peatio::Transaction.new(hash:        '0xfake',
+                               to_address:  'user_address',
+                               amount:      refund_deposit.amount,
+                               currency_id: currency.id)
+    end
+
+    let!(:refund) { Refund.create(deposit: refund_deposit, address: 'user_address') }
+
+    subject { service.refund!(refund) }
+
+    before do
+      refund_deposit.member.payment_address(service.wallet.id).update(address: refund_deposit.address)
+      service.adapter.expects(:create_transaction!).returns(transaction)
+    end
+
+    it 'creates single transaction' do
+      expect(subject).to eq(transaction)
+      expect(subject).to be_a(Peatio::Transaction)
     end
   end
 end

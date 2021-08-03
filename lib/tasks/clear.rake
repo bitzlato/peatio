@@ -10,16 +10,16 @@ namespace :clear do
   end
 
   desc 'Clear deposits, withdraws, orders, trades, disable markets for currencies associated with given market'
-  task :market, [:market_symbol] => [:environment] do |_, args|
+  task :market, [:market_symbol, :batch_limit] => [:environment] do |_, args|
+    batch_limit = args[:batch_limit] || 100
     market = ::Market.find_spot_by_symbol(args[:market_symbol])
     currencies = %i(base_unit quote_unit).map do |unit_side|
-      #Currency.find \
       market.send(unit_side)
     end
     associated_markets = currencies.map do |currency_id|
       Market.spot.where(
         'base_unit = ? OR quote_unit = ?',
-        currency_id, 
+        currency_id,
         currency_id
       )
     end.flatten.uniq
@@ -40,17 +40,16 @@ namespace :clear do
           .explain \
           .split(/^.*QUERY PLAN/) \
           .first
-        end.join("\n") + 
+        end.join("\n") +
         "\n\nTask aborted!\n\n"
-      ) 
+      )
     end
 
     loop_entity_paginated = lambda do |before_action_message, entity, &block|
       Kernel.puts before_action_message
 
       while (
-        # limit 100 per sql call according to https://github.com/bitzlato/peatio/issues/7#issuecomment-878195604
-        records = entity.limit 100
+        records = entity.limit batch_limit
       ).present?
         Kernel.print "."
         block.call(records)
@@ -61,7 +60,7 @@ namespace :clear do
     end
 
     market.state = "disabled"
-    market.save
+    market.save!
 
     loop_entity_paginated.call(
       "Cancelling open orders for the market #{market.id} ...",
@@ -82,39 +81,11 @@ namespace :clear do
       Order.with_market(market)
     ){|orders| orders.delete_all}
 
-    loop_entity_paginated.call(
-      "Dropping deposits for the currencies #{currencies} ...",
-      Deposit.where(currency_id: currencies)
-    ){|deposits| deposits.delete_all}
-
-    loop_entity_paginated.call(
-      "Dropping withdraws for the currencies #{currencies} ...",
-      Withdraw.where(currency_id: currencies)
-    ){|withdraws| withdraws.delete_all}
-
-    loop_entity_paginated.call(
-      "Dropping adjustments for the currencies #{currencies} ...",
-      Adjustment.where(currency_id: currencies)
-    ){|adjustments| adjustments.delete_all}
-
-    loop_entity_paginated.call(
-      "Dropping beneficiaries for the currencies #{currencies} ...",
-      Beneficiary.where(currency_id: currencies)
-    ){|beneficiaries| beneficiaries.delete_all}
-
-    loop_entity_paginated.call(
-      "Dropping internal_transfers for the currencies #{currencies} ...",
-      InternalTransfer.where(currency_id: currencies)
-    ){|internal_transfers| internal_transfers.delete_all}
-
-    loop_entity_paginated.call(
-      "Dropping operations for the currencies #{currencies} ...",
-      Operation.where(currency_id: currencies)
-    ){|operations| operations.delete_all}
-
-    loop_entity_paginated.call(
-      "Dropping transactions for the currencies #{currencies} ...",
-      Transaction.where(currency_id: currencies)
-    ){|transactions| transactions.delete_all}
+    [Account, Deposit, Withdraw, Adjustment, Beneficiary, InternalTransfer, Transaction, Operations::Revenue, Operations::Expense, Operations::Liability, Operations::Asset].each do |model_class|
+      loop_entity_paginated.call(
+        "Dropping #{model_class} for the currencies #{currencies} ...",
+        model_class.where(currency_id: currencies)
+      ){|records| records.delete_all}
+    end
   end
 end

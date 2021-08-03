@@ -435,6 +435,7 @@ steps:
   when:
     branch:
       - master
+      - "*-stable"
 
 trigger:
   event:
@@ -530,7 +531,7 @@ steps:
   detach: true
 
 - name: "Update global OpenDAX version"
-  image: quay.io/openware/goci:0.0.6
+  image: quay.io/openware/goci:0.0.11
   environment:
     GIT_TOKEN:
       from_secret: kite_bot_key

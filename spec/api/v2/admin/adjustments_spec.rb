@@ -31,17 +31,17 @@ describe API::V2::Admin::Adjustments, type: :request do
 
         expect(response).to be_successful
         expect(result.length).to eq 5
-        expect(result[-1].key?('asset')).to be_truthy
-        expect(result[-1].key?('liability')).to be_truthy
-        expect(result[-1]['state']).to eq('rejected')
+        expect(result[0].key?('asset')).to be_truthy
+        expect(result[0].key?('liability')).to be_truthy
+        expect(result[0]['state']).to eq('rejected')
         # We don't create operations for rejected adj.
-        expect(result[-1]['liability']['id'].nil?).to be_truthy
-        expect(result[-1]['asset']['id'].nil?).to be_truthy
-        expect(result[-2].key?('asset')).to be_truthy
-        expect(result[-2].key?('liability')).to be_truthy
-        expect(result[-2]['liability']['id']).to eq accepted.liability.id
-        expect(result[-2]['asset']['id']).to eq accepted.asset.id
-        expect(result[-2]['state']).to eq('accepted')
+        expect(result[0]['liability']['id'].nil?).to be_truthy
+        expect(result[0]['asset']['id'].nil?).to be_truthy
+        expect(result[1].key?('asset')).to be_truthy
+        expect(result[1].key?('liability')).to be_truthy
+        expect(result[1]['liability']['id']).to eq accepted.liability.id
+        expect(result[1]['asset']['id']).to eq accepted.asset.id
+        expect(result[1]['state']).to eq('accepted')
       end
     end
 
@@ -55,7 +55,7 @@ describe API::V2::Admin::Adjustments, type: :request do
 
         expect(response).to be_successful
         expect(response.headers['Total'].to_i).to eq(Adjustment.where(state: 'accepted').count)
-        expect(result.first['id']).to eq(accepted.id)
+        expect(result.last['id']).to eq(accepted.id)
       end
 
       it 'filter by rejected state' do
@@ -179,6 +179,13 @@ describe API::V2::Admin::Adjustments, type: :request do
 
       expect(response).not_to be_successful
       expect(response).to include_api_error('admin.adjustment.non_decimal_amount')
+    end
+
+    it 'checks amount presence' do
+      api_post '/api/v2/admin/adjustments/new', token: token, params: params.merge(amount: '')
+
+      expect(response).not_to be_successful
+      expect(response).to include_api_error('admin.adjustment.empty_amount')
     end
 
     it 'checks right asset_account_code' do
@@ -385,6 +392,13 @@ describe API::V2::Admin::Adjustments, type: :request do
       expect {
         api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
       }.not_to change { Operations::Asset.count }
+    end
+
+    it 'does reject of negative amount' do
+      adjustment.update(amount: -10000000.0)
+      api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
+
+      expect(response.code).to eq '201'
     end
 
     context 'already rejected' do

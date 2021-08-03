@@ -159,6 +159,7 @@ describe Bitzlato::Wallet do
 
       context :voucher do
         before do
+          Bitzlato::Wallet.send(:remove_const, :WITHDRAW_METHOD)
           Bitzlato::Wallet::WITHDRAW_METHOD = 'voucher'
         end
 
@@ -170,6 +171,7 @@ describe Bitzlato::Wallet do
 
       context :payment do
         before do
+          Bitzlato::Wallet.send(:remove_const, :WITHDRAW_METHOD)
           Bitzlato::Wallet::WITHDRAW_METHOD = 'payment'
         end
 
