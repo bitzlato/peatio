@@ -19,7 +19,7 @@ default: &default
 
 development:
   <<: *default
-  database: peatio_development
+  database: <%= ENV.fetch('DATABASE_NAME', 'peatio_development') %>
 
 test:
   <<: *default

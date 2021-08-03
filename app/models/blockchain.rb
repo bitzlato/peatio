@@ -2,6 +2,12 @@
 # frozen_string_literal: true
 
 class Blockchain < ApplicationRecord
+  include Vault::EncryptedModel
+
+  vault_lazy_decrypt!
+
+  vault_attribute :server
+
   has_many :currencies, foreign_key: :blockchain_key, primary_key: :key
   has_many :wallets, foreign_key: :blockchain_key, primary_key: :key
   has_many :whitelisted_smart_contracts, foreign_key: :blockchain_key, primary_key: :key
@@ -39,6 +45,7 @@ class Blockchain < ApplicationRecord
   end
 
   def blockchain_api
+    return if dummy?
     BlockchainService.new(self)
   rescue StandardError => err
     report_exception err
@@ -60,7 +67,7 @@ end
 #  key                  :string(255)      not null
 #  name                 :string(255)
 #  client               :string(255)      not null
-#  server               :string(255)
+#  server_encrypted     :string(1024)
 #  height               :bigint           not null
 #  explorer_address     :string(255)
 #  explorer_transaction :string(255)

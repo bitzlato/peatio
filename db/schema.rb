@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_22_125206) do
+ActiveRecord::Schema.define(version: 2021_08_03_084921) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -18,8 +18,8 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
-  create_table "accounts", id: :serial, force: :cascade do |t|
-    t.integer "member_id", null: false
+  create_table "accounts", primary_key: ["currency_id", "member_id"], force: :cascade do |t|
+    t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
     t.decimal "balance", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "locked", precision: 32, scale: 16, default: "0.0", null: false
@@ -46,11 +46,11 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["currency_id"], name: "index_adjustments_on_currency_id"
   end
 
-  create_table "assets", id: :serial, force: :cascade do |t|
+  create_table "assets", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
     t.string "reference_type"
-    t.integer "reference_id"
+    t.bigint "reference_id"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -74,11 +74,10 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["member_id"], name: "index_beneficiaries_on_member_id"
   end
 
-  create_table "blockchains", id: :serial, force: :cascade do |t|
+  create_table "blockchains", force: :cascade do |t|
     t.string "key", null: false
     t.string "name"
     t.string "client", null: false
-    t.string "server"
     t.bigint "height", null: false
     t.string "explorer_address"
     t.string "explorer_transaction"
@@ -86,6 +85,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.string "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "server_encrypted", limit: 1024
     t.index ["key"], name: "index_blockchains_on_key", unique: true
     t.index ["status"], name: "index_blockchains_on_status"
   end
@@ -122,7 +122,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
 
   create_table "currencies_wallets", id: false, force: :cascade do |t|
     t.string "currency_id"
-    t.integer "wallet_id"
+    t.bigint "wallet_id"
     t.boolean "enable_deposit", default: true, null: false
     t.boolean "enable_withdraw", default: true, null: false
     t.boolean "use_in_balance", default: true, null: false
@@ -131,8 +131,8 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["wallet_id"], name: "index_currencies_wallets_on_wallet_id"
   end
 
-  create_table "deposits", id: :serial, force: :cascade do |t|
-    t.integer "member_id", null: false
+  create_table "deposits", force: :cascade do |t|
+    t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.decimal "fee", precision: 32, scale: 16, null: false
@@ -151,6 +151,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.integer "transfer_type"
     t.json "data"
     t.string "intention_id"
+    t.json "error"
     t.index ["aasm_state", "member_id", "currency_id"], name: "index_deposits_on_aasm_state_and_member_id_and_currency_id"
     t.index ["currency_id", "intention_id"], name: "index_deposits_on_currency_id_and_intention_id", unique: true, where: "(intention_id IS NOT NULL)"
     t.index ["currency_id", "txid", "txout"], name: "index_deposits_on_currency_id_and_txid_and_txout", unique: true
@@ -171,11 +172,11 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.integer "state", default: 1, null: false
   end
 
-  create_table "expenses", id: :serial, force: :cascade do |t|
+  create_table "expenses", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
     t.string "reference_type"
-    t.integer "reference_id"
+    t.bigint "reference_id"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -205,12 +206,12 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.datetime "finished_at"
   end
 
-  create_table "liabilities", id: :serial, force: :cascade do |t|
+  create_table "liabilities", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
-    t.integer "member_id"
+    t.bigint "member_id"
     t.string "reference_type"
-    t.integer "reference_id"
+    t.bigint "reference_id"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -244,8 +245,8 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["symbol", "type"], name: "index_markets_on_symbol_and_type", unique: true
   end
 
-  create_table "members", id: :serial, force: :cascade do |t|
-    t.string "email", null: false
+  create_table "members", force: :cascade do |t|
+    t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "uid", limit: 32, null: false
@@ -259,7 +260,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["username"], name: "index_members_on_username", unique: true, where: "(username IS NOT NULL)"
   end
 
-  create_table "operations_accounts", id: :serial, force: :cascade do |t|
+  create_table "operations_accounts", force: :cascade do |t|
     t.integer "code", null: false
     t.string "type", limit: 10, null: false
     t.string "kind", limit: 30, null: false
@@ -275,7 +276,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["type"], name: "index_operations_accounts_on_type"
   end
 
-  create_table "orders", id: :serial, force: :cascade do |t|
+  create_table "orders", force: :cascade do |t|
     t.string "bid", limit: 10, null: false
     t.string "ask", limit: 10, null: false
     t.string "market_id", limit: 20, null: false
@@ -284,7 +285,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.decimal "origin_volume", precision: 32, scale: 16, null: false
     t.integer "state", null: false
     t.string "type", limit: 8, null: false
-    t.integer "member_id", null: false
+    t.bigint "member_id", null: false
     t.datetime "created_at", precision: 0, null: false
     t.datetime "updated_at", precision: 0, null: false
     t.string "ord_type", limit: 30, null: false
@@ -297,6 +298,8 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.string "remote_id"
     t.string "market_type", default: "spot", null: false
+    t.decimal "trigger_price", precision: 32, scale: 16
+    t.datetime "triggered_at"
     t.index ["member_id"], name: "index_orders_on_member_id"
     t.index ["state"], name: "index_orders_on_state"
     t.index ["type", "market_id", "market_type"], name: "index_orders_on_type_and_market_id_and_market_type"
@@ -307,7 +310,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["uuid"], name: "index_orders_on_uuid", unique: true
   end
 
-  create_table "payment_addresses", id: :serial, force: :cascade do |t|
+  create_table "payment_addresses", force: :cascade do |t|
     t.string "address", limit: 95
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -330,22 +333,22 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["state"], name: "index_refunds_on_state"
   end
 
-  create_table "revenues", id: :serial, force: :cascade do |t|
+  create_table "revenues", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
     t.string "reference_type"
-    t.integer "reference_id"
+    t.bigint "reference_id"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "member_id"
+    t.bigint "member_id"
     t.index ["currency_id"], name: "index_revenues_on_currency_id"
     t.index ["reference_type", "reference_id"], name: "index_revenues_on_reference_type_and_reference_id"
   end
 
   create_table "stats_member_pnl", force: :cascade do |t|
-    t.integer "member_id", null: false
+    t.bigint "member_id", null: false
     t.string "pnl_currency_id", limit: 10, null: false
     t.string "currency_id", limit: 10, null: false
     t.decimal "total_credit", precision: 48, scale: 16, default: "0.0"
@@ -372,16 +375,16 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["pnl_currency_id", "currency_id", "reference_type"], name: "index_currency_ids_and_type", unique: true
   end
 
-  create_table "trades", id: :serial, force: :cascade do |t|
+  create_table "trades", force: :cascade do |t|
     t.decimal "price", precision: 32, scale: 16, null: false
     t.decimal "amount", precision: 32, scale: 16, null: false
-    t.integer "maker_order_id", null: false
-    t.integer "taker_order_id", null: false
+    t.bigint "maker_order_id", null: false
+    t.bigint "taker_order_id", null: false
     t.string "market_id", limit: 20, null: false
     t.datetime "created_at", precision: 3, null: false
     t.datetime "updated_at", precision: 3, null: false
-    t.integer "maker_id", null: false
-    t.integer "taker_id", null: false
+    t.bigint "maker_id", null: false
+    t.bigint "taker_id", null: false
     t.decimal "total", precision: 32, scale: 16, default: "0.0", null: false
     t.string "taker_type", limit: 20, default: "", null: false
     t.string "market_type", default: "spot", null: false
@@ -422,13 +425,15 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.json "options"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "fee", precision: 32, scale: 16
+    t.string "fee_currency_id"
     t.index ["currency_id", "txid"], name: "index_transactions_on_currency_id_and_txid", unique: true
     t.index ["currency_id"], name: "index_transactions_on_currency_id"
     t.index ["reference_type", "reference_id"], name: "index_transactions_on_reference_type_and_reference_id"
     t.index ["txid"], name: "index_transactions_on_txid"
   end
 
-  create_table "transfers", id: :serial, force: :cascade do |t|
+  create_table "transfers", force: :cascade do |t|
     t.string "key", limit: 30, null: false
     t.string "description", limit: 255, default: ""
     t.datetime "created_at", precision: 3, null: false
@@ -437,19 +442,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["key"], name: "index_transfers_on_key", unique: true
   end
 
-  create_table "triggers", force: :cascade do |t|
-    t.bigint "order_id", null: false
-    t.integer "order_type", limit: 2, null: false
-    t.binary "value", null: false
-    t.integer "state", limit: 2, default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["order_id"], name: "index_triggers_on_order_id"
-    t.index ["order_type"], name: "index_triggers_on_order_type"
-    t.index ["state"], name: "index_triggers_on_state"
-  end
-
-  create_table "wallets", id: :serial, force: :cascade do |t|
+  create_table "wallets", force: :cascade do |t|
     t.string "name", limit: 64
     t.string "address", null: false
     t.string "status", limit: 32
@@ -461,6 +454,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.integer "kind", null: false
     t.string "settings_encrypted", limit: 1024
     t.jsonb "balance"
+    t.json "plain_settings"
     t.boolean "enable_invoice", default: false, null: false
     t.index ["kind"], name: "index_wallets_on_kind"
     t.index ["status"], name: "index_wallets_on_status"
@@ -488,8 +482,8 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.index ["kyc_level"], name: "index_withdraw_limits_on_kyc_level"
   end
 
-  create_table "withdraws", id: :serial, force: :cascade do |t|
-    t.integer "member_id", null: false
+  create_table "withdraws", force: :cascade do |t|
+    t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.decimal "fee", precision: 32, scale: 16, null: false
@@ -508,6 +502,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_125206) do
     t.bigint "beneficiary_id"
     t.integer "transfer_type"
     t.json "metadata"
+    t.string "remote_id"
     t.index ["aasm_state"], name: "index_withdraws_on_aasm_state"
     t.index ["currency_id", "txid"], name: "index_withdraws_on_currency_id_and_txid", unique: true
     t.index ["currency_id"], name: "index_withdraws_on_currency_id"

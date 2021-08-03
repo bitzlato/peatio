@@ -14,6 +14,7 @@ module Workers
         Jobs::Cron::Refund,
         Jobs::Cron::WalletBalances,
         Jobs::Cron::TransfersPolling,
+        Jobs::Cron::WithdrawWatcher
       ].freeze
 
       def run
