@@ -747,3 +747,333 @@
     #
     # ERC20 configuration.
     erc20_contract_address: '0x4dfd148b532e934a2a26ea65689cf6268753e130' # Always wrap this value in quotes!
+
+- id:                     bnb
+  name:                   Wrapped BNB
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     0.15
+  min_collection_amount:  0.45
+  withdraw_limit_24h:     22.0
+  withdraw_limit_72h:     45.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               26
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' # Always wrap this value in quotes!
+  
+- id:                     busd
+  name:                   Binance-Peg BUSD
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     20.0
+  min_collection_amount:  60.0
+  withdraw_limit_24h:     3000.0
+  withdraw_limit_72h:     6000.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               27
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0xe9e7cea3dedca5984780bafc599bd69add087d56' # Always wrap this value in quotes!
+  
+- id:                     usdt
+  name:                   Binance-Peg BCS-USD
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     20.0
+  min_collection_amount:  60.0
+  withdraw_limit_24h:     3000.0
+  withdraw_limit_72h:     6000.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               28
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0x55d398326f99059ff775485246999027b3197955' # Always wrap this value in quotes!
+  
+- id:                     cake
+  name:                   PancakeSwap
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     1.0
+  min_collection_amount:  3.0
+  withdraw_limit_24h:     150.0
+  withdraw_limit_72h:     300.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               29
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82' # Always wrap this value in quotes!
+  
+- id:                     xvs
+  name:                   Venus
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     1.0
+  min_collection_amount:  3.0
+  withdraw_limit_24h:     150.0
+  withdraw_limit_72h:     300.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               30
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63' # Always wrap this value in quotes!
+  
+- id:                     bifi
+  name:                   beefy.finance
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     0.05
+  min_collection_amount:  0.15
+  withdraw_limit_24h:     7.0
+  withdraw_limit_72h:     15.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               31
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0xCa3F508B8e4Dd382eE878A314789373D80A5190A' # Always wrap this value in quotes!
+  
+- id:                     bscx
+  name:                   BSCX
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     5.0
+  min_collection_amount:  15.0
+  withdraw_limit_24h:     750.0
+  withdraw_limit_72h:     1500.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               32
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0x5ac52ee5b2a633895292ff6d8a89bb9190451587' # Always wrap this value in quotes!
+  
+- id:                     bunny
+  name:                   Bunny
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     1.0
+  min_collection_amount:  3.0
+  withdraw_limit_24h:     150.0
+  withdraw_limit_72h:     300.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               33
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51' # Always wrap this value in quotes!
+  
+- id:                     1inch
+  name:                   1INCH
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     5.0
+  min_collection_amount:  15.0
+  withdraw_limit_24h:     750.0
+  withdraw_limit_72h:     1500.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               34
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0x111111111117dc0aa78b770fa6a738034120c302' # Always wrap this value in quotes!
+  
+- id:                     dai
+  name:                   Binance-Peg DAI
+  blockchain_key:         bsc-mainnet
+  parent_id:              bsc
+  type:                   coin
+  precision:              6
+  base_factor:            1_000_000_000_000_000_000 # IMPORTANT: Don't forget to update this variable according
+                                    # to your ERC20-based currency requirements
+                                    # (usually can be found on the official website).
+  visible:                false
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     20.0
+  min_collection_amount:  60.0
+  withdraw_limit_24h:     3000.0
+  withdraw_limit_72h:     6000.0
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               35
+  options:
+    # BEP20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 5_000_000_000
+    #
+    # BEP20 configuration.
+    bep20_contract_address: '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3' # Always wrap this value in quotes!
