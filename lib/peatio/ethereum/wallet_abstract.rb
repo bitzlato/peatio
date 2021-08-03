@@ -156,7 +156,7 @@ module Ethereum
                         normalize_address(transaction.to_address),
                         '0x' + amount.to_s(16))
 
-      if transaction.options.present?
+      if transaction.options.present? && transaction.options.dig(:gas_price).present?
         options[:gas_price] = transaction.options[:gas_price]
       else
         options[:gas_price] = calculate_gas_price(options)
