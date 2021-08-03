@@ -7,4 +7,4 @@ trade_executor: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb trade
 influx_writer: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb influx_writer
 deposit_intention: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb deposit_intention
 
-web: bundle exec rails server
+web: bundle exec rails server -b 0.0.0.0 -p 3000
