@@ -17,16 +17,6 @@ describe Currency do
       expect(currency.deposit_fee).to eq 0
     end
 
-    it 'validates blockchain_key' do
-      currency.blockchain_key = 'an-nonexistent-key'
-      expect(currency.valid?).to be_falsey
-      expect(currency.errors[:blockchain_key].size).to eq(1)
-
-      currency.blockchain_key = 'btc-testnet' # an existent key
-      expect(currency.valid?).to be_truthy
-      expect(currency.errors[:blockchain_key]).to be_empty
-    end
-
     it 'validates position' do
       currency.position = 0
       expect(currency.valid?).to be_falsey
@@ -59,11 +49,11 @@ describe Currency do
     it 'validate parent_id value' do
       currency.parent_id = fiat_currency.id
       expect(currency.valid?).to be_falsey
-      expect(currency.errors[:parent_id]).to eq ["is not included in the list"]
+      expect(currency.errors[:parent_id]).to eq ["wrong fiat/crypto nesting"]
 
       currency.parent_id = trst_currency.id
       expect(currency.valid?).to be_falsey
-      expect(currency.errors[:parent_id]).to eq ["is not included in the list"]
+      expect(currency.errors[:parent_id]).to eq ["wrong parent currency"]
     end
   end
 
@@ -95,33 +85,12 @@ describe Currency do
     end
   end
 
-  context 'subunits=' do
-    let!(:currency) { Currency.find(:btc) }
-
-    it 'updates base_factor' do
-      expect { currency.subunits = 4 }.to change { currency.base_factor }.to 10_000
-    end
-  end
-
   context 'read only attributes' do
     let!(:fake_currency) { create(:currency, :btc, id: 'fake') }
-
-    it 'should not update the base factor' do
-      fake_currency.update_attributes :base_factor => 8
-      expect(fake_currency.reload.base_factor).to eq(fake_currency.base_factor)
-    end
 
     it 'should not update the type' do
       fake_currency.update_attributes :type => 'fiat'
       expect(fake_currency.reload.type).to eq(fake_currency.type)
-    end
-  end
-
-  context 'subunits' do
-    let!(:fake_currency) { create(:currency, :btc, id: 'fake', base_factor: 100) }
-
-    it 'return currency subunits' do
-      expect(fake_currency.subunits).to eq(2)
     end
   end
 
@@ -141,7 +110,7 @@ describe Currency do
     after  { ENV['MAX_CURRENCIES'] = nil }
 
     it 'should raise validation error for max currency' do
-      record = build(:currency, :fake, id: 'fake2', type: 'fiat', base_factor: 100)
+      record = build(:currency, :fake, id: 'fake2', type: 'fiat')
       record.save
       expect(record.errors.full_messages).to include(/Max Currency limit has been reached/i)
     end
@@ -158,32 +127,6 @@ describe Currency do
   end
 
   context 'Callbacks' do
-    context 'blockchain key' do
-      let!(:coin) { Currency.find(:btc) }
-      let!(:token) { Currency.find(:trst) }
-
-      it 'should update blockchain key' do
-        token.update_attributes :blockchain_key => coin.blockchain_key
-        expect(token.reload.blockchain_key).to eq(coin.blockchain_key)
-      end
-
-      it 'should create currency with default blockchain key' do
-        currency = Currency.new(code: 'test', parent_id: coin.id)
-
-        expect(currency.blockchain_key).to eq nil
-        expect(currency.valid?).to eq true
-        expect(currency.blockchain_key).to eq coin.blockchain_key
-      end
-
-      it 'should create currency with non default blockchain key' do
-        currency = Currency.new(code: 'test', parent_id: coin.id, blockchain_key: token.blockchain_key)
-
-        expect(currency.blockchain_key).to eq token.blockchain_key
-        expect(currency.valid?).to eq true
-        expect(currency.blockchain_key).to eq token.blockchain_key
-      end
-    end
-
     context 'after_create' do
       let!(:coin) { Currency.find(:btc) }
 
@@ -241,7 +184,7 @@ describe Currency do
 
         context 'without parent id' do
           it 'should not create currency wallet' do
-            currency = Currency.create(code: 'test')
+            currency = Currency.create(code: 'test', blockchain: Blockchain.last)
             expect(CurrencyWallet.find_by(currency_id: currency.id, wallet_id: wallet.id)).to eq nil
           end
         end

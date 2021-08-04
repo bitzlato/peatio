@@ -12,7 +12,6 @@ class Beneficiary < ApplicationRecord
   vault_lazy_decrypt!
 
   include AASM
-  include AASM::Locking
 
   STATES_MAPPING = { pending: 0, active: 1, archived: 2, aml_processing: 3, aml_suspicious: 4 }.freeze
 
@@ -32,7 +31,7 @@ class Beneficiary < ApplicationRecord
 
   enumerize :state, in: STATES_MAPPING, scope: true
 
-  aasm column: :state, enum: :states_mapping, whiny_transitions: false do
+  aasm column: :state, enum: :states_mapping, whiny_transitions: false, requires_lock: true do
     state :pending, initial: true
     state :active
     state :aml_processing
@@ -189,26 +188,3 @@ class Beneficiary < ApplicationRecord
     "%s-%s-%08d" % [data.symbolize_keys[:full_name].downcase.split.join('-'), currency_id.downcase, id]
   end
 end
-
-# == Schema Information
-# Schema version: 20201125134745
-#
-# Table name: beneficiaries
-#
-#  id             :bigint           not null, primary key
-#  member_id      :bigint           not null
-#  currency_id    :string(10)       not null
-#  name           :string(64)       not null
-#  description    :string(255)      default("")
-#  data_encrypted :string(1024)
-#  pin            :integer          unsigned, not null
-#  sent_at        :datetime
-#  state          :integer          default("pending"), unsigned, not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#
-# Indexes
-#
-#  index_beneficiaries_on_currency_id  (currency_id)
-#  index_beneficiaries_on_member_id    (member_id)
-#

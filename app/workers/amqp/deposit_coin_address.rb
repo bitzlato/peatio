@@ -7,42 +7,20 @@ module Workers
       def process(payload)
         payload.symbolize_keys!
 
-        member = Member.find_by_id(payload[:member_id])
-        unless member
-          Rails.logger.warn do
-            'Unable to generate deposit address.'\
-            "Member with id: #{payload[:member_id]} doesn't exist"
-          end
-          return
-        end
+        member = Member.find payload[:member_id]
+        blockchain = Blockchain.find payload[:blockchain_id]
 
-        wallet = Wallet.find_by_id(payload[:wallet_id])
-
-        unless wallet
-          Rails.logger.warn do
-            'Unable to generate deposit address.'\
-            "Deposit Wallet with id: #{payload[:wallet_id]} doesn't exist"
-          end
-          return
-        end
-
-        wallet_service = WalletService.new(wallet)
-
-        member.payment_address(wallet.id).tap do |pa|
+        member.payment_address(blockchain).tap do |pa|
           pa.with_lock do
-            next if pa.address.present?
+            return if pa.address.present?
+            result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency.to_s}")
 
-            # Supply address ID in case of BitGo address generation if it exists.
-            result = wallet_service.create_address!(member.uid, pa.details.merge(updated_at: pa.updated_at))
-
-            if result.present?
-              pa.update!(address: result[:address],
-                        secret:  result[:secret],
-                        details: result.fetch(:details, {}).merge(pa.details))
-            end
+            pa.update!(address: result[:address],
+                       secret:  result[:secret],
+                       details: result[:details])
           end
 
-          pa.trigger_address_event unless pa.address.blank?
+          pa.trigger_address_event if pa.address.present?
         end
 
       # Don't re-enqueue this job in case of error.

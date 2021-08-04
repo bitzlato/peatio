@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 describe API::V2::Account::Deposits, type: :request do
+  let!(:eth) { find_or_create :currency, :eth, id: :eth }
+  let!(:trst) { find_or_create :currency, :trst, id: :trst }
   let(:member) { create(:member, :level_3) }
   let(:other_member) { create(:member, :level_3) }
   let(:token) { jwt_for(member) }
@@ -13,17 +15,16 @@ describe API::V2::Account::Deposits, type: :request do
   end
 
   describe 'POST /api/v2/account/deposits/intention' do
-    let(:wallet) { Wallet.deposit.joins(:currencies).find_by(currencies: { id: currency }) }
     let(:amount) { 12.1231 }
+    let(:currency) { find_or_create :currency, :btc, id: :btc }
     it 'requires authentication' do
       api_post '/api/v2/account/deposits/intention', params: { amount: 123 }
       expect(response.code).to eq '401'
     end
 
     it 'returns with auth token deposits' do
-
       AMQP::Queue.expects(:enqueue).with(:deposit_intention,  anything, { persistent: true }).once
-      api_post '/api/v2/account/deposits/intention', token: token, params: { currency: :btc, amount: amount }
+      api_post '/api/v2/account/deposits/intention', token: token, params: { currency: currency.id, amount: amount }
 
       expect(response).to be_successful
       result = JSON.parse(response.body)
@@ -228,12 +229,13 @@ describe API::V2::Account::Deposits, type: :request do
       end
 
       context 'unauthorized' do
+        let(:currency) { find_or_create :currency, :btc, id: :btc }
         before do
           Ability.stubs(:user_permissions).returns([])
         end
 
         it 'renders unauthorized error' do
-          api_get '/api/v2/account/deposit_address/btc', token: token
+          api_get '/api/v2/account/deposit_address/' + currency.id, token: token
           expect(response).to have_http_status 403
           expect(response).to include_api_error('user.ability.not_permitted')
         end
@@ -242,46 +244,49 @@ describe API::V2::Account::Deposits, type: :request do
 
     context 'successful' do
       context 'eth address' do
-        let(:currency) { :eth }
-        let(:wallet) { Wallet.active_deposit_wallet(currency) }
-        before { member.payment_address(wallet.id).update!(address: '2N2wNXrdo4oEngp498XGnGCbru29MycHogR') }
+        let(:currency) { eth }
+        let(:blockchain) { find_or_create :blockchain, 'eth-rinkeby', key: 'eth-rinkeby' }
+        let(:address) { '2N2wNXrdo4oEngp498XGnGCbru29MycHogR' }
+        before { member.payment_address(blockchain).update!(address: address) }
 
         it 'expose data about eth address' do
-          api_get "/api/v2/account/deposit_address/#{currency}", token: token
-          expect(response.body).to eq '{"currencies":["eth"],"address":"2n2wnxrdo4oengp498xgngcbru29mychogr","state":"active"}'
+          api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
+          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":"' + address.downcase + '","state":"active"}'
         end
 
         it 'pending user address state' do
-          member.payment_address(wallet.id).update!(address: nil)
-          api_get "/api/v2/account/deposit_address/#{currency}", token: token
-          expect(response.body).to eq '{"currencies":["eth"],"address":null,"state":"pending"}'
+          member.payment_address(blockchain).update!(address: nil)
+          api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
+          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":null,"state":"pending"}'
         end
 
         context 'currency code with dot' do
-          let!(:currency) { create(:currency, :xagm_cx) }
+          let!(:currency) { create(:currency, :xagm_cx, blockchain: blockchain) }
 
           it 'returns information about specified deposit address' do
             api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
             expect(response).to have_http_status 200
-            expect(response.body).to eq '{"currencies":["eth","xagm.cx"],"address":"2n2wnxrdo4oengp498xgngcbru29mychogr","state":"active"}'
+            expect(response.body).to eq '{"currencies":["eth","trst","ring","xagm.cx"],"address":"' + address.downcase + '","state":"active"}'
           end
         end
 
         it 'exposes non-remote addresses' do
-          member.payment_address(wallet.id).update!(remote: true)
-          api_get "/api/v2/account/deposit_address/#{currency}", token: token
-          expect(response.body).to eq '{"currencies":["eth"],"address":null,"state":"pending"}'
+          member.payment_address(blockchain).update!(remote: true)
+          api_get "/api/v2/account/deposit_address/#{currency.id}", token: token
+          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":null,"state":"pending"}'
         end
       end
     end
 
     context 'disabled deposit for currency' do
-      let(:currency) { :btc }
+      let(:currency) { find_or_create :currency, :btc, id: :btc }
 
-      before { Currency.find(currency).update!(deposit_enabled: false) }
+      before do
+        Currency.any_instance.expects(:deposit_enabled?).returns(false)
+      end
 
       it 'returns error' do
-        api_get "/api/v2/account/deposit_address/#{currency}", token: token
+        api_get "/api/v2/account/deposit_address/#{currency.id}", token: token
         expect(response).to have_http_status 422
         expect(response).to include_api_error('account.currency.deposit_disabled')
       end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe API::V2::Public::Webhooks, type: :request do
-  pending 'remove opendax_cloud'
+  pending
   #describe 'GET /webhooks/:adapter/:event' do
     #let(:member) { create(:member) }
 

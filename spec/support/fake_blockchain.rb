@@ -15,6 +15,3 @@ class FakeWallet < Peatio::Wallet::Abstract
 
   def configure(settings = {}); end
 end
-
-Peatio::Blockchain.registry[:fake] = FakeBlockchain
-Peatio::Wallet.registry[:fake] = FakeWallet

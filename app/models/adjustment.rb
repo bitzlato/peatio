@@ -5,7 +5,6 @@ class Adjustment < ApplicationRecord
   # == Constants ============================================================
 
   include AASM
-  include AASM::Locking
   CATEGORIES = %w[asset_registration investment minting_token
                   balance_anomaly misc refund compensation
                   incentive bank_fees bank_interest minor].freeze
@@ -44,7 +43,7 @@ class Adjustment < ApplicationRecord
 
   # == Extensions ===========================================================
 
-  aasm column: :state, enum: true, whiny_transitions: false do
+  aasm column: :state, enum: true, whiny_transitions: false, requires_lock: true do
     state :pending, initial: true
     state :accepted
     state :rejected

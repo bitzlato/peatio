@@ -40,11 +40,6 @@ module Workers
         Kernel.sleep self.class.sleep_time
       end
 
-      def is_db_connection_error?(exception)
-        (defined?(Mysql2) && (exception.is_a?(Mysql2::Error::ConnectionError) || exception.cause.is_a?(Mysql2::Error))) ||
-          (defined?(PG) && exception.is_a?(PG::Error))
-      end
-
       def lock(klass, timeout)
         res = ActiveRecord::Base.connection.exec_query("SELECT GET_LOCK('Peatio_#{klass}',#{timeout})")
 

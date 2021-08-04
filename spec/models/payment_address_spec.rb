@@ -5,14 +5,14 @@ describe PaymentAddress do
   context '.create' do
     let(:member)  { create(:member, :level_3) }
     let!(:account) { member.get_account(:btc) }
-    let!(:wallet) { Wallet.joins(:currencies).find_by(currencies: { id: :btc }) }
+    let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet' }
     let(:secret) { 's3cr3t' }
     let(:details) { { 'a' => 'b', 'b' => 'c' } }
-    let!(:addr) { create(:payment_address, :btc_address, address: nil, secret: secret, wallet_id: wallet.id) }
+    let!(:addr) { create(:payment_address, :btc_address, address: nil, secret: secret, blockchain_id: blockchain.id) }
 
     it 'generate address after commit' do
-      AMQP::Queue.expects(:enqueue).with(:deposit_coin_address, { member_id: member.id, wallet_id: wallet.id }, { persistent: true })
-      member.payment_address(wallet.id)
+      AMQP::Queue.expects(:enqueue).with(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain.id }, { persistent: true })
+      member.payment_address(blockchain)
     end
 
     it 'updates secret' do
@@ -44,38 +44,28 @@ describe PaymentAddress do
     context 'status' do
       let(:member)  { create(:member, :level_3) }
       let!(:account) { member.get_account(:btc) }
-      let!(:wallet) { Wallet.joins(:currencies).find_by(currencies: { id: :btc }) }
+      let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet' }
 
       context 'pending' do
-        let!(:addr) { create(:payment_address, :btc_address, address: nil, wallet_id: wallet.id) }
+        let!(:addr) { create(:payment_address, :btc_address, address: nil, blockchain_id: blockchain.id) }
 
         it { expect(addr.status).to eq 'pending' }
       end
 
       context 'active' do
-        let!(:addr) { create(:payment_address, :btc_address, wallet_id: wallet.id) }
+        let!(:addr) { create(:payment_address, :btc_address, blockchain_id: blockchain.id) }
 
         it { expect(addr.status).to eq 'active' }
       end
 
       context 'disabled' do
         before do
-          wallet.update(status: 'disabled')
+          blockchain.update(status: 'disabled')
         end
 
-        let!(:addr) { create(:payment_address, :btc_address, wallet_id: wallet.id) }
+        let!(:addr) { create(:payment_address, :btc_address, blockchain_id: blockchain.id) }
 
         it { expect(addr.status).to eq 'disabled' }
-      end
-
-      context 'retired' do
-        before do
-          wallet.update(status: 'retired')
-        end
-
-        let!(:addr) { create(:payment_address, :btc_address, wallet_id: wallet.id) }
-
-        it { expect(addr.status).to eq 'retired' }
       end
     end
   end

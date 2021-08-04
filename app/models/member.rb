@@ -89,15 +89,12 @@ class Member < ApplicationRecord
     trades.each(&:revert_trade!)
   end
 
-  def payment_address(wallet_id, remote = false)
-    wallet = Wallet.find(wallet_id)
-
-    return if wallet.blank?
-
-    pa = PaymentAddress.find_by(member: self, wallet: wallet, remote: remote)
+  def payment_address(blockchain, remote = false)
+    raise "no blockchain" if blockchain.nil?
+    pa = PaymentAddress.find_by(member: self, blockchain: blockchain, remote: remote)
 
     if pa.blank?
-      pa = payment_addresses.create!(wallet: wallet)
+      pa = payment_addresses.create!(blockchain: blockchain, remote: remote)
     elsif pa.address.blank?
       pa.enqueue_address_generation
     end
@@ -106,19 +103,15 @@ class Member < ApplicationRecord
   end
 
   # Attempts to create additional deposit address for account.
-  def payment_address!(wallet_id, remote = false)
-    wallet = Wallet.find(wallet_id)
-
-    return if wallet.blank?
-
-    pa = PaymentAddress.find_by(member: self, wallet: wallet)
+  def payment_address!(blockchain, remote = false)
+    pa = PaymentAddress.find_by(member: self, blockchain: blockchain, remote: remote)
 
     # The address generation process is in progress.
     if pa.present? && pa.address.blank?
       pa
     else
       # allows user to have multiple addresses
-      pa = payment_addresses.create!(wallet: wallet, remote: remote)
+      pa = payment_addresses.create!(blockchain: blockchain, remote: remote)
     end
     pa
   end

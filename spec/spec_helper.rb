@@ -94,14 +94,42 @@ RSpec.configure do |config|
     AMQP::Queue.stubs(:publish)
     KlineDB.stubs(:kline).returns([])
     Currency.any_instance.stubs(:price).returns(1.to_d)
-    %w[eth-kovan eth-rinkeby btc-testnet].each { |blockchain| FactoryBot.create(:blockchain, blockchain) }
-    %i[usd eur btc eth trst ring].each { |ccy| FactoryBot.create(:currency, ccy) }
+    %w[bitzlato eth-kovan eth-rinkeby btc-testnet].each do |blockchain|
+      FactoryBot.find_or_create(:blockchain, blockchain)
+    end
+    #Money::Currency.all.each do |m|
+      #m.instance_variable_set('@blockchain_key', 'eth-rinkeby') if m.blockchain_key == 'eth-mainnet'
+      #m.instance_variable_set('@blockchain_key', 'bsc-testnet') if m.blockchain_key == 'bsc-mainnet'
+    #end
+    #Money::Currency.all.map(&:blockchain_key).uniq.each do |blockchain|
+      #FactoryBot.find_or_create(:blockchain, blockchain, key: blockchain)
+    #end
+    %i[btc-testnet].each do |key|
+      FactoryBot.find_or_create(:blockchain, key, key: key)
+    end
 
-    %i[ eth_deposit eth_hot eth_warm eth_fee
-        trst_deposit trst_hot
-        btc_hot btc_deposit ].each { |ccy| FactoryBot.create(:wallet, ccy) }
-    %i[btcusd btceth btceth_qe].each { |market| FactoryBot.create(:market, market) }
-    %w[101 102 201 202 211 212 301 302 401 402].each { |ac_code| FactoryBot.create(:operations_account, ac_code)}
+    %i[usd eur btc eth trst ring].each do |code|
+      FactoryBot.find_or_create :currency, code, id: code
+    end
+    #Money::Currency.all.each do |mc|
+      #FactoryBot.find_or_create :currency, mc.iso_code.downcase, id: mc.iso_code.downcase
+    #end
+
+    Wallet.delete_all
+    %i[eth_deposit eth_hot eth_warm eth_fee trst_deposit trst_hot btc_hot btc_deposit ].each do |name|
+      FactoryBot.create(:wallet, name)
+    rescue => err
+      binding.pry
+    end
+
+    %i[btcusd btceth btceth_qe].each do |market|
+      FactoryBot.find_or_create(:market, market, id: market)
+    end
+
+    %w[101 102 201 202 211 212 301 302 401 402].each do |ac_code|
+      FactoryBot.create(:operations_account, ac_code)
+    end
+
     FactoryBot.create(:trading_fee, market_id: :any, group: :any, maker: 0.0015, taker: 0.0015)
     FactoryBot.create(:withdraw_limit)
   end

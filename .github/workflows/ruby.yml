@@ -23,8 +23,12 @@ jobs:
       DATABASE_HOST: 127.0.0.1
       DATABASE_USER: postgres
       DATABASE_PASS: postgres
+      REDIS_URL: redis://localhost:6379
       VAULT_TOKEN: changeme
       JWT_PUBLIC_KEY: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUR3d0RRWUpLb1pJaHZjTkFRRUJCUUFES3dBd0tBSWhBTDBlNnNhMFc4SzN1WS8rRVlrRXdxemo4UTZxc2lwcgp0R1dtYjhPVzhZcDdBZ01CQUFFPQotLS0tLUVORCBQVUJMSUMgS0VZLS0tLS0K
+      MINIMUM_MEMBER_LEVEL_FOR_DEPOSIT: 3
+      MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW: 3
+      MINIMUM_MEMBER_LEVEL_FOR_TRADING: 3
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -91,8 +95,7 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Bundle install
       run: bundle install
-    - name: Initialize configs
-      run: ./bin/init_config
+    - run: cp config/application.example.yml config/application.yml
     - name: Initialize vault
       run: ./bin/init_vault
     - name: Initialize influx db

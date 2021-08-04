@@ -5,22 +5,16 @@
 # TODO: Delete this class and update type column
 module Deposits
   class Coin < Deposit
-    has_one :blockchain, through: :currency
-
     validate { errors.add(:currency, :invalid) if currency && !currency.coin? }
     validates :address, :txid, presence: true
     validates :txid, uniqueness: { scope: %i[currency_id txout] }
 
-    before_validation do
-      if blockchain_api.present? && blockchain_api.case_sensitive? == false
+    before_validation if: :gateway do
+      unless gateway.case_sensitive?
         self.txid = txid.try(:downcase)
-        self.address = address.try(:downcase)
+        self.address = address.try(:downcase) if address?
       end
-    end
-
-    before_validation do
-      next unless blockchain_api&.supports_cash_addr_format? && address?
-      self.address = CashAddr::Converter.to_cash_address(address)
+      self.address = CashAddr::Converter.to_cash_address(address) if gateway.supports_cash_addr_format? && address?
     end
 
     def as_json_for_event_api
