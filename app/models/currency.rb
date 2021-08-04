@@ -139,8 +139,12 @@ class Currency < ApplicationRecord
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
 
-  def blockchain
-    Rails.cache.fetch("#{code}_blockchain", expires_in: 60) { Blockchain.find_by(key: blockchain_key) }
+  # Make it optional because of
+  # super: no superclass method `server' for #<Blockchain:0x00007f96d400ae20>
+  if ENV.true?('CURRENCY_BLOCKCHAIN_CACHE')
+    def blockchain
+      Rails.cache.fetch("#{code}_blockchain", expires_in: 60) { Blockchain.find_by(key: blockchain_key) }
+    end
   end
 
   def wipe_cache
