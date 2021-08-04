@@ -46,10 +46,7 @@ module Workers
       end
 
       def process_deposit(deposit)
-        if deposit.spread.blank?
-          deposit.spread_between_wallets!
-          Rails.logger.warn { "The deposit was spreaded in the next way: #{deposit.spread}"}
-        end
+        deposit.spread_between_wallets!
 
         wallet = PaymentAddress.find_by(address: deposit.address).wallet
         service = WalletService.new(wallet)
@@ -76,10 +73,7 @@ module Workers
       end
 
       def collect_fee(deposit)
-        if deposit.spread.blank?
-          deposit.spread_between_wallets!
-          Rails.logger.warn { "The deposit was spread in the next way: #{deposit.spread}"}
-        end
+        deposit.spread_between_wallets!
 
         fee_wallet = Wallet.active.fee.find_by(blockchain_key: deposit.currency.blockchain_key)
         unless fee_wallet
