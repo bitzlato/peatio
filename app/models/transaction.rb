@@ -13,6 +13,7 @@ class Transaction < ApplicationRecord
 
   belongs_to :reference, polymorphic: true
   belongs_to :currency, foreign_key: :currency_id
+  belongs_to :spreaded_deposit, optional: true, foreign_key: :deposit_spread_id
 
   # == Validations ==========================================================
 

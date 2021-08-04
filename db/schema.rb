@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_03_134756) do
+ActiveRecord::Schema.define(version: 2021_08_04_053515) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -152,6 +152,7 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.json "data"
     t.string "intention_id"
     t.json "error"
+    t.decimal "spread_fee", precision: 32, scale: 16
     t.index ["aasm_state", "member_id", "currency_id"], name: "index_deposits_on_aasm_state_and_member_id_and_currency_id"
     t.index ["currency_id", "intention_id"], name: "index_deposits_on_currency_id_and_intention_id", unique: true, where: "(intention_id IS NOT NULL)"
     t.index ["currency_id", "txid", "txout"], name: "index_deposits_on_currency_id_and_txid_and_txout", unique: true
@@ -456,8 +457,8 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.integer "kind", null: false
     t.string "settings_encrypted", limit: 1024
     t.jsonb "balance"
-    t.json "plain_settings"
     t.boolean "enable_invoice", default: false, null: false
+    t.json "plain_settings"
     t.index ["kind"], name: "index_wallets_on_kind"
     t.index ["status"], name: "index_wallets_on_status"
   end

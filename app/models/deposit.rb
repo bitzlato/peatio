@@ -20,6 +20,9 @@ class Deposit < ApplicationRecord
   belongs_to :currency, required: true
   belongs_to :member, required: true
 
+  # spread transactions
+  has_many :transactions, as: :reference
+
   acts_as_eventable prefix: 'deposit', on: %i[create update]
 
   validates :tid, presence: true, uniqueness: { case_sensitive: false }
@@ -184,6 +187,14 @@ class Deposit < ApplicationRecord
 
   def spread_to_transactions
     spread.map { |s| Peatio::Transaction.new(s) }
+  end
+
+  def db_transactions_from_spread
+    Transaction.where(currency_id: currency_id, txid: spread.map { |s| s[:hash] })
+  end
+
+  def update_spread_fee!
+    update! spread_fee: transactions.where(from_address: address).sum(&:fee)
   end
 
   def spread_between_wallets!

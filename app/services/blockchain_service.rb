@@ -51,6 +51,7 @@ class BlockchainService
     withdrawals = filter_withdrawals(block)
 
     update_fees!(block)
+
     # TODO: Process Transactions with `pending` status
 
     accepted_deposits = []
@@ -87,6 +88,7 @@ class BlockchainService
   private
 
   def filter_deposits(block)
+    binding.pry
     addresses = PaymentAddress.where(wallet: Wallet.deposit_wallets(@currencies.codes), address: block.transactions.map(&:to_address)).pluck(:address)
     block.select { |transaction| transaction.to_address.in?(addresses) }
   end
@@ -99,8 +101,9 @@ class BlockchainService
 
   def update_or_create_deposit(transaction)
     if transaction.amount < Currency.find(transaction.currency_id).min_deposit_amount
+      # TODO Save transcation with message
       # Currently we just skip tiny deposits.
-      Rails.logger.info do
+      Rails.logger.warn do
         "Skipped deposit with txid: #{transaction.hash} with amount: #{transaction.hash}"\
         " to #{transaction.to_address} in block number #{transaction.block_number}"
       end
@@ -114,10 +117,13 @@ class BlockchainService
     address = PaymentAddress.find_by(wallet: Wallet.deposit_wallet(transaction.currency_id), address: transaction.to_address)
     return if address.blank?
 
-    # Skip deposit tx if there is tx for deposit collection process
     # TODO: select only pending transactions
-    tx_collect = Transaction.where(txid: transaction.hash, reference_type: 'Deposit')
-    return if tx_collect.present?
+    tx_collect = Transaction.where(txid: transaction.hash, currency_id: transaction.currency_id, reference_type: 'Deposit')
+    if tx_collect.present?
+      tx_collect.where(status: :pending).update_all status: :succeed
+      # Skip deposit tx if there is tx for deposit collection process
+      return
+    end
 
     if transaction.from_addresses.blank? && adapter.respond_to?(:transaction_sources)
       transaction.from_addresses = adapter.transaction_sources(transaction)
