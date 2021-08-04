@@ -58,7 +58,7 @@ module Ethereum
 
           # 1. Check if the smart contract destination is in whitelist
           #    The common case is a withdraw from a known smart contract of a major exchange
-          if @whitelisted_addresses.include?(tx.fetch('to'))
+          if allowed_erc20_address? tx.fetch('to')
             process_tx = true
           else
             # 2. Check if the transaction is one of our currencies smart contract
@@ -277,6 +277,10 @@ module Ethereum
 
     def convert_from_base_unit(value, currency)
       value.to_d / currency.fetch(:base_factor).to_d
+    end
+
+    def allowed_erc20_address?(address)
+      @whitelisted_addresses.include?(address) || @erc20.map { |r| r[:erc20_contract_address] }.compact.include?(address)
     end
   end
 end
