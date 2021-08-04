@@ -17,9 +17,10 @@ class Withdraw < ApplicationRecord
   SUCCEED_PROCESSING_STATES = %i[prepared accepted skipped processing errored confirming succeed under_review].freeze
 
   include AASM
-  include AASM::Locking
   include TIDIdentifiable
   include FeeChargeable
+
+  alias_attribute :to_address, :rid
 
   extend Enumerize
 
@@ -42,6 +43,8 @@ class Withdraw < ApplicationRecord
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
 
+  # TODO validate rid by blockchain specs
+  #
   validates :rid, :aasm_state, presence: true
   validates :txid, uniqueness: { scope: :currency_id }, if: :txid?
   validates :block_number, allow_blank: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
@@ -58,14 +61,15 @@ class Withdraw < ApplicationRecord
   scope :last_24_hours, -> { where('created_at > ?', 24.hour.ago) }
   scope :last_1_month, -> { where('created_at > ?', 1.month.ago) }
 
-  aasm whiny_transitions: false do
+  aasm whiny_transitions: true, requires_lock: true do
     state :prepared, initial: true
-    state :canceled
     state :accepted
+    state :canceled
     state :skipped
     state :to_reject
     state :rejected
     state :processing
+    state :transfering
     state :under_review
     state :succeed
     state :failed
@@ -81,6 +85,13 @@ class Withdraw < ApplicationRecord
       after_commit do
         # auto process withdrawal if sum less than limits and WITHDRAW_ADMIN_APPROVE env set to false (not set)
         process! if verify_limits && ENV.false?('WITHDRAW_ADMIN_APPROVE') && currency.coin?
+      end
+    end
+
+    event :process do
+      transitions from: %i[accepted skipped errored], to: :processing
+      after_commit do
+        send_coins!
       end
     end
 
@@ -102,32 +113,31 @@ class Withdraw < ApplicationRecord
       end
     end
 
-    event :process do
-      transitions from: %i[accepted skipped errored], to: :processing
-      after :send_coins!
+    event :transfer do
+      transitions from: %i[processing], to: :transfering
     end
 
-    event :load do
-      transitions from: :accepted, to: :confirming do
-        # Load event is available only for coin withdrawals.
-        guard do
-          currency.coin? && txid?
-        end
-      end
-      after_commit do
-        tx = currency.blockchain_api.fetch_transaction(self)
-        if tx.present?
-          success! if tx.status.success?
-        end
-      end
-    end
+    # TODO Move to service
+    #event :load do
+      #transitions from: :accepted, to: :confirming do
+        ## Load event is available only for coin withdrawals.
+        #guard do
+          #currency.coin? && txid?
+        #end
+      #end
+      #after_commit do
+        #tx = currency.blockchain.gateway.fetch_transaction(self)
+        #success! if tx.present? && tx.status.success?
+      #end
+    #end
 
     event :review do
       transitions from: :processing, to: :under_review
     end
 
+    # Transfered to blockchain
     event :dispatch do
-      transitions from: %i[processing under_review], to: :confirming do
+      transitions from: :transfering, to: :confirming do
         # Validate txid presence on coin withdrawal dispatch.
         guard do
           currency.fiat? || txid?
@@ -136,7 +146,19 @@ class Withdraw < ApplicationRecord
     end
 
     event :success do
-      transitions from: %i[confirming errored under_review], to: :succeed do
+      transitions from: :confirming, to: :succeed do
+        guard do
+          currency.fiat? || txid?
+        end
+        after do
+          unlock_and_sub_funds
+          record_complete_operations!
+        end
+      end
+    end
+
+    event :manual_success do
+      transitions from: %i[transfering confirming errored under_review], to: :succeed do
         guard do
           currency.fiat? || txid?
         end
@@ -152,7 +174,7 @@ class Withdraw < ApplicationRecord
     end
 
     event :fail do
-      transitions from: %i[processing confirming skipped errored under_review], to: :failed
+      transitions from: %i[transfering processing confirming skipped errored under_review], to: :failed
       after do
         unlock_funds
         record_cancel_operations!
@@ -160,9 +182,11 @@ class Withdraw < ApplicationRecord
     end
 
     event :err do
-      transitions from: :processing, to: :errored, after: :add_error
+      transitions from: %i[processing transfering], to: :errored, after: :add_error
     end
   end
+
+  delegate :blockchain, to: :currency
 
   class << self
     def sum_query
@@ -211,10 +235,6 @@ class Withdraw < ApplicationRecord
       sum_1_month + sum * currency.get_price <= limits.limit_1_month
   end
 
-  def blockchain_api
-    currency.blockchain_api
-  end
-
   def confirmations
     return 0 if block_number.blank?
     return blockchain.processed_height - block_number if (blockchain.processed_height - block_number) >= 0
@@ -241,6 +261,10 @@ class Withdraw < ApplicationRecord
       updated_at:      updated_at.iso8601,
       completed_at:    completed_at&.iso8601,
       blockchain_txid: txid }
+  end
+
+  def money_amount
+    currency.money_currency.to_money amount
   end
 
   private
@@ -324,39 +348,3 @@ class Withdraw < ApplicationRecord
     AMQP::Queue.enqueue(:withdraw_coin, id: id) if currency.coin?
   end
 end
-
-# == Schema Information
-# Schema version: 20201125134745
-#
-# Table name: withdraws
-#
-#  id             :integer          not null, primary key
-#  member_id      :integer          not null
-#  beneficiary_id :bigint
-#  currency_id    :string(10)       not null
-#  amount         :decimal(32, 16)  not null
-#  fee            :decimal(32, 16)  not null
-#  txid           :string(128)
-#  aasm_state     :string(30)       not null
-#  block_number   :integer
-#  sum            :decimal(32, 16)  not null
-#  type           :string(30)       not null
-#  transfer_type  :integer
-#  tid            :string(64)       not null
-#  rid            :string(256)      not null
-#  note           :string(256)
-#  metadata       :json
-#  error          :json
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  completed_at   :datetime
-#
-# Indexes
-#
-#  index_withdraws_on_aasm_state            (aasm_state)
-#  index_withdraws_on_currency_id           (currency_id)
-#  index_withdraws_on_currency_id_and_txid  (currency_id,txid) UNIQUE
-#  index_withdraws_on_member_id             (member_id)
-#  index_withdraws_on_tid                   (tid)
-#  index_withdraws_on_type                  (type)
-#

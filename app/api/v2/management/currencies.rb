@@ -135,8 +135,8 @@ module API
                    values: { value: (0..18), message: 'management.currency.invalid_subunits' },
                    desc: -> { API::V2::Management::Entities::Currency.documentation[:subunits][:desc] }
           given type: ->(val) { val == 'coin' } do
-            optional :blockchain_key,
-                     values: { value: -> { ::Blockchain.pluck(:key) }, message: 'management.currency.blockchain_key_doesnt_exist' },
+            optional :blockchain_id,
+                     values: { message: 'management.currency.blockchain_id_doesnt_exist' },
                      desc: -> { 'Associated blockchain key which will perform transactions synchronization for currency.' }
             optional :parent_id,
                      values: { value: -> { Currency.coins_without_tokens.pluck(:id).map(&:to_s) }, message: 'management.currency.parent_id_doesnt_exist' },

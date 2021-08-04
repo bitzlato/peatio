@@ -4,6 +4,7 @@
 FactoryBot.define do
   factory :currency do
     trait :usd do
+      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
       code                 { 'usd' }
       name                 { 'US Dollar' }
       type                 { 'fiat' }
@@ -16,6 +17,7 @@ FactoryBot.define do
     end
 
     trait :eur do
+      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
       code                 { 'eur' }
       name                 { 'Euro' }
       type                 { 'fiat' }
@@ -29,11 +31,10 @@ FactoryBot.define do
     end
 
     trait :btc do
-      blockchain_key       { 'btc-testnet' }
+      association :blockchain, 'btc-testnet', strategy: :find_or_create, key: 'btc-testnet'
       code                 { 'btc' }
       name                 { 'Bitcoin' }
       type                 { 'coin' }
-      base_factor          { 100_000_000 }
       withdraw_limit_24h   { 0.1 }
       withdraw_limit_72h   { 1 }
       withdraw_fee         { 0.01 }
@@ -42,11 +43,10 @@ FactoryBot.define do
     end
 
     trait :eth do
-      blockchain_key       { 'eth-rinkeby' }
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                 { 'eth' }
       name                 { 'Ethereum' }
       type                 { 'coin' }
-      base_factor          { 1_000_000_000_000_000_000 }
       withdraw_limit_24h   { 0.1 }
       withdraw_limit_72h   { 1 }
       withdraw_fee         { 0.025 }
@@ -58,12 +58,11 @@ FactoryBot.define do
     end
 
     trait :trst do
-      blockchain_key       { 'eth-rinkeby' }
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                 { 'trst' }
       name                 { 'WeTrust' }
       type                 { 'coin' }
-      parent_id            { 'eth' }
-      base_factor          { 1_000_000 }
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
@@ -76,12 +75,11 @@ FactoryBot.define do
     end
 
     trait :tom do
-      blockchain_key       { 'eth-rinkeby' }
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                 { 'tom' }
       name                 { 'TOM' }
       type                 { 'coin' }
-      parent_id            { 'eth' }
-      base_factor          { 1_000_000 }
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
@@ -94,12 +92,11 @@ FactoryBot.define do
     end
 
     trait :ring do
-      blockchain_key       { 'eth-kovan' }
+      association :blockchain, 'eth-kovan', strategy: :find_or_create, key: 'eth-kovan'
       code                 { 'ring' }
       name                 { 'Evolution Land Global Token' }
       type                 { 'coin' }
-      parent_id            { 'eth' }
-      base_factor          { 1_000_000 }
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
@@ -109,11 +106,10 @@ FactoryBot.define do
     end
 
     trait :fake do
-      blockchain_key      { 'fake-testnet' }
+      association :blockchain, 'fake-testnet', strategy: :find_or_create, key: 'fake-testnet'
       code                { 'fake' }
       name                { 'Fake Coin' }
       type                { 'coin' }
-      base_factor         { 1_000_000 }
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }
       withdraw_fee        { 0.02 }
@@ -122,12 +118,11 @@ FactoryBot.define do
     end
 
     trait :xagm_cx do
-      blockchain_key      { 'eth-rinkeby' }
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                { 'xagm.cx' }
       name                { 'XAGm.cx' }
       type                { 'coin' }
-      parent_id           { 'eth' }
-      base_factor         { 1_000_000 }
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }
       withdraw_fee        { 0.02 }

@@ -11,14 +11,16 @@ class Currency < ApplicationRecord
   # == Attributes ===========================================================
 
   attr_readonly :id,
-                :type,
-                :base_factor
+                :type
 
   # Code is aliased to id because it's more user-friendly primary key.
   # It's preferred to use code where this attributes are equal.
   alias_attribute :code, :id
 
   # == Extensions ===========================================================
+
+
+  has_many :withdraws
 
   serialize :options, JSON unless Rails.configuration.database_support_json
 
@@ -36,10 +38,10 @@ class Currency < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain, foreign_key: :blockchain_key, primary_key: :key
+  belongs_to :blockchain, required: true
   has_and_belongs_to_many :wallets
 
-  has_one :parent, class_name: 'Currency', foreign_key: :id, primary_key: :parent_id
+  belongs_to :parent, class_name: 'Currency'
 
   # == Validations ==========================================================
 
@@ -55,17 +57,8 @@ class Currency < ApplicationRecord
             presence: true,
             numericality: { greater_than_or_equal_to: TOP_POSITION, only_integer: true }
 
-  validates :parent_id, allow_blank: true,
-            inclusion: { in: ->(_) { Currency.coins_without_tokens.pluck(:id).map(&:to_s) } },
-            if: :coin?
-
-  validates :blockchain_key,
-            inclusion: { in: ->(_) { Blockchain.pluck(:key).map(&:to_s) } },
-            if: :coin?
-
   validates :type, inclusion: { in: ->(_) { Currency.types.map(&:to_s) } }
   validates :options, length: { maximum: 1000 }
-  validates :base_factor, numericality: { greater_than_or_equal_to: 1, only_integer: true }
 
   validates :deposit_fee,
             :min_deposit_amount,
@@ -98,14 +91,23 @@ class Currency < ApplicationRecord
 
   before_validation { self.code = code.downcase }
   before_validation { self.deposit_fee = 0 unless fiat? }
-  before_validation { self.blockchain_key = parent.blockchain_key if token? && blockchain_key.blank? }
+  before_validation(if: :token?) { self.blockchain ||= parent.blockchain }
   before_validation(on: :create) { self.position = Currency.count + 1 unless position.present? }
 
   before_validation do
     self.erc20_contract_address = erc20_contract_address.try(:downcase) if erc20_contract_address.present?
   end
 
+  validate if: :parent_id do
+    errors.add :parent_id, 'wrong fiat/crypto nesting' unless fiat? == parent.fiat?
+    errors.add :parent_id, 'nesting currency must be token' unless token?
+    errors.add :parent_id, 'wrong parent currency' if parent.parent_id.present?
+  end
+
   before_update { update_position(self) if position_changed? }
+  delegate :key, to: :blockchain, prefix: true
+
+  delegate :base_factor, :to_money, to: :money_currency
 
   after_commit :wipe_cache
 
@@ -135,17 +137,9 @@ class Currency < ApplicationRecord
 
   # == Instance Methods =====================================================
 
-  delegate :explorer_transaction, :blockchain_api, :explorer_address, to: :blockchain
+  delegate :explorer_transaction, :explorer_address, to: :blockchain
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
-
-  # Make it optional because of
-  # super: no superclass method `server' for #<Blockchain:0x00007f96d400ae20>
-  if ENV.true?('CURRENCY_BLOCKCHAIN_CACHE')
-    def blockchain
-      Rails.cache.fetch("#{code}_blockchain", expires_in: 60) { Blockchain.find_by(key: blockchain_key) }
-    end
-  end
 
   def wipe_cache
     Rails.cache.delete_matched("currencies*")
@@ -153,6 +147,10 @@ class Currency < ApplicationRecord
 
   def initialize_defaults
     self.options = {} if options.blank?
+  end
+
+  def money_currency
+    @money_currency ||= Money::Currency.find! code
   end
 
   def link_wallets
@@ -213,41 +211,3 @@ class Currency < ApplicationRecord
     Math.log(base_factor, 10).round
   end
 end
-
-# == Schema Information
-# Schema version: 20201207134745
-#
-# Table name: currencies
-#
-#  id                    :string(10)       not null, primary key
-#  name                  :string(255)
-#  description           :text(65535)
-#  homepage              :string(255)
-#  blockchain_key        :string(32)
-#  parent_id             :string(255)
-#  type                  :string(30)       default("coin"), not null
-#  deposit_fee           :decimal(32, 16)  default(0.0), not null
-#  min_deposit_amount    :decimal(32, 16)  default(0.0), not null
-#  min_collection_amount :decimal(32, 16)  default(0.0), not null
-#  withdraw_fee          :decimal(32, 16)  default(0.0), not null
-#  min_withdraw_amount   :decimal(32, 16)  default(0.0), not null
-#  withdraw_limit_24h    :decimal(32, 16)  default(0.0), not null
-#  withdraw_limit_72h    :decimal(32, 16)  default(0.0), not null
-#  position              :integer          not null
-#  options               :json
-#  visible               :boolean          default(TRUE), not null
-#  deposit_enabled       :boolean          default(TRUE), not null
-#  withdrawal_enabled    :boolean          default(TRUE), not null
-#  base_factor           :bigint           default(1), not null
-#  precision             :integer          default(8), not null
-#  icon_url              :string(255)
-#  price                 :decimal(32, 16)  default(1.0), not null
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#
-# Indexes
-#
-#  index_currencies_on_parent_id  (parent_id)
-#  index_currencies_on_position   (position)
-#  index_currencies_on_visible    (visible)
-#

@@ -351,31 +351,3 @@ class Trade < ApplicationRecord
     )
   end
 end
-
-# == Schema Information
-# Schema version: 20210225123519
-#
-# Table name: trades
-#
-#  id             :integer          not null, primary key
-#  price          :decimal(32, 16)  not null
-#  amount         :decimal(32, 16)  not null
-#  total          :decimal(32, 16)  default(0.0), not null
-#  maker_order_id :integer          not null
-#  taker_order_id :integer          not null
-#  market_id      :string(20)       not null
-#  maker_id       :integer          not null
-#  taker_id       :integer          not null
-#  taker_type     :string(20)       default(""), not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#
-# Indexes
-#
-#  index_trades_on_created_at                (created_at)
-#  index_trades_on_maker_id                  (maker_id)
-#  index_trades_on_maker_order_id            (maker_order_id)
-#  index_trades_on_market_id_and_created_at  (market_id,created_at)
-#  index_trades_on_taker_id                  (taker_id)
-#  index_trades_on_taker_order_id            (taker_order_id)
-#

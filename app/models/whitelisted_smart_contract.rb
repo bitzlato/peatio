@@ -8,16 +8,11 @@ class WhitelistedSmartContract < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain, foreign_key: :blockchain_key, primary_key: :key
+  belongs_to :blockchain, touch: true, required: true
 
   # == Validations ==========================================================
 
-  validates :address, presence: true, uniqueness: { scope: :blockchain_key }
-
-  validates :blockchain_key,
-            presence: true,
-            inclusion: { in: ->(_) { Blockchain.pluck(:key).map(&:to_s) } }
-
+  validates :address, presence: true, uniqueness: { scope: :blockchain_id }
   validates :state, inclusion: { in: STATES }
 
   # == Scopes ===============================================================
@@ -25,27 +20,5 @@ class WhitelistedSmartContract < ApplicationRecord
   scope :active, -> { where(state: :active) }
   scope :ordered, -> { order(kind: :asc) }
 
-  after_save :update_blockchain
-
-  def update_blockchain
-    blockchain.touch
-  end
+  delegate :key, to: :blockchain, prefix: true
 end
-
-# == Schema Information
-# Schema version: 20210128144535
-#
-# Table name: whitelisted_smart_contracts
-#
-#  id             :bigint           not null, primary key
-#  description    :string(255)
-#  address        :string(255)      not null
-#  state          :string(30)       not null
-#  blockchain_key :string(32)       not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#
-# Indexes
-#
-#  index_whitelisted_smart_contracts_on_address_and_blockchain_key  (address,blockchain_key) UNIQUE
-#

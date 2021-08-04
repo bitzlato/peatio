@@ -17,20 +17,9 @@ module Workers
           return
         end
 
-        wallet = Wallet.deposit_wallet(deposit.currency.id)
-
-        unless wallet.present?
-          Rails.logger.warn do
-            'Unable to make deposit.'\
-            "No deposit wallet for #{deposit.currency}"
-          end
-          return
-        end
-
-
         Rails.logger.info("Create invoice for #{deposit.id}")
-        wallet_service = WalletService.new(wallet)
-        wallet_service.create_invoice! deposit
+
+        deposit.blockchain.gateway.create_invoice! deposit
 
         # Repeat again
       rescue Bitzlato::Client::WrongResponse => e
