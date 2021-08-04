@@ -36,10 +36,6 @@ describe Serializers::EventAPI::OrderCanceled do
   before do
     DatabaseCleaner.clean
     EventAPI.expects(:notify).with('market.btcusd.order_created', anything).once
-    AMQP::Queue.expects(:enqueue_event).with("private", "#{seller.uid}", "order", anything)
-    # side effect, publish account updated state
-    AMQP::Queue.expects(:enqueue_event).with("private", "#{seller.uid}", "account", anything)
-
     EventAPI.expects(:notify).with('market.btcusd.order_canceled', {
       id:                       1,
       market:                  'btcusd',
@@ -63,9 +59,6 @@ describe Serializers::EventAPI::OrderCanceled do
       created_at:              created_at.iso8601,
       canceled_at:             canceled_at.iso8601
     }).once
-    AMQP::Queue.expects(:enqueue_event).with("private", "#{seller.uid}", "order", anything)
-    # side effect, publish account updated state
-    AMQP::Queue.expects(:enqueue_event).with("private", "#{seller.uid}", "account", anything)
   end
 
   after do

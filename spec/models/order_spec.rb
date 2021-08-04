@@ -343,10 +343,7 @@ describe Order, '#trigger_event' do
       }
     end
 
-    before do
-      ::AMQP::Queue.expects(:enqueue_event).with('private', subject.member.uid, 'order', data)
-      ::AMQP::Queue.expects(:enqueue_event).with('private', subject.member.uid, 'account', anything)
-    end
+    before { ::AMQP::Queue.expects(:enqueue_event).with('private', subject.member.uid, 'order', data) }
 
     it { subject.trigger_event }
   end
@@ -390,7 +387,6 @@ describe Order, '#trigger_event' do
       it do
         subject.update!(state: 'done')
         ::AMQP::Queue.expects(:enqueue_event).with('private', subject.member.uid, 'order', data)
-        ::AMQP::Queue.expects(:enqueue_event).with('private', subject.member.uid, 'account', anything)
         subject.trigger_event
       end
     end

@@ -102,22 +102,8 @@ describe Serializers::EventAPI::TradeCompleted, 'Event API' do
       DatabaseCleaner.clean
       EventAPI.expects(:notify).with('model.account.created', anything).twice
       EventAPI.expects(:notify).with('market.btcusd.order_created', anything).twice
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "order", anything)
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "order", anything)
-      # side effect, publish account updated state
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "account", anything)
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "account", anything)
-
       EventAPI.expects(:notify).with('market.btcusd.order_updated', anything).once
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "order", anything)
-      # side effect, publish account updated state
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "account", anything)
-
       EventAPI.expects(:notify).with('market.btcusd.order_completed', anything).once
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "order", anything)
-      # side effect, publish account updated state
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "account", anything)
-
       EventAPI.expects(:notify).with('market.btcusd.trade_completed', {
         id:                     1,
         market:                 'btcusd',
@@ -139,9 +125,6 @@ describe Serializers::EventAPI::TradeCompleted, 'Event API' do
         taker_outcome_fee:      '0.0',
         completed_at:           completed_at.iso8601
       }).once
-      AMQP::Queue.expects(:enqueue_event).with("public", 'btcusd', "trades", anything)
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "trade", anything)
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "trade", anything)
     end
 
     after do
@@ -189,22 +172,8 @@ describe Serializers::EventAPI::TradeCompleted, 'Event API' do
       DatabaseCleaner.clean
       EventAPI.expects(:notify).with('model.account.created', anything).twice
       EventAPI.expects(:notify).with('market.btcusd.order_created', anything).twice
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "order", anything)
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "order", anything)
-      # side effect, publish account updated state
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "account", anything)
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "account", anything)
-
       EventAPI.expects(:notify).with('market.btcusd.order_updated', anything).once
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "order", anything)
-      # side effect, publish account updated state
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "account", anything)
-
       EventAPI.expects(:notify).with('market.btcusd.order_completed', anything).once
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "order", anything)
-      # side effect, publish account updated state
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "account", anything)
-
       EventAPI.expects(:notify).with('market.btcusd.trade_completed', {
         id:                     1,
         market:                 'btcusd',
@@ -226,9 +195,6 @@ describe Serializers::EventAPI::TradeCompleted, 'Event API' do
         taker_outcome_fee:      '0.0',
         completed_at:           completed_at.iso8601
       }).once
-      AMQP::Queue.expects(:enqueue_event).with("public", 'btcusd', "trades", anything)
-      AMQP::Queue.expects(:enqueue_event).with("private", maker.uid, "trade", anything)
-      AMQP::Queue.expects(:enqueue_event).with("private", taker.uid, "trade", anything)
     end
 
     after do

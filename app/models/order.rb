@@ -122,8 +122,7 @@ class Order < ApplicationRecord
         order = lock.find_by_id!(id)
         return unless order.state == ::Order::PENDING
 
-        account = order.hold_account!
-        account.lock_funds!(order.locked)
+        order.hold_account!.lock_funds!(order.locked)
         order.record_submit_operations!
         order.update!(state: ::Order::WAIT)
 
@@ -144,12 +143,10 @@ class Order < ApplicationRecord
       return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
 
       ActiveRecord::Base.transaction do
-        account = order.hold_account!
-        account.unlock_funds!(order.locked)
+        order.hold_account!.unlock_funds!(order.locked)
         order.record_cancel_operations!
 
         order.update!(state: ::Order::CANCEL)
-        AMQP::Queue.enqueue_event("private", order.member&.uid, 'account', order.member_account.as_json_for_event_api)
       end
     end
 
@@ -191,7 +188,6 @@ class Order < ApplicationRecord
     AMQP::Queue.enqueue(:order_processor,
                         { action: 'submit', order: attributes },
                         { persistent: false })
-    AMQP::Queue.enqueue_event("private", member&.uid, 'account', member_account.as_json_for_event_api)
   end
 
   def trigger_third_party_creation
@@ -230,7 +226,6 @@ class Order < ApplicationRecord
     return unless ord_type == 'limit' || state == 'done'
 
     ::AMQP::Queue.enqueue_event('private', member&.uid, 'order', for_notify)
-    ::AMQP::Queue.enqueue_event('private', member&.uid, 'account', member_account.as_json_for_event_api)
   end
 
   def side
@@ -355,11 +350,7 @@ class Order < ApplicationRecord
   end
 
   def member_balance
-    member_account.balance
-  end
-
-  def member_account
-    member.get_account(currency)
+    member.get_account(currency).balance
   end
 
   private
