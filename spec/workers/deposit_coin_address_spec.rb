@@ -5,7 +5,7 @@ describe Workers::AMQP::DepositCoinAddress do
   let(:member) { create(:member, :barong) }
   let(:address) { Faker::Blockchain::Bitcoin.address }
   let(:secret) { PasswordGenerator.generate(64) }
-  let(:wallet) { Wallet.deposit.find_by(blockchain_key: 'btc-testnet') }
+  let(:wallet) { Wallet.active_retired.deposit.find_by(blockchain_key: 'btc-testnet') }
   let(:payment_address) { member.payment_address(wallet.id) }
   let(:create_address_result) do
     { address: address,
@@ -15,11 +15,21 @@ describe Workers::AMQP::DepositCoinAddress do
 
   subject { member.payment_address(wallet.id).address }
 
+
   it 'raise error on databse connection error' do
-    Member.stubs(:find_by_id).raises(Mysql2::Error::ConnectionError.new(''))
-    expect {
-      Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
-    }.to raise_error Mysql2::Error::ConnectionError
+    if defined? Mysql2
+      Member.stubs(:find_by_id).raises(Mysql2::Error::ConnectionError.new(''))
+      expect {
+        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
+      }.to raise_error Mysql2::Error::ConnectionError
+    end
+
+    if defined? PG
+      Member.stubs(:find_by_id).raises(PG::Error.new(''))
+      expect {
+        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
+      }.to raise_error PG::Error
+    end
   end
 
   context 'wallet service' do

@@ -23,7 +23,7 @@ class AirdropService
 
   def perform
     self.class.currencies.each do |currency|
-      wallet = Wallet.deposit_wallet(currency.id)
+      wallet = Wallet.deposit_wallet(currency.id) || raise("No deposit wallet found for currency #{currency.id}")
       wallet.service.create_incentive_deposit!(
         member: @member,
         currency: currency,

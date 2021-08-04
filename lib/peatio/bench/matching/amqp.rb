@@ -5,7 +5,7 @@
 module Bench
   module Matching
     class AMQP
-      include Helpers
+      include Bench::Helpers
 
       def initialize(config)
         @config = config

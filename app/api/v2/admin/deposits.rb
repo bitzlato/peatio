@@ -122,7 +122,7 @@ module API
                    desc: -> { API::V2::Admin::Entities::Refund.documentation[:address][:desc] }
         end
         post '/deposits/:id/refund' do
-          admin_authorize! :wrrie, ::Deposit
+          admin_authorize! :write, ::Deposit
 
           deposit = Deposit.find(params[:id])
 
@@ -159,7 +159,7 @@ module API
 
           member   = Member.find_by!(uid: params[:uid])
           currency = Currency.find_by!(id: params[:currency_id])
-          wallet   = Wallet.deposit_wallet(currency.id)
+          wallet   = Wallet.active_deposit_wallet(currency.id)
 
           unless wallet.present?
             error!({ errors: ['admin.deposit.wallet_not_found'] }, 422)

@@ -13,6 +13,7 @@ ENV['MINIMUM_MEMBER_LEVEL_FOR_DEPOSIT']='3'
 ENV['MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW']='3'
 ENV['MINIMUM_MEMBER_LEVEL_FOR_TRADING']='3'
 ENV['JWT_PUBLIC_KEY']=nil
+ENV['VAULT_ENABLED']='false'
 
 # We remove lib/peatio.rb from LOAD_PATH because of conflict with peatio gem.
 # lib/peatio.rb is added to LOAD_PATH later after requiring gems.

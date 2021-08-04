@@ -19,6 +19,8 @@ describe API::V2::Admin::Withdraws, type: :request do
     create(:btc_withdraw, amount: 42.0, sum: 42.0, member: admin, aasm_state: :accepted)
     create(:btc_withdraw, amount: 11.0, sum: 11.0, member: level_3_member, aasm_state: :skipped)
     create(:btc_withdraw, amount: 12.0, sum: 12.0, member: level_3_member, aasm_state: :errored)
+    create(:btc_withdraw, amount: 10.0, sum: 10.0, member: level_3_member, aasm_state: :under_review)
+
   end
 
   describe 'GET /api/v2/admin/withdraws' do
@@ -41,6 +43,15 @@ describe API::V2::Admin::Withdraws, type: :request do
     end
 
     context 'ordering' do
+      it 'default descending by id' do
+        api_get url, token: token, params: { order_by: 'id' }
+
+        actual = JSON.parse(response.body)
+        expected = Withdraw.order(id: 'desc')
+
+        expect(actual.map { |a| a['id'] }).to eq expected.map(&:id)
+      end
+
       it 'ascending by id' do
         api_get url, token: token, params: { order_by: 'id', ordering: 'asc' }
 
@@ -90,12 +101,12 @@ describe API::V2::Admin::Withdraws, type: :request do
       end
 
       it 'by multiple states' do
-        api_get url, token: token, params: { state: [:skipped, :accepted] }
+        api_get url, token: token, params: { state: [:skipped, :accepted, :under_review] }
 
         actual = JSON.parse(response.body)
-        expected = Withdraw.where(aasm_state: [:skipped, :accepted])
+        expected = Withdraw.where(aasm_state: [:skipped, :accepted, :under_review])
 
-        expect(actual.map { |a| a['state'] }.uniq).to match_array %w[skipped accepted]
+        expect(actual.map { |a| a['state'] }.uniq).to match_array %w[skipped accepted under_review]
         expect(actual.length).to eq expected.count
         expect(actual.map { |a| a['id'] }).to match_array expected.map(&:id)
         expect(actual.map { |a| a['uid'] }).to match_array(expected.map { |d| d.member.uid })

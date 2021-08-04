@@ -27,11 +27,11 @@ class WalletService
   end
 
   def support_deposits_polling?
-    @adapter.respond_to?(:poll_deposits) && @wallet.settings['allow_deposits_polling']
+    @adapter.respond_to?(:poll_deposits)
   end
 
   def support_withdraws_polling?
-    @adapter.respond_to?(:poll_withdraws) && @wallet.settings['allow_withdraws_polling']
+    @adapter.respond_to?(:poll_withdraws)
   end
 
   def poll_withdraws!
@@ -76,9 +76,12 @@ class WalletService
 
       # TODO poll deposits for all currency in one time
       @adapter.poll_deposits.each do |intention|
-        next unless intention[:currency] == currency.id
-        deposit = Deposit.find_by(currency: intention[:currency], intention_id: intention[:id])
-        unless deposit.present?
+        unless intention[:currency] == currency.id
+          Rails.logger.debug("Intention has wrong currency #{intention[:currency]}<>#{currency.id}")
+          next
+        end
+        deposit = Deposit.find_by(currency_id: intention[:currency], intention_id: intention[:id])
+        if deposit.nil?
           Rails.logger.warn("No such deposit intention ##{intention[:id]} for #{currency.id} in wallet #{@wallet.name}")
           next
         end
@@ -94,19 +97,7 @@ class WalletService
           end
           deposit.accept!
 
-          next unless @wallet.settings['save_beneficiary']
-          # Save beneficiary for future withdraws
-          unless intention[:address].present?
-            Rails.logger.warn("Deposit #{deposit.id} has no address to save beneficiaries")
-            next
-          end
-          Rails.logger.info("Save #{intention[:address]} as beneficiary for #{deposit.account.id}")
-
-          currency.wallets.map(&:currencies).flatten.uniq.each do |currency|
-            deposit.account.member.beneficiaries
-              .create_with(data: { address: intention[:address] }, state: :active)
-              .find_or_create_by!(name: [@wallet.settings['beneficiary_prefix'], intention[:address]].compact.join(':'), currency: currency)
-          end
+          save_beneficiary currency, deposit, intention[:address] if @wallet.save_beneficiary
         end
       end
     end
@@ -152,7 +143,8 @@ class WalletService
           # Wallet max_balance will be in the platform currency
           max_balance:             (w.max_balance / deposit.currency.get_price.to_d).round(deposit.currency.precision, BigDecimal::ROUND_DOWN),
           min_collection_amount:   deposit.currency.min_collection_amount,
-          skip_deposit_collection: w.service.skip_deposit_collection? }
+          skip_deposit_collection: w.service.skip_deposit_collection?,
+          plain_settings:          w.plain_settings }
       end
     raise StandardError, "destination wallets don't exist" if destination_wallets.blank?
 
@@ -175,7 +167,7 @@ class WalletService
                        currency: deposit.currency.to_blockchain_api_settings)
 
     pa = PaymentAddress.find_by(wallet_id: @wallet.id, member: deposit.member, address: deposit.address)
-    # NOTE: Deposit wallet configuration is tricky because wallet UIR
+    # NOTE: Deposit wallet configuration is tricky because wallet URI
     #       is saved on Wallet model but wallet address and secret
     #       are saved in PaymentAddress.
     @adapter.configure(
@@ -198,8 +190,16 @@ class WalletService
 
   # TODO: We don't need deposit_spread anymore.
   def deposit_collection_fees!(deposit, deposit_spread)
-    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: deposit.currency.to_blockchain_api_settings)
+    configs = {
+      wallet:   @wallet.to_wallet_api_settings,
+      currency: deposit.currency.to_blockchain_api_settings
+    }
+
+    if deposit.currency.parent_id?
+      configs.merge!(parent_currency: deposit.currency.parent.to_blockchain_api_settings)
+    end
+
+    @adapter.configure(configs)
     deposit_transaction = Peatio::Transaction.new(hash:         deposit.txid,
                                                   txout:        deposit.txout,
                                                   to_address:   deposit.address,
@@ -212,16 +212,40 @@ class WalletService
                                                         deposit.currency.to_blockchain_api_settings)
 
     if transactions.present?
-      deposit.update(spread: deposit.spread.map { |s| s.merge(options: transactions.first.options) })
+      updated_spread = deposit.spread.map do |s|
+        deposit_options = s.fetch(:options, {}).symbolize_keys
+        transaction_options = transactions.first.options.presence || {}
+        general_options = deposit_options.merge(transaction_options)
+
+        s.merge(options: general_options)
+      end
+
+      deposit.update(spread: updated_spread)
+
       transactions.each { |t| save_transaction(t.as_json.merge(from_address: @wallet.address), deposit) }
     end
     transactions
   end
 
   def refund!(refund)
-    refund_transaction = Peatio::Transaction.new(to_address: refund.address,
-                                                 amount: refund.deposit.amount)
+    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
+                       currency: refund.deposit.currency.to_blockchain_api_settings)
 
+    pa = PaymentAddress.find_by(wallet_id: @wallet.id, member: refund.deposit.member, address: refund.deposit.address)
+    # NOTE: Deposit wallet configuration is tricky because wallet URI
+    #       is saved on Wallet model but wallet address and secret
+    #       are saved in PaymentAddress.
+    @adapter.configure(
+      wallet: @wallet.to_wallet_api_settings
+                     .merge(pa.details.symbolize_keys)
+                     .merge(address: pa.address)
+                     .tap { |s| s.merge!(secret: pa.secret) if pa.secret.present? }
+                     .compact
+    )
+
+    refund_transaction = Peatio::Transaction.new(to_address: refund.address,
+                                                 amount: refund.deposit.amount,
+                                                 currency_id: refund.deposit.currency_id)
     @adapter.create_transaction!(refund_transaction, subtract_fee: true)
   end
 
@@ -231,7 +255,7 @@ class WalletService
     @adapter.load_balance!
   rescue Peatio::Wallet::Error => e
     report_exception(e)
-    BlockchainService.new(wallet.blockchain).load_balance!(@wallet.address, currency.id)
+    BlockchainService.new(wallet.blockchain).load_balance!(@wallet.address, currency.id) unless wallet.blockchain.dummy?
   end
 
   def register_webhooks!(url)
@@ -243,8 +267,10 @@ class WalletService
   end
 
   def trigger_webhook_event(event)
+    # If there are erc20 currencies we should configure parent currency here
+    currency = @wallet.currencies.find { |e| e.parent_id == nil }
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: @wallet.currencies.first.to_blockchain_api_settings)
+                       currency: currency.to_blockchain_api_settings)
     @adapter.trigger_webhook_event(event)
   end
 
@@ -283,9 +309,13 @@ class WalletService
         left_amount = 0
       end
 
-      transaction = Peatio::Transaction.new(to_address:  dw[:address],
-                                            amount:      amount_for_wallet.to_d,
-                                            currency_id: deposit.currency_id)
+      transaction_params = { to_address:  dw[:address],
+                             amount: amount_for_wallet.to_d,
+                             currency_id: deposit.currency_id,
+                             options:     dw[:plain_settings]
+                           }.compact
+
+      transaction = Peatio::Transaction.new(transaction_params)
 
       # Tx will not be collected to this destination wallet
       transaction.status = :skipped if dw[:skip_deposit_collection]
@@ -307,6 +337,26 @@ class WalletService
       unless sp.map(&:amount).sum == original_amount
         raise Error, "Deposit spread failed deposit.amount != collection_spread.values.sum"
       end
+    end
+  end
+
+  # Save beneficiary for future withdraws
+  def save_beneficiary(currency, deposit, address)
+    unless address.present?
+      Rails.logger.warn("Deposit #{deposit.id} has no address to save beneficiaries")
+      return
+    end
+    Rails.logger.info("Save #{address} as beneficiary for #{deposit.account.id}")
+
+    beneficiary_name = [@wallet.settings['beneficiary_prefix'], address].compact.join(':')
+
+    currency.wallets.map(&:currencies).flatten.uniq.each do |currency|
+      deposit.account.member.beneficiaries
+        .create_with(data: { address: address }, state: :active)
+        .find_or_create_by!(
+          name: beneficiary_name,
+          currency: currency
+      )
     end
   end
 

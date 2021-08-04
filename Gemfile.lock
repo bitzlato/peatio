@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/bitzlato/peatio-core
+  remote: https://github.com/bitzlato/peatio-core.git
   revision: 9c62876448c7d002f581383d0c5d84473421a31c
   specs:
     peatio (2.6.4)
@@ -17,13 +17,13 @@ GIT
       thin
 
 GIT
-  remote: https://github.com/brandymint/capistrano-tasks
+  remote: https://github.com/brandymint/capistrano-tasks.git
   revision: ed94c975c36a7ba41a173bddf6dba46034ca41e2
   specs:
     capistrano-tasks (0.0.1)
 
 GIT
-  remote: https://github.com/caspark/guard-rspec
+  remote: https://github.com/caspark/guard-rspec.git
   revision: 407ef8c62f3abad575bb66d53c02ba062a5ee8af
   specs:
     guard-rspec (4.7.3)
@@ -31,17 +31,17 @@ GIT
       guard-compat (~> 1.1)
 
 GIT
-  remote: https://github.com/finfex/bitzlato
-  revision: 53b9c814a0be82f7d39c36abc4b9f37770bff405
+  remote: https://github.com/finfex/bitzlato.git
+  revision: 76760712d4e91654214191d9a1cb652d47c1e03f
   branch: main
   specs:
-    bitzlato (0.1.8)
+    bitzlato (0.1.9)
       faraday (>= 0.17)
       json (~> 2.0)
       jwt (~> 2.3.0.dev)
 
 GIT
-  remote: https://github.com/finfex/vault-rails
+  remote: https://github.com/finfex/vault-rails.git
   revision: 6b85d4a9eb448ff8d54e1b3b06d3ca08bbf38289
   specs:
     vault-rails (0.6.0)
@@ -49,20 +49,20 @@ GIT
       vault (~> 0.14)
 
 GIT
-  remote: https://github.com/groovenauts/capistrano-systemd-multiservice
+  remote: https://github.com/groovenauts/capistrano-systemd-multiservice.git
   revision: 955b99cc7588521ddc26ccd523ebba306e16fa0a
   specs:
     capistrano-systemd-multiservice (0.1.0.beta12)
       capistrano (>= 3.7.0, < 3.17.0)
 
 GIT
-  remote: https://github.com/jwt/ruby-jwt
-  revision: 7ca147efe4215bccb34d2c7e8122658b9d8cd798
+  remote: https://github.com/jwt/ruby-jwt.git
+  revision: 3b4a1abf9f26a01de81fa8b81d4e62cc540212cd
   specs:
     jwt (2.3.0.dev)
 
 GIT
-  remote: https://github.com/seuros/capistrano-puma
+  remote: https://github.com/seuros/capistrano-puma.git
   revision: 285b45f51d0662e760cc5e75f15614589a2be170
   specs:
     capistrano3-puma (5.0.4)
@@ -75,48 +75,48 @@ GEM
   specs:
     aasm (5.0.8)
       concurrent-ruby (~> 1.0)
-    actioncable (5.2.4.6)
-      actionpack (= 5.2.4.6)
+    actioncable (5.2.4.5)
+      actionpack (= 5.2.4.5)
       nio4r (~> 2.0)
       websocket-driver (>= 0.6.1)
-    actionmailer (5.2.4.6)
-      actionpack (= 5.2.4.6)
-      actionview (= 5.2.4.6)
-      activejob (= 5.2.4.6)
+    actionmailer (5.2.4.5)
+      actionpack (= 5.2.4.5)
+      actionview (= 5.2.4.5)
+      activejob (= 5.2.4.5)
       mail (~> 2.5, >= 2.5.4)
       rails-dom-testing (~> 2.0)
-    actionpack (5.2.4.6)
-      actionview (= 5.2.4.6)
-      activesupport (= 5.2.4.6)
+    actionpack (5.2.4.5)
+      actionview (= 5.2.4.5)
+      activesupport (= 5.2.4.5)
       rack (~> 2.0, >= 2.0.8)
       rack-test (>= 0.6.3)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    actionview (5.2.4.6)
-      activesupport (= 5.2.4.6)
+    actionview (5.2.4.5)
+      activesupport (= 5.2.4.5)
       builder (~> 3.1)
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
-    activejob (5.2.4.6)
-      activesupport (= 5.2.4.6)
+    activejob (5.2.4.5)
+      activesupport (= 5.2.4.5)
       globalid (>= 0.3.6)
-    activemodel (5.2.4.6)
-      activesupport (= 5.2.4.6)
-    activerecord (5.2.4.6)
-      activemodel (= 5.2.4.6)
-      activesupport (= 5.2.4.6)
+    activemodel (5.2.4.5)
+      activesupport (= 5.2.4.5)
+    activerecord (5.2.4.5)
+      activemodel (= 5.2.4.5)
+      activesupport (= 5.2.4.5)
       arel (>= 9.0)
-    activestorage (5.2.4.6)
-      actionpack (= 5.2.4.6)
-      activerecord (= 5.2.4.6)
+    activestorage (5.2.4.5)
+      actionpack (= 5.2.4.5)
+      activerecord (= 5.2.4.5)
       marcel (~> 0.3.1)
-    activesupport (5.2.4.6)
+    activesupport (5.2.4.5)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
@@ -181,7 +181,9 @@ GEM
       base58 (~> 0.2.2)
     clamp (1.3.2)
     coderay (1.1.3)
-    concurrent-ruby (1.1.9)
+    composite_primary_keys (11.3.1)
+      activerecord (~> 5.2.4)
+    concurrent-ruby (1.1.8)
     connection_pool (2.2.5)
     cookiejar (0.3.3)
     crack (0.4.5)
@@ -238,20 +240,24 @@ GEM
       railties (>= 4.2.0)
     faker (1.9.6)
       i18n (>= 0.7)
-    faraday (1.4.2)
+    faraday (1.5.1)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
       faraday-excon (~> 1.1)
+      faraday-httpclient (~> 1.0.1)
       faraday-net_http (~> 1.0)
       faraday-net_http_persistent (~> 1.1)
+      faraday-patron (~> 1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords (>= 0.0.4)
     faraday-em_http (1.0.0)
     faraday-em_synchrony (1.0.0)
     faraday-excon (1.1.0)
+    faraday-httpclient (1.0.1)
     faraday-net_http (1.0.1)
-    faraday-net_http_persistent (1.1.0)
-    faraday_middleware (1.0.0)
+    faraday-net_http_persistent (1.2.0)
+    faraday-patron (1.0.0)
+    faraday_middleware (1.1.0)
       faraday (~> 1.0)
     faye (1.4.0)
       cookiejar (>= 0.3.0)
@@ -261,14 +267,14 @@ GEM
       multi_json (>= 1.0.0)
       rack (>= 1.0.0)
       websocket-driver (>= 0.5.1)
-    faye-websocket (0.11.1)
+    faye-websocket (0.11.0)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
     ffi (1.15.0)
     figaro (1.1.1)
       thor (~> 0.14)
     foreman (0.87.2)
-    formatador (0.2.5)
+    formatador (0.3.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     god (0.13.7)
@@ -294,13 +300,13 @@ GEM
       rack
     grape_on_rails_routes (0.3.2)
       rails (>= 3.1.1)
-    guard (2.16.2)
+    guard (2.18.0)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
       lumberjack (>= 1.0.12, < 2.0)
       nenv (~> 0.1)
       notiffany (~> 0.0)
-      pry (>= 0.9.12)
+      pry (>= 0.13.0)
       shellany (~> 0.0)
       thor (>= 0.18.1)
     guard-compat (1.2.1)
@@ -338,7 +344,7 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
-    loofah (2.9.1)
+    loofah (2.9.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     lumberjack (1.2.8)
@@ -352,8 +358,8 @@ GEM
     mimemagic (0.3.10)
       nokogiri (~> 1)
       rake
-    mini_mime (1.1.0)
-    mini_portile2 (2.5.3)
+    mini_mime (1.0.3)
+    mini_portile2 (2.5.0)
     minitest (5.14.4)
     mocha (1.12.0)
     msgpack (1.4.2)
@@ -370,7 +376,7 @@ GEM
       net-ssh (>= 2.6.5, < 7.0.0)
     net-ssh (6.1.0)
     nio4r (2.5.7)
-    nokogiri (1.11.6)
+    nokogiri (1.11.2)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
     notiffany (0.1.3)
@@ -390,7 +396,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     public_suffix (4.0.6)
-    puma (5.3.2)
+    puma (5.4.0)
       nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
@@ -402,27 +408,27 @@ GEM
       rack (>= 1.6.0)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
-    rails (5.2.4.6)
-      actioncable (= 5.2.4.6)
-      actionmailer (= 5.2.4.6)
-      actionpack (= 5.2.4.6)
-      actionview (= 5.2.4.6)
-      activejob (= 5.2.4.6)
-      activemodel (= 5.2.4.6)
-      activerecord (= 5.2.4.6)
-      activestorage (= 5.2.4.6)
-      activesupport (= 5.2.4.6)
+    rails (5.2.4.5)
+      actioncable (= 5.2.4.5)
+      actionmailer (= 5.2.4.5)
+      actionpack (= 5.2.4.5)
+      actionview (= 5.2.4.5)
+      activejob (= 5.2.4.5)
+      activemodel (= 5.2.4.5)
+      activerecord (= 5.2.4.5)
+      activestorage (= 5.2.4.5)
+      activesupport (= 5.2.4.5)
       bundler (>= 1.3.0)
-      railties (= 5.2.4.6)
+      railties (= 5.2.4.5)
       sprockets-rails (>= 2.0.0)
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.3.0)
       loofah (~> 2.3)
-    railties (5.2.4.6)
-      actionpack (= 5.2.4.6)
-      activesupport (= 5.2.4.6)
+    railties (5.2.4.5)
+      actionpack (= 5.2.4.5)
+      activesupport (= 5.2.4.5)
       method_source
       rake (>= 0.8.7)
       thor (>= 0.19.0, < 2.0)
@@ -441,7 +447,7 @@ GEM
     regexp_parser (2.1.1)
     reline (0.2.4)
       io-console (~> 0.5)
-    rexml (3.2.4)
+    rexml (3.2.5)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -488,14 +494,14 @@ GEM
       parser
     sd_notify (0.1.1)
     semver2 (3.4.2)
-    sentry-rails (4.5.1)
+    sentry-rails (4.6.4)
       railties (>= 5.0)
-      sentry-ruby-core (~> 4.5.0)
-    sentry-ruby (4.5.1)
+      sentry-ruby-core (~> 4.6.0)
+    sentry-ruby (4.6.4)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       faraday (>= 1.0)
-      sentry-ruby-core (= 4.5.1)
-    sentry-ruby-core (4.5.1)
+      sentry-ruby-core (= 4.6.4)
+    sentry-ruby-core (4.6.4)
       concurrent-ruby
       faraday
     shellany (0.0.1)
@@ -535,7 +541,7 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    websocket-driver (0.7.5)
+    websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
 
@@ -544,6 +550,7 @@ PLATFORMS
 
 DEPENDENCIES
   aasm (~> 5.0.8)
+  addressable (>= 2.8.0)
   annotate (~> 3.1.0)
   arel-is-blank (~> 1.0.0)
   bitzlato!
@@ -567,6 +574,7 @@ DEPENDENCIES
   capistrano-tasks!
   capistrano3-puma!
   cash-addr (~> 0.2.0)
+  composite_primary_keys (~> 11.3.1)
   database_cleaner (~> 1.7)
   digest-sha3 (~> 1.1.0)
   dotenv
@@ -616,6 +624,7 @@ DEPENDENCIES
   ransack (~> 2.3.2)
   rbtree (~> 0.4.2)
   redis (~> 4.1.2)
+  rexml (>= 3.2.5)
   rspec
   rspec-rails (~> 3.8, >= 3.8.2)
   rspec-retry (~> 0.6)
@@ -636,7 +645,7 @@ DEPENDENCIES
   webmock (~> 3.5)
 
 RUBY VERSION
-   ruby 2.6.6p146
+   ruby 2.7.4p191
 
 BUNDLED WITH
-   2.2.17
+   2.1.4

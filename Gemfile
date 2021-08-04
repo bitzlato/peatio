@@ -2,9 +2,8 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-git_source(:github) { |repo_slug| "https://github.com/#{repo_slug}" }
 
-ruby '~> 2.6'
+ruby File.read('.ruby-version')
 
 gem 'ransack', '~> 2.3.2'
 gem 'rails', '~> 5.2.4.5'
@@ -59,7 +58,12 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'net-http-persistent', '~> 3.0.1'
 gem 'influxdb', '~> 0.7.0'
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
+gem 'composite_primary_keys', '~> 11.3.1'
 gem 'dotenv'
+
+# Security versions of deep dependencies
+gem "addressable", ">= 2.8.0"
+gem "rexml", ">= 3.2.5"
 
 group :development, :test do
   gem 'irb'

@@ -1,3 +1,6 @@
-currencies:
-  bbb: 0.1
-  uuu: 5000
+currencies: []
+
+# Example
+# currencies:
+#  bbb: 0.1
+#  uuu: 5000

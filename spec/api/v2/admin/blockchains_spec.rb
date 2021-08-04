@@ -115,7 +115,7 @@ describe API::V2::Admin::Blockchains, type: :request do
 
       expect(response.headers.fetch('Total')).to eq '3'
       expect(result.size).to eq 2
-      expect(result.first['key']).to eq 'eth-kovan'
+      expect(result.first['key']).to eq 'btc-testnet'
 
       api_get '/api/v2/admin/blockchains', params: { limit: 1, page: 2 }, token: token
       result = JSON.parse(response.body)
@@ -391,7 +391,6 @@ describe API::V2::Admin::Blockchains, type: :request do
           expect(Deposits::Coin.where(currency: currency).exists?).to be false
 
           api_post '/api/v2/admin/blockchains/process_block', token: token, params: { block_number: block_number, id: blockchain.id }
-          result = JSON.parse(response.body)
           expect(response).to be_successful
           expect(Deposits::Coin.where(currency: currency).exists?).to be true
         end

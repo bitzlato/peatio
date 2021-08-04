@@ -10,7 +10,7 @@
     "license": {
       "url": "https://github.com/openware/peatio/blob/master/LICENSE.md"
     },
-    "version": "3.1.0"
+    "version": "3.0.0"
   },
   "swagger": "2.0",
   "produces": [

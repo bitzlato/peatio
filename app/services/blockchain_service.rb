@@ -49,6 +49,8 @@ class BlockchainService
     block = @adapter.fetch_block!(block_number)
     deposits = filter_deposits(block)
     withdrawals = filter_withdrawals(block)
+
+    update_fees!(block)
     # TODO: Process Transactions with `pending` status
 
     accepted_deposits = []
@@ -65,6 +67,15 @@ class BlockchainService
     @latest_block_number = nil
   end
 
+  def update_fees!(block)
+    block.each do |tx|
+      Transaction
+        .where(currency_id: tx.currency_id, txid: tx.hash)
+        .where('fee is null or block_number is null')
+        .update_all fee: tx.fee, block_number: tx.block_number
+    end
+  end
+
   def update_height(block_number)
     raise Error, "#{blockchain.name} height was reset." if blockchain.height != blockchain.reload.height
 
@@ -76,7 +87,7 @@ class BlockchainService
   private
 
   def filter_deposits(block)
-    addresses = PaymentAddress.where(wallet: Wallet.deposit.with_currency(@currencies.codes), address: block.transactions.map(&:to_address)).pluck(:address)
+    addresses = PaymentAddress.where(wallet: Wallet.deposit_wallets(@currencies.codes), address: block.transactions.map(&:to_address)).pluck(:address)
     block.select { |transaction| transaction.to_address.in?(addresses) }
   end
 

@@ -101,18 +101,36 @@ describe Order, '#submit' do
     end
   end
 
-  it 'mysql connection error' do
-    ActiveRecord::Base.stubs(:transaction).raises(Mysql2::Error::ConnectionError.new(''))
-    expect { Order.submit(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
+  if defined? Mysql2
+    it 'mysql connection error' do
+      ActiveRecord::Base.stubs(:transaction).raises(Mysql2::Error::ConnectionError.new(''))
+      expect { Order.submit(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
+    end
+  end
+
+  if defined? PG
+    it 'postgresql connection error' do
+      ActiveRecord::Base.stubs(:transaction).raises(PG::Error.new(''))
+      expect { Order.cancel(order.id) }.to raise_error(PG::Error)
+    end
   end
 end
 
 describe Order, '#cancel' do
   let(:order) { create(:order_bid, :with_deposit_liability, state: 'pending', price: '12.32'.to_d, volume: '123.12345678') }
 
-  it 'mysql connection error' do
-    ActiveRecord::Base.stubs(:transaction).raises(Mysql2::Error::ConnectionError.new(''))
-    expect { Order.cancel(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
+  if defined? Mysql2
+    it 'mysql connection error' do
+      ActiveRecord::Base.stubs(:transaction).raises(Mysql2::Error::ConnectionError.new(''))
+      expect { Order.cancel(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
+    end
+  end
+
+  if defined? PG
+    it 'postgresql connection error' do
+      ActiveRecord::Base.stubs(:transaction).raises(PG::Error.new(''))
+      expect { Order.cancel(order.id) }.to raise_error(PG::Error)
+    end
   end
 end
 

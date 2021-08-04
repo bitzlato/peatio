@@ -17,6 +17,8 @@ module Peatio
     # Eager loading app dir.
     config.eager_load_paths += Dir[Rails.root.join('app')]
 
+    config.autoload_paths += Dir["#{config.root}/db/migrate/concerns/**/"]
+
     # Eager load constants from lib/peatio
     # There is a lot of constants used over the whole application.
     #   lib/peatio/aasm/locking.rb => AASM::Locking
@@ -31,7 +33,7 @@ module Peatio
 
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
-    config.time_zone = ENV.fetch('TIMEZONE', File.read('/etc/timezone').strip)
+    config.time_zone = ENV.fetch('TIMEZONE', 'UTC')
 
     # Configure relative url root by setting URL_ROOT_PATH environment variable.
     # Used by microkube with API Gateway.

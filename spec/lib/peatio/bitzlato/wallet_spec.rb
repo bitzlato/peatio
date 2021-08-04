@@ -10,9 +10,10 @@ describe Bitzlato::Wallet do
 
     before do
       wallet.configure(settings)
-      ENV['BITZLATO_API_KEY']=nil
-      ENV['BITZLATO_API_URL']=nil
-      ENV['BITZLATO_API_CLIENT_UID']=nil
+      ENV['BITZLATO_API_KEY']=key.to_json
+      ENV['BITZLATO_API_URL']=uri
+      ENV['BITZLATO_API_CLIENT_UID']='merchant_uid'
+      ENV['BITZLATO_WITHDRAW_POLLING_METHODS']='voucher,payment'
     end
 
     let(:uri) { 'http://127.0.0.1:8000' }
@@ -23,11 +24,8 @@ describe Bitzlato::Wallet do
        "d":"nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk"}
     }
 
-    let(:withdraw_method) { 'voucher' }
-
     let(:settings) do
       {
-        wallet: { uri: uri, key: key, uid: 'merchant_uid', withdraw_method: withdraw_method, withdraw_polling_methods: ['vouchers', 'payments'] },
         currency: { id: :btc },
       }
     end
@@ -160,7 +158,11 @@ describe Bitzlato::Wallet do
       }
 
       context :voucher do
-        let(:withdraw_method) { 'voucher' }
+        before do
+          Bitzlato::Wallet.send(:remove_const, :WITHDRAW_METHOD)
+          Bitzlato::Wallet::WITHDRAW_METHOD = 'voucher'
+        end
+
         it 'create withdrawal transaction' do
           wallet.expects(:create_voucher!)
           wallet.create_transaction!(source_transaction)
@@ -168,7 +170,11 @@ describe Bitzlato::Wallet do
       end
 
       context :payment do
-        let(:withdraw_method) { 'payment' }
+        before do
+          Bitzlato::Wallet.send(:remove_const, :WITHDRAW_METHOD)
+          Bitzlato::Wallet::WITHDRAW_METHOD = 'payment'
+        end
+
         it 'create withdrawal transaction' do
           wallet.expects(:create_payment!)
           wallet.create_transaction!(source_transaction)

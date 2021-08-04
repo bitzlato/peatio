@@ -6,8 +6,8 @@ module Bitzlato
       attr_accessor :is_done, :withdraw_id, :currency, :amount
     end
 
-    WITHDRAW_METHODS = %w[voucher payment]
-    WITHDRAW_POLLING_METHODS = %w[vouchers payments]
+    WITHDRAW_METHODS = %w[payment voucher]
+    WITHDRAW_METHOD = ENV.fetch('BITZLATO_WITHDRAW_METHOD', WITHDRAW_METHODS.first)
 
     def initialize(features = {})
       @features = features
@@ -17,25 +17,17 @@ module Bitzlato
     def configure(settings = {})
       # Clean client state during configure.
       @client = nil
-
       @settings = settings
-
-      @wallet = @settings.fetch(:wallet) do
-        raise Peatio::Wallet::MissingSettingError, :wallet
-      end.slice(:uri, :key, :uid)
     end
 
     def create_transaction!(transaction, options = {})
-      withdraw_method = @settings.dig(:wallet, :withdraw_method)
-      raise Peatio::Wallet::MissingSettingError, 'wallet.withdraw_method' unless WITHDRAW_METHODS.include? withdraw_method
-
-      case withdraw_method
+      case WITHDRAW_METHOD
       when 'voucher'
         create_voucher! transaction, options
       when 'payment'
         create_payment! transaction, options
       else
-        raise Peatio::Wallet::ClientError, "Unknown withdraw_polling_method specified (#{@withdraw_method})"
+        raise Peatio::Wallet::ClientError, "Unknown withdraw_polling_method specified (#{WITHDRAW_METHOD})"
       end
     end
 
@@ -126,27 +118,28 @@ module Bitzlato
     end
 
     def poll_withdraws
-      withdraws = []
-
-      withdraw_polling_methods = @settings.dig(:wallet, :withdraw_polling_methods)
-      raise Peatio::Wallet::MissingSettingError, 'wallet.withdraw_polling_methods' unless withdraw_polling_methods.present? && (withdraw_polling_methods - WITHDRAW_POLLING_METHODS).empty?
-
-      withdraw_polling_methods.each do |method|
+      withdraw_polling_methods.map do |method|
         case method
-        when 'vouchers'
-          withdraws += poll_vouchers
-        when 'payments'
-          withdraws += poll_payments
+        when 'voucher'
+          poll_vouchers
+        when 'payment'
+          poll_payments
         else
-          Rails.logger.error("Unknown withdraw_polling_methods (#{method})")
-          next
+          report_exception(
+            Peatio::Wallet::MissingSettingError.new(
+              "Unknwo bitzlato withdraw polling method #{method}"
+            )
+          )
+          []
         end
-      end
-
-      withdraws
+      end.flatten
     end
 
     private
+
+    def withdraw_polling_methods
+      ENV.fetch('BITZLATO_WITHDRAW_POLLING_METHODS', WITHDRAW_METHOD).split(',')
+    end
 
     def poll_payments
       client
@@ -190,9 +183,9 @@ module Bitzlato
 
     def client
       @client ||= Bitzlato::Client
-        .new(home_url: ENV.fetch('BITZLATO_API_URL', @wallet.fetch(:uri)),
-             key: ENV.fetch('BITZLATO_API_KEY', @wallet.fetch(:key)).yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym),
-             uid: ENV.fetch('BITZLATO_API_CLIENT_UID', @wallet.fetch(:uid)).to_i,
+        .new(home_url: ENV.fetch('BITZLATO_API_URL'),
+             key: ENV.fetch('BITZLATO_API_KEY').yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym),
+             uid: ENV.fetch('BITZLATO_API_CLIENT_UID').to_i,
              logger: ENV.true?('BITZLATO_API_LOGGER'))
     end
   end
