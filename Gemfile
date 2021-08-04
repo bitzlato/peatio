@@ -65,11 +65,13 @@ gem 'dotenv'
 gem "addressable", ">= 2.8.0"
 gem "rexml", ">= 3.2.5"
 
+# Yeah! We use pry in production!
+gem 'pry-byebug',   '~> 3.7'
+
 group :development, :test do
   gem 'irb'
   gem 'bump',         '~> 0.7'
   gem 'faker',        '~> 1.8'
-  gem 'pry-byebug',   '~> 3.7'
   gem 'bullet',       '~> 5.9'
   gem 'grape_on_rails_routes', '~> 0.3.2'
 end
