@@ -18,13 +18,6 @@ class BlockchainService
     @latest_block_number ||= @adapter.latest_block_number
   end
 
-  def load_balance!(address, currency_id)
-    @adapter.load_balance_of_address!(address, currency_id)
-  rescue Peatio::Blockchain::Error => e
-    report_exception(e)
-    raise BalanceLoadError
-  end
-
   def case_sensitive?
     @adapter.features[:case_sensitive]
   end

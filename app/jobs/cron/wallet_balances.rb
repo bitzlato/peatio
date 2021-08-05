@@ -11,7 +11,7 @@ module Jobs
             next
           end
         end
-        sleep 60
+        sleep 30
       end
     end
   end

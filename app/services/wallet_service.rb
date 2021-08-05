@@ -5,7 +5,7 @@ class WalletService
 
   def initialize(wallet)
     @wallet = wallet
-    @adapter = Peatio::Wallet.registry[wallet.gateway.to_sym].new(wallet.settings.symbolize_keys)
+    @adapter = wallet.adapter
   end
 
   def create_invoice!(deposit)
@@ -103,12 +103,6 @@ class WalletService
     end
   end
 
-  def create_address!(uid, pa_details)
-    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: @wallet.currencies.first.to_blockchain_api_settings)
-    @adapter.create_address!(uid: uid, pa_details: pa_details)
-  end
-
   def build_withdrawal!(withdrawal)
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                        currency: withdrawal.currency.to_blockchain_api_settings)
@@ -195,9 +189,6 @@ class WalletService
   end
 
   def refund!(refund)
-    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: refund.deposit.currency.to_blockchain_api_settings)
-
     pa = PaymentAddress.find_by(wallet_id: @wallet.id, member: refund.deposit.member, address: refund.deposit.address)
     # NOTE: Deposit wallet configuration is tricky because wallet URI
     #       is saved on Wallet model but wallet address and secret
@@ -214,15 +205,6 @@ class WalletService
                                                  amount: refund.deposit.amount,
                                                  currency_id: refund.deposit.currency_id)
     @adapter.create_transaction!(refund_transaction, subtract_fee: true)
-  end
-
-  def load_balance!(currency)
-    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
-                       currency: currency)
-    @adapter.load_balance!
-  rescue Peatio::Wallet::Error => e
-    report_exception(e)
-    BlockchainService.new(wallet.blockchain).load_balance!(@wallet.address, currency.id) unless wallet.blockchain.dummy?
   end
 
   def register_webhooks!(url)

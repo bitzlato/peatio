@@ -155,6 +155,10 @@ class Currency < ApplicationRecord
     self.options = {} if options.blank?
   end
 
+  def money_currency
+    @money_currency ||= Money::Currency.find code
+  end
+
   def link_wallets
     if parent_id.present?
       # Iterate through active deposit/withdraw wallets

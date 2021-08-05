@@ -1,0 +1,570 @@
+---
+rub:
+  priority: 1
+  iso_code: RUB
+  name: Russian Ruble
+  symbol: "₽"
+  alternate_symbols:
+  - руб.
+  - р.
+  subunit: Kopeck
+  subunit_to_unit: 100
+  symbol_first: false
+  html_entity: "&#x20BD;"
+  decimal_mark: ","
+  thousands_separator: "."
+  iso_numeric: '643'
+  smallest_denomination: 1
+  is_crypto: false
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 1
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 150
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 150
+
+usd:
+  priority: 2
+  iso_code: USD
+  name: Американский Доллар
+  symbol: "$"
+  disambiguate_symbol: US$
+  alternate_symbols:
+  - US$
+  subunit: Cent
+  subunit_to_unit: 100
+  symbol_first: true
+  html_entity: "$"
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: '840'
+  smallest_denomination: 1
+  is_crypto: false
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 2
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 3
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 3
+
+btc:
+  priority: 3
+  iso_code: BTC
+  name: Bitcoin
+  symbol: B⃦
+  alternate_symbols: []
+  subunit: Satoshi
+  subunit_to_unit: 100000000
+  symbol_first: false
+  html_entity: "&#x20bf;"
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 3
+
+  # минимальная сумма валюты на прием (из minGetSum) 0.001
+  minimal_input_value: 0.001
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut) 0.004
+  minimal_output_value: 0.004
+
+# Курс 126_000 рублей
+ltc:
+  priority: 4
+  iso_code: LTC
+  name: Litecoin
+  symbol: Ł
+  alternate_symbols: []
+  subunit: litoshis
+  # Source: https://en.wikipedia.org/wiki/Litecoin
+  subunit_to_unit: 100000000
+  symbol_first: false
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+  authorized_round: 5
+
+  local_id: 4
+  minimal_input_value: 0.05
+  minimal_output_value: 0.1
+
+eth:
+  priority: 5
+  iso_code: ETH
+  name: Ethereum
+  symbol: Ξ
+  alternate_symbols: []
+  subunit: Gwei
+  # может быть 10−18 степени, но мы останавливаемся на Gwey
+  # https://en.wikipedia.org/wiki/Ethereum
+  subunit_to_unit: 1_000_000_000
+  base_factor: 18
+  symbol_first: false
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  authorized_round: 6
+  is_crypto: true
+
+  local_id: 5
+  minimal_input_value: 0.01
+  minimal_output_value: 0.01
+
+# Darkcoin Dash was originally released as XCoin (XCO
+dsh:
+  priority: 6
+  iso_code: DSH
+  name: Dash
+  symbol:
+  alternate_symbols: []
+  subunit:
+  # Как у BTC, потому что это форл BTC
+  subunit_to_unit: 100000000
+  symbol_first: false
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  authorized_round: 6
+  is_crypto: true
+
+  local_id: 6
+  minimal_input_value: 0.01
+  minimal_output_value: 0.02
+
+kzt:
+  priority: 7
+  iso_code: KZT
+  name: Казахстанский Тэнге
+  symbol: "₸"
+  alternate_symbols: []
+  subunit: Tiyn
+  subunit_to_unit: 100
+  symbol_first: false
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: '398'
+  is_crypto: false
+  smallest_denomination: 1
+
+  local_id: 8
+  minimal_input_value: 2000
+  minimal_output_value: 2000
+
+xrp:
+  priority: 8
+  iso_code: XRP
+  name: Ripple
+  symbol:
+  alternate_symbols: []
+  subunit: drop
+  # 1/миллионная- https://en.wikipedia.org/wiki/Ripple_(payment_protocol)
+  subunit_to_unit: 1000000
+  symbol_first: false
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  authorized_round: 6
+  is_crypto: true
+
+  local_id: 9
+  minimal_input_value: 10
+  minimal_output_value: 20
+
+etc:
+  priority: 9
+  iso_code: ETC
+  name: Ethereum Classic
+  symbol:
+  alternate_symbols: []
+  subunit:
+  # Как у Эфира, потому что это форк эфира
+  subunit_to_unit: 1000000000
+  symbol_first: false
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  authorized_round: 6
+  is_crypto: true
+
+  local_id: 10
+  minimal_input_value: 0.5
+  minimal_output_value: 0.5
+
+xmr:
+  priority: 10
+  iso_code: XMR
+  name: Monero
+  symbol: ɱ
+  alternate_symbols: []
+  subunit: piconero
+  subunit_to_unit: 1000000000000
+  symbol_first: false
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  authorized_round: 6
+  is_crypto: true
+
+  local_id: 11
+  minimal_input_value: 0.2
+  minimal_output_value: 0.2
+
+bch:
+  priority: 11
+  iso_code: BCH
+  name: Bitcoin Cash
+  symbol:
+  alternate_symbols: []
+  subunit:
+  # Как биткойн, потому что это форк
+  subunit_to_unit: 100000000
+  symbol_first: false
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  authorized_round: 8
+  is_crypto: true
+
+  local_id: 12
+  minimal_input_value: 0.005
+  minimal_output_value: 0.005
+
+eur:
+  priority: 12
+  iso_code: EUR
+  name: Euro
+  symbol: €
+  alternate_symbols: []
+  subunit: Cent
+  subunit_to_unit: 100
+  symbol_first: true
+  html_entity: "$"
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: '978'
+  smallest_denomination: 1
+  is_crypto: false
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 13
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 3
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 3
+
+neo:
+  priority: 13
+  iso_code: NEO
+  name: Neo
+  symbol: N
+  alternate_symbols: []
+  subunit: Neo
+  subunit_to_unit: 1
+  symbol_first: true
+  html_entity: "$"
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 14
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 1
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 1
+
+zec:
+  priority: 14
+  iso_code: ZEC
+  name: Zcash
+  symbol: Z
+  alternate_symbols: []
+  subunit: Zcash Cent
+  subunit_to_unit: 100000000
+  symbol_first: true
+  html_entity: "$"
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 15
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 0.001
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 0.004
+
+usdt:
+  priority: 15
+  iso_code: USDT
+  name: Tether
+  symbol: T
+  alternate_symbols: []
+  subunit: USDT Cent
+  subunit_to_unit: 100
+  symbol_first: true
+  html_entity: "$"
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 16
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 3
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 3
+
+uah:
+  priority: 16
+  iso_code: UAH
+  name: Ukrainian hryvnia
+  symbol: "₴"
+  alternate_symbols:
+  - грн.
+  subunit: Kopiyka
+  subunit_to_unit: 100
+  symbol_first: false
+  html_entity: "&#x20B4;"
+  decimal_mark: ","
+  thousands_separator: "."
+  iso_numeric: '4217'
+  smallest_denomination: 1
+  is_crypto: false
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 17
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 100
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 100
+
+eos:
+  priority: 17
+  iso_code: EOS
+  name: Eos
+  symbol:
+  alternate_symbols: []
+  subunit: Larimer
+  subunit_to_unit: 10000
+  symbol_first: true
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 18
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 0.01
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 1
+
+ada:
+  priority: 18
+  iso_code: ADA
+  name: Cardano
+  symbol:
+  alternate_symbols: []
+  subunit: lovelaces
+  subunit_to_unit: 1000000
+  symbol_first: true
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 19
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 5
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 10
+
+xem:
+  priority: 19
+  iso_code: XEM
+  name: XEM
+  symbol:
+  alternate_symbols: []
+  subunit: microXEM
+  subunit_to_unit: 1000000
+  symbol_first: true
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 20
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 10
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 15
+
+waves:
+  priority: 20
+  iso_code: WAVES
+  name: Waves
+  symbol:
+  alternate_symbols: []
+  subunit: Wavelet
+  subunit_to_unit: 100000000
+  symbol_first: true
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 21
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 0.01
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 0.01
+
+trx:
+  priority: 21
+  iso_code: TRX
+  name: Tron
+  symbol:
+  alternate_symbols: []
+  subunit: Sun
+  subunit_to_unit: 1000000
+  symbol_first: true
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 22
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 1
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 10
+
+doge:
+  priority: 21
+  iso_code: DOGE
+  name: Dogecoin
+  symbol: Ð
+  alternate_symbols: []
+  subunit: Microdoge
+  subunit_to_unit: 1000000
+  symbol_first: true
+  html_entity: ''
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: ''
+  smallest_denomination: 1
+  is_crypto: true
+
+  # Местные настройки
+  #
+  # Идентфикатор в type_cy
+  local_id: 23
+
+  # минимальная сумма валюты на прием (из minGetSum)
+  minimal_input_value: 10
+
+  # минимальная сумма валюты на выдачу (из minGetSumOut)
+  minimal_output_value: 100
+
+usdt-erc20:
+  native_currency: eth
+  iso_code: USDT
+  name: USDT(ERC20)
+  subunit: Cents
+  subunit_to_unit: 100000
+  base_factor: 8
+  contract_address: 0xdac17f958d2ee523a2206206994597c13d831ec7
+  is_crypto: true

@@ -65,22 +65,7 @@ class Wallet < ApplicationRecord
   scope :with_deposit_currency, ->(currency) { with_currency(currency).joins(:currency_wallets).where(currencies_wallets: { enable_deposit: true }) }
   scope :ordered, -> { order(kind: :asc) }
 
-  before_validation(on: :create) do
-    if address.blank? && settings[:uri].present? && currencies.present?
-      begin
-        result = generate_settings
-      rescue StandardError => e
-        Rails.logger.info { "Cannot generate wallet address and secret error: #{e.message}" }
-        result = { address: 'changeme', secret: 'changeme' }
-      ensure
-        if result.present?
-          self.address = result.delete(:address)
-          self.settings = self.settings.merge(result)
-        end
-      end
-    end
-  end
-
+  before_validation :generate_settings, on: :create
   before_validation do
     next unless address? && blockchain.try(:blockchain_api).try(:supports_cash_addr_format?)
     self.address = CashAddr::Converter.to_cash_address(address)
@@ -144,18 +129,13 @@ class Wallet < ApplicationRecord
 
   def current_balance(currency = nil)
     if currency.present?
-      WalletService.new(self).load_balance!(currency)
+      currency = currency.money_currency unless currency.is_a? Money::Currency
+      adapter_class.load_balance(uri, address, currency) || NOT_AVAILABLE
     else
       currencies.each_with_object({}) do |c, balances|
-        balances[c.id] = WalletService.new(self).load_balance!(c)
-      rescue StandardError => e
-        report_exception(e)
-        balances[c.id] = NOT_AVAILABLE
+        balances[c.id] = current_balance(c)
       end
     end
-  rescue StandardError => e
-    report_exception(e)
-    NOT_AVAILABLE
   end
 
   def gateway_wallet_kind_support
@@ -176,16 +156,33 @@ class Wallet < ApplicationRecord
     ::WalletService.new(self)
   end
 
+  def adapter
+    adapter_class.new(settings.symbolize_keys)
+  end
+
+  def adapter_class
+    Peatio::Wallet.registry[gateway.to_sym]
+  end
+
   def gateway_implements?(method_name)
     service.adapter.class.instance_methods(false).include?(method_name)
   end
 
+  def create_address!
+    adapter_class.create_address! settings[:uri]
+  end
+
   def generate_settings
-    results = service.create_address!("#{id}_#{kind}_wallet", {})
-    {
-      address: results[:address],
-      secret: results[:secret]
-    }.merge(results[:details] || {})
+    return unless address.blank? && settings[:uri].present? && currencies.present?
+    result = create_address!.reverse_merge details: {}
+  rescue StandardError => e
+    Rails.logger.info { "Cannot generate wallet address and secret error: #{e.message}" }
+    result = { address: 'changeme', secret: 'changeme' }
+  ensure
+    if result.present?
+      self.address = result.delete(:address)
+      self.settings = self.settings.merge(result)
+    end
   end
 end
 

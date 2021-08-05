@@ -51,7 +51,7 @@ module Workers
           end
 
           balance = wallet.current_balance(withdraw.currency)
-          if balance == 'N/A' || balance < withdraw.amount
+          if balance == Wallet::NOT_AVAILABLE || balance < withdraw.amount
             @logger.warn id: withdraw.id,
                          balance: balance.to_s,
                          amount: withdraw.amount.to_s,
