@@ -350,7 +350,11 @@ class Order < ApplicationRecord
   end
 
   def member_balance
-    member.get_account(currency).balance
+    member_account.balance
+  end
+
+  def member_account
+    member.get_account(currency)
   end
 
   private

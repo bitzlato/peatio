@@ -16,12 +16,21 @@ module Workers
       end
 
       def process(payload)
+        order_id = payload.dig('order', 'id')
+
         case payload['action']
         when 'submit'
-          Order.submit(payload.dig('order', 'id'))
+          order = Order.submit order_id
         when 'cancel'
-          Order.cancel(payload.dig('order', 'id'))
+          order = Order.cancel order_id
         end
+
+        ::AMQP::Queue.enqueue(
+          :account_notifier,
+          action: payload['action'],
+          origin: "order_processor",
+          order_id: order_id
+        )
       rescue StandardError => e
         ::AMQP::Queue.enqueue(:trade_error, e.message)
         report_exception_to_screen(e)

@@ -177,6 +177,13 @@ module Matching
 
         EventAPI.notify ['market', order.market_id, event].join('.'), \
           Serializers::EventAPI.const_get(event.camelize).call(order)
+        
+        ::AMQP::Queue.enqueue(
+          :account_notifier,
+          event: event,
+          origin: "trade_executor",
+          order_id: order.id
+        )
       end
     end
 
