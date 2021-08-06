@@ -132,14 +132,6 @@ class Currency < ApplicationRecord
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
 
-  # Make it optional because of
-  # super: no superclass method `server' for #<Blockchain:0x00007f96d400ae20>
-  if ENV.true?('CURRENCY_BLOCKCHAIN_CACHE')
-    def blockchain
-      Rails.cache.fetch("#{code}_blockchain", expires_in: 60) { Blockchain.find_by(key: blockchain_key) }
-    end
-  end
-
   def wipe_cache
     Rails.cache.delete_matched("currencies*")
   end
@@ -210,41 +202,3 @@ class Currency < ApplicationRecord
     Math.log(base_factor, 10).round
   end
 end
-
-# == Schema Information
-# Schema version: 20201207134745
-#
-# Table name: currencies
-#
-#  id                    :string(10)       not null, primary key
-#  name                  :string(255)
-#  description           :text(65535)
-#  homepage              :string(255)
-#  blockchain_key        :string(32)
-#  parent_id             :string(255)
-#  type                  :string(30)       default("coin"), not null
-#  deposit_fee           :decimal(32, 16)  default(0.0), not null
-#  min_deposit_amount    :decimal(32, 16)  default(0.0), not null
-#  min_collection_amount :decimal(32, 16)  default(0.0), not null
-#  withdraw_fee          :decimal(32, 16)  default(0.0), not null
-#  min_withdraw_amount   :decimal(32, 16)  default(0.0), not null
-#  withdraw_limit_24h    :decimal(32, 16)  default(0.0), not null
-#  withdraw_limit_72h    :decimal(32, 16)  default(0.0), not null
-#  position              :integer          not null
-#  options               :json
-#  visible               :boolean          default(TRUE), not null
-#  deposit_enabled       :boolean          default(TRUE), not null
-#  withdrawal_enabled    :boolean          default(TRUE), not null
-#  base_factor           :bigint           default(1), not null
-#  precision             :integer          default(8), not null
-#  icon_url              :string(255)
-#  price                 :decimal(32, 16)  default(1.0), not null
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#
-# Indexes
-#
-#  index_currencies_on_parent_id  (parent_id)
-#  index_currencies_on_position   (position)
-#  index_currencies_on_visible    (visible)
-#

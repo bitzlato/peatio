@@ -42,8 +42,8 @@ FactoryBot.define do
       initialize_with         { Blockchain.find_or_create_by(key: key) }
     end
 
-    trait 'eth-mainnet' do
-      key                     { 'eth-mainnet' }
+    trait 'eth-mainet' do
+      key                     { 'eth-mainet' }
       name                    { 'Ethereum Mainet' }
       client                  { 'geth' }
       server                  { 'http://127.0.0.1:8545' }

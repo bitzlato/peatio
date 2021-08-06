@@ -54,6 +54,7 @@ class Blockchain < ApplicationRecord
   end
 
   def gateway_implements?(method_name)
+    return false if blockchain_api.nil?
     blockchain_api.implements?(method_name)
   end
 

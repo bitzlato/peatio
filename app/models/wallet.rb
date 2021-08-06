@@ -187,28 +187,3 @@ class Wallet < ApplicationRecord
     end
   end
 end
-
-# == Schema Information
-# Schema version: 20201125134745
-#
-# Table name: wallets
-#
-#  id                 :integer          not null, primary key
-#  blockchain_key     :string(32)
-#  name               :string(64)
-#  address            :string(255)      not null
-#  kind               :integer          not null
-#  gateway            :string(20)       default(""), not null
-#  settings_encrypted :string(1024)
-#  balance            :json
-#  max_balance        :decimal(32, 16)  default(0.0), not null
-#  status             :string(32)
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#
-# Indexes
-#
-#  index_wallets_on_kind                             (kind)
-#  index_wallets_on_kind_and_currency_id_and_status  (kind,status)
-#  index_wallets_on_status                           (status)
-#
