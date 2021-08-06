@@ -3,8 +3,8 @@
 
 FactoryBot.define do
   factory :currency do
-
     trait :usd do
+      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
       code                 { 'usd' }
       name                 { 'US Dollar' }
       type                 { 'fiat' }
@@ -17,6 +17,7 @@ FactoryBot.define do
     end
 
     trait :eur do
+      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
       code                 { 'eur' }
       name                 { 'Euro' }
       type                 { 'fiat' }
@@ -30,7 +31,7 @@ FactoryBot.define do
     end
 
     trait :btc do
-      association :blockchain, strategy: :find_or_create, key: 'btc-testnet'
+      association :blockchain, 'btc-testnet', strategy: :find_or_create, key: 'btc-testnet'
       code                 { 'btc' }
       name                 { 'Bitcoin' }
       type                 { 'coin' }
@@ -43,7 +44,7 @@ FactoryBot.define do
     end
 
     trait :eth do
-      association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                 { 'eth' }
       name                 { 'Ethereum' }
       type                 { 'coin' }
@@ -59,7 +60,7 @@ FactoryBot.define do
     end
 
     trait :trst do
-      association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                 { 'trst' }
       name                 { 'WeTrust' }
       type                 { 'coin' }
@@ -77,7 +78,7 @@ FactoryBot.define do
     end
 
     trait :tom do
-      association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                 { 'tom' }
       name                 { 'TOM' }
       type                 { 'coin' }
@@ -95,7 +96,7 @@ FactoryBot.define do
     end
 
     trait :ring do
-      association :blockchain, strategy: :find_or_create, key: 'eth-kovan'
+      association :blockchain, 'eth-kovan', strategy: :find_or_create, key: 'eth-kovan'
       code                 { 'ring' }
       name                 { 'Evolution Land Global Token' }
       type                 { 'coin' }
@@ -110,7 +111,7 @@ FactoryBot.define do
     end
 
     trait :fake do
-      association :blockchain, strategy: :find_or_create, key: 'fake-testnet'
+      association :blockchain, 'fake-testnet', strategy: :find_or_create, key: 'fake-testnet'
       code                { 'fake' }
       name                { 'Fake Coin' }
       type                { 'coin' }
@@ -123,7 +124,7 @@ FactoryBot.define do
     end
 
     trait :xagm_cx do
-      association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                { 'xagm.cx' }
       name                { 'XAGm.cx' }
       type                { 'coin' }

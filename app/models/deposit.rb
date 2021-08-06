@@ -17,10 +17,23 @@ class Deposit < ApplicationRecord
   extend Enumerize
   TRANSFER_TYPES = { fiat: 100, crypto: 200 }
 
-  belongs_to :currency, required: true
+  belongs_to :currency, required: true, touch: false
   belongs_to :member, required: true
+  belongs_to :blockchain, touch: false
 
   acts_as_eventable prefix: 'deposit', on: %i[create update]
+
+  scope :recent, -> { order(id: :desc) }
+
+  before_validation on: :create do
+    self.blockchain ||= self.currency.try(:blockchain)
+  end
+
+  before_create do
+    self.blockchain ||= self.currency.blockchain || raise("No blockchain currency #{currency.id}") if currency.present?
+  end
+  before_validation { self.completed_at ||= Time.current if completed? }
+  before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
 
   validates :tid, presence: true, uniqueness: { case_sensitive: false }
   validates :aasm_state, :type, presence: true
@@ -31,11 +44,6 @@ class Deposit < ApplicationRecord
               greater_than_or_equal_to:
                 -> (deposit){ deposit.currency.min_deposit_amount }
             }, on: :create
-
-  scope :recent, -> { order(id: :desc) }
-
-  before_validation { self.completed_at ||= Time.current if completed? }
-  before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
 
   aasm whiny_transitions: false do
     state :submitted, initial: true
@@ -154,15 +162,13 @@ class Deposit < ApplicationRecord
     true
   end
 
+  delegate :blockchain_api, to: :blockchain
+
   def transfer_links
     # TODO rename data['links'] to transfer_links
     # TODO rename data['expires_at'] to expires_at
     # TODO Use txid instead of intention_id
     data&.fetch 'links', []
-  end
-
-  def blockchain_api
-    currency.blockchain_api
   end
 
   def confirmations
@@ -207,16 +213,15 @@ class Deposit < ApplicationRecord
     self.member = Member.find_by_uid(uid)
   end
 
-  def wallet_state
+  def blockchain_state
     if currency.coin?
       payment_address = PaymentAddress.find_by_address(address)
 
       if payment_address.present?
         # In case when wallet was deleted and payment address still exists in DB
-        return payment_address.wallet.present? ? payment_address.wallet.status : ''
+        return payment_address.blockchain.present? ? payment_address.blockchain.status : ''
       else
-        # Some kinds of gateways ('dummy' for example) does not create payment address
-        Wallet.active_deposit_wallet(currency_id)
+        blockchain.state
       end
     else
       ''
@@ -230,7 +235,7 @@ class Deposit < ApplicationRecord
       currency:                 currency_id,
       amount:                   amount.to_s('F'),
       state:                    aasm_state,
-      wallet_state:             wallet_state,
+      blockchain_state:             blockchain_state,
       created_at:               created_at.iso8601,
       updated_at:               updated_at.iso8601,
       completed_at:             completed_at&.iso8601,

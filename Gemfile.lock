@@ -579,7 +579,7 @@ DEPENDENCIES
   capistrano-tasks!
   capistrano3-puma!
   cash-addr (~> 0.2.0)
-  composite_primary_keys (~> 11.3.1)
+  composite_primary_keys
   database_cleaner (~> 1.7)
   digest-sha3 (~> 1.1.0)
   dotenv

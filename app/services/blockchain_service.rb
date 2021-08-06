@@ -14,6 +14,10 @@ class BlockchainService
                        whitelisted_addresses: @whitelisted_addresses)
   end
 
+  def implements?(method_name)
+    @adapter.class.instance_methods(false).include?(method_name)
+  end
+
   def latest_block_number
     @latest_block_number ||= @adapter.latest_block_number
   end

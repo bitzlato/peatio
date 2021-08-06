@@ -10,12 +10,6 @@ module Workers
         ::Deposit.processing.each do |deposit|
           Rails.logger.info { "Starting processing coin deposit with id: #{deposit.id}." }
 
-          wallet = PaymentAddress.find_by(address: deposit.address).wallet
-          unless wallet
-            Rails.logger.warn { "Can't find active deposit wallet for currency with code: #{deposit.currency_id}."}
-            next
-          end
-
           # Check if adapter has prepare_deposit_collection! implementation
           if wallet.gateway_implements?(:prepare_deposit_collection!)
             begin

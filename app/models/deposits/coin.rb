@@ -5,8 +5,6 @@
 # TODO: Delete this class and update type column
 module Deposits
   class Coin < Deposit
-    has_one :blockchain, through: :currency
-
     validate { errors.add(:currency, :invalid) if currency && !currency.coin? }
     validates :address, :txid, presence: true
     validates :txid, uniqueness: { scope: %i[currency_id txout] }

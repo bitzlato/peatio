@@ -53,6 +53,10 @@ class Blockchain < ApplicationRecord
     client == 'dummy'
   end
 
+  def gateway_implements?(method_name)
+    blockchain_api.implements?(method_name)
+  end
+
   def blockchain_api
     return if dummy?
     BlockchainService.new(self)

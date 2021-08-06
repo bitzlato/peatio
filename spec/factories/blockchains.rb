@@ -3,6 +3,19 @@
 
 FactoryBot.define do
   factory :blockchain do
+    trait 'dummy' do
+      key                     { 'dummy' }
+      name                    { 'dummy' }
+      client                  { 'dummy' }
+      server                  { 'http://127.0.0.1:1' }
+      height                  { 2500000 }
+      min_confirmations       { 6 }
+      explorer_address        { 'https://etherscan.io/address/#{address}' }
+      explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
+      status                  { 'active' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
+    end
+
     trait 'eth-rinkeby' do
       key                     { 'eth-rinkeby' }
       name                    { 'Ethereum Rinkeby' }
