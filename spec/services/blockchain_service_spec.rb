@@ -57,7 +57,7 @@ describe BlockchainService do
 
       before do
         PaymentAddress.create!(member: member,
-                               wallet: wallet,
+                               blockchain: blockchain,
                                address: 'fake_address')
         service.adapter.stubs(:fetch_block!).returns(expected_block)
         service.process_block(block_number)
@@ -103,10 +103,10 @@ describe BlockchainService do
     context 'two fake deposits for one currency were created during block processing' do
       before do
         PaymentAddress.create!(member: member,
-                               wallet: wallet,
+                               blockchain: blockchain,
                                address: 'fake_address')
         PaymentAddress.create!(member: member,
-                               wallet: wallet,
+                               blockchain: blockchain,
                                address: 'fake_address1')
         service.adapter.stubs(:fetch_block!).returns(expected_block)
         service.process_block(block_number)
@@ -138,10 +138,10 @@ describe BlockchainService do
     context 'two fake deposits for two currency were created during block processing' do
       before do
         PaymentAddress.create!(member: member,
-                               wallet: wallet,
+                               blockchain: blockchain,
                                address: 'fake_address')
         PaymentAddress.create!(member: member,
-                               wallet: wallet,
+                               blockchain: blockchain,
                                address: 'fake_address2')
         service.adapter.stubs(:fetch_block!).returns(expected_block)
         service.process_block(block_number)
@@ -160,7 +160,7 @@ describe BlockchainService do
       let!(:transaction) { create(:transaction, txid: 'fake_hash1') }
       before do
         PaymentAddress.create!(member: member,
-                               wallet: wallet,
+                               blockchain: blockchain,
                                address: 'fake_address')
         service.adapter.stubs(:fetch_block!).returns(expected_block)
         service.process_block(block_number)
@@ -403,10 +403,10 @@ describe BlockchainService do
     before do
       service.stubs(:latest_block_number).returns(100)
       PaymentAddress.create!(member: member,
-                             wallet: wallet,
+                             blockchain: blockchain,
                              address: 'fake_address')
       PaymentAddress.create!(member: member,
-                             wallet: wallet,
+                             blockchain: blockchain,
                              address: 'fake_address2')
       service.adapter.stubs(:fetch_block!).returns(expected_block, expected_block1)
     end

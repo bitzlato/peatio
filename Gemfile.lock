@@ -190,7 +190,10 @@ GEM
       rexml
     crass (1.0.6)
     daemons (1.4.0)
-    database_rewinder (0.9.6)
+    database_cleaner-active_record (2.0.1)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     diff-lcs (1.4.4)
     digest-sha3 (1.1.0)
     dotenv (2.7.6)
@@ -580,7 +583,7 @@ DEPENDENCIES
   capistrano3-puma!
   cash-addr (~> 0.2.0)
   composite_primary_keys
-  database_rewinder
+  database_cleaner-active_record
   digest-sha3 (~> 1.1.0)
   dotenv
   em-synchrony (~> 1.0)
