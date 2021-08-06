@@ -7,6 +7,7 @@ class Account < ApplicationRecord
 
   belongs_to :currency, required: true
   belongs_to :member, required: true
+  has_one :blockchain, through: :currency
 
   acts_as_eventable prefix: 'account', on: %i[create update]
 
@@ -27,6 +28,10 @@ class Account < ApplicationRecord
       created_at: created_at&.iso8601,
       updated_at: updated_at&.iso8601
     }
+  end
+
+  def payment_address
+    member.payment_address blockchain
   end
 
   def plus_funds!(amount)
