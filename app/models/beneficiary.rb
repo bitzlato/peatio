@@ -189,26 +189,3 @@ class Beneficiary < ApplicationRecord
     "%s-%s-%08d" % [data.symbolize_keys[:full_name].downcase.split.join('-'), currency_id.downcase, id]
   end
 end
-
-# == Schema Information
-# Schema version: 20201125134745
-#
-# Table name: beneficiaries
-#
-#  id             :bigint           not null, primary key
-#  member_id      :bigint           not null
-#  currency_id    :string(10)       not null
-#  name           :string(64)       not null
-#  description    :string(255)      default("")
-#  data_encrypted :string(1024)
-#  pin            :integer          unsigned, not null
-#  sent_at        :datetime
-#  state          :integer          default("pending"), unsigned, not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#
-# Indexes
-#
-#  index_beneficiaries_on_currency_id  (currency_id)
-#  index_beneficiaries_on_member_id    (member_id)
-#

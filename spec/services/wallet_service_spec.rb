@@ -111,10 +111,10 @@ describe WalletService do
 
   context :collect_deposit do
     before do
-      Peatio::Blockchain.registry.expects(:[])
-                        .with(:bitcoin)
-                        .returns(fake_blockchain_adapter.class)
-                        .at_least_once
+      #Peatio::Blockchain.registry.expects(:[])
+                        #.with(:bitcoin)
+                        #.returns(fake_blockchain_adapter.class)
+                        #.at_least_once
     end
 
     let!(:deposit_wallet) { create(:wallet, :fake_deposit) }
@@ -145,7 +145,7 @@ describe WalletService do
       subject { service.collect_deposit!(deposit, spread_deposit) }
 
       before do
-        deposit.member.payment_address(service.wallet.id).update(address: deposit.address)
+        deposit.member.payment_address(blockchain).update(address: deposit.address)
         service.adapter.expects(:create_transaction!).returns(transaction.first)
       end
 
@@ -180,7 +180,7 @@ describe WalletService do
       subject { service.collect_deposit!(deposit, spread_deposit) }
 
       before do
-        deposit.member.payment_address(service.wallet.id).update(address: deposit.address)
+        deposit.member.payment_address(blockchain).update(address: deposit.address)
         service.adapter.expects(:create_transaction!).with(spread_deposit.first, subtract_fee: true).returns(transaction.first)
         service.adapter.expects(:create_transaction!).with(spread_deposit.second, subtract_fee: true).returns(transaction.second)
       end
@@ -193,22 +193,11 @@ describe WalletService do
   end
 
   context :deposit_collection_fees do
-    before do
-      Peatio::Blockchain.registry.expects(:[])
-                        .with(:bitcoin)
-                        .returns(fake_blockchain_adapter.class)
-                        .at_least_once
-    end
-
     let!(:fee_wallet) { create(:wallet, :fake_fee) }
-    let!(:deposit_wallet) { create(:wallet, :fake_deposit) }
-
     let(:amount) { 2 }
     let(:deposit) { create(:deposit_btc, amount: amount, currency: currency) }
-
     let(:fake_wallet_adapter) { FakeWallet.new }
     let(:service) { WalletService.new(fee_wallet) }
-
     let(:spread_deposit) do
       [Peatio::Transaction.new(to_address: 'fake-cold',
                                amount: '2.0',
@@ -266,13 +255,6 @@ describe WalletService do
   end
 
   context :refund do
-    before do
-      Peatio::Blockchain.registry.expects(:[])
-                        .with(:bitcoin)
-                        .returns(fake_blockchain_adapter.class)
-                        .at_least_once
-    end
-
     let!(:deposit_wallet) { create(:wallet, :fake_deposit) }
 
     let(:amount) { 2 }
@@ -293,7 +275,7 @@ describe WalletService do
     subject { service.refund!(refund) }
 
     before do
-      refund_deposit.member.payment_address(service.wallet.id).update(address: refund_deposit.address)
+      refund_deposit.member.payment_address(blockchain).update(address: refund_deposit.address)
       service.adapter.expects(:create_transaction!).returns(transaction)
     end
 

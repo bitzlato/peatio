@@ -230,7 +230,6 @@ FactoryBot.define do
         CurrencyWallet.create(currency_id: 'fake', wallet_id: w.id)
       end
       association :blockchain, strategy: :find_or_create, key: 'fake-testnet'
-      blockchain_key     { 'fake-testnet' }
       name               { 'Fake Currency Fee Wallet' }
       address            { 'fake-fee' }
       kind               { 'fee' }

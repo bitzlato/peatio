@@ -103,7 +103,7 @@ class Member < ApplicationRecord
 
   # Attempts to create additional deposit address for account.
   def payment_address!(blockchain, remote = false)
-    pa = PaymentAddress.find_by(member: self, blockchain: blockchain)
+    pa = PaymentAddress.find_by(member: self, blockchain: blockchain, remote: remote)
 
     # The address generation process is in progress.
     if pa.present? && pa.address.blank?
