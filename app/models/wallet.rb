@@ -41,7 +41,7 @@ class Wallet < ApplicationRecord
 
   vault_attribute :settings, serialize: :json, default: {}
 
-  belongs_to :blockchain, foreign_key: :blockchain_key, primary_key: :key
+  belongs_to :blockchain
   has_and_belongs_to_many :currencies
   has_many :currency_wallets
 
@@ -169,7 +169,7 @@ class Wallet < ApplicationRecord
   end
 
   def create_address!
-    adapter_class.create_address! settings[:uri]
+    adapter_class.create_address! money_currency.blockchain.server
   end
 
   def generate_settings

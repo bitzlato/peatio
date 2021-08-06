@@ -137,7 +137,7 @@ module API
             error!({ errors: ['account.wallet.not_found'] }, 422)
           end
 
-          payment_address = current_user.payment_address(wallet.id)
+          payment_address = current_user.payment_address(wallet.money_currency)
           present payment_address, with: API::V2::Entities::PaymentAddress, address_format: params[:address_format]
         end
       end

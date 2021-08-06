@@ -36,7 +36,7 @@ class Currency < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain, foreign_key: :blockchain_key, primary_key: :key
+  belongs_to :blockchain
   has_and_belongs_to_many :wallets
 
   has_one :parent, class_name: 'Currency', foreign_key: :id, primary_key: :parent_id
@@ -57,10 +57,6 @@ class Currency < ApplicationRecord
 
   validates :parent_id, allow_blank: true,
             inclusion: { in: ->(_) { Currency.coins_without_tokens.pluck(:id).map(&:to_s) } },
-            if: :coin?
-
-  validates :blockchain_key,
-            inclusion: { in: ->(_) { Blockchain.pluck(:key).map(&:to_s) } },
             if: :coin?
 
   validates :type, inclusion: { in: ->(_) { Currency.types.map(&:to_s) } }
@@ -98,7 +94,7 @@ class Currency < ApplicationRecord
 
   before_validation { self.code = code.downcase }
   before_validation { self.deposit_fee = 0 unless fiat? }
-  before_validation { self.blockchain_key = parent.blockchain_key if token? && blockchain_key.blank? }
+  before_validation(if: :token?) { self.blockchain ||= parent.blockchain }
   before_validation(on: :create) { self.position = Currency.count + 1 unless position.present? }
 
   before_validation do

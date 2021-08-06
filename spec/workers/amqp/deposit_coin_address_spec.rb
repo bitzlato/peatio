@@ -5,7 +5,7 @@ describe Workers::AMQP::DepositCoinAddress do
   let(:member) { create(:member, :barong) }
   let(:address) { Faker::Blockchain::Bitcoin.address }
   let(:secret) { PasswordGenerator.generate(64) }
-  let(:wallet) { Wallet.active_retired.deposit.find_by(blockchain_key: 'btc-testnet') }
+  let(:wallet) { Wallet.active_retired.deposit.find_by(blockchain_key: 'eth-testnet') }
   let(:payment_address) { member.payment_address(wallet.id) }
   let(:create_address_result) do
     { address: address,
@@ -34,9 +34,10 @@ describe Workers::AMQP::DepositCoinAddress do
 
   context 'wallet service' do
     before do
-      WalletService.any_instance
-                    .expects(:create_address!)
-                    .returns(create_address_result)
+      WS::Ethereum::AddressCreator
+        .any_instance
+        .expects(:call)
+        .returns(create_address_result)
     end
 
     it 'is passed to wallet service' do
@@ -54,7 +55,7 @@ describe Workers::AMQP::DepositCoinAddress do
           secret: secret }
       end
 
-      it 'is passed to wallet service' do
+      fit 'is passed to wallet service' do
         Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
         expect(subject).to eq address
         payment_address.reload

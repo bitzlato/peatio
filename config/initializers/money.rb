@@ -49,6 +49,12 @@ class Money::Currency
     end
   end
 
+  def blockchain
+    return if blockchain_key.nil?
+    @blockchain ||= Blockhain.find_by_key(blockchain_key) ||
+      raise("No blockchain #{blockchain_key} is found")
+  end
+
   def parent_currency
     return if @parent_currency.nil?
     Money::Currency.find! @parent_currency

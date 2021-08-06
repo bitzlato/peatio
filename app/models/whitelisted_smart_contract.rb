@@ -8,16 +8,11 @@ class WhitelistedSmartContract < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain, foreign_key: :blockchain_key, primary_key: :key
+  belongs_to :blockchain
 
   # == Validations ==========================================================
 
-  validates :address, presence: true, uniqueness: { scope: :blockchain_key }
-
-  validates :blockchain_key,
-            presence: true,
-            inclusion: { in: ->(_) { Blockchain.pluck(:key).map(&:to_s) } }
-
+  validates :address, presence: true, uniqueness: { scope: :blockchain_id }
   validates :state, inclusion: { in: STATES }
 
   # == Scopes ===============================================================

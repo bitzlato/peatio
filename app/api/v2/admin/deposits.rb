@@ -166,7 +166,7 @@ module API
           end
 
           if currency.deposit_enabled
-            payment_address = member.payment_address(wallet.id)
+            payment_address = member.payment_address(wallet.money_currency)
             present payment_address, with: API::V2::Entities::PaymentAddress, address_format: params[:address_format]
             status 201
           else

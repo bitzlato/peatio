@@ -18,14 +18,9 @@ class PaymentAddress < ApplicationRecord
   belongs_to :wallet
   belongs_to :member
 
-  before_validation do
-    next if blockchain_api&.case_sensitive?
-    self.address = address.try(:downcase)
-  end
-
-  before_validation do
-    next unless address? && blockchain_api&.supports_cash_addr_format?
-    self.address = CashAddr::Converter.to_cash_address(address)
+  before_validation if: :address do
+    self.address = address.try(:downcase) unless blockchain_api&.case_sensitive?
+    self.address = CashAddr::Converter.to_cash_address(address) if blockchain_api&.supports_cash_addr_format?
   end
 
   def blockchain_api
@@ -33,7 +28,7 @@ class PaymentAddress < ApplicationRecord
   end
 
   def enqueue_address_generation
-    AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, wallet_id: wallet.id }, { persistent: true })
+    AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, currency_id: wallet.id }, { persistent: true })
   end
 
   def format_address(format)
