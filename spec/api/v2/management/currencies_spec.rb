@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 describe API::V2::Management::Currencies, type: :request do
+  let!(:blockchain) { find_or_create :blockchain, 'eth-rinkeby', key: 'eth-rinkeby' }
+  let!(:parent_currency) { find_or_create :currency, 'btc', id: 'btc' }
   before do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
@@ -43,7 +45,7 @@ describe API::V2::Management::Currencies, type: :request do
     let(:signers) { %i[alex jeff] }
 
     it 'create coin' do
-      data.merge!(code: 'test', blockchain_key: 'btc-testnet')
+      data.merge!(code: 'test', blockchain_id: blockchain.id)
       request
       result = JSON.parse(response.body)
       expect(response).to be_successful
@@ -51,17 +53,17 @@ describe API::V2::Management::Currencies, type: :request do
     end
 
     it 'create token' do
-      data.merge!(code: 'test', blockchain_key: 'btc-testnet', parent_id: 'btc')
+      data.merge!(code: 'test', blockchain_id: blockchain.id, parent_id: parent_currency.id)
       request
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
       expect(result['type']).to eq 'coin'
-      expect(result['parent_id']).to eq 'btc'
+      expect(result['parent_id']).to eq parent_currency.id.to_s
     end
 
     it 'create fiat' do
-      data.merge!(code: 'test', type: 'fiat')
+      data.merge!(code: 'test', type: 'fiat', blockchain_id: blockchain.id)
       request
       result = JSON.parse(response.body)
 
@@ -69,15 +71,15 @@ describe API::V2::Management::Currencies, type: :request do
       expect(result['type']).to eq 'fiat'
     end
 
-    it 'validate blockchain_key param' do
-      data.merge!(code: 'test', blockchain_key: 'test-blockchain')
+    it 'validate blockchain_id param' do
+      data.merge!(code: 'test', blockchain_id: nil)
       request
       expect(response).to have_http_status 422
-      expect(response.body).to match(/management.currency.blockchain_key_doesnt_exist/i)
+      expect(response.body).to eq("{\"errors\":[\"Blockchain must exist\"]}")
     end
 
     it 'validate type param' do
-      data.merge!(code: 'test', blockchain_key: 'test-blockchain' , type: 'test')
+      data.merge!(code: 'test', blockchain_id: blockchain.id, type: 'test')
       request
 
       expect(response).to have_http_status 422
@@ -125,7 +127,7 @@ describe API::V2::Management::Currencies, type: :request do
     end
 
     it 'verifies subunits >= 0' do
-      data.merge!(code: 'test', blockchain_key: 'btc-testnet', subunits: -1)
+      data.merge!(code: 'test', blockchain_id: blockchain.id, subunits: -1)
       request
 
       expect(response.body).to match(/management.currency.invalid_subunits/i)
@@ -133,7 +135,7 @@ describe API::V2::Management::Currencies, type: :request do
     end
 
     it 'verifies subunits <= 18' do
-      data.merge!(code: 'test', blockchain_key: 'btc-testnet', subunits: 19)
+      data.merge!(code: 'test', blockchain_id: blockchain.id, subunits: 19)
       request
 
       expect(response.body).to match(/management.currency.invalid_subunits/i)
@@ -141,7 +143,7 @@ describe API::V2::Management::Currencies, type: :request do
     end
 
     it 'creates 1_000_000_000_000_000_000 base_factor' do
-      data.merge!(code: 'test', blockchain_key: 'btc-testnet', subunits: 18)
+      data.merge!(code: 'test', blockchain_id: blockchain.id, subunits: 18)
       request
 
       result = JSON.parse(response.body)
@@ -151,7 +153,7 @@ describe API::V2::Management::Currencies, type: :request do
     end
 
     it 'return error while putting base_factor and subunit params' do
-      data.merge!(code: 'test', blockchain_key: 'btc-testnet', subunits: 18, base_factor: 1)
+      data.merge!(code: 'test', blockchain_id: blockchain.id, subunits: 18, base_factor: 1)
       request
 
       expect(response.code).to eq '422'
@@ -159,7 +161,7 @@ describe API::V2::Management::Currencies, type: :request do
     end
 
     it 'creates currency with 1000 base_factor' do
-      data.merge!(code: 'test', blockchain_key: 'btc-testnet', base_factor: 1000)
+      data.merge!(code: 'test', blockchain_id: blockchain.id, base_factor: 1000)
       request
 
       result = JSON.parse(response.body)
