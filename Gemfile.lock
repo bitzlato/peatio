@@ -1,4 +1,12 @@
 GIT
+  remote: https://github.com/bitzlato/money.git
+  revision: 6f9550e1e13eb4386c7490d8d5390e55c113cefb
+  branch: main
+  specs:
+    money (6.17.0)
+      i18n (>= 0.6.4, <= 2)
+
+GIT
   remote: https://github.com/bitzlato/peatio-core.git
   revision: 9c62876448c7d002f581383d0c5d84473421a31c
   specs:
@@ -608,6 +616,7 @@ DEPENDENCIES
   memoist (~> 0.16.0)
   method-not-implemented (~> 1.0.1)
   mocha (~> 1.8)
+  money!
   net-http-persistent (~> 3.0.1)
   peatio!
   pg (~> 1.2)

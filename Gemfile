@@ -68,8 +68,7 @@ gem "rexml", ">= 3.2.5"
 # Yeah! We use pry in production!
 gem 'pry-byebug',   '~> 3.7'
 
-gem 'money', github: 'bitzlato/money'
-gem 'money-rails'
+gem 'money', github: 'bitzlato/money', branch: 'main'
 
 group :development, :test do
   gem 'irb'

@@ -1,11 +1,10 @@
 ---
 btc:
-  iso_code: BTC
   name: Bitcoin
   symbol: B⃦
   alternate_symbols: []
   subunit: Satoshi
-  subunit_to_unit: 100000000
+  base_factor_subunits: 8
   symbol_first: false
   html_entity: "&#x20bf;"
   decimal_mark: "."
@@ -13,31 +12,77 @@ btc:
   iso_numeric: ''
   smallest_denomination: 1
   is_crypto: true
+  base_factor:            8
+  precision:              8
+  blockchain_key: 'bitzlato'
 
 eth:
-  iso_code: ETH
   name: Ethereum
   symbol: Ξ
   alternate_symbols: []
-  subunit: Gwei
-  # может быть 10−18 степени, но мы останавливаемся на Gwey
-  # https://en.wikipedia.org/wiki/Ethereum
-  subunit_to_unit: 1_000_000_000
-  base_factor: 18
-  symbol_first: false
-  html_entity: ''
-  decimal_mark: "."
-  thousands_separator: ","
-  iso_numeric: ''
+  subunit: wei
+  precision:            8
+  base_factor_subunits: 18
   smallest_denomination: 1
   blockchain_key: 'eth-mainnet'
 
-usdt-erc20:
-  iso_code: USDT-erc20
-  native_currency: eth
-  name: USDT(ERC20)
+mcr:
+  name: MCR Stablecoin
+  blockchain_key: 'bitzlato'
+  base_factor_subunits: 2
+
+mdt:
+  name: Monolith
+  precision: 6
+  base_factor_subunits: 6
+  blockchain_key: 'bitzlato'
+
+bnb:
+  name: BNB
+  base_factor_subunits: 18
+  precision: 6
+  blockchain_key: 'bsc-mainnet'
+  contract_address: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+
+usdt:
+  name: USTD(ERC20/P2P)
   subunit: USDT Cent
-  subunit_to_unit: 100000
-  base_factor: 6
+  subunit_to_unit: 100
+  base_factor_subunits: 2
+  blockchain_key: 'bitzlato'
+  precision: 6
+
+mcr-erc20:
+  parent_currency: eth
+  name: MCR(ERC20)
+  contract_address: '0xed351575b9869aada94435e0066ba38e08800b60'
+  base_factor_subunits: 18
+  precision: 6
+
+usdt-erc20:
+  parent_currency: eth
+  name: USDT(ERC20)
+  base_factor_subunits: 6
   contract_address: '0xdac17f958d2ee523a2206206994597c13d831ec7'
-  blockchain_key: 'eth-mainnet'
+  precesion: 6
+
+usdc-erc20:
+  parent_currency: eth
+  name: USDC(ERC20)
+  base_factor_subunits: 6
+  contractor_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+  precesion: 6
+
+mdt-erc20:
+  parent_currency: eth
+  name: MDT(ERC20)
+  base_factor_subunits: 18
+  contract_address: '0x4dfd148b532e934a2a26ea65689cf6268753e130'
+  precesion: 6
+
+dai-erc20:
+  parent_currency: eth
+  subunit: DAI cents
+  base_factor_subunits: 18
+  contract_address: '0x6b175474e89094c44da98b954eedeac495271d0f'
+  precision: 6
