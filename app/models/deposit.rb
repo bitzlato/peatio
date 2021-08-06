@@ -215,21 +215,6 @@ class Deposit < ApplicationRecord
     self.member = Member.find_by_uid(uid)
   end
 
-  def blockchain_state
-    if currency.coin?
-      payment_address = PaymentAddress.find_by_address(address)
-
-      if payment_address.present?
-        # In case when wallet was deleted and payment address still exists in DB
-        return payment_address.blockchain.present? ? payment_address.blockchain.status : ''
-      else
-        blockchain.state
-      end
-    else
-      ''
-    end
-  end
-
   def as_json_for_event_api
     { tid:                      tid,
       user:                     { uid: member.uid, email: member.email },
@@ -237,7 +222,7 @@ class Deposit < ApplicationRecord
       currency:                 currency_id,
       amount:                   amount.to_s('F'),
       state:                    aasm_state,
-      blockchain_state:             blockchain_state,
+      blockchain_state:         blockchain.status,
       created_at:               created_at.iso8601,
       updated_at:               updated_at.iso8601,
       completed_at:             completed_at&.iso8601,

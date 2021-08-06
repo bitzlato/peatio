@@ -20,11 +20,12 @@ describe API::V2::Account::Deposits, type: :request do
       expect(response.code).to eq '401'
     end
 
-    it 'returns with auth token deposits' do
+    fit 'returns with auth token deposits' do
 
       AMQP::Queue.expects(:enqueue).with(:deposit_intention,  anything, { persistent: true }).once
       api_post '/api/v2/account/deposits/intention', token: token, params: { currency: :btc, amount: amount }
 
+      binding.pry
       expect(response).to be_successful
       result = JSON.parse(response.body)
       expect(result['amount']).to eq amount.to_s
@@ -243,8 +244,8 @@ describe API::V2::Account::Deposits, type: :request do
     context 'successful' do
       context 'eth address' do
         let(:currency) { :eth }
-        let(:wallet) { Wallet.active_deposit_wallet(currency) }
-        before { member.payment_address(wallet.id).update!(address: '2N2wNXrdo4oEngp498XGnGCbru29MycHogR') }
+        let(:blockchain) { create :blockchain, :dummy }
+        before { member.payment_address(blockchain).update!(address: '2N2wNXrdo4oEngp498XGnGCbru29MycHogR') }
 
         it 'expose data about eth address' do
           api_get "/api/v2/account/deposit_address/#{currency}", token: token
@@ -252,7 +253,7 @@ describe API::V2::Account::Deposits, type: :request do
         end
 
         it 'pending user address state' do
-          member.payment_address(wallet.id).update!(address: nil)
+          member.payment_address(blockchain).update!(address: nil)
           api_get "/api/v2/account/deposit_address/#{currency}", token: token
           expect(response.body).to eq '{"currencies":["eth"],"address":null,"state":"pending"}'
         end
@@ -268,7 +269,7 @@ describe API::V2::Account::Deposits, type: :request do
         end
 
         it 'exposes non-remote addresses' do
-          member.payment_address(wallet.id).update!(remote: true)
+          member.payment_address(blockchain).update!(remote: true)
           api_get "/api/v2/account/deposit_address/#{currency}", token: token
           expect(response.body).to eq '{"currencies":["eth"],"address":null,"state":"pending"}'
         end
