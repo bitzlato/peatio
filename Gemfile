@@ -30,6 +30,7 @@ gem 'faraday_middleware'
 gem 'faye', '~> 1.4'
 gem 'eventmachine', '~> 1.2'
 gem 'em-synchrony', '~> 1.0'
+gem "strip_attributes"
 
 # We use 2.3.0.dev for bitzlato client
 # Fill free to update to rubygem version when it will be released

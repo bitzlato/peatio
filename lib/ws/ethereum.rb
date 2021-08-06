@@ -16,7 +16,7 @@ module WS
     def create_address!(uri, secret = nil)
       AddressCreator
         .new(build_client(uri))
-        .call(address, currency.base_factor, currency.contract_address)
+        .call(secret)
     end
 
     def create_transaction(from_address:, to_address:, amount:, secret: , contract_address: nil, subtract_fee: false)

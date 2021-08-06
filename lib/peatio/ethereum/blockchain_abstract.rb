@@ -1,5 +1,8 @@
+require 'ws/ethereum'
+
 module Ethereum
   class BlockchainAbstract < Peatio::Blockchain::Abstract
+    extend WS::Ethereum
 
     UndefinedCurrencyError = Class.new(StandardError)
 

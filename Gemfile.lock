@@ -519,6 +519,8 @@ GEM
       net-ssh (>= 2.8.0)
     sshkit-interactive (0.3.0)
       sshkit (~> 1.12)
+    strip_attributes (1.11.0)
+      activemodel (>= 3.0, < 7.0)
     thin (1.8.1)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
@@ -554,7 +556,7 @@ PLATFORMS
 DEPENDENCIES
   aasm (~> 5.0.8)
   addressable (>= 2.8.0)
-  annotate (~> 3.1.0)
+  annotate
   arel-is-blank (~> 1.0.0)
   bitzlato!
   bootsnap (>= 1.1.0)
@@ -641,6 +643,7 @@ DEPENDENCIES
   sentry-rails
   sentry-ruby
   slackistrano
+  strip_attributes
   timecop (~> 0.9)
   validate_url (~> 1.0.4)
   validates_lengths_from_database (~> 0.7.0)

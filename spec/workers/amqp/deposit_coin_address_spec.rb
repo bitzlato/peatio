@@ -5,34 +5,33 @@ describe Workers::AMQP::DepositCoinAddress do
   let(:member) { create(:member, :barong) }
   let(:address) { Faker::Blockchain::Bitcoin.address }
   let(:secret) { PasswordGenerator.generate(64) }
-  let(:wallet) { Wallet.active_retired.deposit.find_by(blockchain_key: 'eth-testnet') }
-  let(:payment_address) { member.payment_address(wallet.id) }
+  let(:blockchain) { create(:blockchain, 'eth-rinkeby') }
+  let(:payment_address) { member.payment_address(blockchain.id) }
   let(:create_address_result) do
     { address: address,
       secret: secret,
       details: { label: 'new-label' } }
   end
 
-  subject { member.payment_address(wallet.id).address }
-
+  subject { member.payment_address(blockchain).address }
 
   it 'raise error on databse connection error' do
     if defined? Mysql2
-      Member.stubs(:find_by_id).raises(Mysql2::Error::ConnectionError.new(''))
+      Member.stubs(:find).raises(Mysql2::Error::ConnectionError.new(''))
       expect {
-        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
+        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
       }.to raise_error Mysql2::Error::ConnectionError
     end
 
     if defined? PG
-      Member.stubs(:find_by_id).raises(PG::Error.new(''))
+      Member.stubs(:find).raises(PG::Error.new(''))
       expect {
-        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
+        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
       }.to raise_error PG::Error
     end
   end
 
-  context 'wallet service' do
+  context 'blockchain service' do
     before do
       WS::Ethereum::AddressCreator
         .any_instance
@@ -40,8 +39,9 @@ describe Workers::AMQP::DepositCoinAddress do
         .returns(create_address_result)
     end
 
-    it 'is passed to wallet service' do
-      Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
+    it 'is passed to blockchain service' do
+      BlockchainService.any_instance.expects(:case_sensitive?).returns true
+      Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
       expect(subject).to eq address
       payment_address.reload
       expect(payment_address.as_json
@@ -55,8 +55,9 @@ describe Workers::AMQP::DepositCoinAddress do
           secret: secret }
       end
 
-      fit 'is passed to wallet service' do
-        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
+      it 'is passed to blockchain service' do
+        BlockchainService.any_instance.expects(:case_sensitive?).returns true
+        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
         expect(subject).to eq address
         payment_address.reload
         expect(payment_address.as_json
@@ -75,7 +76,7 @@ describe Workers::AMQP::DepositCoinAddress do
       end
 
       it 'shouldnt create address' do
-        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, wallet_id: wallet.id)
+        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
         expect(subject).to eq nil
         payment_address.reload
         expect(payment_address.as_json

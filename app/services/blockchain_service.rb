@@ -18,6 +18,10 @@ class BlockchainService
     @latest_block_number ||= @adapter.latest_block_number
   end
 
+  def create_address!
+    @adapter.class.create_address! blockchain.server
+  end
+
   def case_sensitive?
     @adapter.features[:case_sensitive]
   end

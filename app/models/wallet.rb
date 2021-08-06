@@ -169,7 +169,7 @@ class Wallet < ApplicationRecord
   end
 
   def create_address!
-    adapter_class.create_address! money_currency.blockchain.server
+    blockchain.create_address!
   end
 
   def generate_settings

@@ -7,35 +7,20 @@ module Workers
       def process(payload)
         payload.symbolize_keys!
 
-        member = Member.find_by_id(payload[:member_id]) ||
-          raise(
-            'Unable to generate deposit address.'\
-            "Member with id: #{payload[:member_id]} doesn't exist"
-          )
+        member = Member.find payload[:member_id]
+        blockchain = Blockchain.find payload[:blockchain_id]
 
-        currency = Money::Currency.find!(payload[:currency_id]) ||
-          raise(
-            'Unable to generate deposit address.'\
-            "Currency id: #{payload[:currency_id]} doesn't exist"
-          )
-
-        member.payment_address(currency).tap do |pa|
+        member.payment_address(blockchain).tap do |pa|
+          return if pa.address.present?
           pa.with_lock do
-            next if pa.address.present?
+            result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency.to_s}")
 
-            result= currency.blockchain.create_address!
-
-            binding.pry
-            if result.present?
-              pa.update!(address: result[:address],
-                         secret:  result[:secret],
-                         details: { updated_at: pa.updated_at })
-            else
-              raise "No result when creating adress for #{member.id} #{currency.to_s}"
-            end
+            pa.update!(address: result[:address],
+                       secret:  result[:secret],
+                       details: result[:details])
           end
 
-          pa.trigger_address_event unless pa.address.blank?
+          pa.trigger_address_event if pa.address.present?
         end
 
       # Don't re-enqueue this job in case of error.

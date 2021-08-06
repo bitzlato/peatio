@@ -5,31 +5,26 @@ FactoryBot.define do
   factory :payment_address do
     address { Faker::Blockchain::Bitcoin.address }
     member { create(:member, :level_3) }
-    wallet { Wallet.joins(:currencies).find_by(currencies: { id: 'usd' }) }
+    association :blockchain
 
     trait :btc_address do
       member { create(:member, :level_3) }
-      wallet { Wallet.joins(:currencies).find_by(currencies: { id: 'btc' }) }
+      association :blockchain, strategy: :find_or_create, key: 'btc-testnet'
     end
 
     trait :eth_address do
       member { create(:member, :level_3) }
-      wallet { Wallet.joins(:currencies).find_by(currencies: { id: 'eth' }) }
+      association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
     end
 
     trait :trst_address do
       member { create(:member, :level_3) }
-      wallet { Wallet.joins(:currencies).find_by(currencies: { id: 'trst' }) }
+      association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
     end
 
     trait :ring_address do
       member { create(:member, :level_3) }
-      wallet { Wallet.joins(:currencies).find_by(currencies: { id: 'ring' }) }
-    end
-
-    trait :ltc_address do
-      member { create(:member, :level_3) }
-      wallet { Wallet.joins(:currencies).find_by(currencies: { id: 'ltc' }) }
+      association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
     end
 
     factory :btc_payment_address,  traits: [:btc_address]

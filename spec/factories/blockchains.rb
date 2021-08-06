@@ -3,7 +3,6 @@
 
 FactoryBot.define do
   factory :blockchain do
-
     trait 'eth-rinkeby' do
       key                     { 'eth-rinkeby' }
       name                    { 'Ethereum Rinkeby' }
@@ -14,6 +13,7 @@ FactoryBot.define do
       explorer_address        { 'https://etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
       status                  { 'active' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
     end
 
     trait 'eth-kovan' do
@@ -26,10 +26,11 @@ FactoryBot.define do
       explorer_address        { 'https://kovan.etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://kovan.etherscan.io/tx/#{txid}' }
       status                  { 'active' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
     end
 
-    trait 'eth-mainet' do
-      key                     { 'eth-mainet' }
+    trait 'eth-mainnet' do
+      key                     { 'eth-mainnet' }
       name                    { 'Ethereum Mainet' }
       client                  { 'geth' }
       server                  { 'http://127.0.0.1:8545' }
@@ -38,6 +39,7 @@ FactoryBot.define do
       explorer_address        { 'https://etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
       status                  { 'disabled' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
     end
 
     trait 'btc-testnet' do
@@ -50,6 +52,7 @@ FactoryBot.define do
       explorer_address        { 'https://blockchain.info/address/#{address}' }
       explorer_transaction    { 'https://blockchain.info/tx/#{txid}' }
       status                  { 'active' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
     end
 
     trait 'fake-testnet' do
@@ -58,6 +61,7 @@ FactoryBot.define do
       client                  { 'fake' }
       height                  { 1 }
       status                  { 'active' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
     end
   end
 end

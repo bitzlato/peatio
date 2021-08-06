@@ -1,6 +1,8 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
+# Rename to Gateway
+#
 class Blockchain < ApplicationRecord
   include Vault::EncryptedModel
 
@@ -12,18 +14,21 @@ class Blockchain < ApplicationRecord
   has_many :wallets
   has_many :whitelisted_smart_contracts
 
-  validates :key, :name, :client, presence: true
-  validates :key, uniqueness: true
+  validates :key, :name, presence: true, uniqueness: true
   validates :status, inclusion: { in: %w[active disabled] }
   validates :height,
             :min_confirmations,
             numericality: { greater_than_or_equal_to: 1, only_integer: true }
   validates :server, url: { allow_blank: true }
-  validates :client, inclusion: { in: -> (_) { clients.map(&:to_s) } }
+  validates :client,
+    presence: true,
+    inclusion: { in: -> (_) { clients.map(&:to_s) } }
 
   before_create { self.key = self.key.strip.downcase }
 
-  scope :active,   -> { where(status: :active) }
+  scope :active, -> { where(status: :active) }
+
+  delegate :create_address!, to: :blockchain_api
 
   class << self
     def clients
@@ -38,6 +43,10 @@ class Blockchain < ApplicationRecord
 
   def status
     super&.inquiry
+  end
+
+  def active?
+    status.active?
   end
 
   def dummy?
@@ -57,27 +66,3 @@ class Blockchain < ApplicationRecord
     height + min_confirmations
   end
 end
-
-# == Schema Information
-# Schema version: 20201125134745
-#
-# Table   serverwaname: blockchains
-#
-#  id                   :integer          not null, primary key
-#  key                  :string(255)      not null
-#  name                 :string(255)
-#  client               :string(255)      not null
-#  server_encrypted     :string(1024)
-#  height               :bigint           not null
-#  explorer_address     :string(255)
-#  explorer_transaction :string(255)
-#  min_confirmations    :integer          default(6), not null
-#  status               :string(255)      not null
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#
-# Indexes
-#
-#  index_blockchains_on_key     (key) UNIQUE
-#  index_blockchains_on_status  (status)
-#
