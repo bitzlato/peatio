@@ -17,16 +17,6 @@ describe Currency do
       expect(currency.deposit_fee).to eq 0
     end
 
-    it 'validates blockchain_key' do
-      currency.blockchain_key = 'an-nonexistent-key'
-      expect(currency.valid?).to be_falsey
-      expect(currency.errors[:blockchain_key].size).to eq(1)
-
-      currency.blockchain_key = 'btc-testnet' # an existent key
-      expect(currency.valid?).to be_truthy
-      expect(currency.errors[:blockchain_key]).to be_empty
-    end
-
     it 'validates position' do
       currency.position = 0
       expect(currency.valid?).to be_falsey
@@ -158,32 +148,6 @@ describe Currency do
   end
 
   context 'Callbacks' do
-    context 'blockchain key' do
-      let!(:coin) { Currency.find(:btc) }
-      let!(:token) { Currency.find(:trst) }
-
-      it 'should update blockchain key' do
-        token.update_attributes :blockchain_key => coin.blockchain_key
-        expect(token.reload.blockchain_key).to eq(coin.blockchain_key)
-      end
-
-      it 'should create currency with default blockchain key' do
-        currency = Currency.new(code: 'test', parent_id: coin.id)
-
-        expect(currency.blockchain_key).to eq nil
-        expect(currency.valid?).to eq true
-        expect(currency.blockchain_key).to eq coin.blockchain_key
-      end
-
-      it 'should create currency with non default blockchain key' do
-        currency = Currency.new(code: 'test', parent_id: coin.id, blockchain_key: token.blockchain_key)
-
-        expect(currency.blockchain_key).to eq token.blockchain_key
-        expect(currency.valid?).to eq true
-        expect(currency.blockchain_key).to eq token.blockchain_key
-      end
-    end
-
     context 'after_create' do
       let!(:coin) { Currency.find(:btc) }
 
@@ -241,7 +205,7 @@ describe Currency do
 
         context 'without parent id' do
           it 'should not create currency wallet' do
-            currency = Currency.create(code: 'test')
+            currency = Currency.create(code: 'test', blockchain: Blockchain.last)
             expect(CurrencyWallet.find_by(currency_id: currency.id, wallet_id: wallet.id)).to eq nil
           end
         end
