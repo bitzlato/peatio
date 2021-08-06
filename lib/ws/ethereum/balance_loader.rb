@@ -9,7 +9,7 @@ module WS
         else
           load_basic_balance(address, base_factor)
         end
-      rescue Ethereum::Client::Error => e
+      rescue ::Ethereum::Client::Error => e
         raise Peatio::Wallet::ClientError, e
       end
 

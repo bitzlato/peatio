@@ -156,7 +156,7 @@ class Currency < ApplicationRecord
   end
 
   def money_currency
-    @money_currency ||= Money::Currency.find code
+    @money_currency ||= Money::Currency.find! code
   end
 
   def link_wallets

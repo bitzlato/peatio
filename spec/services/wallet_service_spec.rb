@@ -89,23 +89,6 @@ describe WalletService do
     end
   end
 
-  context :create_address! do
-    let(:account) { create(:member, :level_3, :barong).get_account(currency)  }
-    let(:blockchain_address) do
-      { address: :fake_address,
-        secret: :changeme,
-        details: { uid: account.member.uid } }
-    end
-
-    before do
-      service.adapter.expects(:create_address!).returns(blockchain_address)
-    end
-
-    it 'creates address' do
-      expect(service.create_address!(account, nil)).to eq blockchain_address
-    end
-  end
-
   context :build_withdrawal! do
     let(:withdrawal) { create(:btc_withdraw, rid: 'fake-address', amount: 100, currency: currency, member: member) }
 

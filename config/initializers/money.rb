@@ -29,11 +29,16 @@ require 'ws/ethereum/helpers'
 class Money::Currency
   include WS::Ethereum::Helpers
 
+  class << self
+    def find!(code)
+      find(code) || raise("No #{code} Money::Currency found!")
+    end
+  end
+
   def convert_to_base_unit(value)
     x = value.to_d * base_factor
     unless (x % 1).zero?
-      raise Peatio::Wallet::ClientError,
-        "Failed to convert value to base (smallest) unit because it exceeds the maximum precision: " \
+      raise "Failed to convert currency (#{to_s}) value to base (smallest) unit because it exceeds the maximum precision: " \
         "#{value.to_d} - #{x.to_d} must be equal to zero."
     end
     x.to_i
@@ -44,7 +49,11 @@ class Money::Currency
   end
 
   def crypto?
-    self.class.table[@id][:is_crypto]
+    blockchain_key.present?
+  end
+
+  def blockchain_key
+    self.class.table[@id][:blockchain_key]
   end
 
   def contract_address
@@ -66,7 +75,3 @@ class Money::Currency
   end
 end
 # rubocop:enable Style/ClassAndModuleChildren
-#
-# Загружаем только нужные
-CURRENCIES_PATH = Rails.root.join './config/money_currencies.yml'
-Psych.load(File.read(CURRENCIES_PATH)).each { |_key, cur| Money::Currency.register cur.symbolize_keys }
