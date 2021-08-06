@@ -130,7 +130,6 @@ module API
             error!({ errors: ['account.currency.deposit_disabled'] }, 422)
           end
 
-
           payment_address = current_user.payment_address(currency.blockchain)
           present payment_address, with: API::V2::Entities::PaymentAddress, address_format: params[:address_format]
         end

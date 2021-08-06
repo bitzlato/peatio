@@ -64,7 +64,7 @@ FactoryBot.define do
       code                 { 'trst' }
       name                 { 'WeTrust' }
       type                 { 'coin' }
-      parent_id            { 'eth' }
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       base_factor          { 1_000_000 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
@@ -82,7 +82,7 @@ FactoryBot.define do
       code                 { 'tom' }
       name                 { 'TOM' }
       type                 { 'coin' }
-      parent_id            { 'eth' }
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       base_factor          { 1_000_000 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
@@ -100,7 +100,7 @@ FactoryBot.define do
       code                 { 'ring' }
       name                 { 'Evolution Land Global Token' }
       type                 { 'coin' }
-      parent_id            { 'eth' }
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       base_factor          { 1_000_000 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
@@ -128,7 +128,7 @@ FactoryBot.define do
       code                { 'xagm.cx' }
       name                { 'XAGm.cx' }
       type                { 'coin' }
-      parent_id           { 'eth' }
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       base_factor         { 1_000_000 }
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }

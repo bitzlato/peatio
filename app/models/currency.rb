@@ -39,7 +39,7 @@ class Currency < ApplicationRecord
   belongs_to :blockchain, required: true
   has_and_belongs_to_many :wallets
 
-  has_one :parent, class_name: 'Currency', foreign_key: :id, primary_key: :parent_id
+  belongs_to :parent, class_name: 'Currency'
 
   # == Validations ==========================================================
 
@@ -54,10 +54,6 @@ class Currency < ApplicationRecord
   validates :position,
             presence: true,
             numericality: { greater_than_or_equal_to: TOP_POSITION, only_integer: true }
-
-  validates :parent_id, allow_blank: true,
-            inclusion: { in: ->(_) { Currency.coins_without_tokens.pluck(:id).map(&:to_s) } },
-            if: :coin?
 
   validates :type, inclusion: { in: ->(_) { Currency.types.map(&:to_s) } }
   validates :options, length: { maximum: 1000 }

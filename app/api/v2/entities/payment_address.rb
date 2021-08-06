@@ -13,7 +13,7 @@ module API
             example: -> { ::Currency.visible.codes }
           }
         ) do |pa|
-          pa.wallet.currencies.codes
+          pa.blockchain.currencies.codes
         end
 
         expose(
