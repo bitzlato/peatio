@@ -460,7 +460,7 @@ ActiveRecord::Schema.define(version: 2021_08_06_151717) do
     t.jsonb "balance"
     t.json "plain_settings"
     t.boolean "enable_invoice", default: false, null: false
-    t.bigint "blockchain_id"
+    t.bigint "blockchain_id", null: false
     t.index ["blockchain_id"], name: "index_wallets_on_blockchain_id"
     t.index ["kind"], name: "index_wallets_on_kind"
     t.index ["status"], name: "index_wallets_on_status"
@@ -472,7 +472,7 @@ ActiveRecord::Schema.define(version: 2021_08_06_151717) do
     t.string "state", limit: 30, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "blockchain_id"
+    t.bigint "blockchain_id", null: false
     t.index ["blockchain_id", "address"], name: "index_whitelisted_smart_contracts_on_blockchain_id_and_address", unique: true
     t.index ["blockchain_id"], name: "index_whitelisted_smart_contracts_on_blockchain_id"
   end

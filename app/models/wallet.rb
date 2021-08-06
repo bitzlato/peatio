@@ -65,6 +65,8 @@ class Wallet < ApplicationRecord
   scope :with_deposit_currency, ->(currency) { with_currency(currency).joins(:currency_wallets).where(currencies_wallets: { enable_deposit: true }) }
   scope :ordered, -> { order(kind: :asc) }
 
+  delegate :key, to: :blockchain, prefix: true
+
   before_validation :generate_settings, on: :create
   before_validation do
     next unless address? && blockchain.try(:blockchain_api).try(:supports_cash_addr_format?)

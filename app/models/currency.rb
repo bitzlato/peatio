@@ -102,6 +102,7 @@ class Currency < ApplicationRecord
   end
 
   before_update { update_position(self) if position_changed? }
+  delegate :key, to: :blockchain, prefix: true
 
   after_commit :wipe_cache
 

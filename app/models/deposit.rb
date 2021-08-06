@@ -45,6 +45,8 @@ class Deposit < ApplicationRecord
                 -> (deposit){ deposit.currency.min_deposit_amount }
             }, on: :create
 
+  delegate :key, to: :blockchain, prefix: true
+
   aasm whiny_transitions: false do
     state :submitted, initial: true
     state :invoiced

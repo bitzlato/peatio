@@ -8,7 +8,7 @@ class WhitelistedSmartContract < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain
+  belongs_to :blockchain, touch: true, required: true
 
   # == Validations ==========================================================
 
@@ -20,27 +20,5 @@ class WhitelistedSmartContract < ApplicationRecord
   scope :active, -> { where(state: :active) }
   scope :ordered, -> { order(kind: :asc) }
 
-  after_save :update_blockchain
-
-  def update_blockchain
-    blockchain.touch
-  end
+  delegate :key, to: :blockchain, prefix: true
 end
-
-# == Schema Information
-# Schema version: 20210128144535
-#
-# Table name: whitelisted_smart_contracts
-#
-#  id             :bigint           not null, primary key
-#  description    :string(255)
-#  address        :string(255)      not null
-#  state          :string(30)       not null
-#  blockchain_key :string(32)       not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#
-# Indexes
-#
-#  index_whitelisted_smart_contracts_on_address_and_blockchain_key  (address,blockchain_key) UNIQUE
-#
