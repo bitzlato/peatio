@@ -73,6 +73,14 @@ module API
           )
 
           expose(
+            :blockchain_id,
+            documentation: {
+                type: Integer,
+                desc: 'Wallet blockchain id.'
+            }
+          )
+
+          expose(
             :blockchain_key,
             documentation: {
                 type: String,

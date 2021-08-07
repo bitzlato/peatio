@@ -43,6 +43,9 @@ module API
           optional :blockchain_key,
                    values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.currency.blockchain_key_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_key][:desc] }
+          optional :blockchain_id,
+                   values: { type: Integer, value: -> { ::Blockchain.pluck(:id) }, message: 'admin.currency.blockchain_id_doesnt_exist' },
+                   desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_id][:desc] }
           optional :kind,
                    values: { value: -> { Wallet.kind.values }, message: 'admin.wallet.invalid_kind' },
                    desc: -> { API::V2::Admin::Entities::Wallet.documentation[:kind][:desc] }
@@ -57,10 +60,11 @@ module API
           admin_authorize! :read, ::Wallet
 
           ransack_params = Helpers::RansackBuilder.new(params)
-                             .eq(:blockchain_key)
-                             .translate_in(currencies: :currencies_id)
-                             .merge(kind_eq: params[:kind].present? ? Wallet.kinds[params[:kind].to_sym] : nil)
-                             .build
+            .eq(:blockchain_id)
+            .eq(:blockchain_key)
+            .translate_in(currencies: :currencies_id)
+            .merge(kind_eq: params[:kind].present? ? Wallet.kinds[params[:kind].to_sym] : nil)
+            .build
 
           search = ::Wallet.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
@@ -97,9 +101,10 @@ module API
         end
         params do
           use :create_wallet_params
-          requires :blockchain_key,
-                   values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.wallet.blockchain_key_doesnt_exist' },
-                   desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_key][:desc] }
+          requires :blockchain_id,
+            type: Integer,
+            values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.wallet.blockchain_id_doesnt_exist' },
+            desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_id][:desc] }
           requires :name,
                    desc: -> { API::V2::Admin::Entities::Wallet.documentation[:name][:desc] }
           optional :address,
@@ -155,9 +160,9 @@ module API
           requires :id,
                    type: { value: Integer, message: 'admin.wallet.non_integer_id' },
                    desc: -> { API::V2::Admin::Entities::Wallet.documentation[:id][:desc] }
-          optional :blockchain_key,
-                   values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.wallet.blockchain_key_doesnt_exist' },
-                   desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_key][:desc] }
+          optional :blockchain_id,
+                   values: { type: Integer, value: -> { ::Blockchain.pluck(:id) }, message: 'admin.wallet.blockchain_id_doesnt_exist' },
+                   desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_id][:desc] }
           optional :name,
                    desc: -> { API::V2::Admin::Entities::Wallet.documentation[:name][:desc] }
           optional :address,

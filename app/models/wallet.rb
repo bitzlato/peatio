@@ -78,6 +78,14 @@ class Wallet < ApplicationRecord
       Peatio::Wallet.registry.adapters.keys
     end
 
+    def blockchain_key_eq(key)
+      joins(:blockchain).where(blockchains: { key: key })
+    end
+
+    def self.ransackable_attributes(_auth_object = nil)
+      super + %w(blockchain_key_eq)
+    end
+
     def kinds(options={})
       ENUMERIZED_KINDS
         .yield_self do |kinds|
@@ -129,10 +137,19 @@ class Wallet < ApplicationRecord
     end
   end
 
+  def blockchain_key=(key)
+    return self.blockchain = nil if key.nil?
+    self.blockchain = Blockchain.find_by(key: key) || raise("No blockchain with key #{key}")
+  end
+
   def current_balance(currency = nil)
     if currency.present?
-      currency = currency.money_currency unless currency.is_a? Money::Currency
-      adapter_class.load_balance(uri, address, currency) || NOT_AVAILABLE
+      begin
+        currency = currency.money_currency unless currency.is_a? Money::Currency
+        adapter_class.load_balance(uri, address, currency) || NOT_AVAILABLE
+      rescue Peatio::Wallet::ClientError
+        NOT_AVAILABLE
+      end
     else
       currencies.each_with_object({}) do |c, balances|
         balances[c.id] = current_balance(c)
@@ -143,7 +160,7 @@ class Wallet < ApplicationRecord
   def gateway_wallet_kind_support
     return unless gateway_implements?(:support_wallet_kind?)
 
-    errors.add(:gateway, "#{gateway} can't be used as a #{kind} wallet") unless service.adapter.support_wallet_kind?(kind)
+    errors.add(:gateway, "'#{gateway}' can't be used as a '#{kind}' wallet") unless service.adapter.support_wallet_kind?(kind)
   end
 
   def to_wallet_api_settings

@@ -94,7 +94,7 @@ describe Wallet do
         subject.gateway = 'abc'
         subject.kind = 'deposit'
         expect(subject).to_not be_valid
-        expect(subject.errors.full_messages).to eq ['Gateway abc can\'t be used as a deposit wallet']
+        expect(subject.errors.full_messages).to eq ["Gateway 'abc' can\'t be used as a 'deposit' wallet"]
       end
     end
   end
