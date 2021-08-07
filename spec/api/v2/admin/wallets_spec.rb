@@ -125,7 +125,7 @@ describe API::V2::Admin::Wallets, type: :request do
 
           expect(response_body.length).not_to eq 0
           expect(response_body.pluck('currencies').map { |a| a.include?('eth') }.all?).to eq(true)
-          count = Wallet.with_currency(:etc).count
+          count = Wallet.with_currency(:eth).count
           expect(response_body.find { |c| c['id'] == hot_wallet.id }['currencies'].sort).to eq(%w[eth trst])
           expect(response_body.count).to eq(count)
         end
@@ -157,21 +157,44 @@ describe API::V2::Admin::Wallets, type: :request do
   end
 
   describe 'post /api/v2/admin/wallets/new' do
+    let(:name) { 'test' }
     it 'create wallet' do
-      api_post '/api/v2/admin/wallets/new', params: { name: 'test', kind: 'deposit', currencies: 'eth', address: 'blank', blockchain_key: 'btc-testnet', gateway: 'geth', plain_settings: {external_wallet_id: 1}, settings: { uri: 'http://127.0.0.1:18332'}}, token: token
+      api_post '/api/v2/admin/wallets/new',
+        params: {
+        name: name,
+        kind: 'deposit',
+        currencies: 'eth',
+        address: 'blank',
+        blockchain_id: blockchain.id,
+        gateway: 'geth',
+        plain_settings: {external_wallet_id: 1},
+        settings: { uri: 'http://127.0.0.1:18332'}
+      },
+        token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result['name']).to eq 'Test'
+      expect(result['name']).to eq name
     end
 
     it 'create wallet' do
-      api_post '/api/v2/admin/wallets/new', params: { name: 'test', kind: 'deposit', currencies: ['eth','trst'], address: 'blank', blockchain_id: 'btc-testnet', gateway: 'geth', plain_settings: {external_wallet_id: 1}, settings: { uri: 'http://127.0.0.1:18332'}}, token: token
+      api_post '/api/v2/admin/wallets/new',
+        params: {
+        name: 'test',
+        kind: 'deposit',
+        currencies: ['eth','trst'],
+        address: 'blank',
+        blockchain_id: blockchain.id,
+        gateway: 'geth',
+        plain_settings: {external_wallet_id: 1},
+        settings: { uri: 'http://127.0.0.1:18332'}
+      },
+        token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
       expect(result['currencies']).to eq(['eth', 'trst'])
-      expect(result['name']).to eq 'Test'
+      expect(result['name']).to eq 'test'
     end
 
     it 'checked required params' do
@@ -186,7 +209,19 @@ describe API::V2::Admin::Wallets, type: :request do
     end
 
     it 'validate status' do
-      api_post '/api/v2/admin/wallets/new', params: { name: 'test', kind: 'deposit', currencies: 'eth', address: 'blank', blockchain_id: 'btc-testnet', gateway: 'geth', plain_settings: {external_wallet_id: 1}, settings: { uri: 'http://127.0.0.1:18332'}, status: 'disable' }, token: token
+      api_post '/api/v2/admin/wallets/new',
+        params: {
+        name: 'test',
+        kind: 'deposit',
+        currencies: 'eth',
+        address: 'blank',
+        blockchain_id: blockchain.id,
+        gateway: 'geth',
+        plain_settings: {external_wallet_id: 1},
+        settings: { uri: 'http://127.0.0.1:18332'},
+        status: 'disable'
+      },
+        token: token
 
       expect(response.code).to eq '422'
       expect(response).to include_api_error('admin.wallet.invalid_status')
@@ -259,11 +294,10 @@ describe API::V2::Admin::Wallets, type: :request do
           kind: 'hot',
           currencies: [ 'eth', 'trst' ],
           address: 'blank',
-          blockchain_key: 'btc-testnet',
+          blockchain_id: blockchain.id,
           gateway: 'custom',
           settings: { uri: 'http://127.0.0.1:18332'}
-        },
-          token: token
+        }, token: token
 
         expect(response).to be_successful
         expect(response_body['gateway']).to eq 'custom'
@@ -305,11 +339,14 @@ describe API::V2::Admin::Wallets, type: :request do
     end
 
     it 'update wallet with new secret' do
-      api_post '/api/v2/admin/wallets/update', params: { id: wallet.id, currencies: 'btc', settings: { secret: 'new secret'} }, token: token
+      api_post '/api/v2/admin/wallets/update',
+        params: { id: wallet.id, currencies: 'btc', settings: { secret: 'new secret' } },
+        token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
       expect(result['currencies']).to eq ['btc']
+      wallet.reload
       expect(wallet.settings['uri']).to eq nil
       expect(wallet.settings['secret']).to eq 'new secret'
     end

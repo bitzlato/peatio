@@ -97,9 +97,10 @@ RSpec.configure do |config|
     %w[eth-kovan eth-rinkeby btc-testnet].each { |blockchain| FactoryBot.find_or_create(:blockchain, blockchain) }
     %i[usd eur btc eth trst ring].each { |ccy| FactoryBot.find_or_create(:currency, ccy, id: ccy) }
 
+    Wallet.delete_all
     %i[ eth_deposit eth_hot eth_warm eth_fee
         trst_deposit trst_hot
-        btc_hot btc_deposit ].each { |name| FactoryBot.find_or_create(:wallet, name, name: name) }
+        btc_hot btc_deposit ].each { |name| FactoryBot.create(:wallet, name) }
     %i[btcusd btceth btceth_qe].each { |market| FactoryBot.find_or_create(:market, market, id: market) }
     %w[101 102 201 202 211 212 301 302 401 402].each { |ac_code| FactoryBot.create(:operations_account, ac_code)}
     FactoryBot.create(:trading_fee, market_id: :any, group: :any, maker: 0.0015, taker: 0.0015)
