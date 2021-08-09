@@ -62,6 +62,10 @@ class PaymentAddress < ApplicationRecord
                           currencies: wallet.currencies.codes,
                           address:  address)
   end
+
+  def currency
+    wallet.native_currency
+  end
 end
 
 # == Schema Information
