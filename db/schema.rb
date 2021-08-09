@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_06_185439) do
+ActiveRecord::Schema.define(version: 2021_08_07_084947) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -77,7 +77,6 @@ ActiveRecord::Schema.define(version: 2021_08_06_185439) do
   create_table "blockchains", force: :cascade do |t|
     t.string "key", null: false
     t.string "name"
-    t.string "client", null: false
     t.bigint "height", null: false
     t.string "explorer_address"
     t.string "explorer_transaction"
@@ -86,6 +85,7 @@ ActiveRecord::Schema.define(version: 2021_08_06_185439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "server_encrypted", limit: 1024
+    t.string "gateway_klass", null: false
     t.index ["key"], name: "index_blockchains_on_key", unique: true
     t.index ["status"], name: "index_blockchains_on_status"
   end
@@ -150,13 +150,13 @@ ActiveRecord::Schema.define(version: 2021_08_06_185439) do
     t.text "from_addresses"
     t.integer "transfer_type"
     t.json "data"
-    t.string "intention_id"
+    t.string "invoice_id"
     t.json "error"
     t.bigint "blockchain_id", null: false
     t.index ["aasm_state", "member_id", "currency_id"], name: "index_deposits_on_aasm_state_and_member_id_and_currency_id"
     t.index ["blockchain_id", "txid"], name: "index_deposits_on_blockchain_id_and_txid", unique: true, where: "(txid IS NOT NULL)"
     t.index ["blockchain_id"], name: "index_deposits_on_blockchain_id"
-    t.index ["currency_id", "intention_id"], name: "index_deposits_on_currency_id_and_intention_id", unique: true, where: "(intention_id IS NOT NULL)"
+    t.index ["currency_id", "invoice_id"], name: "index_deposits_on_currency_id_and_invoice_id", unique: true, where: "(invoice_id IS NOT NULL)"
     t.index ["currency_id", "txid", "txout"], name: "index_deposits_on_currency_id_and_txid_and_txout", unique: true
     t.index ["currency_id"], name: "index_deposits_on_currency_id"
     t.index ["member_id", "txid"], name: "index_deposits_on_member_id_and_txid"
@@ -452,7 +452,6 @@ ActiveRecord::Schema.define(version: 2021_08_06_185439) do
     t.string "status", limit: 32
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "gateway", limit: 20, default: "", null: false
     t.decimal "max_balance", precision: 32, scale: 16, default: "0.0", null: false
     t.integer "kind", null: false
     t.string "settings_encrypted", limit: 1024

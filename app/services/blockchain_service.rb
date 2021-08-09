@@ -47,19 +47,25 @@ class BlockchainService
   end
 
   def process_block(block_number)
-    block = @adapter.fetch_block!(block_number)
-    deposits = filter_deposits(block)
-    withdrawals = filter_withdrawals(block)
+    block = gateway.fetch_block!(block_number)
 
-    update_fees!(block)
-    # TODO: Process Transactions with `pending` status
+    payment_addresses = PaymentAddress.where(blockchain: blockchain, address: block.transactions.map(&:to_address)).pluck(:address)
+    withdraw_txids = Withdraws::Coin.confirming.where(currency: @currencies).pluck(:txid)
 
-    accepted_deposits = []
-    ActiveRecord::Base.transaction do
-      accepted_deposits = deposits.map(&method(:update_or_create_deposit)).compact
-      withdrawals.each(&method(:update_withdrawal))
+    block.select do |tx|
+      if tx.to_address.in?(payment_addresses)
+        update_or_create_deposit tx
+      elsif tx.hash.in?(withdraw_txids)
+        update_withdrawal tx
+        withdrawals.each(&method(:update_withdrawal))
+      end
+      # TODO add blockchain
+      Transaction
+        .where(currency_id: tx.currency_id, txid: tx.hash)
+        .where('fee is null or block_number is null')
+        .update_all fee: tx.fee, block_number: tx.block_number
     end
-    accepted_deposits.each(&:process!)
+
     block
   end
 
@@ -70,10 +76,6 @@ class BlockchainService
 
   def update_fees!(block)
     block.each do |tx|
-      Transaction
-        .where(currency_id: tx.currency_id, txid: tx.hash)
-        .where('fee is null or block_number is null')
-        .update_all fee: tx.fee, block_number: tx.block_number
     end
   end
 
@@ -86,17 +88,6 @@ class BlockchainService
   end
 
   private
-
-  def filter_deposits(block)
-    addresses = PaymentAddress.where(blockchain: blockchain, address: block.transactions.map(&:to_address)).pluck(:address)
-    block.select { |transaction| transaction.to_address.in?(addresses) }
-  end
-
-  def filter_withdrawals(block)
-    # TODO: Process addresses in batch in case of huge number of confirming withdrawals.
-    withdraw_txids = Withdraws::Coin.confirming.where(currency: @currencies).pluck(:txid)
-    block.select { |transaction| transaction.hash.in?(withdraw_txids) }
-  end
 
   def update_or_create_deposit(transaction)
     if transaction.amount < Currency.find(transaction.currency_id).min_deposit_amount
@@ -137,19 +128,17 @@ class BlockchainService
         d.block_number = transaction.block_number
       end
 
-    deposit.update_column(:block_number, transaction.block_number) if deposit.block_number != transaction.block_number
-    # Manually calculating deposit confirmations, because blockchain height is not updated yet.
-    if latest_block_number - deposit.block_number >= @blockchain.min_confirmations && deposit.accept!
-      deposit
-    else
-      nil
+    unless deposit.block_number == transaction.block_number
+      Rails.logger.warn { "Update deposit block_number (#{deposit.block_number} -> #{transaction.block_number}" }
+      deposit.update_column :block_number, transaction.block_number
     end
+    deposit.accept! if deposit.submitted?
+    deposit.process! if latest_block_number - deposit.block_number >= blockchain.min_confirmations
   end
 
   def update_withdrawal(transaction)
-    withdrawal =
-      Withdraws::Coin.confirming
-        .find_by(currency_id: transaction.currency_id, txid: transaction.hash)
+    withdrawal = blockchain.withdraws.confirming
+      .find_by(currency_id: transaction.currency_id, txid: transaction.hash)
 
     # Skip non-existing in database withdrawals.
     if withdrawal.blank?
@@ -157,15 +146,18 @@ class BlockchainService
       return
     end
 
-    withdrawal.update_column(:block_number, transaction.block_number)
+    withdrawal.with_lock do
+      withdrawal.update_column :block_number, transaction.block_number if withdrawal.block_number.nil?
 
-    # Fetch transaction from a blockchain that has `pending` status.
-    transaction = adapter.fetch_transaction(transaction) if @adapter.respond_to?(:fetch_transaction) && transaction.status.pending?
-    # Manually calculating withdrawal confirmations, because blockchain height is not updated yet.
-    if transaction.status.failed?
-      withdrawal.fail!
-    elsif transaction.status.success? && latest_block_number - withdrawal.block_number >= @blockchain.min_confirmations
-      withdrawal.success!
+      # Fetch transaction from a blockchain that has `pending` status.
+      transaction = adapter.fetch_transaction(transaction) if transaction.status.pending?
+
+      # Manually calculating withdrawal confirmations, because blockchain height is not updated yet.
+      if transaction.status.failed?
+        withdrawal.fail!
+      elsif transaction.status.success? && latest_block_number - withdrawal.block_number >= blockchain.min_confirmations
+        withdrawal.success!
+      end
     end
   end
 end

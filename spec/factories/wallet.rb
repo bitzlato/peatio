@@ -14,7 +14,6 @@ FactoryBot.define do
       kind               { 'deposit' }
       max_balance        { 0.0 }
       status             { 'active' }
-      gateway            { 'geth' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -29,7 +28,6 @@ FactoryBot.define do
       kind               { 'deposit' }
       max_balance        { 0.0 }
       status             { 'active' }
-      gateway            { 'opendax_cloud' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -44,7 +42,6 @@ FactoryBot.define do
       kind               { 'hot' }
       max_balance        { 100.0 }
       status             { 'active' }
-      gateway            { 'geth' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -59,7 +56,6 @@ FactoryBot.define do
       kind               { 'hot' }
       max_balance        { 100.0 }
       status             { 'active' }
-      gateway            { 'opendax_cloud' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -74,7 +70,6 @@ FactoryBot.define do
       kind               { 'warm' }
       max_balance        { 1000.0 }
       status             { 'active' }
-      gateway            { 'geth' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -89,7 +84,6 @@ FactoryBot.define do
       kind               { 'cold' }
       max_balance        { 1000.0 }
       status             { 'active' }
-      gateway            { 'geth' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -104,7 +98,6 @@ FactoryBot.define do
       kind               { 'fee' }
       max_balance        { 1000.0 }
       status             { 'active' }
-      gateway            { 'geth' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -119,7 +112,6 @@ FactoryBot.define do
       kind               { 'deposit' }
       max_balance        { 0.0 }
       status             { 'active' }
-      gateway            { 'geth' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -134,7 +126,6 @@ FactoryBot.define do
       kind               { 'hot' }
       max_balance        { 100.0 }
       status             { 'active' }
-      gateway            { 'geth' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -149,7 +140,6 @@ FactoryBot.define do
       kind               { 'deposit' }
       max_balance        { 0.0 }
       status             { 'active' }
-      gateway            { 'bitcoind' }
       uri                { 'http://127.0.0.1:18332' }
       secret             { 'changeme' }
     end
@@ -164,7 +154,6 @@ FactoryBot.define do
       kind               { 'hot' }
       max_balance        { 500.0 }
       status             { 'active' }
-      gateway            { 'bitcoind' }
       uri                { 'http://127.0.0.1:18332' }
       secret             { 'changeme' }
     end
@@ -179,7 +168,6 @@ FactoryBot.define do
       kind              { 'deposit' }
       max_balance       { 0.0 }
       status            { 'active' }
-      gateway           { 'fake' }
       uri               { 'http://127.0.0.1:18881' }
     end
 
@@ -193,7 +181,6 @@ FactoryBot.define do
       kind              { 'hot' }
       max_balance       { 10.0 }
       status            { 'active' }
-      gateway           { 'fake' }
       uri               { 'http://127.0.0.1:18881' }
     end
 
@@ -207,7 +194,6 @@ FactoryBot.define do
       kind              { 'warm' }
       max_balance       { 100.0 }
       status            { 'active' }
-      gateway           { 'fake' }
       uri               { 'http://127.0.0.1:18881' }
     end
 
@@ -221,7 +207,6 @@ FactoryBot.define do
       kind              { 'cold' }
       max_balance       { 1000.0 }
       status            { 'active' }
-      gateway           { 'fake' }
       uri               { 'http://127.0.0.1:18881' }
     end
 
@@ -235,7 +220,6 @@ FactoryBot.define do
       kind               { 'fee' }
       max_balance        { 1000.0 }
       status             { 'active' }
-      gateway            { 'fake' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end

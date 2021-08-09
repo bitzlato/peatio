@@ -1,10 +1,7 @@
 # Copyright (c) 2019 Danil Pismenny <danil@brandymint.ru>
-
-require 'ws/ethereum/helpers'
-
 # rubocop:disable Style/ClassAndModuleChildren
 class Money::Currency
-  include WS::Ethereum::Helpers
+  include NumericHelpers
   attr_reader :contract_address, :parent_currency, :precesion, :base_factor_subunits
 
   class << self

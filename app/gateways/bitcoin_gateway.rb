@@ -1,0 +1,2 @@
+class BitcoinGateway
+end

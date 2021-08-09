@@ -1,0 +1,2 @@
+class DummyGateway < AbstractGateway
+end

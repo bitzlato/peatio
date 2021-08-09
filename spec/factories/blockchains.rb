@@ -3,10 +3,11 @@
 
 FactoryBot.define do
   factory :blockchain do
+    gateway_klass { DummyGateway.name }
+
     trait 'dummy' do
       key                     { 'dummy' }
       name                    { 'dummy' }
-      client                  { 'dummy' }
       server                  { 'http://127.0.0.1:1' }
       height                  { 2500000 }
       min_confirmations       { 6 }
@@ -19,7 +20,7 @@ FactoryBot.define do
     trait 'eth-rinkeby' do
       key                     { 'eth-rinkeby' }
       name                    { 'Ethereum Rinkeby' }
-      client                  { 'geth' }
+      gateway_klass { EthereumGateway.name }
       server                  { 'http://127.0.0.1:8545' }
       height                  { 2500000 }
       min_confirmations       { 6 }
@@ -31,8 +32,8 @@ FactoryBot.define do
 
     trait 'eth-kovan' do
       key                     { 'eth-kovan' }
+      gateway_klass { EthereumGateway.name }
       name                    { 'Ethereum Kovan' }
-      client                  { 'parity' }
       server                  { 'http://127.0.0.1:8545' }
       height                  { 2500000 }
       min_confirmations       { 6 }
@@ -44,8 +45,8 @@ FactoryBot.define do
 
     trait 'eth-mainet' do
       key                     { 'eth-mainet' }
+      gateway_klass { EthereumGateway.name }
       name                    { 'Ethereum Mainet' }
-      client                  { 'geth' }
       server                  { 'http://127.0.0.1:8545' }
       height                  { 2500000 }
       min_confirmations       { 4 }
@@ -57,8 +58,8 @@ FactoryBot.define do
 
     trait 'btc-testnet' do
       key                     { 'btc-testnet' }
+      gateway_klass { EthereumGateway.name }
       name                    { 'Bitcoin Testnet' }
-      client                  { 'bitcoin' }
       server                  { 'http://127.0.0.1:18332' }
       height                  { 1350000 }
       min_confirmations       { 1 }
@@ -71,7 +72,6 @@ FactoryBot.define do
     trait 'fake-testnet' do
       key                     { 'fake-testnet' }
       name                    { 'Fake Testnet' }
-      client                  { 'fake' }
       height                  { 1 }
       status                  { 'active' }
       initialize_with         { Blockchain.find_or_create_by(key: key) }

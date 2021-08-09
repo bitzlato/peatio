@@ -51,8 +51,6 @@ class Wallet < ApplicationRecord
 
   validates :status,  inclusion: { in: STATES }
 
-  validates :gateway, inclusion: { in: ->(_){ Wallet.gateways.map(&:to_s) } }
-
   validates :max_balance, numericality: { greater_than_or_equal_to: 0 }
 
   scope :active,   -> { where(status: :active) }
@@ -66,6 +64,7 @@ class Wallet < ApplicationRecord
   scope :ordered, -> { order(kind: :asc) }
 
   delegate :key, to: :blockchain, prefix: true
+  delegate :create_address!, :gateway, to: :blockchain
 
   before_validation :generate_settings, on: :create
   before_validation do
@@ -74,10 +73,6 @@ class Wallet < ApplicationRecord
   end
 
   class << self
-    def gateways
-      Peatio::Wallet.registry.adapters.keys
-    end
-
     def blockchain_key_eq(key)
       joins(:blockchain).where(blockchains: { key: key })
     end
@@ -146,7 +141,7 @@ class Wallet < ApplicationRecord
     if currency.present?
       begin
         currency = currency.money_currency unless currency.is_a? Money::Currency
-        adapter_class.load_balance(uri, address, currency) || NOT_AVAILABLE
+        gateway.load_balance(uri, address, currency) || NOT_AVAILABLE
       rescue Peatio::Wallet::ClientError
         NOT_AVAILABLE
       end
@@ -158,37 +153,16 @@ class Wallet < ApplicationRecord
   end
 
   def gateway_wallet_kind_support
-    return unless gateway_implements?(:support_wallet_kind?)
-
-    errors.add(:gateway, "'#{gateway}' can't be used as a '#{kind}' wallet") unless service.adapter.support_wallet_kind?(kind)
+    errors.add(:gateway, "'#{gateway.name}' can't be used as a '#{kind}' wallet") unless gateway.support_wallet_kind?(kind)
   end
 
   def to_wallet_api_settings
     settings.compact.deep_symbolize_keys.merge(address: address)
   end
 
+  # Rename to exlporer_url
   def wallet_url
     blockchain.explorer_address.gsub('#{address}', address) if blockchain
-  end
-
-  def service
-    ::WalletService.new(self)
-  end
-
-  def adapter
-    adapter_class.new(settings.symbolize_keys)
-  end
-
-  def adapter_class
-    Peatio::Wallet.registry[gateway.to_sym]
-  end
-
-  def gateway_implements?(method_name)
-    service.adapter.class.instance_methods(false).include?(method_name)
-  end
-
-  def create_address!
-    blockchain.create_address!
   end
 
   def generate_settings

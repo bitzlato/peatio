@@ -47,7 +47,7 @@ class Deposit < ApplicationRecord
 
   delegate :key, to: :blockchain, prefix: true
 
-  aasm whiny_transitions: false do
+  aasm whiny_transitions: true do
     state :submitted, initial: true
     state :invoiced
     state :canceled
@@ -164,12 +164,12 @@ class Deposit < ApplicationRecord
     true
   end
 
-  delegate :blockchain_api, to: :blockchain
+  delegate :gateway, to: :blockchain
 
   def transfer_links
     # TODO rename data['links'] to transfer_links
     # TODO rename data['expires_at'] to expires_at
-    # TODO Use txid instead of intention_id
+    # TODO Use txid instead of invoice_id
     data&.fetch 'links', []
   end
 
@@ -188,10 +188,6 @@ class Deposit < ApplicationRecord
     else
       update!(error: error << { class: e.class.to_s, message: e.message })
     end
-  end
-
-  def spread_to_transactions
-    spread.map { |s| Peatio::Transaction.new(s) }
   end
 
   def spread_between_wallets!

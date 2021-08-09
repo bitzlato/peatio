@@ -69,32 +69,19 @@ describe Wallet do
     end
 
     context 'gateway_wallet_kind_support' do
-      class AbstractWallet < Peatio::Wallet::Abstract
-        def initialize(_opts = {}); end
-        def configure(settings = {}); end
-
-        def support_wallet_kind?(kind)
-          kind == 'hot'
-        end
-      end
-
-      before(:all) do
-        Peatio::Wallet.registry[:abc] = AbstractWallet
-      end
-
       it 'allows to create hot wallet' do
+        AbstractGateway.stubs(:support_wallet_kind?).returns true
         expect {
-          subject.gateway = 'abc'
           subject.kind = 'hot'
           subject.save!
         }.not_to raise_error
       end
 
       it 'does not allow to create hot wallet' do
-        subject.gateway = 'abc'
+        AbstractGateway.any_instance.stubs(:support_wallet_kind?).returns false
         subject.kind = 'deposit'
         expect(subject).to_not be_valid
-        expect(subject.errors.full_messages).to eq ["Gateway 'abc' can\'t be used as a 'deposit' wallet"]
+        expect(subject.errors.full_messages).to eq ["Gateway 'EthereumGateway' can\'t be used as a 'deposit' wallet"]
       end
     end
   end

@@ -1,10 +1,5 @@
-require 'ws/ethereum'
-
 module Ethereum
   class WalletAbstract < Peatio::Wallet::Abstract
-    extend WS::Ethereum
-    include WS::Ethereum::Helpers
-
     DEFAULT_ETH_FEE = { gas_limit: 21_000, gas_price: :standard }.freeze
 
     DEFAULT_ERC20_FEE = { gas_limit: 90_000, gas_price: :standard }.freeze

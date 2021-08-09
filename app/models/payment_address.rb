@@ -19,13 +19,13 @@ class PaymentAddress < ApplicationRecord
   belongs_to :blockchain
 
   before_validation if: :address do
-    if blockchain_api.present?
-      self.address = address.downcase unless blockchain_api.case_sensitive?
-      self.address = CashAddr::Converter.to_cash_address(address) if blockchain_api.supports_cash_addr_format?
+    if blockchain.present?
+      self.address = address.downcase unless gateway.case_sensitive?
+      self.address = CashAddr::Converter.to_cash_address(address) if gateway.supports_cash_addr_format?
     end
   end
 
-  delegate :blockchain_api, to: :blockchain
+  delegate :gateway, to: :blockchain
 
   def enqueue_address_generation
     AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain_id }, { persistent: true })

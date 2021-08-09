@@ -1,9 +1,5 @@
-require 'ws/ethereum'
-
 module Ethereum
   class BlockchainAbstract < Peatio::Blockchain::Abstract
-    extend WS::Ethereum
-
     UndefinedCurrencyError = Class.new(StandardError)
 
     TOKEN_EVENT_IDENTIFIER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'

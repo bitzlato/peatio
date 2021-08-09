@@ -11,7 +11,7 @@ module Workers
           Rails.logger.info { "Starting processing coin deposit with id: #{deposit.id}." }
 
           # Check if adapter has prepare_deposit_collection! implementation
-          if wallet.gateway_implements?(:prepare_deposit_collection!)
+          if deposit.blockchain.gateway_implements?(:prepare_deposit_collection!)
             begin
               # Process fee collection for tokens
               collect_fee(deposit)
@@ -42,10 +42,7 @@ module Workers
       def process_deposit(deposit)
         deposit.spread_between_wallets!
 
-        wallet = PaymentAddress.find_by(address: deposit.address).wallet
-        service = WalletService.new(wallet)
-
-        transactions = service.collect_deposit!(deposit, deposit.spread_to_transactions)
+        transactions = deposit.blockchain.gateway.collect_deposit!(deposit)
 
         if transactions.present?
           # Save txids in deposit spread.
@@ -69,7 +66,7 @@ module Workers
       def collect_fee(deposit)
         deposit.spread_between_wallets!
 
-        fee_wallet = Wallet.active.fee.find_by(blockchain_key: deposit.currency.blockchain_key)
+        fee_wallet = deposit.blockchain.wallets.active.fee.take
         unless fee_wallet
           Rails.logger.warn { "Can't find active fee wallet for currency with code: #{deposit.currency_id}."}
           return

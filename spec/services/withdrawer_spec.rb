@@ -1,7 +1,7 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
-describe Workers::AMQP::WithdrawCoin do
+describe Withdrawer do
   let(:member) { create(:member, :barong) }
   let(:withdrawal) { create(:btc_withdraw, :with_deposit_liability) }
   let(:processing_withdrawal) do
@@ -10,19 +10,6 @@ describe Workers::AMQP::WithdrawCoin do
       .tap(&:process!)
   end
 
-  context 'withdrawal does not exist' do
-    before { Withdraw.expects(:find_by_id).returns(nil) }
-
-    it 'returns nil' do
-      expect(Workers::AMQP::WithdrawCoin.new.process(withdrawal.as_json)).to be(nil)
-    end
-  end
-
-  context 'withdrawal is not in processing state' do
-    it 'returns nil' do
-      expect(Workers::AMQP::WithdrawCoin.new.process(withdrawal.as_json)).to be(nil)
-    end
-  end
 
   context 'withdrawal with empty rid' do
     before do
