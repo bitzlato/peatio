@@ -14,6 +14,7 @@ class PaymentAddress < ApplicationRecord
   vault_attribute :details, serialize: :json, default: {}
   vault_attribute :secret
 
+  # TODO Migrate association from wallet to blockchain and remove Wallet.deposit*
   belongs_to :wallet
   belongs_to :member
 
@@ -60,6 +61,10 @@ class PaymentAddress < ApplicationRecord
     ::AMQP::Queue.enqueue_event('private', member.uid, :deposit_address, type: :create,
                           currencies: wallet.currencies.codes,
                           address:  address)
+  end
+
+  def currency
+    wallet.native_currency
   end
 end
 

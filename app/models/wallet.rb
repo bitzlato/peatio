@@ -172,12 +172,19 @@ class Wallet < ApplicationRecord
     blockchain.explorer_address.gsub('#{address}', address) if blockchain
   end
 
+  def natice_currency
+  end
+
   def service
     ::WalletService.new(self)
   end
 
   def gateway_implements?(method_name)
     service.adapter.class.instance_methods(false).include?(method_name)
+  end
+
+  def native_currency
+    currencies.find { |c| c.parent_id.nil? } || raise("No native currency for wallet id #{id}")
   end
 
   def generate_settings
