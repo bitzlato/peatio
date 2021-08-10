@@ -1,7 +1,7 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
-describe WS::Ethereum::BalanceLoader do
+describe ::EthereumGateway::BalanceLoader do
   let(:address) { 'address' }
   let(:base_factor) { currency.base_factor }
 

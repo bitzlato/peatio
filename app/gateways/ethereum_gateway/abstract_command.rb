@@ -1,5 +1,5 @@
 class EthereumGateway
-  class AbstracttCommand
+  class AbstractCommand
     include NumericHelpers
 
     attr_reader :client
