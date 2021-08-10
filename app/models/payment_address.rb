@@ -18,6 +18,8 @@ class PaymentAddress < ApplicationRecord
   belongs_to :wallet
   belongs_to :member
 
+  delegate :currencies, to: :wallet
+
   before_validation do
     next if blockchain_api&.case_sensitive?
     self.address = address.try(:downcase)
@@ -59,7 +61,7 @@ class PaymentAddress < ApplicationRecord
 
   def trigger_address_event
     ::AMQP::Queue.enqueue_event('private', member.uid, :deposit_address, type: :create,
-                          currencies: wallet.currencies.codes,
+                          currencies: currencies.codes,
                           address:  address)
   end
 
