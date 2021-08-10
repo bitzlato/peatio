@@ -7,9 +7,9 @@ module Workers
       def process(payload)
         payload.symbolize_keys!
 
-        member_id = Member.find_by!(uid: payload.member_uid).id
+        member_id = Member.find_by!(uid: payload[:member_uid]).id
 
-        service = ::OrderServices::CreateOrder.new(member_id, payload.data)
+        service = ::OrderServices::CreateOrder.new(member_id, payload[:data])
         order = service.perform
       rescue StandardError => e
         raise e if is_db_connection_error?(e)
