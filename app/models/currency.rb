@@ -20,6 +20,9 @@ class Currency < ApplicationRecord
 
   # == Extensions ===========================================================
 
+
+  has_many :withdraws
+
   serialize :options, JSON unless Rails.configuration.database_support_json
 
   include Helpers::ReorderPosition

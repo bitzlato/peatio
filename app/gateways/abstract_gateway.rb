@@ -33,12 +33,12 @@ class AbstractGateway
   end
 
   def fetch_block(block_number)
-    raise 'not implemented'
+    raise "not implemented #{self.class}"
   end
 
   private
 
   def build_client
-    raise 'not implemented'
+    raise "not implemented #{self.class}"
   end
 end

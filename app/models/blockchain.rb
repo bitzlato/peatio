@@ -13,6 +13,7 @@ class Blockchain < ApplicationRecord
   has_many :currencies
   has_many :wallets
   has_many :whitelisted_smart_contracts
+  has_many :withdraws, through: :currencies
 
   validates :key, :name, presence: true, uniqueness: true
   validates :status, inclusion: { in: %w[active disabled] }

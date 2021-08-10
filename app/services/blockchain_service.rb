@@ -2,52 +2,26 @@ class BlockchainService
   Error = Class.new(StandardError)
   BalanceLoadError = Class.new(StandardError)
 
-  attr_reader :blockchain, :whitelisted_smart_contract, :currencies, :adapter
+  attr_reader :blockchain, :whitelisted_smart_contract, :currencies
+
+  delegate :gateway, to: :blockchain
 
   def initialize(blockchain)
     @blockchain = blockchain
     @currencies = blockchain.currencies.deposit_enabled
     @whitelisted_addresses = blockchain.whitelisted_smart_contracts.active
-    @adapter = Peatio::Blockchain.registry[blockchain.client.to_sym].new
-    @adapter.configure(server: @blockchain.server,
-                       currencies: @currencies.map(&:to_blockchain_api_settings),
-                       whitelisted_addresses: @whitelisted_addresses)
-  end
-
-  def implements?(method_name)
-    @adapter.class.instance_methods(false).include?(method_name)
   end
 
   def latest_block_number
-    @latest_block_number ||= @adapter.latest_block_number
-  end
-
-  def create_address!
-    @adapter.class.create_address! blockchain.server
-  end
-
-  def case_sensitive?
-    @adapter.features[:case_sensitive]
-  end
-
-  def supports_cash_addr_format?
-    @adapter.features[:cash_addr_format]
+    @latest_block_number ||= gateway.latest_block_number
   end
 
   def fetch_transaction(transaction)
-    tx = Peatio::Transaction.new(currency_id: transaction.currency_id,
-                                 hash: transaction.txid,
-                                 to_address: transaction.rid,
-                                 amount: transaction.amount)
-    if @adapter.respond_to?(:fetch_transaction)
-      @adapter.fetch_transaction(tx)
-    else
-      tx
-    end
+    gateway.fetch_transaction transaction.txid
   end
 
   def process_block(block_number)
-    block = gateway.fetch_block!(block_number)
+    block = gateway.fetch_block(block_number)
 
     payment_addresses = PaymentAddress.where(blockchain: blockchain, address: block.transactions.map(&:to_address)).pluck(:address)
     withdraw_txids = Withdraws::Coin.confirming.where(currency: @currencies).pluck(:txid)
@@ -57,7 +31,6 @@ class BlockchainService
         update_or_create_deposit tx
       elsif tx.hash.in?(withdraw_txids)
         update_withdrawal tx
-        withdrawals.each(&method(:update_withdrawal))
       end
       # TODO add blockchain
       Transaction
@@ -100,7 +73,7 @@ class BlockchainService
     end
 
     # Fetch transaction from a blockchain that has `pending` status.
-    transaction = adapter.fetch_transaction(transaction) if @adapter.respond_to?(:fetch_transaction) && transaction.status.pending?
+    transaction = gateway.fetch_transaction(transaction.txid, transaction.txout) if transaction.status.pending?
     return unless transaction.status.success?
 
     address = PaymentAddress.find_by(blockchain: blockchain, address: transaction.to_address)
@@ -111,8 +84,8 @@ class BlockchainService
     tx_collect = Transaction.where(txid: transaction.hash, reference_type: 'Deposit')
     return if tx_collect.present?
 
-    if transaction.from_addresses.blank? && adapter.respond_to?(:transaction_sources)
-      transaction.from_addresses = adapter.transaction_sources(transaction)
+    if transaction.from_addresses.blank? && gateway.respond_to?(:transaction_sources)
+      transaction.from_addresses = gateway.transaction_sources(transaction)
     end
 
     deposit =
@@ -150,7 +123,7 @@ class BlockchainService
       withdrawal.update_column :block_number, transaction.block_number if withdrawal.block_number.nil?
 
       # Fetch transaction from a blockchain that has `pending` status.
-      transaction = adapter.fetch_transaction(transaction) if transaction.status.pending?
+      transaction = gateway.fetch_transaction(transaction.hash, transaction.txout) if transaction.status.pending?
 
       # Manually calculating withdrawal confirmations, because blockchain height is not updated yet.
       if transaction.status.failed?
