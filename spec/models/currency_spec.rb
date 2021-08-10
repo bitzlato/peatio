@@ -49,11 +49,11 @@ describe Currency do
     it 'validate parent_id value' do
       currency.parent_id = fiat_currency.id
       expect(currency.valid?).to be_falsey
-      expect(currency.errors[:parent_id]).to eq ["is not included in the list"]
+      expect(currency.errors[:parent_id]).to eq ["wrong fiat/crypto nesting"]
 
       currency.parent_id = trst_currency.id
       expect(currency.valid?).to be_falsey
-      expect(currency.errors[:parent_id]).to eq ["is not included in the list"]
+      expect(currency.errors[:parent_id]).to eq ["wrong parent currency"]
     end
   end
 

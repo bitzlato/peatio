@@ -97,6 +97,12 @@ class Currency < ApplicationRecord
     self.erc20_contract_address = erc20_contract_address.try(:downcase) if erc20_contract_address.present?
   end
 
+  validate if: :parent_id do
+    errors.add :parent_id, 'wrong fiat/crypto nesting' unless fiat? == parent.fiat?
+    errors.add :parent_id, 'nesting currency must be token' unless token?
+    errors.add :parent_id, 'wrong parent currency' if parent.parent_id.present?
+  end
+
   before_update { update_position(self) if position_changed? }
   delegate :key, to: :blockchain, prefix: true
 
@@ -128,7 +134,7 @@ class Currency < ApplicationRecord
 
   # == Instance Methods =====================================================
 
-  delegate :explorer_transaction, :blockchain_api, :explorer_address, to: :blockchain
+  delegate :explorer_transaction, :explorer_address, to: :blockchain
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
 
