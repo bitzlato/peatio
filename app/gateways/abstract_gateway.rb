@@ -32,6 +32,10 @@ class AbstractGateway
     self.class.name
   end
 
+  def fetch_block(block_number)
+    raise 'not implemented'
+  end
+
   private
 
   def build_client

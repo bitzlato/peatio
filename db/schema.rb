@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_09_090917) do
+ActiveRecord::Schema.define(version: 2021_08_07_084947) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -321,8 +321,6 @@ ActiveRecord::Schema.define(version: 2021_08_09_090917) do
     t.string "details_encrypted", limit: 1024
     t.bigint "member_id"
     t.boolean "remote", default: false, null: false
-    t.jsonb "balances", default: {}
-    t.datetime "balances_updated_at"
     t.bigint "blockchain_id", null: false
     t.index ["blockchain_id", "address"], name: "index_payment_addresses_on_blockchain_id_and_address", unique: true, where: "(address IS NOT NULL)"
     t.index ["blockchain_id"], name: "index_payment_addresses_on_blockchain_id"

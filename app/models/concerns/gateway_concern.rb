@@ -1,12 +1,11 @@
-module BlockchainGateway
+module GatewayConcern
   extend ActiveSupport::Concern
   AVAILABLE_GATEWAYS = [BitzlatoGateway, DummyGateway, BitcoinGateway, EthereumGateway].map(&:to_s)
 
   included do
     validates :gateway_klass, presence: true, inclusion: { in: AVAILABLE_GATEWAYS }
-    delegate :create_address!, to: :gateway
-    delegate :implements?, :case_sensitive?, to: :gateway_class
-
+    delegate :create_address!, :case_sensitive?, to: :gateway
+    delegate :implements?, to: :gateway_class
   end
 
   def gateway_class

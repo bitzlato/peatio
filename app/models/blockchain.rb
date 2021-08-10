@@ -4,8 +4,7 @@
 # Rename to Gateway
 #
 class Blockchain < ApplicationRecord
-  include BlockchainGateway
-
+  include GatewayConcern
   include Vault::EncryptedModel
 
   vault_lazy_decrypt!

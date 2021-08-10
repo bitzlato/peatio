@@ -15,6 +15,7 @@ FactoryBot.define do
       explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
       status                  { 'active' }
       initialize_with         { Blockchain.find_or_create_by(key: key) }
+      gateway_klass           { DummyGateway.name }
     end
 
     trait 'eth-rinkeby' do
@@ -45,7 +46,7 @@ FactoryBot.define do
 
     trait 'eth-mainet' do
       key                     { 'eth-mainet' }
-      gateway_klass { EthereumGateway.name }
+      gateway_klass           { EthereumGateway.name }
       name                    { 'Ethereum Mainet' }
       server                  { 'http://127.0.0.1:8545' }
       height                  { 2500000 }
@@ -58,7 +59,7 @@ FactoryBot.define do
 
     trait 'btc-testnet' do
       key                     { 'btc-testnet' }
-      gateway_klass { EthereumGateway.name }
+      gateway_klass           { BitcoinGateway.name }
       name                    { 'Bitcoin Testnet' }
       server                  { 'http://127.0.0.1:18332' }
       height                  { 1350000 }
@@ -75,6 +76,7 @@ FactoryBot.define do
       height                  { 1 }
       status                  { 'active' }
       initialize_with         { Blockchain.find_or_create_by(key: key) }
+      gateway_klass           { DummyGateway.name }
     end
   end
 end
