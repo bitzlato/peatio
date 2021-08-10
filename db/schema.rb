@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_07_084947) do
+ActiveRecord::Schema.define(version: 2021_08_10_202928) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -95,7 +95,6 @@ ActiveRecord::Schema.define(version: 2021_08_07_084947) do
     t.decimal "withdraw_limit_24h", precision: 32, scale: 16, default: "0.0", null: false
     t.json "options"
     t.boolean "visible", default: true, null: false
-    t.bigint "base_factor", default: 1, null: false
     t.integer "precision", limit: 2, default: 8, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -11,8 +11,7 @@ class Currency < ApplicationRecord
   # == Attributes ===========================================================
 
   attr_readonly :id,
-                :type,
-                :base_factor
+                :type
 
   # Code is aliased to id because it's more user-friendly primary key.
   # It's preferred to use code where this attributes are equal.
@@ -60,7 +59,6 @@ class Currency < ApplicationRecord
 
   validates :type, inclusion: { in: ->(_) { Currency.types.map(&:to_s) } }
   validates :options, length: { maximum: 1000 }
-  validates :base_factor, numericality: { greater_than_or_equal_to: 1, only_integer: true }
 
   validates :deposit_fee,
             :min_deposit_amount,

@@ -35,7 +35,6 @@ FactoryBot.define do
       code                 { 'btc' }
       name                 { 'Bitcoin' }
       type                 { 'coin' }
-      base_factor          { 100_000_000 }
       withdraw_limit_24h   { 0.1 }
       withdraw_limit_72h   { 1 }
       withdraw_fee         { 0.01 }
@@ -48,7 +47,6 @@ FactoryBot.define do
       code                 { 'eth' }
       name                 { 'Ethereum' }
       type                 { 'coin' }
-      base_factor          { 1_000_000_000_000_000_000 }
       withdraw_limit_24h   { 0.1 }
       withdraw_limit_72h   { 1 }
       withdraw_fee         { 0.025 }
@@ -65,7 +63,6 @@ FactoryBot.define do
       name                 { 'WeTrust' }
       type                 { 'coin' }
       association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
-      base_factor          { 1_000_000 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
@@ -83,7 +80,6 @@ FactoryBot.define do
       name                 { 'TOM' }
       type                 { 'coin' }
       association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
-      base_factor          { 1_000_000 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
@@ -101,7 +97,6 @@ FactoryBot.define do
       name                 { 'Evolution Land Global Token' }
       type                 { 'coin' }
       association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
-      base_factor          { 1_000_000 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
@@ -115,7 +110,6 @@ FactoryBot.define do
       code                { 'fake' }
       name                { 'Fake Coin' }
       type                { 'coin' }
-      base_factor         { 1_000_000 }
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }
       withdraw_fee        { 0.02 }
@@ -129,7 +123,6 @@ FactoryBot.define do
       name                { 'XAGm.cx' }
       type                { 'coin' }
       association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
-      base_factor         { 1_000_000 }
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }
       withdraw_fee        { 0.02 }

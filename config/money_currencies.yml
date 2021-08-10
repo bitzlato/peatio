@@ -13,7 +13,7 @@ btc:
   smallest_denomination: 1
   is_crypto: true
   base_factor:            8
-  precision:              8
+  precesion:              8
   blockchain_key: 'bitzlato'
 
 eth:
@@ -21,7 +21,7 @@ eth:
   symbol: Ξ
   alternate_symbols: []
   subunit: wei
-  precision:            8
+  precesion:            8
   base_factor_subunits: 18
   smallest_denomination: 1
   blockchain_key: 'eth-mainnet'
@@ -33,14 +33,14 @@ mcr:
 
 mdt:
   name: Monolith
-  precision: 6
+  precesion: 6
   base_factor_subunits: 6
   blockchain_key: 'bitzlato'
 
 bnb:
   name: BNB
   base_factor_subunits: 18
-  precision: 6
+  precesion: 6
   blockchain_key: 'bsc-mainnet'
   contract_address: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
 
@@ -50,20 +50,27 @@ usdt:
   subunit_to_unit: 100
   base_factor_subunits: 2
   blockchain_key: 'bitzlato'
-  precision: 6
+  precesion: 6
 
 mcr-erc20:
   parent_currency: eth
   name: MCR(ERC20)
   contract_address: '0xed351575b9869aada94435e0066ba38e08800b60'
   base_factor_subunits: 18
-  precision: 6
+  precesion: 6
 
 usdt-erc20:
   parent_currency: eth
   name: USDT(ERC20)
   base_factor_subunits: 6
   contract_address: '0xdac17f958d2ee523a2206206994597c13d831ec7'
+  precesion: 6
+
+usdc:
+  parent_currency: eth
+  name: USDC(ERC20)
+  base_factor_subunits: 6
+  contractor_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
   precesion: 6
 
 usdc-erc20:
@@ -80,9 +87,36 @@ mdt-erc20:
   contract_address: '0x4dfd148b532e934a2a26ea65689cf6268753e130'
   precesion: 6
 
+dai:
+  parent_currency: eth
+  subunit: DAI cents
+  base_factor_subunits: 18
+  contract_address: '0x6b175474e89094c44da98b954eedeac495271d0f'
+  precesion: 6
+  
 dai-erc20:
   parent_currency: eth
   subunit: DAI cents
   base_factor_subunits: 18
   contract_address: '0x6b175474e89094c44da98b954eedeac495271d0f'
-  precision: 6
+  precesion: 6
+
+trst:
+  parent_currency: eth
+  base_factor: 1_000_000
+  precesion: 6
+
+tom:
+  parent_currency: eth
+  base_factor: 1_000_000
+  precesion: 6
+
+ring:
+  parent_currency: eth
+  base_factor: 1_000_000
+  precesion: 6
+
+fake:
+  base_factor: 1_000_000
+  precesion: 6
+  blockchain_key: 'fake-testnet'

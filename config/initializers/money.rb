@@ -37,8 +37,16 @@ class Money::Currency
     @base_factor_subunits = data[:base_factor_subunits]
     @precesion = data[:precesion] || @base_factor_subunits
 
+    @base_factor = data[:base_factor]
+
     if blockchain_key.present?
-      raise "No base_factor_subunits or currency '#{@id}'" unless @base_factor_subunits
+      unless @base_factor_subunits
+        if @base_factor
+          @base_factor_subunits = Math.log(@base_factor, 10).round
+        else
+          raise "No base_factor_subunits or currency '#{@id}'"
+        end
+      end
       raise "No precesion or currency '#{@id}'" unless @precesion
 
       @base_factor = 10 ** base_factor_subunits
@@ -59,7 +67,7 @@ class Money::Currency
 
   def blockchain_key
     raise "You must not use blockchain_key (#{@blockchain_key})) in nested currency (#{@id}). It inherits from parent currency" if @blockchain_key && @parent_currency.present?
-    @blockchain_key || parent_currency.blockchain_key
+    @blockchain_key || parent_currency.try(:blockchain_key)
   end
 
   def to_money(value)

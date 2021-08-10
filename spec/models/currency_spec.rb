@@ -85,33 +85,12 @@ describe Currency do
     end
   end
 
-  context 'subunits=' do
-    let!(:currency) { Currency.find(:btc) }
-
-    it 'updates base_factor' do
-      expect { currency.subunits = 4 }.to change { currency.base_factor }.to 10_000
-    end
-  end
-
   context 'read only attributes' do
     let!(:fake_currency) { create(:currency, :btc, id: 'fake') }
-
-    it 'should not update the base factor' do
-      fake_currency.update_attributes :base_factor => 8
-      expect(fake_currency.reload.base_factor).to eq(fake_currency.base_factor)
-    end
 
     it 'should not update the type' do
       fake_currency.update_attributes :type => 'fiat'
       expect(fake_currency.reload.type).to eq(fake_currency.type)
-    end
-  end
-
-  context 'subunits' do
-    let!(:fake_currency) { create(:currency, :btc, id: 'fake', base_factor: 100) }
-
-    it 'return currency subunits' do
-      expect(fake_currency.subunits).to eq(2)
     end
   end
 
@@ -131,7 +110,7 @@ describe Currency do
     after  { ENV['MAX_CURRENCIES'] = nil }
 
     it 'should raise validation error for max currency' do
-      record = build(:currency, :fake, id: 'fake2', type: 'fiat', base_factor: 100)
+      record = build(:currency, :fake, id: 'fake2', type: 'fiat')
       record.save
       expect(record.errors.full_messages).to include(/Max Currency limit has been reached/i)
     end
