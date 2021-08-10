@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-set :stage, :staging
 set :rails_env, :staging
-fetch(:default_env)[:rails_env] = :staging
 
-server ENV['STAGING_SERVER'],
+set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:application)}" }
+
+server '87.98.150.101',
        user: fetch(:user),
        port: '22',
        roles: %w[app db daemons].freeze,
