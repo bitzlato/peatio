@@ -14,7 +14,8 @@ module Workers
         Jobs::Cron::Refund,
         Jobs::Cron::WalletBalances,
         Jobs::Cron::TransfersPolling,
-        Jobs::Cron::WithdrawWatcher
+        # Подтверждение транзакций перенести Переходит в BlockchainService
+        # Jobs::Cron::WithdrawWatcher
       ].freeze
 
       def run

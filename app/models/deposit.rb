@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Deposit < ApplicationRecord
-  STATES = %i[submitted invoiced canceled rejected accepted collected skipped processing fee_processing].freeze
+  STATES = %i[submitted invoiced canceled rejected accepted skipped dispatched].freeze
 
   serialize :error, JSON unless Rails.configuration.database_support_json
   serialize :spread, Array
@@ -53,12 +53,13 @@ class Deposit < ApplicationRecord
     state :canceled
     state :rejected
     state :accepted
-    state :aml_processing
-    state :aml_suspicious
+    # state :aml_processing
+    # state :aml_suspicious
     state :processing
     state :skipped
-    state :collected
-    state :fee_processing
+    # state :collected
+    state :dispatched
+    # state :fee_processing
     state :errored
     state :refunding
     event(:cancel) { transitions from: :submitted, to: :canceled }
@@ -67,7 +68,6 @@ class Deposit < ApplicationRecord
       transitions from: %i[submitted invoiced], to: :accepted
       after do
         if currency.coin? && (Peatio::App.config.deposit_funds_locked ||
-                              Peatio::AML.adapter.present? ||
                               Peatio::App.config.manual_deposit_approval)
           account.plus_locked_funds(amount)
         else
@@ -84,55 +84,52 @@ class Deposit < ApplicationRecord
       transitions from: :submitted, to: :invoiced
     end
 
-    event :process do
-      transitions from: %i[aml_processing aml_suspicious accepted errored], to: :aml_processing do
-        guard do
-          Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval
-        end
+    # Нет смысла сейчас собирать fee, делаем это отдельным процессом
+    #event :process do
+      #transitions from: %i[aml_processing aml_suspicious accepted errored], to: :aml_processing do
+        #guard do
+          #Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval
+        #end
 
-        after do
-          process_collect! if aml_check!
-        end
-      end
+        #after do
+          #process_collect! if aml_check!
+        #end
+      #end
 
-      transitions from: %i[accepted skipped errored], to: :processing do
-        guard { currency.coin? }
-      end
-    end
+      #transitions from: %i[accepted skipped errored], to: :processing do
+        #guard { currency.coin? }
+      #end
+    #end
 
-    event :fee_process do
-      transitions from: %i[accepted processing skipped], to: :fee_processing do
-        guard { currency.coin? }
-      end
-    end
+    #event :fee_process do
+      #transitions from: %i[accepted processing skipped], to: :fee_processing do
+        #guard { currency.coin? }
+      #end
+    #end
 
-    event :err do
-      transitions from: %i[processing fee_processing], to: :errored, after: :add_error
-    end
+    #event :process_collect do
+      #transitions from: %i[aml_processing aml_suspicious], to: :processing do
+        #guard do
+          #currency.coin? && (Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval)
+        #end
 
-    event :process_collect do
-      transitions from: %i[aml_processing aml_suspicious], to: :processing do
-        guard do
-          currency.coin? && (Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval)
-        end
+        #after do
+          #if !Peatio::App.config.deposit_funds_locked
+            #account.unlock_funds(amount)
+            #record_complete_operations!
+          #end
+        #end
+      #end
+    #end
 
-        after do
-          if !Peatio::App.config.deposit_funds_locked
-            account.unlock_funds(amount)
-            record_complete_operations!
-          end
-        end
-      end
-    end
-
-    event :aml_suspicious do
-      transitions from: :aml_processing, to: :aml_suspicious do
-        guard { Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval  }
-      end
-    end
+    #event :aml_suspicious do
+      #transitions from: :aml_processing, to: :aml_suspicious do
+        #guard { Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval  }
+      #end
+    #end
 
     event :dispatch do
-      transitions from: %i[processing fee_processing], to: :collected
+      transitions from: %i[accepted], to: :dispatched
       after do
         if Peatio::App.config.deposit_funds_locked
           account.unlock_funds(amount)
@@ -142,7 +139,7 @@ class Deposit < ApplicationRecord
     end
 
     event :refund do
-      transitions from: %i[aml_suspicious skipped], to: :refunding do
+      transitions from: %i[skipped], to: :refunding do
         guard { currency.coin? }
       end
     end
@@ -236,6 +233,11 @@ class Deposit < ApplicationRecord
 
   def enqueue_deposit_intention!
     AMQP::Queue.enqueue(:deposit_intention, { deposit_id: id }, { persistent: true })
+  end
+
+  def process!
+    # только для совместимости
+    # TODO удалить
   end
 
   private

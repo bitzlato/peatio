@@ -6,6 +6,49 @@ module Workers
       self.sleep_time = 60
 
       def process
+        # do nothing
+      end
+
+      def deposit_collection_fees!(deposit, deposit_spread)
+        configs = {
+          wallet:   @wallet.to_wallet_api_settings,
+          currency: deposit.currency.to_blockchain_api_settings
+        }
+
+        if deposit.currency.parent_id?
+          configs.merge!(parent_currency: deposit.currency.parent.to_blockchain_api_settings)
+        end
+
+        @adapter.configure(configs)
+        deposit_transaction = Peatio::Transaction.new(hash:         deposit.txid,
+                                                      txout:        deposit.txout,
+                                                      to_address:   deposit.address,
+                                                      block_number: deposit.block_number,
+                                                      amount:       deposit.amount)
+
+        transactions = @adapter.prepare_deposit_collection!(deposit_transaction,
+                                                            # In #spread_deposit valid transactions saved with pending state
+                                                            deposit_spread.select { |t| t.status.pending? },
+                                                            deposit.currency.to_blockchain_api_settings)
+
+        if transactions.present?
+          updated_spread = deposit.spread.map do |s|
+            deposit_options = s.fetch(:options, {}).symbolize_keys
+            transaction_options = transactions.first.options.presence || {}
+            general_options = deposit_options.merge(transaction_options)
+
+            s.merge(options: general_options)
+          end
+
+          deposit.update(spread: updated_spread)
+
+          transactions.each { |t| save_transaction(t.as_json.merge(from_address: @wallet.address), deposit) }
+        end
+        transactions
+      end
+
+      # TODO Сделать отдельный сервис для перевода депонированных средств на горячий
+      def process_bak
         # Process deposits with `processing` state each minute
         ::Deposit.processing.each do |deposit|
           Rails.logger.info { "Starting processing coin deposit with id: #{deposit.id}." }
@@ -75,6 +118,12 @@ module Workers
         transactions = WalletService.new(fee_wallet).deposit_collection_fees!(deposit, deposit.spread_to_transactions)
         deposit.fee_process! if transactions.present?
         Rails.logger.warn { "The API accepted token deposit collection fee and assigned transaction ID: #{transactions.map(&:as_json)}." }
+      end
+
+      # Record blockchain transactions in DB
+      def save_transaction(transaction, reference)
+        transaction['txid'] = transaction.delete('hash')
+        Transaction.create!(transaction.merge(reference: reference))
       end
     end
   end

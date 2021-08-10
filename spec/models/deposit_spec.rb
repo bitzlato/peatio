@@ -231,162 +231,6 @@ describe Deposit do
     end
   end
 
-  context :process do
-    context 'fiat deposit' do
-      it 'doesnt process fiat deposit' do
-        deposit.accept!
-        expect(deposit.process!).to eq false
-      end
-    end
-
-    context 'coin deposit' do
-      context 'automatic process' do
-        context 'coin deposit' do
-          subject { create(:deposit_btc, amount: 3.7) }
-          it 'process coin deposit' do
-            crypto_deposit = create(:deposit_btc, amount: 3.7)
-            crypto_deposit.accept!
-            expect(crypto_deposit.process!).to eq true
-            expect(crypto_deposit.processing?).to eq true
-          end
-        end
-      end
-
-      context 'manual process' do
-        before do
-          Peatio::App.config.stubs(:manual_deposit_approval).returns(true)
-        end
-
-        subject { create(:deposit_btc, amount: 3.7) }
-
-        it do
-          subject.accept!
-          subject.process!
-
-          expect(subject.aml_processing?).to eq true
-        end
-      end
-    end
-  end
-
-  context 'process collect' do
-    let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
-
-    subject { crypto_deposit }
-
-    context 'with manual deposit approval' do
-      context 'deposit_funds_locked disabled' do
-        before do
-          Peatio::App.config.stubs(:manual_deposit_approval).returns(true)
-          crypto_deposit.accept!
-          crypto_deposit.process!
-        end
-
-        it 'process deposit collection' do
-          crypto_deposit.process_collect!
-
-          expect(crypto_deposit.processing?).to eq true
-
-          %i[main locked].each do |kind|
-            expect(
-              subject.member.balance_for(currency: subject.currency, kind: kind)
-            ).to eq(
-              subject.member.legacy_balance_for(currency: subject.currency, kind: kind)
-            )
-
-            liabilities = Operations::Liability.where(currency_id: subject.currency.id, member_id: subject.member.id)
-            expect(liabilities.count).to eq 3
-
-            # Lock funds on deposit accepted step (1 liability)
-            account = Operations::Account.find_by(kind: :locked, currency_type: subject.currency.type, type: 'liability', scope: 'member')
-            expect(liabilities.first.code).to eq account.code
-
-            # Moved funds from locked to main (2 liabilities)
-            # debit
-            account = Operations::Account.find_by(kind: :locked, currency_type: subject.currency.type, type: 'liability', scope: 'member')
-            expect(liabilities.second.code).to eq account.code
-
-            # credit
-            account = Operations::Account.find_by(kind: :main, currency_type: subject.currency.type, type: 'liability', scope: 'member')
-            expect(liabilities.last.code).to eq account.code
-          end
-        end
-      end
-
-      context 'deposit_funds_locked enabled' do
-        before do
-          Peatio::App.config.stubs(:deposit_funds_locked).returns(true)
-          crypto_deposit.accept!
-          crypto_deposit.process!
-        end
-
-        it 'process deposit collection' do
-          crypto_deposit.process_collect!
-
-          expect(crypto_deposit.processing?).to eq true
-
-          %i[main locked].each do |kind|
-            expect(
-              subject.member.balance_for(currency: subject.currency, kind: kind)
-            ).to eq(
-              subject.member.legacy_balance_for(currency: subject.currency, kind: kind)
-            )
-          end
-
-          expect(subject.member.balance_for(currency: subject.currency, kind: :locked)).to eq 3.7
-          expect(subject.member.balance_for(currency: subject.currency, kind: :main)).to eq 0
-
-          # Lock funds on deposit accepted step (1 liability)
-          liabilities = Operations::Liability.where(currency_id: subject.currency.id, member_id: subject.member.id, reference_type: 'Deposit')
-          expect(liabilities.count).to eq 1
-
-          account = Operations::Account.find_by(kind: :locked, currency_type: subject.currency.type, type: 'liability', scope: 'member')
-          expect(liabilities.first.code).to eq account.code
-        end
-      end
-    end
-  end
-
-  context :processing do
-    let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
-
-    before do
-      Peatio::App.config.stubs(:deposit_funds_locked).returns(true)
-      crypto_deposit.accept!
-      crypto_deposit.process!
-    end
-
-    subject { crypto_deposit }
-
-    it 'commit deposit to collected' do
-      # Minus locked and plus main accounts
-      expect { subject.dispatch! }.to change { Operations::Liability.count }.by(2)
-
-      %i[main locked].each do |kind|
-        expect(
-          subject.member.balance_for(currency: subject.currency, kind: kind)
-        ).to eq(
-          subject.member.legacy_balance_for(currency: subject.currency, kind: kind)
-        )
-      end
-      expect(crypto_deposit.aasm_state).to eq('collected')
-    end
-
-    it 'dispatch deposit to skipped' do
-      # Minus locked and plus main accounts
-      expect { subject.skip! }.to change { Operations::Liability.count }.by(0)
-
-      %i[main locked].each do |kind|
-        expect(
-          subject.member.balance_for(currency: subject.currency, kind: kind)
-        ).to eq(
-          subject.member.legacy_balance_for(currency: subject.currency, kind: kind)
-        )
-      end
-      expect(crypto_deposit.aasm_state).to eq('skipped')
-    end
-  end
-
   context :dispatch do
     let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
 
@@ -455,17 +299,17 @@ describe Deposit do
     end
   end
 
-  context :err do
-    let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
+  #context :err do
+    #let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
 
-    subject { crypto_deposit }
-    it 'transitions to :errored after calling #err!' do
-      subject.accept!
-      subject.process!
-      subject.err! StandardError.new "This is an exception"
+    #subject { crypto_deposit }
+    #it 'transitions to :errored after calling #err!' do
+      #subject.accept!
+      #subject.process!
+      #subject.err! StandardError.new "This is an exception"
 
-      expect(subject.errored?).to be true
-      expect(subject.error).to eq [{"class"=>"StandardError", "message"=>"This is an exception"}]
-    end
-  end
+      #expect(subject.errored?).to be true
+      #expect(subject.error).to eq [{"class"=>"StandardError", "message"=>"This is an exception"}]
+    #end
+  #end
 end

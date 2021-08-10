@@ -63,7 +63,6 @@ class Withdrawer
     transaction = client.create_transaction!(source_transaction) ||
       raise("No transaction returned for withdraw (#{withdraw.id})")
 
-    binding.pry
     # is from_address dfinedx?
     Transaction
       .create!(
