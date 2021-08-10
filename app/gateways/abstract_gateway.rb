@@ -9,6 +9,8 @@ class AbstractGateway
     instance_methods(false).include?(method_name)
   end
 
+  attr_reader :client
+
   def initialize(blockchain)
     @blockchain = blockchain
     @client = build_client

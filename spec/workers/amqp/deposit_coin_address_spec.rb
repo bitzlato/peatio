@@ -33,14 +33,13 @@ describe Workers::AMQP::DepositCoinAddress do
 
   context 'blockchain service' do
     before do
-      WS::Ethereum::AddressCreator
+      EthereumGateway::AddressCreator
         .any_instance
         .expects(:call)
         .returns(create_address_result)
     end
 
     it 'is passed to blockchain service' do
-      BlockchainService.any_instance.expects(:case_sensitive?).returns true
       Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
       expect(subject).to eq address
       payment_address.reload
@@ -56,7 +55,6 @@ describe Workers::AMQP::DepositCoinAddress do
       end
 
       it 'is passed to blockchain service' do
-        BlockchainService.any_instance.expects(:case_sensitive?).returns true
         Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
         expect(subject).to eq address
         payment_address.reload

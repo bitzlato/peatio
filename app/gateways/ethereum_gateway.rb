@@ -5,13 +5,13 @@ class EthereumGateway < AbstractGateway
     false
   end
 
-  def load_balance(uri, address, currency)
+  def load_balance(address, currency)
     BalanceLoader
       .new(client)
       .call(address, currency.base_factor, currency.contract_address)
   end
 
-  def create_address!(uri, secret = nil)
+  def create_address!(secret = nil)
     AddressCreator
       .new(client)
       .call(secret)

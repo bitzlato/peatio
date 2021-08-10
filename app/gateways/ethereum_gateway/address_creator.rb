@@ -1,4 +1,3 @@
-require_relative 'abstract_service'
 class EthereumGateway
   class AddressCreator < AbstractCommand
     def call(secret = nil)

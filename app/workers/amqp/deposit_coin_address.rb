@@ -11,8 +11,8 @@ module Workers
         blockchain = Blockchain.find payload[:blockchain_id]
 
         member.payment_address(blockchain).tap do |pa|
-          return if pa.address.present?
           pa.with_lock do
+            return if pa.address.present?
             result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency.to_s}")
 
             pa.update!(address: result[:address],
