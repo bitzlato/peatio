@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_03_134756) do
+ActiveRecord::Schema.define(version: 2021_08_09_090917) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -77,7 +77,6 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
   create_table "blockchains", force: :cascade do |t|
     t.string "key", null: false
     t.string "name"
-    t.string "client", null: false
     t.bigint "height", null: false
     t.string "explorer_address"
     t.string "explorer_transaction"
@@ -86,6 +85,7 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "server_encrypted", limit: 1024
+    t.string "gateway_klass", null: false
     t.index ["key"], name: "index_blockchains_on_key", unique: true
     t.index ["status"], name: "index_blockchains_on_status"
   end
@@ -101,7 +101,6 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.datetime "updated_at", null: false
     t.decimal "withdraw_fee", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "deposit_fee", precision: 32, scale: 16, default: "0.0", null: false
-    t.string "blockchain_key", limit: 32
     t.string "icon_url"
     t.decimal "min_deposit_amount", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "withdraw_limit_72h", precision: 32, scale: 16, default: "0.0", null: false
@@ -115,7 +114,8 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.string "homepage"
     t.decimal "price", precision: 32, scale: 16, default: "1.0", null: false
     t.string "parent_id"
-    t.index ["parent_id"], name: "index_currencies_on_parent_id"
+    t.bigint "blockchain_id", null: false
+    t.index ["blockchain_id"], name: "index_currencies_on_blockchain_id"
     t.index ["position"], name: "index_currencies_on_position"
     t.index ["visible"], name: "index_currencies_on_visible"
   end
@@ -150,10 +150,13 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.text "from_addresses"
     t.integer "transfer_type"
     t.json "data"
-    t.string "intention_id"
+    t.string "invoice_id"
     t.json "error"
+    t.bigint "blockchain_id", null: false
     t.index ["aasm_state", "member_id", "currency_id"], name: "index_deposits_on_aasm_state_and_member_id_and_currency_id"
-    t.index ["currency_id", "intention_id"], name: "index_deposits_on_currency_id_and_intention_id", unique: true, where: "(intention_id IS NOT NULL)"
+    t.index ["blockchain_id", "txid"], name: "index_deposits_on_blockchain_id_and_txid", unique: true, where: "(txid IS NOT NULL)"
+    t.index ["blockchain_id"], name: "index_deposits_on_blockchain_id"
+    t.index ["currency_id", "invoice_id"], name: "index_deposits_on_currency_id_and_invoice_id", unique: true, where: "(invoice_id IS NOT NULL)"
     t.index ["currency_id", "txid", "txout"], name: "index_deposits_on_currency_id_and_txid_and_txout", unique: true
     t.index ["currency_id"], name: "index_deposits_on_currency_id"
     t.index ["member_id", "txid"], name: "index_deposits_on_member_id_and_txid"
@@ -317,10 +320,13 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.string "secret_encrypted", limit: 255
     t.string "details_encrypted", limit: 1024
     t.bigint "member_id"
-    t.bigint "wallet_id"
     t.boolean "remote", default: false, null: false
+    t.bigint "blockchain_id", null: false
+    t.jsonb "balances", default: {}
+    t.datetime "balances_updated_at"
+    t.index ["blockchain_id", "address"], name: "index_payment_addresses_on_blockchain_id_and_address", unique: true, where: "(address IS NOT NULL)"
+    t.index ["blockchain_id"], name: "index_payment_addresses_on_blockchain_id"
     t.index ["member_id"], name: "index_payment_addresses_on_member_id"
-    t.index ["wallet_id"], name: "index_payment_addresses_on_wallet_id"
   end
 
   create_table "refunds", force: :cascade do |t|
@@ -427,8 +433,6 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.datetime "updated_at", null: false
     t.decimal "fee", precision: 32, scale: 16
     t.string "fee_currency_id"
-    t.bigint "deposit_id"
-    t.bigint "deposit_spread_id"
     t.index ["currency_id", "txid"], name: "index_transactions_on_currency_id_and_txid", unique: true
     t.index ["currency_id"], name: "index_transactions_on_currency_id"
     t.index ["reference_type", "reference_id"], name: "index_transactions_on_reference_type_and_reference_id"
@@ -450,14 +454,14 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.string "status", limit: 32
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "gateway", limit: 20, default: "", null: false
     t.decimal "max_balance", precision: 32, scale: 16, default: "0.0", null: false
-    t.string "blockchain_key", limit: 32
     t.integer "kind", null: false
     t.string "settings_encrypted", limit: 1024
     t.jsonb "balance"
-    t.boolean "enable_invoice", default: false, null: false
     t.json "plain_settings"
+    t.boolean "enable_invoice", default: false, null: false
+    t.bigint "blockchain_id", null: false
+    t.index ["blockchain_id"], name: "index_wallets_on_blockchain_id"
     t.index ["kind"], name: "index_wallets_on_kind"
     t.index ["status"], name: "index_wallets_on_status"
   end
@@ -466,10 +470,11 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.string "description"
     t.string "address", null: false
     t.string "state", limit: 30, null: false
-    t.string "blockchain_key", limit: 32, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["address", "blockchain_key"], name: "index_whitelisted_smart_contracts_on_address_and_blockchain_key", unique: true
+    t.bigint "blockchain_id", null: false
+    t.index ["blockchain_id", "address"], name: "index_whitelisted_smart_contracts_on_blockchain_id_and_address", unique: true
+    t.index ["blockchain_id"], name: "index_whitelisted_smart_contracts_on_blockchain_id"
   end
 
   create_table "withdraw_limits", force: :cascade do |t|
@@ -513,4 +518,5 @@ ActiveRecord::Schema.define(version: 2021_08_03_134756) do
     t.index ["type"], name: "index_withdraws_on_type"
   end
 
+  add_foreign_key "currencies", "currencies", column: "parent_id"
 end
