@@ -32,6 +32,7 @@ describe Workers::AMQP::DepositCoinAddress do
   end
 
   context 'blockchain service' do
+    let(:address) { Faker::Blockchain::Ethereum.address }
     before do
       EthereumGateway::AddressCreator
         .any_instance
