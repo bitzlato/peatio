@@ -118,23 +118,25 @@ class Withdraw < ApplicationRecord
       transitions from: %i[processing], to: :transfering
     end
 
-    event :load do
-      transitions from: :accepted, to: :confirming do
-        # Load event is available only for coin withdrawals.
-        guard do
-          currency.coin? && txid?
-        end
-      end
-      after_commit do
-        tx = currency.blockchain.gateway.fetch_transaction(self)
-        success! if tx.present? && tx.status.success?
-      end
-    end
+    # TODO Move to service
+    #event :load do
+      #transitions from: :accepted, to: :confirming do
+        ## Load event is available only for coin withdrawals.
+        #guard do
+          #currency.coin? && txid?
+        #end
+      #end
+      #after_commit do
+        #tx = currency.blockchain.gateway.fetch_transaction(self)
+        #success! if tx.present? && tx.status.success?
+      #end
+    #end
 
     event :review do
       transitions from: :processing, to: :under_review
     end
 
+    # Transfered to blockchain
     event :dispatch do
       transitions from: %i[transfering], to: :confirming do
         # Validate txid presence on coin withdrawal dispatch.
@@ -181,9 +183,11 @@ class Withdraw < ApplicationRecord
     end
 
     event :err do
-      transitions from: :processing, to: :errored, after: :add_error
+      transitions from: %i[processing transfering], to: :errored, after: :add_error
     end
   end
+
+  delegate :blockchain, to: :currency
 
   class << self
     def sum_query
@@ -258,6 +262,10 @@ class Withdraw < ApplicationRecord
       updated_at:      updated_at.iso8601,
       completed_at:    completed_at&.iso8601,
       blockchain_txid: txid }
+  end
+
+  def money_amount
+    currency.money_currency.to_money amount
   end
 
   private

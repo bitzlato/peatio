@@ -94,10 +94,6 @@ module Jobs
           withdraw.success! if @service.adapter.withdraw_confirmed?(withdraw.remote_id)
         end
 
-        def is_db_connection_error?(exception)
-          (defined?(Mysql2) && (exception.is_a?(Mysql2::Error::ConnectionError) || exception.cause.is_a?(Mysql2::Error))) ||
-            (defined?(PG) && exception.is_a?(PG::Error))
-        end
       end
     end
   end

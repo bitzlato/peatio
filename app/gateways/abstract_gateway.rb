@@ -1,6 +1,10 @@
 class AbstractGateway
   attr_reader :blockchain
 
+  def self.case_sensitive?
+    true
+  end
+
   def self.implements?(method_name)
     instance_methods(false).include?(method_name)
   end

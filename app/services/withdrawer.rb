@@ -12,7 +12,9 @@ class Withdrawer
     end
   end
 
-  Invlalid = Class.new StandardError
+  Invalid = Class.new StandardError
+
+  attr_reader :wallet
 
   def initialize(wallet, logger = nil)
     @wallet = wallet
@@ -30,9 +32,9 @@ class Withdrawer
         fee: withdraw.fee.to_s('F'),
         currency: withdraw.currency.code.upcase,
         rid: withdraw.rid,
-        message: 'Sending witdraw.'
+        message: 'Sending withdraw.'
 
-      transaction = create_transaction! witdraw
+      transaction = create_transaction! withdraw
 
       @logger.warn id: withdraw.id, message: 'Withdrawal has processed', txid: transaction.id
 
@@ -55,32 +57,30 @@ class Withdrawer
   private
 
   def create_transaction!(withdraw)
-    source_transaction = Peatio::Transaction.new(to_address: withdraw.rid,
-                                                 amount:     withdraw.amount,
-                                                 currency_id: withdraw.currency_id,
-                                                 options: { tid: withdraw.tid, withdrawal_id: withdraw.id })
+    transaction = withdraw.blockchain.gateway.
+      create_transaction!(
+        from_address: wallet.address,
+        to_address: withdraw.to_address,
+        amount: withdraw.money_amount,
+        contract_address: withdraw.money_amount.currency.contract_address,
+        secret: wallet.secret,
+    ) || raise("No transaction returned for withdraw (#{withdraw.id})")
 
-    transaction = client.create_transaction!(source_transaction) ||
-      raise("No transaction returned for withdraw (#{withdraw.id})")
-
-    # is from_address dfinedx?
+    # TODO create withdrawal transaction from blockchain service
     Transaction
       .create!(
         transaction.as_json.merge(from_address: wallet.address, reference: withdraw, txid: transaction.delete('hash'))
     )
 
+    withdraw.update!(
+      metadata: withdraw.metadata.merge(transaction.options), # Saves links and etc
+      txid: transaction.hash || raise("transaction does not have hash #{transaction} for withdraw #{withdraw.id}")
+    )
     raise "transaction for withdraw #{withdraw.id} is not succeed #{transaction}" unless transaction.status == 'succeed'
 
     logger.warn id: withdraw.id,
       tid: transaction.hash,
       message: 'The currency API accepted withdraw and assigned transaction ID.'
-
-    withdraw.assign_attributes(
-      metadata: withdraw.metadata.merge(transaction.options), # Saves links and etc
-      txid: transaction.hash || raise("transaction does not have hash #{transaction} for withdraw #{withdraw.id}")
-    )
-    withdraw.success
-    withdraw.save!
   end
 
   private
@@ -100,15 +100,17 @@ class Withdrawer
       raise Invalid, "Can\'t find active hot wallet for currency", currency: withdraw.currency.id
     end
 
-    balance = wallet.current_balance(withdraw.currency)
-    if balance == Wallet::NOT_AVAILABLE || balance < withdraw.amount
-      withdraw.skip!
-      raise(
-        Invalid,
-        'The withdraw skipped because wallet balance is not sufficient or amount greater than wallet max_balance.',
-        balance: balance.to_s,
-        amount: withdraw.amount.to_s
-      )
-    end
+    # А есть ли смысл проверять баланс, если нода всеравно вернет ошибку?
+    # TODO ловить и обрабатывать ошибки от ноды
+    #balance = wallet.current_balance(withdraw.currency)
+    #if balance == Wallet::NOT_AVAILABLE || balance < withdraw.amount
+      #withdraw.skip!
+      #raise(
+        #Invalid,
+        #'The withdraw skipped because wallet balance is not sufficient or amount greater than wallet max_balance.',
+        #balance: balance.to_s,
+        #amount: withdraw.amount.to_s
+      #)
+    #end
   end
 end

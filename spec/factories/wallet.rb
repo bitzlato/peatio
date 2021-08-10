@@ -18,40 +18,12 @@ FactoryBot.define do
       secret             { 'changeme' }
     end
 
-    trait :eth_opendax_cloud_deposit do
-      after(:create) do |w|
-        CurrencyWallet.create(currency_id: 'eth', wallet_id: w.id)
-      end
-      association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
-      name               { 'Ethereum Deposit Opendax Cloud Wallet' }
-      address            { '0x828058628DF254Ebf252e0b1b5393D1DED91E369' }
-      kind               { 'deposit' }
-      max_balance        { 0.0 }
-      status             { 'active' }
-      uri                { 'http://127.0.0.1:8545' }
-      secret             { 'changeme' }
-    end
-
     trait :eth_hot do
       after(:create) do |w|
         CurrencyWallet.create(currency_id: 'eth', wallet_id: w.id)
       end
       association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
       name               { 'Ethereum Hot Wallet' }
-      address            { '0xb6a61c43DAe37c0890936D720DC42b5CBda990F9' }
-      kind               { 'hot' }
-      max_balance        { 100.0 }
-      status             { 'active' }
-      uri                { 'http://127.0.0.1:8545' }
-      secret             { 'changeme' }
-    end
-
-    trait :eth_opendax_cloud_hot do
-      after(:create) do |w|
-        CurrencyWallet.create(currency_id: 'eth', wallet_id: w.id)
-      end
-      association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
-      name               { 'Ethereum Hot Opendax Cloud Wallet' }
       address            { '0xb6a61c43DAe37c0890936D720DC42b5CBda990F9' }
       kind               { 'hot' }
       max_balance        { 100.0 }
