@@ -20,10 +20,17 @@ describe BlockchainService do
   let!(:fake_currency1) { create(:currency, :fake, id: 'fake1') }
   let!(:fake_currency2) { create(:currency, :fake, id: 'fake2') }
   let!(:wallet) { create(:wallet, :fake_deposit) }
-
   let!(:member) { create(:member) }
-
-  let(:transaction) { Peatio::Transaction.new(hash: 'fake_txid', to_address: 'fake_address', from_addresses: ['fake_address'], amount: 5, block_number: 3, currency_id: 'fake1', txout: 4, status: 'success') }
+  let(:transaction) do
+    Peatio::Transaction.new(hash: 'fake_txid',
+                            to_address: 'fake_address',
+                            from_addresses: ['fake_address'],
+                            amount: 5,
+                            block_number: 3,
+                            currency_id: 'fake1',
+                            txout: 4,
+                            status: 'success')
+  end
 
   let(:expected_transactions) do
     [

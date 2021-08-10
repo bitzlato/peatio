@@ -54,7 +54,7 @@ module Workers
           Rails.logger.info { "Starting processing coin deposit with id: #{deposit.id}." }
 
           # Check if adapter has prepare_deposit_collection! implementation
-          if deposit.blockchain.gateway_implements?(:prepare_deposit_collection!)
+          if deposit.blockchain.implements?(:prepare_deposit_collection!)
             begin
               # Process fee collection for tokens
               collect_fee(deposit)

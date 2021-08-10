@@ -1,10 +1,6 @@
 class EthereumGateway < AbstractGateway
   IDLE_TIMEOUT = 1
 
-  def self.case_sensitive?
-    false
-  end
-
   def load_balance(address, currency)
     BalanceLoader
       .new(client)

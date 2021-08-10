@@ -2,7 +2,7 @@ class AbstractGateway
   attr_reader :blockchain
 
   def self.case_sensitive?
-    true
+    false
   end
 
   def self.implements?(method_name)
@@ -25,7 +25,7 @@ class AbstractGateway
   end
 
   def case_sensitive?
-    true
+    self.class.case_sensitive?
   end
 
   def name
