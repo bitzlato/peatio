@@ -3,21 +3,6 @@
 module API
   module V2
     module OrderHelpers
-
-      def build_order(attrs)
-        (attrs[:side] == 'sell' ? OrderAsk : OrderBid).new \
-          state:         ::Order::PENDING,
-          member:        current_user,
-          ask:           current_market&.base_unit,
-          bid:           current_market&.quote_unit,
-          market:        current_market,
-          market_type:   ::Market::DEFAULT_TYPE,
-          ord_type:      attrs[:ord_type] || 'limit',
-          price:         attrs[:price],
-          volume:        attrs[:volume],
-          origin_volume: attrs[:volume]
-      end
-
       def create_order(attrs)
         create_order_errors = {
           ::Account::AccountError => 'market.account.insufficient_balance',
@@ -25,9 +10,10 @@ module API
           ActiveRecord::RecordInvalid => 'market.order.invalid_volume_or_price'
         }
 
-        order = build_order(attrs)
-        order.submit_order
+        service = ::OrderServices::CreateOrder.new(current_user.id, attrs)
+        order = service.perform
         order
+        
         # TODO: Make more specific error message for ActiveRecord::RecordInvalid.
       rescue StandardError => e
         if create_order_errors.include?(e.class)

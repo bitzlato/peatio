@@ -52,6 +52,9 @@ queue:
   new_trade:
     name: peatio.trade.new
     durable: true
+  new_order:
+    name: peatio.order.new
+    durable: true
   order_processor:
     name: peatio.order.processor
     durable: true
@@ -88,6 +91,9 @@ binding:
     exchange: matching
   trade_executor:
     queue: new_trade
+    exchange: matching
+  order_creator:
+    queue: new_order
     exchange: matching
   order_processor:
     queue: order_processor
