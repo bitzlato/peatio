@@ -39,8 +39,7 @@ gem 'email_validator', '~> 1.6.0'
 gem 'validate_url', '~> 1.0.4'
 gem 'god', '~> 0.13.7', require: false
 gem 'arel-is-blank', '~> 1.0.0'
-gem "sentry-ruby"
-gem "sentry-rails"
+gem 'bugsnag'
 gem 'memoist', '~> 0.16.0'
 gem 'method-not-implemented', '~> 1.0.1'
 gem 'validates_lengths_from_database', '~> 0.7.0'
@@ -124,7 +123,7 @@ group :deploy do
   gem 'capistrano-systemd-multiservice', github: 'groovenauts/capistrano-systemd-multiservice', require: false
   # gem 'capistrano-master-key', require: false, github: 'virgoproz/capistrano-master-key'
   gem 'capistrano-git-with-submodules'
-  gem 'capistrano-sentry', require: false
+  gem 'bugsnag-capistrano', require: false
   gem 'slackistrano', require: false
 end
 

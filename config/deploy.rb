@@ -42,8 +42,10 @@ set :db_remote_clean, true
 set :app_version, SemVer.find.to_s
 set :current_version, `git rev-parse HEAD`.strip
 
-set :sentry_organization, ENV['SENTRY_ORGANIZATION']
-set :sentry_release_version, -> { [fetch(:app_version), fetch(:current_version)].compact.join('-') }
+if Gem.loaded_specs.key?('capistrano-sentry')
+  set :sentry_organization, ENV['SENTRY_ORGANIZATION']
+  set :sentry_release_version, -> { [fetch(:app_version), fetch(:current_version)].compact.join('-') }
+end
 
 set :puma_init_active_record, true
 set :puma_control_app, true
@@ -67,8 +69,10 @@ set :systemd_daemon_instances, -> { %i[cron_job blockchain deposit] }
 set :systemd_amqp_daemon_role, :daemons
 set :systemd_amqp_daemon_instances, -> { %i[deposit_coin_address withdraw_coin deposit_intention matching order_processor trade_executor influx_writer] }
 
-before 'deploy:starting', 'sentry:validate_config'
-after 'deploy:published', 'sentry:notice_deployment'
+if Gem.loaded_specs.key?('capistrano-sentry')
+  before 'deploy:starting', 'sentry:validate_config'
+  after 'deploy:published', 'sentry:notice_deployment'
+end
 
 after 'deploy:publishing', 'systemd:puma:reload-or-restart'
 after 'deploy:publishing', 'systemd:daemon:reload-or-restart'
