@@ -171,25 +171,6 @@ class Order < ApplicationRecord
     end
   end
 
-  def submit_order
-    return unless new_record?
-
-    self.locked = self.origin_locked = if ord_type == 'market' && side == 'buy'
-                                         [compute_locked * OrderBid::LOCKING_BUFFER_FACTOR, member_balance].min
-                                       else
-                                         compute_locked
-                                       end
-
-    raise ::Account::AccountError, "member_balance > locked = #{member_balance}>#{locked}" unless member_balance >= locked
-
-    return trigger_third_party_creation unless market.engine.peatio_engine?
-
-    save!
-    AMQP::Queue.enqueue(:order_processor,
-                        { action: 'submit', order: attributes },
-                        { persistent: false })
-  end
-
   def trigger_third_party_creation
     return unless new_record?
 

@@ -7,13 +7,17 @@ module Workers
       def process(payload)
         payload.symbolize_keys!
 
-        member_id = Member.find_by!(uid: payload[:member_uid]).id
+        @member = Member.find_by!(uid: payload[:member_uid])
 
         service = ::OrderServices::CreateOrder.new(member_id, payload[:data])
         order = service.perform
       rescue StandardError => e
-        raise e if is_db_connection_error?(e)
-
+        ::AMQP::Queue.enqueue_event(
+          'private',
+          @member.uid,
+          'order_error',
+          'market.order.create_error',
+        )
         report_exception(e)
       end
     end
