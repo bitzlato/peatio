@@ -12,7 +12,6 @@ class Withdrawer
     end
   end
 
-  Error = Class.new StandardError
   Fail = Class.new Error
   Busy = Class.new Error
 
