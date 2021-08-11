@@ -5,20 +5,24 @@ describe ::EthereumGateway::TransactionCreator do
   let(:address) { 'address' }
   let(:uri) { 'http://127.0.0.1:8545' }
   let(:client) { ::Ethereum::Client.new(uri) }
-
   let(:eth) { Currency.find_by(id: :eth) }
   let(:trst) { Currency.find_by(id: :trst) }
   let(:ring) { Currency.find_by(id: :ring) }
   let(:secret) { SecureRandom.hex(5) }
   let(:amount) { (1.1.to_d * base_factor).to_i }
-  let(:base_factor) { eth.base_factor }
   let(:txid) { '0xab6ada9608f4cebf799ee8be20fe3fb84b0d08efcdb0d962df45d6fce70cb017' }
   let(:fetched_gas_price) { 1_000_000_000 }
   let(:from_address) { Faker::Blockchain::Ethereum.address }
   let(:to_address) { Faker::Blockchain::Ethereum.address }
   let(:gas_limit) { EthereumGateway::TransactionCreator::DEFAULT_ETH_GAS_LIMIT }
+  let(:gas_factor) { 1 }
 
   subject { described_class.new(client) }
+
+  before do
+    stub_gas_fetching fetched_gas_price
+    stub_personal_sendTransaction
+  end
 
   def stub_gas_fetching(gas_price)
     id = 1
@@ -36,17 +40,19 @@ describe ::EthereumGateway::TransactionCreator do
 
   end
 
-  def stub_personal_sendTransaction(from:, to:, value:, gas: , gasPrice:)
-    request_body = { jsonrpc: '2.0',
-                     id: 2,
-                     method: :personal_sendTransaction,
-                     params: [{
-                       from: from,
-                       to: to,
-                       value: '0x' + (value.to_s 16),
-                       gas: '0x' + (gas.to_s 16),
-                       gasPrice: '0x' + (gasPrice.to_s 16)
-                     }, secret] }
+  let(:request_body) do
+    { jsonrpc: '2.0',
+                   id: 2,
+                   method: :personal_sendTransaction,
+                   params: [{
+                     from: from_address,
+                     to: to_address,
+                     value: '0x' + (value.to_s 16),
+                     gas: '0x' + (gas_limit.to_s 16),
+                     gasPrice: '0x' + (transaction_gas_price.to_s 16)
+                   }, secret] }
+  end
+  def stub_personal_sendTransaction
     stub_request(:post, uri)
       .with(body: request_body.to_json)
       .to_return(body: { result: txid, error: nil, id: 1 }.to_json)
@@ -57,9 +63,22 @@ describe ::EthereumGateway::TransactionCreator do
     example.run
     WebMock.allow_net_connect!
   end
+  let(:result) do
+    subject.call(
+      amount: amount,
+      gas_limit: gas_limit,
+      from_address: from_address,
+      to_address: to_address,
+      secret: secret,
+      subtract_fee: subtract_fee,
+      gas_factor: gas_factor,
+      contract_address: contract_address
+    )
+  end
 
   context 'eth transaction' do
-    let(:gas_factor) { 1 }
+    let(:base_factor) { eth.base_factor }
+    let(:contract_address) { nil }
     let(:subtract_fee) { false }
     let(:result_transaction_hash) do
       {
@@ -76,28 +95,6 @@ describe ::EthereumGateway::TransactionCreator do
         }
       }
     end
-    let(:result) do
-      subject.call(
-        amount: amount,
-        gas_limit: gas_limit,
-        from_address: from_address,
-        to_address: to_address,
-        secret: secret,
-        subtract_fee: subtract_fee,
-        gas_factor: gas_factor
-      )
-    end
-    before do
-      stub_gas_fetching fetched_gas_price
-      stub_personal_sendTransaction(
-        from: from_address,
-        to: to_address,
-        value: value,
-        gas: gas_limit,
-        gasPrice: transaction_gas_price)
-
-    end
-
     context 'transaction with subtract fees' do
       let(:transaction_gas_price) { fetched_gas_price }
       let(:value) { amount - gas_limit * transaction_gas_price }
@@ -120,45 +117,41 @@ describe ::EthereumGateway::TransactionCreator do
     end
   end
 
-  context 'erc20 transaction' do
-    pending
-
+  context 'erc20 transaction for trst' do
+    let(:base_factor) { trst.base_factor }
+    let(:to_address) { '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa' }
+    let(:transaction_gas_price) { fetched_gas_price }
+    let(:subtract_fee) { false }
+    let(:contract_address) { trst.options.fetch('erc20_contract_address') }
     let(:request_body) do
       { jsonrpc: '2.0',
         id: 2,
         method: :personal_sendTransaction,
         params: [{
-          from: deposit_wallet_eth.address.downcase,
-          to: trst.options.fetch('erc20_contract_address'),
+          from: from_address,
+          to: contract_address,
           data: '0xa9059cbb0000000000000000000000006d6cabaa7232d7f45b143b445114f7e92350a2aa000000000000000000000000000000000000000000000000000000000010c8e0',
-          gas: '0x15f90',
-          gasPrice: gas_price_hex
+          gas: '0x' + (gas_limit.to_s 16),
+          gasPrice: '0x' + transaction_gas_price.to_s(16),
         }, secret] }
     end
-
-    before do
-      wallet.configure(settings)
+    let(:result_transaction_hash) do
+      {
+        from_addresses: [from_address],
+        amount: amount,
+        to_address: to_address,
+        hash: txid,
+        status: 'pending',
+        options: {
+          'contract_address' => contract_address,
+          'gas_limit' => gas_limit,
+          'gas_factor' => gas_factor,
+          'gas_price' => transaction_gas_price,
+        }
+      }
     end
 
-    it do
-      stub_request(:post, uri)
-        .with(body: eth_GasPrice.to_json)
-        .to_return(body: { result: gas_price_hex,
-                           error: nil,
-                           id: 1 }.to_json)
-
-      stub_request(:post, uri)
-        .with(body: request_body.to_json)
-        .to_return(body: { result: txid,
-                           error: nil,
-                           id: 1 }.to_json)
-      result = wallet.create_transaction!(transaction)
-      expect(result.as_json.symbolize_keys).to eq(amount: 1.1.to_s,
-                                                  to_address: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa',
-                                                  hash: txid,
-                                                  status: 'pending',
-                                                  options: { 'erc20_contract_address' => '0x87099add3bcc0821b5b151307c147215f839a110', 'gas_limit' => 90_000, 'gas_price' => 1_000_000_000 })
-    end
+    it { expect(result.as_json.symbolize_keys).to eq(result_transaction_hash) }
   end
 
   #context :prepare_deposit_collection! do

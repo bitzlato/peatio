@@ -14,8 +14,10 @@ class EthereumGateway
              gas_limit: nil,
              gas_factor: 1)
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
+      raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
       gas_price ||= (fetch_gas_price * gas_factor).to_i
-      txid, amount, gas_limit = contract_address.present? ?
+
+      peatio_transaction = contract_address.present? ?
         create_erc20_transaction!(amount: amount,
                                   from_address: from_address,
                                   to_address: to_address,
@@ -30,22 +32,8 @@ class EthereumGateway
                                 secret: secret,
                                 gas_limit: gas_limit || DEFAULT_ERC20_GAS_LIMIT,
                                 gas_price: gas_price)
-
-      txid = normalize_txid txid
-      raise Ethereum::Client::Error, \
-        "Withdrawal from #{from_address} to #{to_address} failed (invalid txid #{txid})." unless valid_txid? txid
-      Peatio::Transaction.new(
-        from_address: from_address,
-        to_address:   to_address,
-        amount:       amount,
-        hash:         normalize_address(txid),
-        options: {
-          gas_price: gas_price,
-          gas_limit: gas_limit,
-          gas_factor: gas_factor,
-          subtract_fee: subtract_fee
-        }
-      )
+      peatio_transaction.options.merge! gas_factor: gas_factor
+      peatio_transaction
     end
 
     def create_eth_transaction!(from_address:,
@@ -59,7 +47,8 @@ class EthereumGateway
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= gas_limit.to_i * gas_price.to_i if subtract_fee
 
-      txid = client
+      txid = validate_txid!(
+        client
         .json_rpc(:personal_sendTransaction,
                   [{
           from:     normalize_address(from_address),
@@ -68,8 +57,19 @@ class EthereumGateway
           gas:      '0x' + gas_limit.to_i.to_s(16),
           gasPrice: '0x' + gas_price.to_i.to_s(16)
         }.compact, secret])
+      )
 
-      return txid, amount, gas_limit
+      Peatio::Transaction.new(
+        from_address: from_address,
+        to_address:   to_address,
+        amount:       amount,
+        hash:         normalize_address(txid),
+        options: {
+          gas_price: gas_price,
+          gas_limit: gas_limit,
+          subtract_fee: subtract_fee
+        }
+      )
     end
 
     def create_erc20_transaction!(from_address:,
@@ -79,22 +79,38 @@ class EthereumGateway
                                   secret:,
                                   gas_limit: DEFAULT_ERC20_GAS_LIMIT,
                                   gas_price:)
-      data = abi_encode('transfer(address,uint256)',
-                        normalize_address(to_address),
-                        '0x' + amount.base_units.to_s(16))
+      data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
-      txid = client.json_rpc(:personal_sendTransaction,
-                             [{
-        from:     normalize_address(from_address),
-        to:       options.fetch(contract_address_option),
-        data:     data,
-        gas:      '0x' + gas_limit.to_i.to_s(16),
-        gasPrice: '0x' + gas_price.to_i.to_s(16)
-      }.compact, secret])
-      return txid, amount, gas_limit
+      txid = validate_txid!(
+        client.json_rpc(:personal_sendTransaction,
+                        [{
+          from:     normalize_address(from_address),
+          to:       contract_address,
+          data:     data,
+          gas:      '0x' + gas_limit.to_i.to_s(16),
+          gasPrice: '0x' + gas_price.to_i.to_s(16)
+        }.compact, secret])
+      )
+      Peatio::Transaction.new(
+        from_address: from_address,
+        to_address:   to_address,
+        amount:       amount,
+        hash:         normalize_address(txid),
+        options: {
+          contract_address: contract_address,
+          gas_price: gas_price,
+          gas_limit: gas_limit,
+        }
+      )
     end
 
     private
+
+    def validate_txid!(txid)
+      raise Ethereum::Client::Error, \
+        "Transaction from #{from_address} to #{to_address} for #{amount} failed (invalid txid #{txid})." unless valid_txid? txid
+      txid
+    end
 
     # ex calculate_gas_price
     def fetch_gas_price

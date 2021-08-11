@@ -19,7 +19,11 @@ class EthereumGateway < AbstractGateway
                           secret:,
                           contract_address: nil,
                           subtract_fee: false)
-    amount = amount.base_units if amount.is_a? Money
+    if amount.is_a? Money
+      amount = amount.base_units
+    elsif !amount.is_a? Integer
+      raise "amount (#{amount} #{amount.class}) must be an Integer (base units)"
+    end
     TransactionCreator
       .new(client)
       .call(from_address: from_address,
