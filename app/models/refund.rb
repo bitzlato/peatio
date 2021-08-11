@@ -4,11 +4,10 @@
 class Refund < ApplicationRecord
   extend Enumerize
   include AASM
-  include AASM::Locking
 
   belongs_to :deposit, required: true
 
-  aasm column: :state, whiny_transitions: false do
+  aasm column: :state, whiny_transitions: false, requires_lock: true do
     state :pending, initial: true
     state :processed
     state :failed

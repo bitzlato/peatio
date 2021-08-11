@@ -17,7 +17,6 @@ class Withdraw < ApplicationRecord
   SUCCEED_PROCESSING_STATES = %i[prepared accepted skipped processing errored confirming succeed under_review].freeze
 
   include AASM
-  include AASM::Locking
   include TIDIdentifiable
   include FeeChargeable
 
@@ -62,7 +61,7 @@ class Withdraw < ApplicationRecord
   scope :last_24_hours, -> { where('created_at > ?', 24.hour.ago) }
   scope :last_1_month, -> { where('created_at > ?', 1.month.ago) }
 
-  aasm whiny_transitions: true do
+  aasm whiny_transitions: true, requires_lock: true do
     state :prepared, initial: true
     state :accepted
     state :canceled

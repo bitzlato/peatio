@@ -10,7 +10,6 @@ class Deposit < ApplicationRecord
   serialize :data, JSON unless Rails.configuration.database_support_json
 
   include AASM
-  include AASM::Locking
   include TIDIdentifiable
   include FeeChargeable
 
@@ -47,7 +46,7 @@ class Deposit < ApplicationRecord
 
   delegate :key, to: :blockchain, prefix: true
 
-  aasm whiny_transitions: true do
+  aasm whiny_transitions: true, requires_lock: true do
     state :submitted, initial: true
     state :invoiced
     state :canceled

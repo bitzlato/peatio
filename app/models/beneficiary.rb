@@ -12,7 +12,6 @@ class Beneficiary < ApplicationRecord
   vault_lazy_decrypt!
 
   include AASM
-  include AASM::Locking
 
   STATES_MAPPING = { pending: 0, active: 1, archived: 2, aml_processing: 3, aml_suspicious: 4 }.freeze
 
@@ -32,7 +31,7 @@ class Beneficiary < ApplicationRecord
 
   enumerize :state, in: STATES_MAPPING, scope: true
 
-  aasm column: :state, enum: :states_mapping, whiny_transitions: false do
+  aasm column: :state, enum: :states_mapping, whiny_transitions: false, requires_lock: true do
     state :pending, initial: true
     state :active
     state :aml_processing
