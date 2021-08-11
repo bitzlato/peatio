@@ -1,4 +1,36 @@
 ---
+eur:
+  iso_code: EUR
+  name: Euro
+  symbol: €
+  alternate_symbols: []
+  subunit: Cent
+  subunit_to_unit: 100
+  symbol_first: true
+  html_entity: "$"
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: '978'
+  smallest_denomination: 1
+  is_crypto: false
+
+usd:
+  iso_code: USD
+  name: Американский Доллар
+  symbol: "$"
+  disambiguate_symbol: US$
+  alternate_symbols:
+  - US$
+  subunit: Cent
+  subunit_to_unit: 100
+  symbol_first: true
+  html_entity: "$"
+  decimal_mark: "."
+  thousands_separator: ","
+  iso_numeric: '840'
+  smallest_denomination: 1
+  is_crypto: false
+
 btc:
   name: Bitcoin
   symbol: B⃦
@@ -12,7 +44,6 @@ btc:
   iso_numeric: ''
   smallest_denomination: 1
   is_crypto: true
-  base_factor:            8
   precesion:              8
   blockchain_key: 'bitzlato'
 
@@ -120,3 +151,8 @@ fake:
   base_factor: 1_000_000
   precesion: 6
   blockchain_key: 'fake-testnet'
+
+xagm.cx:
+  parent_currency: eth
+  base_factor: 1_000_000
+  precesion: 6

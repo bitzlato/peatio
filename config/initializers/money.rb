@@ -51,6 +51,8 @@ class Money::Currency
 
       @base_factor = 10 ** base_factor_subunits
       @subunit_to_unit ||= @base_factor
+    else
+      @base_factor = 10 && @subunit_to_unit
     end
   end
 

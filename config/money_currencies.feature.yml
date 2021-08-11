@@ -32,23 +32,6 @@ rub:
   smallest_denomination: 1
   is_crypto: false
 
-usd:
-  iso_code: USD
-  name: Американский Доллар
-  symbol: "$"
-  disambiguate_symbol: US$
-  alternate_symbols:
-  - US$
-  subunit: Cent
-  subunit_to_unit: 100
-  symbol_first: true
-  html_entity: "$"
-  decimal_mark: "."
-  thousands_separator: ","
-  iso_numeric: '840'
-  smallest_denomination: 1
-  is_crypto: false
-
 dsh:
   iso_code: DSH
   name: Dash
@@ -147,21 +130,6 @@ bch:
   smallest_denomination: 1
   authorized_round: 8
   is_crypto: true
-
-eur:
-  iso_code: EUR
-  name: Euro
-  symbol: €
-  alternate_symbols: []
-  subunit: Cent
-  subunit_to_unit: 100
-  symbol_first: true
-  html_entity: "$"
-  decimal_mark: "."
-  thousands_separator: ","
-  iso_numeric: '978'
-  smallest_denomination: 1
-  is_crypto: false
 
 neo:
   iso_code: NEO

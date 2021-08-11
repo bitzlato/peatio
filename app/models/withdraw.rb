@@ -138,7 +138,7 @@ class Withdraw < ApplicationRecord
 
     # Transfered to blockchain
     event :dispatch do
-      transitions from: %i[transfering], to: :confirming do
+      transitions from: :transfering, to: :confirming do
         # Validate txid presence on coin withdrawal dispatch.
         guard do
           currency.fiat? || txid?
@@ -147,7 +147,7 @@ class Withdraw < ApplicationRecord
     end
 
     event :success do
-      transitions from: %i[confirming], to: :succeed do
+      transitions from: :confirming, to: :succeed do
         guard do
           currency.fiat? || txid?
         end

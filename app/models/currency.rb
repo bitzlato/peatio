@@ -107,7 +107,7 @@ class Currency < ApplicationRecord
   before_update { update_position(self) if position_changed? }
   delegate :key, to: :blockchain, prefix: true
 
-  delegate :base_factor, to: :money_currency
+  delegate :base_factor, :to_money, to: :money_currency
 
   after_commit :wipe_cache
 

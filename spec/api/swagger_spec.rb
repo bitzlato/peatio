@@ -20,7 +20,6 @@ describe 'Swagger', type: :request do
   it "returns APIv2 admin swagger docs" do
     expect do
       get "/api/v2/admin/swagger"
-      binding.pry
       expect(response).to have_http_status 200
     end.not_to raise_error
   end

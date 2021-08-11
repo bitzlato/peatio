@@ -39,19 +39,34 @@ class Withdrawer
 
       transaction = create_transaction! withdraw
 
-      logger.warn id: withdraw.id, message: 'Withdrawal has processed', txid: transaction.id
+      # TODO create withdrawal transaction from blockchain service
+      Transaction.create!(
+        from_address: transaction.from_address,
+        to_address: transaction.to_address,
+        reference: withdraw,
+        currency: withdraw.currency,
+        amount: withdraw.currency.to_money(transaction.amount),
+        options: transaction.options,
+      )
 
+      withdraw.update!(
+        metadata: (withdraw.metadata.presence || {}).merge(transaction.options || {}), # Saves links and etc
+        txid: transaction.hash || raise("transaction does not have hash #{transaction} for withdraw #{withdraw.id}")
+      )
+
+      logger.warn id: withdraw.id,
+        tid: transaction.hash,
+        message: 'The currency API accepted withdraw and assigned transaction ID.'
       withdraw.dispatch!
 
     rescue Busy => e
-      binding.pry
+      # TODO repeat withdraw
+      withdraw.fail!
       logger.warn e.as_json.merge( id: withdraw.id )
     rescue Fail => e
-      binding.pry
       withdraw.fail!
       logger.warn e.as_json.merge( id: withdraw.id )
     rescue StandardError => e
-      binding.pry
       logger.warn id: withdraw.id, message: 'Failed to process withdraw. See exception details below.'
       report_exception(e)
       withdraw.err! e
@@ -75,19 +90,9 @@ class Withdrawer
         secret: wallet.secret,
     ) || raise("No transaction returned for withdraw (#{withdraw.id})")
 
-    raise 'wtf?' unless transaction.from_address == wallet.address
-    # TODO create withdrawal transaction from blockchain service
-    Transaction.create!(transaction.as_json.merge(reference: withdraw))
+    raise "transaction.from_address (#{transaction.from_address})<> wallet.address (#{wallet.address})" unless transaction.from_address == wallet.address
 
-    withdraw.update!(
-      metadata: withdraw.metadata.merge(transaction.options), # Saves links and etc
-      txid: transaction.hash || raise("transaction does not have hash #{transaction} for withdraw #{withdraw.id}")
-    )
-    raise "transaction for withdraw #{withdraw.id} is not succeed #{transaction}" unless transaction.status == 'succeed'
-
-    logger.warn id: withdraw.id,
-      tid: transaction.hash,
-      message: 'The currency API accepted withdraw and assigned transaction ID.'
+    transaction
   end
 
   private
