@@ -19,6 +19,8 @@ class Account < ApplicationRecord
   scope :visible, -> { joins(:currency).merge(Currency.where(visible: true)) }
   scope :ordered, -> { joins(:currency).order(position: :asc) }
 
+  delegate :enable_invoice?, :enable_invoice, to: :blockchain
+
   def as_json_for_event_api
     {
       member_id: member_id,

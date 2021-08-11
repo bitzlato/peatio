@@ -34,7 +34,9 @@ module API
 
         expose(
           :deposit_address,
-          if: ->(account, _options) { account.currency.coin? && !account.blockchain.implements?(:enable_invoice) },
+          if: ->(account, _options) do
+            account.currency.coin? && account.payment_address.address.present? && !account.enable_invoice?
+          end,
           using: API::V2::Entities::PaymentAddress,
           documentation: {
             desc: 'User deposit address',
@@ -46,14 +48,12 @@ module API
 
         expose(
           :enable_invoice,
-          if: ->(account, _options) { !account.blockchain.implements?(:enable_invoice) },
+          if: ->(account, _options) { account.enable_invoice? },
           documentation: {
             desc: 'Show intention form instead of payment address generation',
             type: JSON
           }
-        ) do |account, options|
-          true
-        end
+        )
       end
     end
   end

@@ -251,7 +251,7 @@ describe API::V2::Account::Deposits, type: :request do
 
         it 'expose data about eth address' do
           api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
-          expect(response.body).to eq '{"currencies":["eth","trst"],"address":"' + address + '","state":"active"}'
+          expect(response.body).to eq '{"currencies":["eth","trst"],"address":"' + address.downcase + '","state":"active"}'
         end
 
         it 'pending user address state' do
@@ -266,7 +266,7 @@ describe API::V2::Account::Deposits, type: :request do
           it 'returns information about specified deposit address' do
             api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
             expect(response).to have_http_status 200
-            expect(response.body).to eq '{"currencies":["eth","trst","xagm.cx"],"address":"' + address + '","state":"active"}'
+            expect(response.body).to eq '{"currencies":["eth","trst","xagm.cx"],"address":"' + address.downcase + '","state":"active"}'
           end
         end
 
