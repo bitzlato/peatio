@@ -5,10 +5,8 @@ module OrderServices
     end
 
     def perform(market:, side:, ord_type:, price:, volume:)
-      @market = ::Market.active.find_spot_by_symbol(market)
-
       order = build_order(
-        market: @market,
+        market: market,
         side: side,
         ord_type: ord_type,
         price: price,
@@ -16,20 +14,20 @@ module OrderServices
       )
       submit_order!(order)
 
-      order.reload
+      order.reload!
     end
 
     private
 
-    def build_order(side:, ord_type:, price:, volume:)
+    def build_order(market:,side:, ord_type:, price:, volume:)
       order_subclass = side == 'sell' ? OrderAsk : OrderBid
 
       order_subclass.new(
         state:         ::Order::PENDING,
         member:        @member,
-        ask:           @market&.base_unit,
-        bid:           @market&.quote_unit,
-        market:        @market,
+        ask:           market.base_unit,
+        bid:           market.quote_unit,
+        market:        market,
         market_type:   ::Market::DEFAULT_TYPE,
         ord_type:      ord_type || 'limit',
         price:         price,
@@ -39,8 +37,6 @@ module OrderServices
     end
 
     def submit_order!(order)
-      return unless order.new_record?
-
       order.locked = order.origin_locked = if order.ord_type == 'market' && order.side == 'buy'
                                              [
                                                order.compute_locked * OrderBid::LOCKING_BUFFER_FACTOR,
@@ -60,7 +56,7 @@ module OrderServices
       order.save!
       AMQP::Queue.enqueue(:order_processor,
                           { action: 'submit', order: order.attributes },
-                          { persistent: false })
+                          { persistent: true })
     end
   end
 end
