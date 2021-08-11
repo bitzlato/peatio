@@ -36,17 +36,18 @@ class Withdrawer
         rid: withdraw.rid,
         message: 'Sending withdraw.'
 
-      transaction = create_transaction! withdraw
+      transaction = push_transaction_to_blockchain! withdraw
 
       # TODO create withdrawal transaction from blockchain service
-      Transaction.create!(
-        from_address: transaction.from_address,
-        to_address: transaction.to_address,
-        reference: withdraw,
-        currency: withdraw.currency,
-        amount: withdraw.currency.to_money(transaction.amount),
-        options: transaction.options,
-      )
+      #Transaction.create!(
+        #from_address: transaction.from_address,
+        #to_address: transaction.to_address,
+        #reference: withdraw,
+        #currency: withdraw.currency,
+        #amount: withdraw.currency.to_money(transaction.amount),
+        #options: transaction.options,
+      #)
+      #
 
       withdraw.update!(
         metadata: (withdraw.metadata.presence || {}).merge(transaction.options || {}), # Saves links and etc
@@ -79,7 +80,7 @@ class Withdrawer
 
   private
 
-  def create_transaction!(withdraw)
+  def push_transaction_to_blockchain!(withdraw)
     transaction = withdraw.blockchain.gateway.
       create_transaction!(
         from_address: wallet.address,
