@@ -118,23 +118,23 @@ class BlockchainService
       Rails.logger.info { "Skipped withdrawal: #{transaction.hash}." }
       return
     end
+    # TODO save contract_address
+    ::Transaction
+      .create_with(amount: transaction.amount,
+                   to_address: transaction.to_address,
+                   from_address: transaction.from_address,
+                   block_number: transaction.block_number,
+                   txout: transaction.txout,
+                   reference: withdrawal,
+                   status: transaction.status.success? ? :succeed : :pending,
+                  )
+      .find_or_create_by!(currency_id: withdrawal.currency_id, txid: transaction.id)
 
     withdrawal.with_lock do
       withdrawal.update_column :block_number, transaction.block_number if withdrawal.block_number.nil?
 
       # Fetch transaction from a blockchain that has `pending` status.
       transaction = gateway.fetch_transaction(transaction.hash, transaction.txout) if transaction.status.pending?
-
-      Transaction.
-        create_with!(amount: transaction.amount,
-                     to_address: transaction.to_address,
-                     from_address: transaction.from_address,
-                     block_number: transaction.block_number,
-                     txout: transaction.txout,
-                     reference: withdrawal,
-                     status: transaction.status,
-                     currency_id: withdrawal.currency_id).
-        find_or_create_by!(blockchain: blockchain, txid: transaction.id)
 
       # Manually calculating withdrawal confirmations, because blockchain height is not updated yet.
       if transaction.status.failed?
