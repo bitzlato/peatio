@@ -12,8 +12,7 @@ module API
              success: API::V2::Admin::Entities::WhitelistedSmartContract
         params do
           optional :blockchain_id,
-                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' },
-                   desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:blockchain_id][:desc] }
+                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' }
           use :pagination
           use :ordering
         end
@@ -51,8 +50,7 @@ module API
         end
         params do
           requires :blockchain_id,
-                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' },
-                   desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:blockchain_id][:desc] }
+                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' }
           requires :address,
                    desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:address][:desc] }
           optional :description,
@@ -82,8 +80,8 @@ module API
                    type: { value: Integer, message: 'admin.whitelistedsmartcontract.non_integer_id' },
                    desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:id][:desc] }
           optional :blockchain_id,
-                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' },
-                   desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:blockchain_id][:desc] }
+                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' }
+                   # desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:blockchain_id][:desc] }
           optional :description,
                    desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:description][:desc] }
           optional :address,

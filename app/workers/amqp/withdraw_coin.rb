@@ -19,6 +19,12 @@ module Workers
           return
         end
 
+        wallet = withdraw.currency.blockchain.wallets.hot.with_currency(withdraw.currency).take
+        if wallet.blank?
+          @logger.warn id: payload[:id], message: 'No hot wallet for withdraw'
+          return
+        end
+
         Withdrawer.new(withdraw, @logger).call withdraw
       end
     end

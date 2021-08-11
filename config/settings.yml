@@ -1,0 +1,17 @@
+defaults: &defaults
+  eth:
+    gas_limit: 21_000
+  erc20:
+    gas_limit: 90_000
+
+production:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+staging:
+  <<: *defaults
+
+development:
+  <<: *defaults

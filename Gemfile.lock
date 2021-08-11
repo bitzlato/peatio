@@ -507,6 +507,7 @@ GEM
     sentry-ruby-core (4.6.4)
       concurrent-ruby
       faraday
+    settingslogic (2.0.9)
     shellany (0.0.1)
     slackistrano (4.0.1)
       capistrano (>= 3.8.1)
@@ -645,6 +646,7 @@ DEPENDENCIES
   semver2 (~> 3.4)
   sentry-rails
   sentry-ruby
+  settingslogic
   slackistrano
   strip_attributes
   timecop (~> 0.9)

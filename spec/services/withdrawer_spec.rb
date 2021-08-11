@@ -9,12 +9,33 @@ describe Withdrawer do
 
   subject { described_class.new(wallet) }
 
-  context 'succesful withdraw' do
-    it do
-      expect(gateway).to receive(:create_transaction!)
-      subject.call(withdraw)
+  context do
+    before do
+      gateway.class.any_instance.expects(:create_transaction!).returns(transaction)
+    end
 
-      expect(withdraw.aasm_state).to eq 'dispatched'
+    context 'errored' do
+      let(:transaction) { nil}
+      it do
+        subject.call(withdraw)
+        expect(withdraw.aasm_state).to eq 'errored'
+      end
+    end
+    context 'succesful withdraw' do
+      let(:transaction) { Peatio::Transaction.new( amount: withdraw.amount, to_address: withdraw.to_address, hash: SecureRandom.hex(5)) }
+      #Peatio::Transaction.new(
+        #from_address: from_address,
+        #to_address:   to_address,
+        #currency_id:  amount.currency.id,
+        #amount:       amount,
+        #hash:         normalize_addres(txid),
+        #options: { gas_price: gas_price, gas_limit: gas_limit }
+      #)
+      fit do
+        subject.call(withdraw)
+
+        expect(withdraw.aasm_state).to eq 'dispatched'
+      end
     end
   end
 

@@ -1,4 +1,4 @@
-describe Ethereum::Eth::Blockchain do
+describe 'Ethereum::Eth::Blockchain' do
   pending
 
   #let(:eth) do

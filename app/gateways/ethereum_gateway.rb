@@ -13,7 +13,13 @@ class EthereumGateway < AbstractGateway
       .call(secret)
   end
 
-  def create_transaction!(from_address:, to_address:, amount:, secret: , contract_address: nil, subtract_fee: false)
+  def create_transaction!(from_address:,
+                          to_address:,
+                          amount:,
+                          secret:,
+                          contract_address: nil,
+                          subtract_fee: false)
+    amount = amount.base_units if amount.is_a? Money
     TransactionCreator
       .new(client)
       .call(from_address: from_address,
