@@ -12,7 +12,7 @@ gem 'redis', '~> 4.1.2', require: ['redis', 'redis/connection/hiredis']
 gem 'hiredis', '~> 0.6.0'
 gem 'figaro', '~> 1.1.1'
 gem 'hashie', '~> 3.6.0'
-gem 'aasm', '~> 5.0.8'
+gem 'aasm', '~> 5.2.0'
 gem 'bunny', '~> 2.14.1'
 gem 'cancancan', '~> 3.1.0'
 gem 'enumerize', '~> 2.2.2'
@@ -133,3 +133,5 @@ group :deploy do
 end
 
 gem "sd_notify", "~> 0.1.1"
+
+gem "after_commit_everywhere", "~> 1.1"
