@@ -30,7 +30,7 @@ class BlockchainService
       if tx.to_address.in?(payment_addresses)
         update_or_create_deposit tx
       elsif tx.hash.in?(withdraw_txids)
-        update_withdrawal tx
+        update_or_create_withdraw tx
       end
       # TODO add blockchain
       Transaction
@@ -109,7 +109,7 @@ class BlockchainService
     deposit.process! if latest_block_number - deposit.block_number >= blockchain.min_confirmations
   end
 
-  def update_withdrawal(transaction)
+  def update_or_create_withdraw(transaction)
     withdrawal = blockchain.withdraws.confirming
       .find_by(currency_id: transaction.currency_id, txid: transaction.hash)
 
@@ -124,6 +124,17 @@ class BlockchainService
 
       # Fetch transaction from a blockchain that has `pending` status.
       transaction = gateway.fetch_transaction(transaction.hash, transaction.txout) if transaction.status.pending?
+
+      Transaction.
+        create_with!(amount: transaction.amount,
+                     to_address: transaction.to_address,
+                     from_address: transaction.from_address,
+                     block_number: transaction.block_number,
+                     txout: transaction.txout,
+                     reference: withdrawal,
+                     status: transaction.status,
+                     currency_id: withdrawal.currency_id).
+        find_or_create_by!(blockchain: blockchain, txid: transaction.id)
 
       # Manually calculating withdrawal confirmations, because blockchain height is not updated yet.
       if transaction.status.failed?
