@@ -54,7 +54,7 @@ class Money::Currency
   end
 
   def base_factor
-    subunit_to_unit
+    subunit_to_unit || raise("base_factor is nil for currency #{to_s}")
   end
 
   def blockchain
@@ -77,10 +77,6 @@ class Money::Currency
   # TODO rename from_units_to_money
   def to_money(value)
     value.to_money self
-  end
-
-  def base_factor
-    @base_factor || raise("base_factor is nil for currency #{to_s}")
   end
 
   def convert_to_base_unit(value)
