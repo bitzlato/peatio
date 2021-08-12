@@ -59,5 +59,12 @@ class EthereumGateway
     rescue Ethereum::Client::Error => e
       raise Peatio::Blockchain::ClientError, e
     end
+
+    private
+
+    def invalid_eth_transaction?(block_txn)
+      block_txn.fetch('to').blank? \
+        || block_txn.fetch('value').hex.to_d <= 0 && block_txn.fetch('input').hex <= 0
+    end
   end
 end
