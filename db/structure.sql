@@ -732,9 +732,9 @@ CREATE TABLE public.payment_addresses (
     details_encrypted character varying(1024),
     member_id bigint,
     remote boolean DEFAULT false NOT NULL,
-    blockchain_id bigint NOT NULL,
     balances jsonb DEFAULT '{}'::jsonb,
-    balances_updated_at timestamp without time zone
+    balances_updated_at timestamp without time zone,
+    blockchain_id bigint NOT NULL
 );
 
 
@@ -1202,7 +1202,8 @@ CREATE TABLE public.withdraws (
     beneficiary_id bigint,
     transfer_type integer,
     metadata json,
-    remote_id character varying
+    remote_id character varying,
+    blockchain_id bigint NOT NULL
 );
 
 
@@ -2273,6 +2274,13 @@ CREATE INDEX index_withdraws_on_aasm_state ON public.withdraws USING btree (aasm
 
 
 --
+-- Name: index_withdraws_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_withdraws_on_blockchain_id ON public.withdraws USING btree (blockchain_id);
+
+
+--
 -- Name: index_withdraws_on_currency_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2305,6 +2313,14 @@ CREATE INDEX index_withdraws_on_tid ON public.withdraws USING btree (tid);
 --
 
 CREATE INDEX index_withdraws_on_type ON public.withdraws USING btree (type);
+
+
+--
+-- Name: withdraws fk_rails_34ec868d17; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.withdraws
+    ADD CONSTRAINT fk_rails_34ec868d17 FOREIGN KEY (blockchain_id) REFERENCES public.blockchains(id);
 
 
 --
@@ -2502,8 +2518,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210727101029'),
 ('20210803084921'),
 ('20210803134756'),
-('20210806110309'),
 ('20210806112457'),
+('20210806112458'),
 ('20210806131828'),
 ('20210806144136'),
 ('20210806151717'),
@@ -2513,6 +2529,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210807084947'),
 ('20210809090917'),
 ('20210810202928'),
-('20210811181035');
+('20210811181035'),
+('20210812044904'),
+('20210812065148');
 
 
