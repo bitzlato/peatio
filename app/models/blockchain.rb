@@ -34,6 +34,10 @@ class Blockchain < ApplicationRecord
     implements? :cash_addr
   end
 
+  def native_currency
+    currencies.find { |c| c.parent_id.nil? } || raise("No native currency for wallet id #{id}")
+  end
+
   def status
     super&.inquiry
   end

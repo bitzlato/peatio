@@ -10,6 +10,11 @@ module Workers
         member = Member.find payload[:member_id]
         blockchain = Blockchain.find payload[:blockchain_id]
 
+        if blockchain.native_currency.enable_invoice?
+          Rails.warn "Skip deposit coin address for invoicable blockchain #{payload}"
+          return
+        end
+
         member.payment_address(blockchain).tap do |pa|
           pa.with_lock do
             return if pa.address.present?

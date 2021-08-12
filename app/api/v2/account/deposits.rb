@@ -130,6 +130,10 @@ module API
             error!({ errors: ['account.currency.deposit_disabled'] }, 422)
           end
 
+          if currency.enable_invoice?
+            error!({ errors: ['account.currency.no_deposit_address_invoices_only'] }, 422)
+          end
+
           payment_address = current_user.payment_address(currency.blockchain)
           present payment_address, with: API::V2::Entities::PaymentAddress, address_format: params[:address_format]
         end
