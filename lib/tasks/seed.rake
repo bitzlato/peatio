@@ -24,6 +24,8 @@ namespace :seed do
         else
           Currency.create!(hash)
         end
+      rescue => err
+        binding.pry
       end
     end
   end
@@ -121,10 +123,10 @@ namespace :seed do
   task whitelisted_smart_contracts: :environment do
     WhitelistedSmartContract.transaction do
       YAML.load_file(Rails.root.join('config/seed/whitelisted_smart_contracts.yml')).each do |hash|
-        next if WhitelistedSmartContract.exists?(address: hash.fetch('address'), blockchain_key: hash.fetch('blockchain_key'))
-        next if Blockchain.find_by(key: hash.fetch('blockchain_key')).blank?
+        blockchain = Blockchain.find_by_key(hash.fetch('blockchain_key'))
+        next if WhitelistedSmartContract.exists?(address: hash.fetch('address'), blockchain: blockchain)
 
-        WhitelistedSmartContract.create!(hash)
+        WhitelistedSmartContract.create!(address: hash.fetch('address'), state: hash.fetch('state'), blockchain: blockchain)
       end
     end
   end

@@ -1,4 +1,10 @@
 # encoding: UTF-8
+
+# Record blockchain transactions in DB
+def save_transaction(transaction, reference)
+  transaction['txid'] = transaction.delete('hash')
+  Transaction.create!(transaction.merge(reference: reference))
+end
 # frozen_string_literal: true
 
 # Legacy withdraw factories are deprecated because they update

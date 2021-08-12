@@ -1,0 +1,2 @@
+class GatewayService
+end

@@ -221,35 +221,3 @@ class Market < ApplicationRecord
     self.engine = Engine.find_by(name: engine_name)
   end
 end
-
-# == Schema Information
-# Schema version: 20210225123519
-#
-# Table name: markets
-#
-#  id               :bigint           not null, primary key
-#  symbol           :string(20)       not null
-#  type             :string(255)      default("spot"), not null
-#  base_unit        :string(10)       not null
-#  quote_unit       :string(10)       not null
-#  engine_id        :bigint           not null
-#  amount_precision :integer          default(4), not null
-#  price_precision  :integer          default(4), not null
-#  min_price        :decimal(32, 16)  default(0.0), not null
-#  max_price        :decimal(32, 16)  default(0.0), not null
-#  min_amount       :decimal(32, 16)  default(0.0), not null
-#  position         :integer          not null
-#  data             :json
-#  state            :string(32)       default("enabled"), not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#
-# Indexes
-#
-#  index_markets_on_base_unit                          (base_unit)
-#  index_markets_on_base_unit_and_quote_unit_and_type  (base_unit,quote_unit,type) UNIQUE
-#  index_markets_on_engine_id                          (engine_id)
-#  index_markets_on_position                           (position)
-#  index_markets_on_quote_unit                         (quote_unit)
-#  index_markets_on_symbol_and_type                    (symbol,type) UNIQUE
-#

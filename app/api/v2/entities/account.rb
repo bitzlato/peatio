@@ -34,27 +34,26 @@ module API
 
         expose(
           :deposit_address,
-          if: ->(account, _options) { account.currency.coin? && !Wallet.deposit_wallet(account.currency_id)&.enable_invoice },
+          if: ->(account, _options) do
+            account.currency.coin? && account.payment_address.address.present? && !account.enable_invoice?
+          end,
           using: API::V2::Entities::PaymentAddress,
           documentation: {
             desc: 'User deposit address',
             type: String
           }
         ) do |account, options|
-          wallet = Wallet.active_deposit_wallet(account.currency_id)
-          ::PaymentAddress.find_by(wallet: wallet, member: options[:current_user], remote: false)
+          account.payment_address
         end
 
         expose(
-          :enable_intention,
-          if: ->(account, _options) { Wallet.deposit_wallet(account.currency_id)&.enable_invoice },
+          :enable_invoice,
+          if: ->(account, _options) { account.enable_invoice? },
           documentation: {
             desc: 'Show intention form instead of payment address generation',
             type: JSON
           }
-        ) do |account, options|
-          true
-        end
+        )
       end
     end
   end

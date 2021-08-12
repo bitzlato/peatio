@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Deposit < ApplicationRecord
-  STATES = %i[submitted invoiced canceled rejected accepted collected skipped processing fee_processing].freeze
+  STATES = %i[submitted invoiced canceled rejected accepted skipped dispatched].freeze
 
   serialize :error, JSON unless Rails.configuration.database_support_json
   serialize :spread, Array
@@ -10,17 +10,29 @@ class Deposit < ApplicationRecord
   serialize :data, JSON unless Rails.configuration.database_support_json
 
   include AASM
-  include AASM::Locking
   include TIDIdentifiable
   include FeeChargeable
 
   extend Enumerize
   TRANSFER_TYPES = { fiat: 100, crypto: 200 }
 
-  belongs_to :currency, required: true
+  belongs_to :currency, required: true, touch: false
   belongs_to :member, required: true
+  belongs_to :blockchain, touch: false
 
   acts_as_eventable prefix: 'deposit', on: %i[create update]
+
+  scope :recent, -> { order(id: :desc) }
+
+  before_validation on: :create do
+    self.blockchain ||= self.currency.try(:blockchain)
+  end
+
+  before_create do
+    self.blockchain ||= self.currency.blockchain || raise("No blockchain currency #{currency.id}") if currency.present?
+  end
+  before_validation { self.completed_at ||= Time.current if completed? }
+  before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
 
   validates :tid, presence: true, uniqueness: { case_sensitive: false }
   validates :aasm_state, :type, presence: true
@@ -32,23 +44,21 @@ class Deposit < ApplicationRecord
                 -> (deposit){ deposit.currency.min_deposit_amount }
             }, on: :create
 
-  scope :recent, -> { order(id: :desc) }
+  delegate :key, to: :blockchain, prefix: true
 
-  before_validation { self.completed_at ||= Time.current if completed? }
-  before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
-
-  aasm whiny_transitions: false do
+  aasm whiny_transitions: true, requires_lock: true do
     state :submitted, initial: true
     state :invoiced
     state :canceled
     state :rejected
     state :accepted
-    state :aml_processing
-    state :aml_suspicious
+    # state :aml_processing
+    # state :aml_suspicious
     state :processing
     state :skipped
-    state :collected
-    state :fee_processing
+    # state :collected
+    state :dispatched
+    # state :fee_processing
     state :errored
     state :refunding
     event(:cancel) { transitions from: :submitted, to: :canceled }
@@ -57,7 +67,6 @@ class Deposit < ApplicationRecord
       transitions from: %i[submitted invoiced], to: :accepted
       after do
         if currency.coin? && (Peatio::App.config.deposit_funds_locked ||
-                              Peatio::AML.adapter.present? ||
                               Peatio::App.config.manual_deposit_approval)
           account.plus_locked_funds(amount)
         else
@@ -74,55 +83,52 @@ class Deposit < ApplicationRecord
       transitions from: :submitted, to: :invoiced
     end
 
-    event :process do
-      transitions from: %i[aml_processing aml_suspicious accepted errored], to: :aml_processing do
-        guard do
-          Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval
-        end
+    # Нет смысла сейчас собирать fee, делаем это отдельным процессом
+    #event :process do
+      #transitions from: %i[aml_processing aml_suspicious accepted errored], to: :aml_processing do
+        #guard do
+          #Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval
+        #end
 
-        after do
-          process_collect! if aml_check!
-        end
-      end
+        #after do
+          #process_collect! if aml_check!
+        #end
+      #end
 
-      transitions from: %i[accepted skipped errored], to: :processing do
-        guard { currency.coin? }
-      end
-    end
+      #transitions from: %i[accepted skipped errored], to: :processing do
+        #guard { currency.coin? }
+      #end
+    #end
 
-    event :fee_process do
-      transitions from: %i[accepted processing skipped], to: :fee_processing do
-        guard { currency.coin? }
-      end
-    end
+    #event :fee_process do
+      #transitions from: %i[accepted processing skipped], to: :fee_processing do
+        #guard { currency.coin? }
+      #end
+    #end
 
-    event :err do
-      transitions from: %i[processing fee_processing], to: :errored, after: :add_error
-    end
+    #event :process_collect do
+      #transitions from: %i[aml_processing aml_suspicious], to: :processing do
+        #guard do
+          #currency.coin? && (Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval)
+        #end
 
-    event :process_collect do
-      transitions from: %i[aml_processing aml_suspicious], to: :processing do
-        guard do
-          currency.coin? && (Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval)
-        end
+        #after do
+          #if !Peatio::App.config.deposit_funds_locked
+            #account.unlock_funds(amount)
+            #record_complete_operations!
+          #end
+        #end
+      #end
+    #end
 
-        after do
-          if !Peatio::App.config.deposit_funds_locked
-            account.unlock_funds(amount)
-            record_complete_operations!
-          end
-        end
-      end
-    end
-
-    event :aml_suspicious do
-      transitions from: :aml_processing, to: :aml_suspicious do
-        guard { Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval  }
-      end
-    end
+    #event :aml_suspicious do
+      #transitions from: :aml_processing, to: :aml_suspicious do
+        #guard { Peatio::AML.adapter.present? || Peatio::App.config.manual_deposit_approval  }
+      #end
+    #end
 
     event :dispatch do
-      transitions from: %i[processing fee_processing], to: :collected
+      transitions from: %i[accepted], to: :dispatched
       after do
         if Peatio::App.config.deposit_funds_locked
           account.unlock_funds(amount)
@@ -132,7 +138,7 @@ class Deposit < ApplicationRecord
     end
 
     event :refund do
-      transitions from: %i[aml_suspicious skipped], to: :refunding do
+      transitions from: %i[skipped], to: :refunding do
         guard { currency.coin? }
       end
     end
@@ -154,15 +160,13 @@ class Deposit < ApplicationRecord
     true
   end
 
+  delegate :gateway, to: :blockchain
+
   def transfer_links
     # TODO rename data['links'] to transfer_links
     # TODO rename data['expires_at'] to expires_at
-    # TODO Use txid instead of intention_id
+    # TODO Use txid instead of invoice_id
     data&.fetch 'links', []
-  end
-
-  def blockchain_api
-    currency.blockchain_api
   end
 
   def confirmations
@@ -180,10 +184,6 @@ class Deposit < ApplicationRecord
     else
       update!(error: error << { class: e.class.to_s, message: e.message })
     end
-  end
-
-  def spread_to_transactions
-    spread.map { |s| Peatio::Transaction.new(s) }
   end
 
   def spread_between_wallets!
@@ -207,20 +207,8 @@ class Deposit < ApplicationRecord
     self.member = Member.find_by_uid(uid)
   end
 
-  def wallet_state
-    if currency.coin?
-      payment_address = PaymentAddress.find_by_address(address)
-
-      if payment_address.present?
-        # In case when wallet was deleted and payment address still exists in DB
-        return payment_address.wallet.present? ? payment_address.wallet.status : ''
-      else
-        # Some kinds of gateways ('dummy' for example) does not create payment address
-        Wallet.active_deposit_wallet(currency_id)
-      end
-    else
-      ''
-    end
+  def payment_address
+    member.payment_address blockchain
   end
 
   def as_json_for_event_api
@@ -230,7 +218,7 @@ class Deposit < ApplicationRecord
       currency:                 currency_id,
       amount:                   amount.to_s('F'),
       state:                    aasm_state,
-      wallet_state:             wallet_state,
+      blockchain_state:         blockchain.status,
       created_at:               created_at.iso8601,
       updated_at:               updated_at.iso8601,
       completed_at:             completed_at&.iso8601,
@@ -244,6 +232,11 @@ class Deposit < ApplicationRecord
 
   def enqueue_deposit_intention!
     AMQP::Queue.enqueue(:deposit_intention, { deposit_id: id }, { persistent: true })
+  end
+
+  def process!
+    # только для совместимости
+    # TODO удалить
   end
 
   private
@@ -293,37 +286,3 @@ class Deposit < ApplicationRecord
     end
   end
 end
-
-# == Schema Information
-# Schema version: 20200827105929
-#
-# Table name: deposits
-#
-#  id             :integer          not null, primary key
-#  member_id      :integer          not null
-#  currency_id    :string(10)       not null
-#  amount         :decimal(32, 16)  not null
-#  fee            :decimal(32, 16)  not null
-#  address        :string(95)
-#  from_addresses :string(1000)
-#  txid           :string(128)
-#  txout          :integer
-#  aasm_state     :string(30)       not null
-#  block_number   :integer
-#  type           :string(30)       not null
-#  transfer_type  :integer
-#  tid            :string(64)       not null
-#  spread         :string(1000)
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  completed_at   :datetime
-#
-# Indexes
-#
-#  index_deposits_on_aasm_state_and_member_id_and_currency_id  (aasm_state,member_id,currency_id)
-#  index_deposits_on_currency_id                               (currency_id)
-#  index_deposits_on_currency_id_and_txid_and_txout            (currency_id,txid,txout) UNIQUE
-#  index_deposits_on_member_id_and_txid                        (member_id,txid)
-#  index_deposits_on_tid                                       (tid)
-#  index_deposits_on_type                                      (type)
-#

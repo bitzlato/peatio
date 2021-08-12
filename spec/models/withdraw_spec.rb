@@ -64,7 +64,6 @@ describe Withdraw do
 
     context :process do
       before { subject.accept! }
-      before { subject.accept! }
 
       it 'transitions to :processing after calling #process! when withdrawing fiat currency' do
         subject.currency.stubs(:coin?).returns(false)
@@ -129,17 +128,8 @@ describe Withdraw do
         expect(subject.canceled?).to be true
       end
 
-      it 'transitions from :accepted to :canceled after calling #cancel!' do
-        subject.accept!
-        subject.accept!
-        subject.cancel!
-
-        expect(subject.canceled?).to be true
-      end
-
       context :record_cancel_operations do
         before do
-          subject.accept!
           subject.accept!
         end
         it 'creates two liability operations' do
@@ -179,7 +169,6 @@ describe Withdraw do
     context :skip do
       before do
         subject.accept!
-        subject.accept!
         subject.process!
       end
 
@@ -197,21 +186,6 @@ describe Withdraw do
 
       it 'transitions from :submitted to :rejected after calling #reject!' do
         subject.reject!
-        expect(subject.rejected?).to be true
-      end
-
-      it 'transitions from :accepted to :rejected after calling #reject!' do
-        subject.accept!
-        subject.reject!
-
-        expect(subject.rejected?).to be true
-      end
-
-      it 'transitions from :under_review to :rejected after calling #reject!' do
-        subject.process!
-        subject.review!
-        subject.reject!
-
         expect(subject.rejected?).to be true
       end
 
@@ -267,21 +241,12 @@ describe Withdraw do
 
       before do
         subject.accept!
-        subject.accept!
         subject.process!
+        subject.transfer!
         subject.dispatch!
       end
 
       it 'transitions from :confirming to :success after calling #success!' do
-        subject.success!
-
-        expect(subject.succeed?).to be true
-      end
-
-      it 'transitions from :under_review to :success after calling #success!' do
-        subject.accept!
-        subject.process!
-        subject.review!
         subject.success!
 
         expect(subject.succeed?).to be true
@@ -334,51 +299,48 @@ describe Withdraw do
         end
       end
     end
-    context :load do
-      let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
+    #context :load do
+      #let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
 
-      subject { create(:btc_withdraw, :with_deposit_liability) }
+      #subject { create(:btc_withdraw, :with_deposit_liability) }
 
-      before { subject.accept! }
+      #before { subject.accept! }
 
-      it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
-        subject.load!
-        expect(subject.accepted?).to be true
-      end
+      #it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
+        #expect { subject.load! }.to raise_error(AASM::InvalidTransition)
+      #end
 
-      it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
-        BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
-        subject.update(txid: txid)
-        subject.load!
-        expect(subject.confirming?).to be true
-      end
-    end
+      #it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
+        #BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
+        #subject.update(txid: txid)
+        #subject.load!
+        #expect(subject.confirming?).to be true
+      #end
+    #end
 
-    context :load do
-      let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
+    #context :load do
+      #let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
 
-      subject { create(:btc_withdraw, :with_deposit_liability) }
+      #subject { create(:btc_withdraw, :with_deposit_liability) }
 
-      before { subject.accept! }
-      before { subject.accept! }
+      #before { subject.accept! }
 
-      it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
-        subject.load!
-        expect(subject.accepted?).to be true
-      end
+      #it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
+        #subject.load!
+        #expect(subject.accepted?).to be true
+      #end
 
-      it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
-        BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
-        subject.update(txid: txid)
-        subject.load!
-        expect(subject.confirming?).to be true
-      end
-    end
+      #it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
+        #BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
+        #subject.update(txid: txid)
+        #subject.load!
+        #expect(subject.confirming?).to be true
+      #end
+    #end
 
     context :fail do
       subject { create(:btc_withdraw, :with_deposit_liability) }
 
-      before { subject.accept! }
       before { subject.accept! }
 
       context 'from errored' do
@@ -421,9 +383,6 @@ describe Withdraw do
         let(:coin) { Currency.find(:btc) }
 
         subject { create(:btc_withdraw, :with_deposit_liability, member: member, rid: address, beneficiary: beneficiary) }
-
-        before { subject.accept! }
-        before { subject.accept! }
 
         let!(:beneficiary) { create(:beneficiary,
                                     member: member,

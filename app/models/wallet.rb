@@ -21,7 +21,7 @@ class Wallet < ApplicationRecord
   ENUMERIZED_KINDS = { deposit: 100, fee: 200, hot: 310, warm: 320, cold: 330, standalone: 400 }.freeze
   enumerize :kind, in: ENUMERIZED_KINDS, scope: true
 
-  SETTING_ATTRIBUTES = %i[uri secret client_uid save_beneficiary beneficiary_prefix enable_invoice].freeze
+  SETTING_ATTRIBUTES = %i[uri secret client_uid save_beneficiary beneficiary_prefix].freeze
   STATES = %w[active disabled retired].freeze
   # active - system use active wallets for all user transactions transfers.
   # retired - system use retired wallet only to accept deposits.
@@ -41,7 +41,7 @@ class Wallet < ApplicationRecord
 
   vault_attribute :settings, serialize: :json, default: {}
 
-  belongs_to :blockchain, foreign_key: :blockchain_key, primary_key: :key
+  belongs_to :blockchain
   has_and_belongs_to_many :currencies
   has_many :currency_wallets
 
@@ -50,8 +50,6 @@ class Wallet < ApplicationRecord
   validate :gateway_wallet_kind_support
 
   validates :status,  inclusion: { in: STATES }
-
-  validates :gateway, inclusion: { in: ->(_){ Wallet.gateways.map(&:to_s) } }
 
   validates :max_balance, numericality: { greater_than_or_equal_to: 0 }
 
@@ -65,30 +63,22 @@ class Wallet < ApplicationRecord
   scope :with_deposit_currency, ->(currency) { with_currency(currency).joins(:currency_wallets).where(currencies_wallets: { enable_deposit: true }) }
   scope :ordered, -> { order(kind: :asc) }
 
-  before_validation(on: :create) do
-    if address.blank? && settings[:uri].present? && currencies.present?
-      begin
-        result = generate_settings
-      rescue StandardError => e
-        Rails.logger.info { "Cannot generate wallet address and secret error: #{e.message}" }
-        result = { address: 'changeme', secret: 'changeme' }
-      ensure
-        if result.present?
-          self.address = result.delete(:address)
-          self.settings = self.settings.merge(result)
-        end
-      end
-    end
-  end
+  delegate :key, to: :blockchain, prefix: true
+  delegate :create_address!, :gateway, to: :blockchain
 
+  before_validation :generate_settings, on: :create
   before_validation do
     next unless address? && blockchain.try(:blockchain_api).try(:supports_cash_addr_format?)
     self.address = CashAddr::Converter.to_cash_address(address)
   end
 
   class << self
-    def gateways
-      Peatio::Wallet.registry.adapters.keys
+    def blockchain_key_eq(key)
+      joins(:blockchain).where(blockchains: { key: key })
+    end
+
+    def self.ransackable_attributes(_auth_object = nil)
+      super + %w(blockchain_key_eq)
     end
 
     def kinds(options={})
@@ -142,45 +132,37 @@ class Wallet < ApplicationRecord
     end
   end
 
+  def blockchain_key=(key)
+    return self.blockchain = nil if key.nil?
+    self.blockchain = Blockchain.find_by(key: key) || raise("No blockchain with key #{key}")
+  end
+
   def current_balance(currency = nil)
     if currency.present?
-      WalletService.new(self).load_balance!(currency)
+      begin
+        currency = currency.money_currency unless currency.is_a? Money::Currency
+        gateway.load_balance(uri, address, currency) || NOT_AVAILABLE
+      rescue Peatio::Wallet::ClientError
+        NOT_AVAILABLE
+      end
     else
       currencies.each_with_object({}) do |c, balances|
-        balances[c.id] = WalletService.new(self).load_balance!(c)
-      rescue StandardError => e
-        report_exception(e)
-        balances[c.id] = NOT_AVAILABLE
+        balances[c.id] = current_balance(c)
       end
     end
-  rescue StandardError => e
-    report_exception(e)
-    NOT_AVAILABLE
   end
 
   def gateway_wallet_kind_support
-    return unless gateway_implements?(:support_wallet_kind?)
-
-    errors.add(:gateway, "#{gateway} can't be used as a #{kind} wallet") unless service.adapter.support_wallet_kind?(kind)
+    errors.add(:gateway, "'#{gateway.name}' can't be used as a '#{kind}' wallet") unless gateway.support_wallet_kind?(kind)
   end
 
   def to_wallet_api_settings
     settings.compact.deep_symbolize_keys.merge(address: address)
   end
 
+  # Rename to exlporer_url
   def wallet_url
     blockchain.explorer_address.gsub('#{address}', address) if blockchain
-  end
-
-  def natice_currency
-  end
-
-  def service
-    ::WalletService.new(self)
-  end
-
-  def gateway_implements?(method_name)
-    service.adapter.class.instance_methods(false).include?(method_name)
   end
 
   def native_currency
@@ -188,35 +170,15 @@ class Wallet < ApplicationRecord
   end
 
   def generate_settings
-    results = service.create_address!("#{id}_#{kind}_wallet", {})
-    {
-      address: results[:address],
-      secret: results[:secret]
-    }.merge(results[:details] || {})
+    return unless address.blank? && settings[:uri].present? && currencies.present?
+    result = create_address!.reverse_merge details: {}
+  rescue StandardError => e
+    Rails.logger.info { "Cannot generate wallet address and secret error: #{e.message}" }
+    result = { address: 'changeme', secret: 'changeme' }
+  ensure
+    if result.present?
+      self.address = result.delete(:address)
+      self.settings = self.settings.merge(result)
+    end
   end
 end
-
-# == Schema Information
-# Schema version: 20201125134745
-#
-# Table name: wallets
-#
-#  id                 :integer          not null, primary key
-#  blockchain_key     :string(32)
-#  name               :string(64)
-#  address            :string(255)      not null
-#  kind               :integer          not null
-#  gateway            :string(20)       default(""), not null
-#  settings_encrypted :string(1024)
-#  balance            :json
-#  max_balance        :decimal(32, 16)  default(0.0), not null
-#  status             :string(32)
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#
-# Indexes
-#
-#  index_wallets_on_kind                             (kind)
-#  index_wallets_on_kind_and_currency_id_and_status  (kind,status)
-#  index_wallets_on_status                           (status)
-#

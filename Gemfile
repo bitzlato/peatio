@@ -12,7 +12,7 @@ gem 'redis', '~> 4.1.2', require: ['redis', 'redis/connection/hiredis']
 gem 'hiredis', '~> 0.6.0'
 gem 'figaro', '~> 1.1.1'
 gem 'hashie', '~> 3.6.0'
-gem 'aasm', '~> 5.0.8'
+gem 'aasm', '~> 5.2.0'
 gem 'bunny', '~> 2.14.1'
 gem 'cancancan', '~> 3.1.0'
 gem 'enumerize', '~> 2.2.2'
@@ -30,6 +30,8 @@ gem 'faraday_middleware'
 gem 'faye', '~> 1.4'
 gem 'eventmachine', '~> 1.2'
 gem 'em-synchrony', '~> 1.0'
+gem "strip_attributes"
+gem 'settingslogic'
 
 # We use 2.3.0.dev for bitzlato client
 # Fill free to update to rubygem version when it will be released
@@ -57,7 +59,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'net-http-persistent', '~> 3.0.1'
 gem 'influxdb', '~> 0.7.0'
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
-gem 'composite_primary_keys', '~> 11.3.1'
+gem 'composite_primary_keys'
 gem 'dotenv'
 
 # Security versions of deep dependencies
@@ -66,6 +68,8 @@ gem "rexml", ">= 3.2.5"
 
 # Yeah! We use pry in production!
 gem 'pry-byebug',   '~> 3.7'
+
+gem 'money', github: 'bitzlato/money', branch: 'main'
 
 group :development, :test do
   gem 'irb'
@@ -77,7 +81,7 @@ end
 
 group :development do
   gem 'foreman'
-  gem 'annotate',   '~> 3.1.0'
+  gem 'annotate'
   gem 'ruby-prof',  '~> 0.17.0', require: false
   gem 'listen',     '>= 3.0.5', '< 3.2'
 
@@ -90,7 +94,7 @@ group :test do
   gem 'rspec-rails', '~> 3.8', '>= 3.8.2'
   gem 'rspec-retry',         '~> 0.6'
   gem 'webmock',             '~> 3.5'
-  gem 'database_cleaner',    '~> 1.7'
+  gem 'database_cleaner-active_record'
   gem 'mocha',               '~> 1.8', require: false
   gem 'factory_bot_rails', '~> 5.0', '>= 5.0.2'
   gem 'timecop',             '~> 0.9'
@@ -128,3 +132,5 @@ group :deploy do
 end
 
 gem "sd_notify", "~> 0.1.1"
+
+gem "after_commit_everywhere", "~> 1.1"

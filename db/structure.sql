@@ -237,10 +237,8 @@ ALTER SEQUENCE public.beneficiaries_id_seq OWNED BY public.beneficiaries.id;
 --
 
 CREATE TABLE public.blockchains (
-    id bigint NOT NULL,
     key character varying NOT NULL,
     name character varying,
-    client character varying NOT NULL,
     height bigint NOT NULL,
     explorer_address character varying,
     explorer_transaction character varying,
@@ -248,7 +246,10 @@ CREATE TABLE public.blockchains (
     status character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    server_encrypted character varying(1024)
+    server_encrypted character varying(1024),
+    id bigint NOT NULL,
+    gateway_klass character varying NOT NULL,
+    enable_invoice boolean DEFAULT false NOT NULL
 );
 
 
@@ -257,7 +258,6 @@ CREATE TABLE public.blockchains (
 --
 
 CREATE SEQUENCE public.blockchains_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -282,13 +282,11 @@ CREATE TABLE public.currencies (
     withdraw_limit_24h numeric(32,16) DEFAULT 0 NOT NULL,
     options json,
     visible boolean DEFAULT true NOT NULL,
-    base_factor bigint DEFAULT 1 NOT NULL,
     "precision" smallint DEFAULT 8 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     withdraw_fee numeric(32,16) DEFAULT 0.0 NOT NULL,
     deposit_fee numeric(32,16) DEFAULT 0 NOT NULL,
-    blockchain_key character varying(32),
     icon_url character varying,
     min_deposit_amount numeric(32,16) DEFAULT 0.0 NOT NULL,
     withdraw_limit_72h numeric(32,16) DEFAULT 0.0 NOT NULL,
@@ -301,7 +299,8 @@ CREATE TABLE public.currencies (
     description text,
     homepage character varying,
     price numeric(32,16) DEFAULT 1.0 NOT NULL,
-    parent_id character varying
+    parent_id character varying,
+    blockchain_id bigint NOT NULL
 );
 
 
@@ -342,8 +341,9 @@ CREATE TABLE public.deposits (
     from_addresses text,
     transfer_type integer,
     data json,
-    intention_id character varying,
-    error json
+    invoice_id character varying,
+    error json,
+    blockchain_id bigint NOT NULL
 );
 
 
@@ -731,8 +731,10 @@ CREATE TABLE public.payment_addresses (
     secret_encrypted character varying(255),
     details_encrypted character varying(1024),
     member_id bigint,
-    wallet_id bigint,
-    remote boolean DEFAULT false NOT NULL
+    remote boolean DEFAULT false NOT NULL,
+    blockchain_id bigint NOT NULL,
+    balances jsonb DEFAULT '{}'::jsonb,
+    balances_updated_at timestamp without time zone
 );
 
 
@@ -1005,7 +1007,11 @@ CREATE TABLE public.transactions (
     status character varying,
     options json,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    fee numeric(32,16),
+    fee_currency_id character varying,
+    deposit_id bigint,
+    deposit_spread_id bigint
 );
 
 
@@ -1073,14 +1079,13 @@ CREATE TABLE public.wallets (
     status character varying(32),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    gateway character varying(20) DEFAULT ''::character varying NOT NULL,
     max_balance numeric(32,16) DEFAULT 0 NOT NULL,
-    blockchain_key character varying(32),
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
+    enable_invoice boolean DEFAULT false NOT NULL,
     plain_settings json,
-    enable_invoice boolean DEFAULT false NOT NULL
+    blockchain_id bigint NOT NULL
 );
 
 
@@ -1113,9 +1118,9 @@ CREATE TABLE public.whitelisted_smart_contracts (
     description character varying,
     address character varying NOT NULL,
     state character varying(30) NOT NULL,
-    blockchain_key character varying(32) NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    blockchain_id bigint NOT NULL
 );
 
 
@@ -1729,10 +1734,10 @@ CREATE INDEX index_blockchains_on_status ON public.blockchains USING btree (stat
 
 
 --
--- Name: index_currencies_on_parent_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_currencies_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_currencies_on_parent_id ON public.currencies USING btree (parent_id);
+CREATE INDEX index_currencies_on_blockchain_id ON public.currencies USING btree (blockchain_id);
 
 
 --
@@ -1799,6 +1804,20 @@ CREATE INDEX index_deposits_on_aasm_state_and_member_id_and_currency_id ON publi
 
 
 --
+-- Name: index_deposits_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_deposits_on_blockchain_id ON public.deposits USING btree (blockchain_id);
+
+
+--
+-- Name: index_deposits_on_blockchain_id_and_txid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_deposits_on_blockchain_id_and_txid ON public.deposits USING btree (blockchain_id, txid) WHERE (txid IS NOT NULL);
+
+
+--
 -- Name: index_deposits_on_currency_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1806,10 +1825,10 @@ CREATE INDEX index_deposits_on_currency_id ON public.deposits USING btree (curre
 
 
 --
--- Name: index_deposits_on_currency_id_and_intention_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_deposits_on_currency_id_and_invoice_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_deposits_on_currency_id_and_intention_id ON public.deposits USING btree (currency_id, intention_id) WHERE (intention_id IS NOT NULL);
+CREATE UNIQUE INDEX index_deposits_on_currency_id_and_invoice_id ON public.deposits USING btree (currency_id, invoice_id) WHERE (invoice_id IS NOT NULL);
 
 
 --
@@ -2030,17 +2049,24 @@ CREATE UNIQUE INDEX index_orders_on_uuid ON public.orders USING btree (uuid);
 
 
 --
+-- Name: index_payment_addresses_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_payment_addresses_on_blockchain_id ON public.payment_addresses USING btree (blockchain_id);
+
+
+--
+-- Name: index_payment_addresses_on_blockchain_id_and_address; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_payment_addresses_on_blockchain_id_and_address ON public.payment_addresses USING btree (blockchain_id, address) WHERE (address IS NOT NULL);
+
+
+--
 -- Name: index_payment_addresses_on_member_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_payment_addresses_on_member_id ON public.payment_addresses USING btree (member_id);
-
-
---
--- Name: index_payment_addresses_on_wallet_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_payment_addresses_on_wallet_id ON public.payment_addresses USING btree (wallet_id);
 
 
 --
@@ -2184,6 +2210,13 @@ CREATE UNIQUE INDEX index_transfers_on_key ON public.transfers USING btree (key)
 
 
 --
+-- Name: index_wallets_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_wallets_on_blockchain_id ON public.wallets USING btree (blockchain_id);
+
+
+--
 -- Name: index_wallets_on_kind; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2198,10 +2231,17 @@ CREATE INDEX index_wallets_on_status ON public.wallets USING btree (status);
 
 
 --
--- Name: index_whitelisted_smart_contracts_on_address_and_blockchain_key; Type: INDEX; Schema: public; Owner: -
+-- Name: index_whitelisted_smart_contracts_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_whitelisted_smart_contracts_on_address_and_blockchain_key ON public.whitelisted_smart_contracts USING btree (address, blockchain_key);
+CREATE INDEX index_whitelisted_smart_contracts_on_blockchain_id ON public.whitelisted_smart_contracts USING btree (blockchain_id);
+
+
+--
+-- Name: index_whitelisted_smart_contracts_on_blockchain_id_and_address; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_whitelisted_smart_contracts_on_blockchain_id_and_address ON public.whitelisted_smart_contracts USING btree (blockchain_id, address);
 
 
 --
@@ -2265,6 +2305,14 @@ CREATE INDEX index_withdraws_on_tid ON public.withdraws USING btree (tid);
 --
 
 CREATE INDEX index_withdraws_on_type ON public.withdraws USING btree (type);
+
+
+--
+-- Name: currencies fk_rails_a7ead03da9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.currencies
+    ADD CONSTRAINT fk_rails_a7ead03da9 FOREIGN KEY (parent_id) REFERENCES public.currencies(id);
 
 
 --
@@ -2451,6 +2499,20 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210714075758'),
 ('20210721093857'),
 ('20210722125206'),
-('20210727101029');
+('20210727101029'),
+('20210803084921'),
+('20210803134756'),
+('20210806110309'),
+('20210806112457'),
+('20210806131828'),
+('20210806144136'),
+('20210806151717'),
+('20210806185439'),
+('20210807083117'),
+('20210807083309'),
+('20210807084947'),
+('20210809090917'),
+('20210810202928'),
+('20210811181035');
 
 

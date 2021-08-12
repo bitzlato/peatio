@@ -62,9 +62,6 @@ module API
           requires :kind,
                    values: { value: ::Wallet.kind.values, message: 'management.wallet.invalid_kind' },
                    desc: -> { API::V2::Management::Entities::Wallet.documentation[:kind][:desc] }
-          requires :gateway,
-                   values: { value: -> { ::Wallet.gateways.map(&:to_s) }, message: 'management.wallet.gateway_doesnt_exist' },
-                   desc: -> { API::V2::Management::Entities::Wallet.documentation[:gateway][:desc] }
           optional :settings, type: JSON,
                               default: {},
                               desc: -> { 'Wallet settings (uri, secret)' } do
@@ -106,9 +103,6 @@ module API
           optional :kind,
                    values: { value: ::Wallet.kind.values, message: 'management.wallet.invalid_kind' },
                    desc: -> { API::V2::Management::Entities::Wallet.documentation[:kind][:desc] }
-          optional :gateway,
-                   values: { value: -> { ::Wallet.gateways.map(&:to_s) }, message: 'management.wallet.gateway_doesnt_exist' },
-                   desc: -> { API::V2::Management::Entities::Wallet.documentation[:gateway][:desc] }
           optional :currencies,
                    values: { value: ->(v) { (Array.wrap(v) - ::Currency.codes).blank? }, message: 'management.wallet.currency_doesnt_exist' },
                    types: [String, Array], coerce_with: ->(c) { Array.wrap(c) },
