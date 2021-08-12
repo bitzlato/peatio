@@ -1,6 +1,8 @@
 class EthereumGateway
   class BlockFetcher < AbstractCommand
-    def call(block_number)
+    ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+    def call(block_number, contract_addresses=[], allowed_contracts=[])
       block_json = client.json_rpc(:eth_getBlockByNumber, ["0x#{block_number.to_s(16)}", true])
 
       if block_json.blank? || block_json['transactions'].blank?
@@ -14,13 +16,12 @@ class EthereumGateway
 
           # 1. Check if the smart contract destination is in whitelist
           #    The common case is a withdraw from a known smart contract of a major exchange
-          if allowed_erc20_address? tx.fetch('to')
+          if allowed_contracts.include? normalize_address(tx.fetch('to'))
             process_tx = true
           else
             # 2. Check if the transaction is one of our currencies smart contract
-            @erc20.each do |c|
-              contract_address = normalize_address(c.dig(:options, contract_address_option))
-              next if contract_address != normalize_address(tx.fetch('to'))
+            contract_addresses.each do |c|
+              next if c.contract_address != normalize_address(tx.fetch('to'))
 
               # Check if the tx is from one of our wallets (to confirm withdrawals)
               if Wallet.withdraw.where(address: normalize_address(tx.fetch('from'))).present?

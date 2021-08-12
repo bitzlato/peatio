@@ -43,7 +43,9 @@ class EthereumGateway < AbstractGateway
   def fetch_block(block_number)
     BlockFetcher
       .new(client)
-      .call(block_number)
+      .call(block_number,
+            blockchain.currencies.tokens.pluck(:contract_address),
+            blockchain.whitelisted_smart_contracts.active)
   end
 
   def latest_block_number

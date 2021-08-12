@@ -78,6 +78,7 @@ class Currency < ApplicationRecord
   scope :fiats, -> { where(type: :fiat) }
   # This scope select all coins without parent_id, which means that they are not tokens
   scope :coins_without_tokens, -> { coins.where(parent_id: nil) }
+  scope :tokens, -> { where 'parent_id is not null and contract_address is not null' }
 
   # == Callbacks ============================================================
 
@@ -141,6 +142,10 @@ class Currency < ApplicationRecord
 
   def blockchain_key=(key)
     self.blockchain = Blockchain.find_by_key!(key)
+  end
+
+  def contract_address
+    erc20_contract_address
   end
 
   def wipe_cache
