@@ -25,7 +25,9 @@ class BlockchainService
 
     payment_addresses = PaymentAddress.where(blockchain: blockchain,
                                              address: block.transactions.map(&:to_address)).pluck(:address)
-    withdraw_txids = Withdraws::Coin.confirming.where(currency: @currencies).pluck(:txid)
+    withdraw_txids = blockchain.withdraws.confirming.pluck(:txid)
+
+    binding.pry
 
     block.select do |tx|
       if tx.to_address.in?(payment_addresses)
@@ -33,6 +35,7 @@ class BlockchainService
       elsif tx.hash.in?(withdraw_txids)
         update_or_create_withdraw tx
       end
+      binding.pry
       # TODO add blockchain
       Transaction
         .where(currency_id: tx.currency_id, txid: tx.hash)
@@ -64,7 +67,7 @@ class BlockchainService
   private
 
   def update_or_create_deposit(transaction)
-    if transaction.amount < Currency.find(transaction.currency_id).min_deposit_amount
+    if transaction.amount < transaction.amount.currency.min_deposit_amount
       # Currently we just skip tiny deposits.
       Rails.logger.info do
         "Skipped deposit with txid: #{transaction.hash} with amount: #{transaction.hash}"\
@@ -78,6 +81,7 @@ class BlockchainService
     return unless transaction.status.success?
 
     address = PaymentAddress.find_by(blockchain: blockchain, address: transaction.to_address)
+    binding.pry
     return if address.blank?
 
     # Skip deposit tx if there is tx for deposit collection process
@@ -89,6 +93,7 @@ class BlockchainService
       transaction.from_addresses = gateway.transaction_sources(transaction)
     end
 
+    binding.pry
     deposit =
       Deposits::Coin.find_or_create_by!(
         currency_id: transaction.currency_id,
@@ -96,7 +101,7 @@ class BlockchainService
         txout: transaction.txout
       ) do |d|
         d.address = transaction.to_address
-        d.amount = transaction.amount
+        d.amount = transaction.amount.to_d
         d.member = address.member
         d.from_addresses = transaction.from_addresses
         d.block_number = transaction.block_number

@@ -42,6 +42,10 @@ class Blockchain < ApplicationRecord
     super&.inquiry
   end
 
+  def service
+    @blockchain_service ||= BlockchainService.new(self)
+  end
+
   def active?
     status.active?
   end

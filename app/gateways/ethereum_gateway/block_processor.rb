@@ -1,5 +1,5 @@
 class EthereumGateway
-  class BlockFetcher < AbstractCommand
+  class BlockProcessor < AbstractCommand
     ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
     TOKEN_EVENT_IDENTIFIER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
     ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -7,6 +7,7 @@ class EthereumGateway
     FAILED = '0x0'
 
     def call(block_number,
+             withdraw_checker: ->(_a) { true },
              deposit_checker: ->(_a) { true },
              system_addresses: ->(_a) { true },
              amount_converter: ->(amount, _contract_address) { amount },
@@ -14,7 +15,6 @@ class EthereumGateway
              allowed_contracts: [])
       @contract_addresses = contract_addresses
       @amount_converter = amount_converter
-      @deposit_checker = deposit_checker
       block_json = client.json_rpc(:eth_getBlockByNumber, ["0x#{block_number.to_s(16)}", true])
 
       return if block_json.blank? || block_json['transactions'].blank?
@@ -25,9 +25,7 @@ class EthereumGateway
         next if invalid_eth_transaction?(tx)
 
         if tx.fetch('input').hex <= 0
-          address_from = normalize_address(tx['from'])
-          address_to = normalize_address(tx['to'])
-          @transactions << build_eth_transaction(tx) if system_addresses.include?(address_from) || @deposit_checker.call(address_to)
+          @transactions << build_eth_transaction(tx)
           next
         end
 
@@ -39,9 +37,8 @@ class EthereumGateway
         #    The common case is a withdraw from a known smart contract of a major exchange (TODO)
         # 2. Check if the transaction is one of our currencies smart contract
         # 3. Check if the tx is from one of our wallets (to confirm withdrawals)
-        next unless contract_addresses.include?(contract_address) ||
-          system_addresses.include?(address_from) ||
-          @deposit_checker.call(address_to)
+        next unless contract_addresses.include?(contract_addresses) ||
+          system_addresses.include?(address_from)
 
         @transactions += build_erc20_transactions(fetch_erc20_transaction tx.fetch('hash'))
       end
@@ -85,6 +82,7 @@ class EthereumGateway
     #end
 
     def build_eth_transaction(block_txn)
+      [
         {
           hash:           normalize_txid(block_txn.fetch('hash')),
           amount:         @amount_converter.call(block_txn.fetch('value').hex),
@@ -95,6 +93,7 @@ class EthereumGateway
           # currency_id:    currency.fetch(:id),
           status:         transaction_status(block_txn)
         }
+      ]
     end
 
     def build_erc20_transactions(txn_receipt)
@@ -108,23 +107,21 @@ class EthereumGateway
         next if log.fetch('topics').blank? || log.fetch('topics')[0] != TOKEN_EVENT_IDENTIFIER
 
         contract_address = log.fetch('address')
-        next unless @contract_addresses.include? contract_address
+        next unless contract_addresses.include? contract_address
 
-        address_to = normalize_address('0x' + log.fetch('topics').last[-40..-1])
+        destination_address = normalize_address('0x' + log.fetch('topics').last[-40..-1])
 
-        next unless @deposit_checker.call(address_to)
-        binding.pry
-        formatted_txs << {
+        formatted_txs << build_erc20_transactions(
           hash:            normalize_txid(txn_receipt.fetch('transactionHash')),
           amount:          @amount_converter.call(log.fetch('data').hex, contract_address),
           from_addresses:  [normalize_address(txn_receipt['from'])],
-          to_address:      address_to,
+          to_address:      destination_address,
           txout:           log['logIndex'].to_i(16),
           block_number:    txn_receipt.fetch('blockNumber').to_i(16),
           contract_address: log.fetch('address'),
           #currency_id:     currency.fetch(:id),
           status:          transaction_status(txn_receipt)
-        }
+        )
       end
     end
 

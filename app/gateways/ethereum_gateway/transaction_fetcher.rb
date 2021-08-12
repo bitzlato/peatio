@@ -28,6 +28,15 @@ class EthereumGateway
       rescue Ethereum::Client::Error => e
         raise Peatio::Wallet::ClientError, e
       end
+
+      private
+      def fetch_erc20_transaction(tx_id)
+        Rails.logger.debug "Fetching tx receipt #{tx_id}"
+        tx = client.json_rpc(:eth_getTransactionReceipt, [tx_id])
+        return if tx.nil? || tx.fetch('to').blank?
+        tx
+      end
+
     end
   end
 end
