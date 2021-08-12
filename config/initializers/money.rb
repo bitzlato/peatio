@@ -35,30 +35,31 @@ class Money::Currency
     @parent_currency = data[:parent_currency]
     @blockchain_key = data[:blockchain_key]
     @base_factor_subunits = data[:base_factor_subunits]
-    @precesion = data[:precesion] || @base_factor_subunits
 
-    @base_factor = data[:base_factor]
+    raise "You can't set base_factor_subunits and subunit_to_unit in same time #{data}" if @base_factor_subunits && @subunit_to_unit
 
-    if blockchain_key.present?
-      unless @base_factor_subunits
-        if @base_factor
-          @base_factor_subunits = Math.log(@base_factor, 10).round
-        else
-          raise "No base_factor_subunits or currency '#{@id}'"
-        end
-      end
-      raise "No precesion or currency '#{@id}'" unless @precesion
+    # base_factor_subunits - zero's count (for example: 2)
+    # subunit_to_unit - amount of subunits (cents) in unit (dollar) (for example: 100)
+    # base_factor is alias of subunit_to_unit
 
-      @base_factor = 10 ** base_factor_subunits
-      @subunit_to_unit ||= @base_factor
+    if @base_factor_subunits.present?
+      @subunit_to_unit = 10 ** @base_factor_subunits
+    elsif @subunit_to_unit.present?
+      @base_factor_subunits = Math.log(@subunit_to_unit, 10).round
     else
-      @base_factor = 10 && @subunit_to_unit
+      raise "No subunit_to_unit or base_factor_subunits for currency '#{@id}'"
     end
+
+    @precesion = data[:precesion] || @base_factor_subunits
+  end
+
+  def base_factor
+    subunit_to_unit
   end
 
   def blockchain
     return if blockchain_key.nil?
-    @blockchain ||= Blockhain.find_by_key(blockchain_key) ||
+    @blockchain ||= Blockchain.find_by_key(blockchain_key) ||
       raise("No blockchain #{blockchain_key} is found")
   end
 
@@ -72,6 +73,7 @@ class Money::Currency
     @blockchain_key || parent_currency.try(:blockchain_key)
   end
 
+  # TODO rename from_units_to_money
   def to_money(value)
     value.to_money self
   end

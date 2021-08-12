@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_11_181035) do
+ActiveRecord::Schema.define(version: 2021_08_12_044904) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -321,9 +321,9 @@ ActiveRecord::Schema.define(version: 2021_08_11_181035) do
     t.string "details_encrypted", limit: 1024
     t.bigint "member_id"
     t.boolean "remote", default: false, null: false
-    t.bigint "blockchain_id", null: false
     t.jsonb "balances", default: {}
     t.datetime "balances_updated_at"
+    t.bigint "blockchain_id", null: false
     t.index ["blockchain_id", "address"], name: "index_payment_addresses_on_blockchain_id_and_address", unique: true, where: "(address IS NOT NULL)"
     t.index ["blockchain_id"], name: "index_payment_addresses_on_blockchain_id"
     t.index ["member_id"], name: "index_payment_addresses_on_member_id"
@@ -433,6 +433,8 @@ ActiveRecord::Schema.define(version: 2021_08_11_181035) do
     t.datetime "updated_at", null: false
     t.decimal "fee", precision: 32, scale: 16
     t.string "fee_currency_id"
+    t.bigint "deposit_id"
+    t.bigint "deposit_spread_id"
     t.index ["currency_id", "txid"], name: "index_transactions_on_currency_id_and_txid", unique: true
     t.index ["currency_id"], name: "index_transactions_on_currency_id"
     t.index ["reference_type", "reference_id"], name: "index_transactions_on_reference_type_and_reference_id"
@@ -458,8 +460,8 @@ ActiveRecord::Schema.define(version: 2021_08_11_181035) do
     t.integer "kind", null: false
     t.string "settings_encrypted", limit: 1024
     t.jsonb "balance"
-    t.json "plain_settings"
     t.boolean "enable_invoice", default: false, null: false
+    t.json "plain_settings"
     t.bigint "blockchain_id", null: false
     t.index ["blockchain_id"], name: "index_wallets_on_blockchain_id"
     t.index ["kind"], name: "index_wallets_on_kind"

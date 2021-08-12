@@ -67,7 +67,6 @@ class Currency < ApplicationRecord
             :min_withdraw_amount,
             :withdraw_limit_24h,
             :withdraw_limit_72h,
-            :precision,
             numericality: { greater_than_or_equal_to: 0 }
 
   # == Scopes ===============================================================
@@ -89,6 +88,9 @@ class Currency < ApplicationRecord
     insert_position(self)
   end
 
+  before_validation on: :create do
+    self.blockchain = money_currency.blockchain
+  end
   before_validation { self.code = code.downcase }
   before_validation { self.deposit_fee = 0 unless fiat? }
   before_validation(if: :token?) { self.blockchain ||= parent.blockchain }
@@ -105,9 +107,9 @@ class Currency < ApplicationRecord
   end
 
   before_update { update_position(self) if position_changed? }
-  delegate :key, to: :blockchain, prefix: true
 
-  delegate :base_factor, :to_money, to: :money_currency
+  delegate :key, to: :blockchain, prefix: true
+  delegate :base_factor, :precision, :to_money, to: :money_currency
 
   after_commit :wipe_cache
 

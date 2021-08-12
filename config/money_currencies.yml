@@ -13,6 +13,7 @@ eur:
   iso_numeric: '978'
   smallest_denomination: 1
   is_crypto: false
+  blockchain_key: 'bitzlato'
 
 usd:
   iso_code: USD
@@ -30,6 +31,7 @@ usd:
   iso_numeric: '840'
   smallest_denomination: 1
   is_crypto: false
+  blockchain_key: 'bitzlato'
 
 btc:
   name: Bitcoin
@@ -79,7 +81,6 @@ usdt:
   name: USTD(ERC20/P2P)
   subunit: USDT Cent
   subunit_to_unit: 100
-  base_factor_subunits: 2
   blockchain_key: 'bitzlato'
   precesion: 6
 
@@ -134,25 +135,25 @@ dai-erc20:
 
 trst:
   parent_currency: eth
-  base_factor: 1_000_000
+  subunit_to_unit: 1_000_000
   precesion: 6
 
 tom:
   parent_currency: eth
-  base_factor: 1_000_000
+  subunit_to_unit: 1_000_000
   precesion: 6
 
 ring:
   parent_currency: eth
-  base_factor: 1_000_000
+  subunit_to_unit: 1_000_000
   precesion: 6
 
 fake:
-  base_factor: 1_000_000
+  subunit_to_unit: 1_000_000
   precesion: 6
   blockchain_key: 'fake-testnet'
 
 xagm.cx:
   parent_currency: eth
-  base_factor: 1_000_000
+  subunit_to_unit: 1_000_000
   precesion: 6

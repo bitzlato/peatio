@@ -10,7 +10,6 @@ class Blockchain < ApplicationRecord
   vault_lazy_decrypt!
   vault_attribute :server
 
-  has_many :currencies
   has_many :wallets
   has_many :whitelisted_smart_contracts
   has_many :withdraws, through: :currencies
