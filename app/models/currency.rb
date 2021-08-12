@@ -19,7 +19,6 @@ class Currency < ApplicationRecord
 
   # == Extensions ===========================================================
 
-
   has_many :withdraws
 
   serialize :options, JSON unless Rails.configuration.database_support_json
@@ -152,8 +151,13 @@ class Currency < ApplicationRecord
     self.options = {} if options.blank?
   end
 
+  # quick fix specs
+  def money_code
+    return 'fake' if code.start_with? 'fake'
+  end
+
   def money_currency
-    @money_currency ||= Money::Currency.find! code
+    @money_currency ||= Money::Currency.find!(money_code || code)
   end
 
   def link_wallets

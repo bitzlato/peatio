@@ -23,7 +23,8 @@ class BlockchainService
   def process_block(block_number)
     block = gateway.fetch_block(block_number)
 
-    payment_addresses = PaymentAddress.where(blockchain: blockchain, address: block.transactions.map(&:to_address)).pluck(:address)
+    payment_addresses = PaymentAddress.where(blockchain: blockchain,
+                                             address: block.transactions.map(&:to_address)).pluck(:address)
     withdraw_txids = Withdraws::Coin.confirming.where(currency: @currencies).pluck(:txid)
 
     block.select do |tx|

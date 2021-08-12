@@ -29,8 +29,9 @@ class Withdraw < ApplicationRecord
 
   TRANSFER_TYPES = { fiat: 100, crypto: 200 }
 
-  belongs_to :currency, required: true
-  belongs_to :member, required: true
+  belongs_to :blockchain, required: true, touch: false
+  belongs_to :currency, required: true, touch: false
+  belongs_to :member, required: true, touch: false
 
   # Optional beneficiary association gives ability to support both in-peatio
   # beneficiaries and managed by third party application.
@@ -39,6 +40,7 @@ class Withdraw < ApplicationRecord
   acts_as_eventable prefix: 'withdraw', on: %i[create update]
 
   after_initialize :initialize_defaults, if: :new_record?
+  before_validation { self.blockchain ||= currency.try(:blockchain) }
   before_validation(on: :create) { self.rid ||= beneficiary.rid if beneficiary.present? }
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
@@ -185,8 +187,6 @@ class Withdraw < ApplicationRecord
       transitions from: %i[processing transfering], to: :errored, after: :add_error
     end
   end
-
-  delegate :blockchain, to: :currency
 
   class << self
     def sum_query

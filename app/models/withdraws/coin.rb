@@ -5,7 +5,6 @@
 # TODO: Delete this class and update type column
 module Withdraws
   class Coin < Withdraw
-    has_one :blockchain, through: :currency
 
     before_validation if: :blockchain do
       if blockchain.supports_cash_addr_format? && rid? && CashAddr::Converter.is_valid?(rid)

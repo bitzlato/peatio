@@ -281,13 +281,13 @@ describe API::V2::Admin::Deposits, type: :request do
 
         it 'expose data about eth address' do
           api_post url, params: { currency: currency, uid: level_3_member.uid}, token: token
-          expect(response.body).to eq '{"currencies":["eth","trst"],"address":"' + address.downcase + '","state":"active"}'
+          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":"' + address.downcase + '","state":"active"}'
         end
 
         it 'pending user address state' do
           level_3_member.payment_address(blockchain).update!(address: nil)
           api_post url, params: { currency: currency, uid: level_3_member.uid}, token: token
-          expect(response.body).to eq '{"currencies":["eth","trst"],"address":null,"state":"pending"}'
+          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":null,"state":"pending"}'
         end
       end
     end

@@ -4,7 +4,7 @@
 describe Blockchain do
   context 'validations' do
 
-    subject { build(:blockchain, 'eth-mainet') }
+    subject { build(:blockchain, 'eth-rinkeby') }
 
     it 'checks valid record' do
       expect(subject).to be_valid

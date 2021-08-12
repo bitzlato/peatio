@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_12_044904) do
+ActiveRecord::Schema.define(version: 2021_08_12_065148) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -510,7 +510,9 @@ ActiveRecord::Schema.define(version: 2021_08_12_044904) do
     t.integer "transfer_type"
     t.json "metadata"
     t.string "remote_id"
+    t.bigint "blockchain_id", null: false
     t.index ["aasm_state"], name: "index_withdraws_on_aasm_state"
+    t.index ["blockchain_id"], name: "index_withdraws_on_blockchain_id"
     t.index ["currency_id", "txid"], name: "index_withdraws_on_currency_id_and_txid", unique: true
     t.index ["currency_id"], name: "index_withdraws_on_currency_id"
     t.index ["member_id"], name: "index_withdraws_on_member_id"
@@ -519,4 +521,5 @@ ActiveRecord::Schema.define(version: 2021_08_12_044904) do
   end
 
   add_foreign_key "currencies", "currencies", column: "parent_id"
+  add_foreign_key "withdraws", "blockchains"
 end
