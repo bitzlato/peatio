@@ -2,7 +2,7 @@
 # rubocop:disable Style/ClassAndModuleChildren
 class Money::Currency
   include NumericHelpers
-  attr_reader :contract_address, :parent_currency, :precesion, :base_factor_subunits
+  attr_reader :contract_address, :parent_currency, :precision, :base_factor_subunits
 
   class << self
     def find!(code)
@@ -50,7 +50,7 @@ class Money::Currency
       raise "No subunit_to_unit or base_factor_subunits for currency '#{@id}'"
     end
 
-    @precesion = data[:precesion] || @base_factor_subunits
+    @precision = data[:precision] || @base_factor_subunits
   end
 
   def base_factor
