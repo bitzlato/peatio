@@ -102,14 +102,14 @@ usdc:
   parent_currency: eth
   name: USDC(ERC20)
   base_factor_subunits: 6
-  contractor_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+  contract_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
   precision: 6
 
 usdc-erc20:
   parent_currency: eth
   name: USDC(ERC20)
   base_factor_subunits: 6
-  contractor_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+  contract_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
   precision: 6
 
 mdt-erc20:
@@ -137,15 +137,18 @@ trst:
   parent_currency: eth
   subunit_to_unit: 1_000_000
   precision: 6
+  contract_address: fake
 
 tom:
   parent_currency: eth
   subunit_to_unit: 1_000_000
+  contract_address: fake
   precision: 6
 
 ring:
   parent_currency: eth
   subunit_to_unit: 1_000_000
+  contract_address: fake
   precision: 6
 
 fake:
@@ -155,5 +158,6 @@ fake:
 
 xagm.cx:
   parent_currency: eth
+  contract_address: fake
   subunit_to_unit: 1_000_000
   precision: 6

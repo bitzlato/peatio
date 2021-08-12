@@ -50,6 +50,8 @@ class Money::Currency
       raise "No subunit_to_unit or base_factor_subunits for currency '#{@id}'"
     end
 
+    raise "No contract_address for #{@id}" if @parent_currency.present? && !@contract_address
+
     @precision = data[:precision] || @base_factor_subunits
   end
 
