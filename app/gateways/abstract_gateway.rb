@@ -11,6 +11,10 @@ class AbstractGateway
 
   attr_reader :client
 
+  def latest_block_number
+    nil
+  end
+
   def initialize(blockchain)
     @blockchain = blockchain
     @client = build_client
