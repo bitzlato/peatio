@@ -140,6 +140,10 @@ class Currency < ApplicationRecord
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
 
+  def blockchain_key=(key)
+    self.blockchain = Blockchain.find_by_key!(key)
+  end
+
   def wipe_cache
     Rails.cache.delete_matched("currencies*")
   end
