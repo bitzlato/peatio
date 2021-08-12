@@ -20,6 +20,8 @@ set :disallow_pushing, true
 
 set :db_dump_extra_opts, '--force'
 
+set :bugsnag_api_key, ENV.fetch('BUGSNAG_API_KEY')
+
 default_branch = 'master'
 current_branch = `git rev-parse --abbrev-ref HEAD`.chomp
 
