@@ -91,8 +91,6 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Bundle install
       run: bundle install
-    - name: Initialize configs
-      run: ./bin/init_config
     - name: Initialize vault
       run: ./bin/init_vault
     - name: Initialize influx db
