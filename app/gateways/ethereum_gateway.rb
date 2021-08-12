@@ -48,7 +48,7 @@ class EthereumGateway < AbstractGateway
     BlockFetcher
       .new(client)
       .call(block_number,
-            blockchain.currencies.tokens.pluck(:contract_address),
+            blockchain.currencies.tokens.map(&:contract_address),
             blockchain.whitelisted_smart_contracts.active)
   end
 

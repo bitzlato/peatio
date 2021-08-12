@@ -78,7 +78,7 @@ class Currency < ApplicationRecord
   scope :fiats, -> { where(type: :fiat) }
   # This scope select all coins without parent_id, which means that they are not tokens
   scope :coins_without_tokens, -> { coins.where(parent_id: nil) }
-  scope :tokens, -> { where 'parent_id is not null and contract_address is not null' }
+  scope :tokens, -> { coins.where.not(parent_id: nil) }
 
   # == Callbacks ============================================================
 
