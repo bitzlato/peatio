@@ -4,7 +4,6 @@
 FactoryBot.define do
   factory :currency do
     trait :usd do
-      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
       code                 { 'usd' }
       name                 { 'US Dollar' }
       type                 { 'fiat' }
@@ -14,10 +13,10 @@ FactoryBot.define do
       withdraw_fee         { 0.1 }
       position             { 1 }
       options              { {} }
+      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
     end
 
     trait :eur do
-      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
       code                 { 'eur' }
       name                 { 'Euro' }
       type                 { 'fiat' }
@@ -28,10 +27,10 @@ FactoryBot.define do
       position             { 2 }
       visible              { false }
       options              { {} }
+      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
     end
 
     trait :btc do
-      association :blockchain, 'btc-testnet', strategy: :find_or_create, key: 'btc-testnet'
       code                 { 'btc' }
       name                 { 'Bitcoin' }
       type                 { 'coin' }
@@ -40,6 +39,22 @@ FactoryBot.define do
       withdraw_fee         { 0.01 }
       position             { 3 }
       options              { {} }
+      association :blockchain, 'btc-testnet', strategy: :find_or_create, key: 'btc-testnet'
+    end
+
+    trait :bnb do
+      code                 { 'bnb' }
+      name                 { 'bnb' }
+      type                 { 'coin' }
+      withdraw_limit_24h   { 0.1 }
+      withdraw_limit_72h   { 1 }
+      withdraw_fee         { 0.025 }
+      position             { 4 }
+      options do
+        { gas_limit: 21_000,
+          gas_price: 1_000_000_000 }
+      end
+      association :blockchain, 'bsc-testnet', strategy: :find_or_create, key: 'bsc-testnet'
     end
 
     trait :eth do
@@ -91,8 +106,22 @@ FactoryBot.define do
       end
     end
 
+    trait :usdt do
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
+      code                 { 'usdt' }
+      name                 { 'usdt' }
+      type                 { 'coin' }
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
+      withdraw_limit_24h   { 100 }
+      withdraw_limit_72h   { 1000 }
+      withdraw_fee         { 0.025 }
+      position             { 6 }
+      options \
+        { { erc20_contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e' } }
+    end
+
     trait :ring do
-      association :blockchain, 'eth-kovan', strategy: :find_or_create, key: 'eth-kovan'
+      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                 { 'ring' }
       name                 { 'Evolution Land Global Token' }
       type                 { 'coin' }
@@ -105,8 +134,32 @@ FactoryBot.define do
         { { erc20_contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e' } }
     end
 
+    trait :mdt do
+      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
+      code                { 'mdt' }
+      name                { 'mdt' }
+      type                { 'coin' }
+      withdraw_limit_24h  { 100 }
+      withdraw_limit_72h  { 1000 }
+      withdraw_fee        { 0.02 }
+      position            { 7 }
+      options             { {} }
+    end
+
+    trait :mcr do
+      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
+      code                { 'mcr' }
+      name                { 'mcr' }
+      type                { 'coin' }
+      withdraw_limit_24h  { 100 }
+      withdraw_limit_72h  { 1000 }
+      withdraw_fee        { 0.02 }
+      position            { 7 }
+      options             { {} }
+    end
+
     trait :fake do
-      association :blockchain, 'fake-testnet', strategy: :find_or_create, key: 'fake-testnet'
+      association :blockchain, :dummy, strategy: :find_or_create, key: 'dummy'
       code                { 'fake' }
       name                { 'Fake Coin' }
       type                { 'coin' }

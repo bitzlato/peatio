@@ -33,6 +33,7 @@ class Account < ApplicationRecord
   end
 
   def payment_address
+    binding.pry if blockchain.nil?
     member.payment_address blockchain
   end
 

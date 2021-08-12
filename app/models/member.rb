@@ -90,6 +90,7 @@ class Member < ApplicationRecord
   end
 
   def payment_address(blockchain, remote = false)
+    raise "no blockchain" if blockchain.nil?
     pa = PaymentAddress.find_by(member: self, blockchain: blockchain, remote: remote)
 
     if pa.blank?

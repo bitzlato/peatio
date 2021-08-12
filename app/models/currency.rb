@@ -88,9 +88,6 @@ class Currency < ApplicationRecord
     insert_position(self)
   end
 
-  before_validation on: :create do
-    self.blockchain = money_currency.blockchain
-  end
   before_validation { self.code = code.downcase }
   before_validation { self.deposit_fee = 0 unless fiat? }
   before_validation(if: :token?) { self.blockchain ||= parent.blockchain }

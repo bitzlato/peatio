@@ -1,6 +1,6 @@
 module GatewayConcern
   extend ActiveSupport::Concern
-  AVAILABLE_GATEWAYS = [BitzlatoGateway, DummyGateway, BitcoinGateway, EthereumGateway].map(&:to_s)
+  AVAILABLE_GATEWAYS = [BinanceGateway, BitzlatoGateway, DummyGateway, BitcoinGateway, EthereumGateway].map(&:to_s)
 
   included do
     validates :gateway_klass, presence: true, inclusion: { in: AVAILABLE_GATEWAYS }
