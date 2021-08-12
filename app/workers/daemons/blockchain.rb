@@ -17,6 +17,10 @@ module Workers
           @thread ||= Thread.new do
             bc_service = BlockchainService.new(@blockchain)
 
+            unless @blockchain.gateway.enable_block_fetching?
+              Rails.logger.info { "Skip #{blockchain.name} block processing." }
+              return
+            end
             Rails.logger.info { "Processing #{@blockchain.name} blocks." }
 
             loop do

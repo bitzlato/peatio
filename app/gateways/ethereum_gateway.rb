@@ -1,6 +1,10 @@
 class EthereumGateway < AbstractGateway
   IDLE_TIMEOUT = 1
 
+  def enable_block_fetching?
+    true
+  end
+
   def load_balance(address, currency)
     BalanceLoader
       .new(client)

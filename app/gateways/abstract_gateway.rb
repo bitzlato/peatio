@@ -20,6 +20,10 @@ class AbstractGateway
     @client = build_client
   end
 
+  def enable_block_fetching?
+    false
+  end
+
   def supports_cash_addr_format?
     false
   end
