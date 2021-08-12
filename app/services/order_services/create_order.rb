@@ -22,7 +22,7 @@ module OrderServices
     def build_order(market:,side:, ord_type:, price:, volume:)
       order_subclass = side == 'sell' ? OrderAsk : OrderBid
 
-      order_subclass.new(
+      order = order_subclass.new(
         state:         ::Order::PENDING,
         member:        @member,
         ask:           market.base_unit,
@@ -33,27 +33,35 @@ module OrderServices
         price:         price,
         volume:        volume,
         origin_volume: volume,
+        locked:        locked_value,
+        origin_locked: locked_value,
       )
+
+      locked_value = if order.ord_type == 'market' && order.side == 'buy'
+        [
+          order.compute_locked * OrderBid::LOCKING_BUFFER_FACTOR,
+          order.ember_balance
+        ].min
+      else
+        order.compute_locked
+      end
+
+      order.assign_attributes(
+        locked: locked_value,
+        origin_locked: locked_value
+      )
+
+      order
     end
 
     def submit_order!(order)
-      order.locked = order.origin_locked = if order.ord_type == 'market' && order.side == 'buy'
-                                             [
-                                               order.compute_locked * OrderBid::LOCKING_BUFFER_FACTOR,
-                                               order.ember_balance
-                                             ].min
-                                           else
-                                             order.compute_locked
-                                           end
-
       raise(
         ::Account::AccountError,
         "member_balance > locked = #{order.member_balance}>#{order.locked}"
-      ) unless order.member_balance >= order.locked
+      ) if order.member_balance < order.locked
 
       return order.trigger_third_party_creation unless order.market.engine.peatio_engine?
 
-      order.save!
       AMQP::Queue.enqueue(:order_processor,
                           { action: 'submit', order: order.attributes },
                           { persistent: true })
