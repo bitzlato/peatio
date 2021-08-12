@@ -29,7 +29,7 @@ module Workers
       rescue StandardError => e
         raise e if is_db_connection_error?(e)
 
-        report_exception(e)
+        report_exception(e, true, payload)
       end
     end
   end
