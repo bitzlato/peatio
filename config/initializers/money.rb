@@ -60,7 +60,6 @@ class Money::Currency
   end
 
   def blockchain
-    raise 'откуда используется?'
     return if blockchain_key.nil?
     @blockchain ||= Blockchain.find_by_key(blockchain_key) ||
       raise("No blockchain #{blockchain_key} is found")

@@ -12,10 +12,6 @@ class BlockchainService
     @whitelisted_addresses = blockchain.whitelisted_smart_contracts.active
   end
 
-  def self.processed_block_numbers
-    (Transaction.where.not(block_number: nil).pluck(:block_number) + Withdraw.where.not(block_number: nil).pluck(:block_number) + Deposit.where.not(block_number: nil).pluck(:block_number)).uniq
-  end
-
   def latest_block_number
     @latest_block_number ||= gateway.latest_block_number
   end
@@ -29,12 +25,14 @@ class BlockchainService
 
     transactions = gateway.fetch_block_transactions(block_number)
 
+    withdraw_scope =  blockchain.withdraws.where.not(txid: nil).where(block_number: [nil,block_number])
     if Rails.env.production?
-      withdraw_txids = blockchain.withdraws.confirming.pluck(:txid)
+      withdraw_txids = withdraw_scope.confirming.pluck(:txid)
     else
       # Check it all, we want debug in development
-      withdraw_txids = blockchain.withdraws.pluck(:txid)
+      withdraw_txids = withdraw_scope.pluck(:txid)
     end
+    binding.pry
 
     transactions.each do |tx|
       if tx.to_address.in?(blockchain.deposit_addresses)

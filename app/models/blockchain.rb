@@ -45,6 +45,12 @@ class Blockchain < ApplicationRecord
     super&.inquiry
   end
 
+  def processed_block_numbers
+    (transactions.where.not(block_number: nil).pluck(:block_number) +
+     withdraws.where.not(block_number: nil).pluck(:block_number) +
+     deposits.where.not(block_number: nil).pluck(:block_number)).uniq
+  end
+
   def service
     @blockchain_service ||= BlockchainService.new(self)
   end
