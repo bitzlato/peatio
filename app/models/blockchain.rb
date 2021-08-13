@@ -51,6 +51,15 @@ class Blockchain < ApplicationRecord
      deposits.where.not(block_number: nil).pluck(:block_number)).uniq
   end
 
+  def follow_txids
+    if Rails.env.production?
+      withdraws.confirming.pluck(:txid)
+    else
+      # Check it all. We want to debug it in development
+      withdraws.pluck(:txid)
+    end
+  end
+
   def service
     @blockchain_service ||= BlockchainService.new(self)
   end

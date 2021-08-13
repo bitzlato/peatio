@@ -71,7 +71,10 @@ class EthereumGateway < AbstractGateway
   def fetch_block_transactions(block_number)
     BlockFetcher
       .new(client)
-      .call(block_number, contract_addresses: blockchain.contract_addresses, follow_addresses: blockchain.follow_addresses)
+      .call(block_number,
+            contract_addresses: blockchain.contract_addresses,
+            follow_addresses: blockchain.follow_addresses,
+            follow_txids: blockchain.follow_txids)
       .map(&method(:hash_to_transaction))
   end
 

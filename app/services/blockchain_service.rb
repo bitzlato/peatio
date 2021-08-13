@@ -32,7 +32,6 @@ class BlockchainService
       # Check it all, we want debug in development
       withdraw_txids = withdraw_scope.pluck(:txid)
     end
-    binding.pry
 
     transactions.each do |tx|
       if tx.to_address.in?(blockchain.deposit_addresses)

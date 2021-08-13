@@ -3,11 +3,12 @@ class EthereumGateway
     ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
     TOKEN_EVENT_IDENTIFIER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 
-    def call(block_number, contract_addresses: [], follow_addresses: [])
+    def call(block_number, contract_addresses: [], follow_addresses: [], follow_txids: [])
       # logger.info("Fetch block #{block_number} with contract_addresses: #{contract_addresses} and follow_addresses #{follow_addresses}")
       logger.debug("Fetch block #{block_number}")
       @contract_addresses = contract_addresses
       @follow_addresses = follow_addresses
+      @follow_txids = follow_txids
       block_json = client.json_rpc(:eth_getBlockByNumber, ["0x#{block_number.to_s(16)}", true])
 
       return if block_json.blank? || block_json['transactions'].blank?
@@ -19,7 +20,9 @@ class EthereumGateway
         if tx.fetch('input').hex <= 0
           from_address = normalize_address(tx['from'])
           to_address = normalize_address(tx['to'])
-          transactions << build_eth_transaction(tx) if follow_addresses.include?(from_address) || follow_addresses.include?(to_address)
+          transactions << build_eth_transaction(tx) if follow_addresses.include?(from_address) ||
+            follow_addresses.include?(to_address) ||
+            follow_txids.include?(normalize_txid(tx.fetch('hash')))
         else
           contract_address = normalize_address tx.fetch('to')
           from_address = normalize_address tx.fetch('from')
@@ -42,7 +45,7 @@ class EthereumGateway
 
     private
 
-    attr_reader :follow_addresses, :contract_addresses
+    attr_reader :follow_addresses, :contract_addresses, :follow_txids
 
     # The usual case is a function call transfer(address,uint256) with footprint 'a9059cbb'
     def get_address_from_input(input)
@@ -103,9 +106,10 @@ class EthereumGateway
         to_address = normalize_address('0x' + log.fetch('topics').last[-40..-1])
         from_address = normalize_address(txn_receipt['from'])
 
-        next unless follow_addresses.include?(to_address) || follow_addresses.include?(from_address)
+        txid = normalize_txid(txn_receipt.fetch('transactionHash'))
+        next unless follow_addresses.include?(to_address) || follow_addresses.include?(from_address) || follow_txids.include?(txid)
         formatted_txs << {
-          hash:            normalize_txid(txn_receipt.fetch('transactionHash')),
+          hash:            txid,
           amount:          log.fetch('data').hex,
           from_addresses:  [from_address],
           to_address:      to_address,
