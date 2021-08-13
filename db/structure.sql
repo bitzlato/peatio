@@ -300,7 +300,8 @@ CREATE TABLE public.currencies (
     homepage character varying,
     price numeric(32,16) DEFAULT 1.0 NOT NULL,
     parent_id character varying,
-    blockchain_id bigint NOT NULL
+    blockchain_id bigint NOT NULL,
+    enable_invoice boolean DEFAULT false NOT NULL
 );
 
 
@@ -311,10 +312,44 @@ CREATE TABLE public.currencies (
 CREATE TABLE public.currencies_wallets (
     currency_id character varying,
     wallet_id bigint,
-    enable_deposit boolean DEFAULT true NOT NULL,
-    enable_withdraw boolean DEFAULT true NOT NULL,
     use_in_balance boolean DEFAULT true NOT NULL
 );
+
+
+--
+-- Name: deposit_spreads; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.deposit_spreads (
+    id bigint NOT NULL,
+    deposit_id bigint,
+    to_address character varying NOT NULL,
+    txid character varying NOT NULL,
+    currency_id character varying NOT NULL,
+    amount numeric NOT NULL,
+    meta jsonb DEFAULT '[]'::jsonb NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: deposit_spreads_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.deposit_spreads_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: deposit_spreads_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.deposit_spreads_id_seq OWNED BY public.deposit_spreads.id;
 
 
 --
@@ -337,13 +372,13 @@ CREATE TABLE public.deposits (
     tid public.citext NOT NULL,
     address character varying(95),
     block_number integer,
-    spread character varying(1000),
     from_addresses text,
     transfer_type integer,
     data json,
     invoice_id character varying,
     error json,
-    blockchain_id bigint NOT NULL
+    blockchain_id bigint NOT NULL,
+    collection_state character varying DEFAULT 'pending'::character varying NOT NULL
 );
 
 
@@ -1256,6 +1291,13 @@ ALTER TABLE ONLY public.blockchains ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: deposit_spreads id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deposit_spreads ALTER COLUMN id SET DEFAULT nextval('public.deposit_spreads_id_seq'::regclass);
+
+
+--
 -- Name: deposits id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1470,6 +1512,14 @@ ALTER TABLE ONLY public.blockchains
 
 ALTER TABLE ONLY public.currencies
     ADD CONSTRAINT currencies_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: deposit_spreads deposit_spreads_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deposit_spreads
+    ADD CONSTRAINT deposit_spreads_pkey PRIMARY KEY (id);
 
 
 --
@@ -1795,6 +1845,20 @@ CREATE UNIQUE INDEX index_currency_ids_and_member_id ON public.stats_member_pnl 
 --
 
 CREATE UNIQUE INDEX index_currency_ids_and_type ON public.stats_member_pnl_idx USING btree (pnl_currency_id, currency_id, reference_type);
+
+
+--
+-- Name: index_deposit_spreads_on_deposit_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_deposit_spreads_on_deposit_id ON public.deposit_spreads USING btree (deposit_id);
+
+
+--
+-- Name: index_deposit_spreads_on_txid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_deposit_spreads_on_txid ON public.deposit_spreads USING btree (txid);
 
 
 --
@@ -2332,6 +2396,14 @@ ALTER TABLE ONLY public.currencies
 
 
 --
+-- Name: deposit_spreads fk_rails_eef3f5807b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deposit_spreads
+    ADD CONSTRAINT fk_rails_eef3f5807b FOREIGN KEY (deposit_id) REFERENCES public.deposits(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -2531,6 +2603,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210810202928'),
 ('20210811181035'),
 ('20210812044904'),
-('20210812065148');
+('20210812065148'),
+('20210812130229'),
+('20210813085546'),
+('20210813093012'),
+('20210813125626'),
+('20210813150209');
 
 

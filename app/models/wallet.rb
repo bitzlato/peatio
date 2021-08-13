@@ -59,8 +59,8 @@ class Wallet < ApplicationRecord
   scope :fee,      -> { where(kind: kinds(fee: true, values: true)) }
   scope :withdraw, -> { where(kind: kinds(withdraw: true, values: true)) }
   scope :with_currency, ->(currency) { joins(:currencies).where(currencies: { id: currency }) }
-  scope :with_withdraw_currency, ->(currency) { with_currency(currency).joins(:currency_wallets).where(currencies_wallets: { enable_withdraw: true }) }
-  scope :with_deposit_currency, ->(currency) { with_currency(currency).joins(:currency_wallets).where(currencies_wallets: { enable_deposit: true }) }
+  scope :with_withdraw_currency, ->(currency) { with_currency(currency).where(currencies: { withdrawal_enabled: true }) }
+  scope :with_deposit_currency, ->(currency) { with_currency(currency).where(currencies: { deposit_enabled: true }) }
   scope :ordered, -> { order(kind: :asc) }
 
   delegate :key, to: :blockchain, prefix: true
