@@ -27,15 +27,12 @@ class BlockchainService
                                              address: block.transactions.map(&:to_address)).pluck(:address)
     withdraw_txids = blockchain.withdraws.confirming.pluck(:txid)
 
-    binding.pry
-
     block.select do |tx|
       if tx.to_address.in?(payment_addresses)
         update_or_create_deposit tx
       elsif tx.hash.in?(withdraw_txids)
         update_or_create_withdraw tx
       end
-      binding.pry
       # TODO add blockchain
       Transaction
         .where(currency_id: tx.currency_id, txid: tx.hash)
@@ -81,7 +78,6 @@ class BlockchainService
     return unless transaction.status.success?
 
     address = PaymentAddress.find_by(blockchain: blockchain, address: transaction.to_address)
-    binding.pry
     return if address.blank?
 
     # Skip deposit tx if there is tx for deposit collection process
@@ -93,7 +89,6 @@ class BlockchainService
       transaction.from_addresses = gateway.transaction_sources(transaction)
     end
 
-    binding.pry
     deposit =
       Deposits::Coin.find_or_create_by!(
         currency_id: transaction.currency_id,

@@ -113,7 +113,6 @@ class EthereumGateway
         address_to = normalize_address('0x' + log.fetch('topics').last[-40..-1])
 
         next unless @deposit_checker.call(address_to)
-        binding.pry
         formatted_txs << {
           hash:            normalize_txid(txn_receipt.fetch('transactionHash')),
           amount:          @amount_converter.call(log.fetch('data').hex, contract_address),
