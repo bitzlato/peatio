@@ -13,6 +13,8 @@ class CreateDepositSpreads < ActiveRecord::Migration[5.2]
 
     add_index :deposit_spreads, :txid, unique: true
 
+    Deposit.serialize :spread, Array
+
     Deposit.where.not(spread: [nil, []]).find_each do |deposit|
       # => [{:to_address=>"0x7075bbbd9bd3e8ce47a0e7ad23170d94c772dfa1",
       #:amount=>"0.017962999969361",
