@@ -100,3 +100,5 @@ set :dotenv_hook_commands, %w{rails ruby}
 Capistrano::DSL.stages.each do |stage|
   after stage, 'dotenv:hook'
 end
+
+after 'db:pull', 'db:nullify_encrypted_columns'
