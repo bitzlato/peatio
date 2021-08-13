@@ -5,7 +5,6 @@ class Deposit < ApplicationRecord
   STATES = %i[submitted invoiced canceled rejected accepted skipped dispatched].freeze
 
   serialize :error, JSON unless Rails.configuration.database_support_json
-  serialize :spread, Array
   serialize :from_addresses, Array
   serialize :data, JSON unless Rails.configuration.database_support_json
 
@@ -192,18 +191,14 @@ class Deposit < ApplicationRecord
     end
   end
 
-  def spread_between_wallets!
-    return false if spread.present?
-    update! spread: DepositSpreader.call(self).map(&:as_json)
-  end
+  #def spread_between_wallets!
+    #return false if spread.present?
+    #update! spread: DepositSpreader.call(self).map(&:as_json)
+  #end
 
-  def spread_transactions_ids
-    spread.map { |s| s.fetch(:hash) }
-  end
-
-  def spread
-    super.map(&:symbolize_keys)
-  end
+  #def spread_transactions_ids
+    #spread.map { |s| s.fetch(:hash) }
+  #end
 
   def account
     member&.get_account(currency)
