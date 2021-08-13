@@ -10,8 +10,8 @@ module API
           ActiveRecord::RecordInvalid => 'market.order.invalid_volume_or_price'
         }
 
-        service = ::OrderServices::CreateOrder.new(current_user.id, attrs)
-        order = service.perform
+        service = ::OrderServices::CreateOrder.new(current_user)
+        order = service.perform(attrs)
         order
         
         # TODO: Make more specific error message for ActiveRecord::RecordInvalid.
