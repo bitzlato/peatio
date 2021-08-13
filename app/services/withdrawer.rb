@@ -23,6 +23,7 @@ class Withdrawer
   end
 
   def call(withdraw)
+    raise 'turned off' if Rails.env.production?
     withdraw.lock!.transfer!
 
     withdraw.with_lock do

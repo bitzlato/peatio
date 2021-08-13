@@ -77,8 +77,12 @@ class Money::Currency
   end
 
   # TODO rename from_units_to_money
-  def to_money(value)
-    value.to_money self
+  def to_money_from_decimal(value)
+    value.to_money(self).freeze
+  end
+
+  def to_money_from_units(value)
+    Money.new(value, self).freeze
   end
 
   def convert_to_base_unit(value)

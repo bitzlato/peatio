@@ -2,55 +2,47 @@ class EthereumGateway
   class BlockFetcher < AbstractCommand
     ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
     TOKEN_EVENT_IDENTIFIER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
-    ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-    SUCCESS = '0x1'
-    FAILED = '0x0'
 
-    def call(block_number,
-             deposit_checker: ->(_a) { true },
-             system_addresses: ->(_a) { true },
-             amount_converter: ->(amount, _contract_address) { amount },
-             contract_addresses: [],
-             allowed_contracts: [])
+    def call(block_number, contract_addresses: [], follow_addresses: [])
+      # logger.info("Fetch block #{block_number} with contract_addresses: #{contract_addresses} and follow_addresses #{follow_addresses}")
+      logger.debug("Fetch block #{block_number}")
       @contract_addresses = contract_addresses
-      @amount_converter = amount_converter
-      @deposit_checker = deposit_checker
+      @follow_addresses = follow_addresses
       block_json = client.json_rpc(:eth_getBlockByNumber, ["0x#{block_number.to_s(16)}", true])
 
       return if block_json.blank? || block_json['transactions'].blank?
 
-      @transactions = []
-
+      transactions = []
       block_json.fetch('transactions').each do |tx|
         next if invalid_eth_transaction?(tx)
 
         if tx.fetch('input').hex <= 0
-          address_from = normalize_address(tx['from'])
-          address_to = normalize_address(tx['to'])
-          @transactions << build_eth_transaction(tx) if system_addresses.include?(address_from) || @deposit_checker.call(address_to)
-          next
+          from_address = normalize_address(tx['from'])
+          to_address = normalize_address(tx['to'])
+          transactions << build_eth_transaction(tx) if follow_addresses.include?(from_address) || follow_addresses.include?(to_address)
+        else
+          contract_address = normalize_address tx.fetch('to')
+          from_address = normalize_address tx.fetch('from')
+          to_address = get_address_from_input tx.fetch('input')
+
+          # 1. Check if the smart contract destination is in whitelist
+          #    The common case is a withdraw from a known smart contract of a major exchange (TODO)
+          # 2. Check if the transaction is one of our currencies smart contract
+          # 3. Check if the tx is from one of our wallets (to confirm withdrawals)
+          next unless contract_addresses.include?(contract_address) || follow_addresses.include?(from_address) || follow_addresses.include?(to_address)
+
+          transactions += build_erc20_transactions(fetch_erc20_transaction tx.fetch('hash'))
         end
-
-        contract_address = normalize_address tx.fetch('to')
-        address_from = normalize_address tx.fetch('from')
-        address_to = get_address_from_input tx.fetch('input')
-
-        # 1. Check if the smart contract destination is in whitelist
-        #    The common case is a withdraw from a known smart contract of a major exchange (TODO)
-        # 2. Check if the transaction is one of our currencies smart contract
-        # 3. Check if the tx is from one of our wallets (to confirm withdrawals)
-        next unless contract_addresses.include?(contract_address) ||
-          system_addresses.include?(address_from) ||
-          @deposit_checker.call(address_to)
-
-        @transactions += build_erc20_transactions(fetch_erc20_transaction tx.fetch('hash'))
       end
-      @transactions
+      logger.info("Fetching block #{block_number} finished with #{transactions.count} transactions catched")
+      transactions.compact
     rescue Ethereum::Client::Error => e
       raise Peatio::Blockchain::ClientError, e
     end
 
     private
+
+    attr_reader :follow_addresses, :contract_addresses
 
     # The usual case is a function call transfer(address,uint256) with footprint 'a9059cbb'
     def get_address_from_input(input)
@@ -65,7 +57,7 @@ class EthereumGateway
     end
 
     def fetch_erc20_transaction(tx_id)
-      Rails.logger.debug "Fetching tx receipt #{tx_id}"
+      # logger.debug "Fetching tx receipt #{tx_id}"
       tx = client.json_rpc(:eth_getTransactionReceipt, [tx_id])
       return if tx.nil? || tx.fetch('to').blank?
       tx
@@ -87,66 +79,54 @@ class EthereumGateway
     def build_eth_transaction(block_txn)
         {
           hash:           normalize_txid(block_txn.fetch('hash')),
-          amount:         @amount_converter.call(block_txn.fetch('value').hex),
+          amount:         block_txn.fetch('value').hex,
           from_addresses: [normalize_address(block_txn['from'])],
           to_address:     normalize_address(block_txn['to']),
           txout:          block_txn.fetch('transactionIndex').to_i(16),
           block_number:   block_txn.fetch('blockNumber').to_i(16),
-          # currency_id:    currency.fetch(:id),
-          status:         transaction_status(block_txn)
+          status:         transaction_status(block_txn),
+          contract_address: nil
         }
     end
 
     def build_erc20_transactions(txn_receipt)
       # Build invalid transaction for failed withdrawals
-      if transaction_status(txn_receipt) == 'fail' && txn_receipt.fetch('logs').blank?
-        return build_invalid_erc20_transaction(txn_receipt)
-      end
+      return [build_invalid_erc20_transaction(txn_receipt)] if transaction_status(txn_receipt) == 'failed' && txn_receipt.fetch('logs').blank?
 
       txn_receipt.fetch('logs').each_with_object([]) do |log, formatted_txs|
         next if log['blockHash'].blank? && log['blockNumber'].blank?
         next if log.fetch('topics').blank? || log.fetch('topics')[0] != TOKEN_EVENT_IDENTIFIER
 
         contract_address = log.fetch('address')
-        next unless @contract_addresses.include? contract_address
+        next unless contract_addresses.include? contract_address
 
-        address_to = normalize_address('0x' + log.fetch('topics').last[-40..-1])
+        to_address = normalize_address('0x' + log.fetch('topics').last[-40..-1])
+        from_address = normalize_address(txn_receipt['from'])
 
-        next unless @deposit_checker.call(address_to)
+        next unless follow_addresses.include?(to_address) || follow_addresses.include?(from_address)
         formatted_txs << {
           hash:            normalize_txid(txn_receipt.fetch('transactionHash')),
-          amount:          @amount_converter.call(log.fetch('data').hex, contract_address),
-          from_addresses:  [normalize_address(txn_receipt['from'])],
-          to_address:      address_to,
+          amount:          log.fetch('data').hex,
+          from_addresses:  [from_address],
+          to_address:      to_address,
           txout:           log['logIndex'].to_i(16),
           block_number:    txn_receipt.fetch('blockNumber').to_i(16),
           contract_address: log.fetch('address'),
-          #currency_id:     currency.fetch(:id),
           status:          transaction_status(txn_receipt)
         }
       end
     end
 
     def build_invalid_erc20_transaction(txn_receipt)
-      return unless contract_address.include? txn_receipt.fetch('to')
+      return unless contract_addresses.include? txn_receipt.fetch('to')
 
       {
         hash:         normalize_txid(txn_receipt.fetch('transactionHash')),
         block_number: txn_receipt.fetch('blockNumber').to_i(16),
         contract_address: txn_receipt.fetch('to'),
-        #currency_id:  currency.fetch(:id),
+        amount: 0,
         status:       transaction_status(txn_receipt),
       }
-    end
-
-    def transaction_status(block_txn)
-      if block_txn.dig('status') == SUCCESS
-        'success'
-      elsif block_txn.dig('status') == FAILED
-        'failed'
-      else
-        'pending'
-      end
     end
   end
 end

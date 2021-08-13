@@ -1,5 +1,8 @@
 class Peatio::Transaction
   alias_attribute :id, :hash
+  alias_attribute :txid, :hash
+  attr_accessor :contract_address
+
   def from_address=(value)
     self.from_addresses = [value]
   end

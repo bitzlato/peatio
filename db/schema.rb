@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_12_130229) do
+ActiveRecord::Schema.define(version: 2021_08_13_093012) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -132,6 +132,19 @@ ActiveRecord::Schema.define(version: 2021_08_12_130229) do
     t.index ["wallet_id"], name: "index_currencies_wallets_on_wallet_id"
   end
 
+  create_table "deposit_spreads", force: :cascade do |t|
+    t.bigint "deposit_id"
+    t.string "to_address", null: false
+    t.string "txid", null: false
+    t.string "currency_id", null: false
+    t.decimal "amount", null: false
+    t.jsonb "meta", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deposit_id"], name: "index_deposit_spreads_on_deposit_id"
+    t.index ["txid"], name: "index_deposit_spreads_on_txid", unique: true
+  end
+
   create_table "deposits", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
@@ -147,13 +160,13 @@ ActiveRecord::Schema.define(version: 2021_08_12_130229) do
     t.citext "tid", null: false
     t.string "address", limit: 95
     t.integer "block_number"
-    t.string "spread", limit: 1000
     t.text "from_addresses"
     t.integer "transfer_type"
     t.json "data"
     t.string "invoice_id"
     t.json "error"
     t.bigint "blockchain_id", null: false
+    t.string "collection_state", default: "pending", null: false
     t.index ["aasm_state", "member_id", "currency_id"], name: "index_deposits_on_aasm_state_and_member_id_and_currency_id"
     t.index ["blockchain_id", "txid"], name: "index_deposits_on_blockchain_id_and_txid", unique: true, where: "(txid IS NOT NULL)"
     t.index ["blockchain_id"], name: "index_deposits_on_blockchain_id"
@@ -522,5 +535,6 @@ ActiveRecord::Schema.define(version: 2021_08_12_130229) do
   end
 
   add_foreign_key "currencies", "currencies", column: "parent_id"
+  add_foreign_key "deposit_spreads", "deposits"
   add_foreign_key "withdraws", "blockchains"
 end

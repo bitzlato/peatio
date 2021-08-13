@@ -20,6 +20,8 @@ class Currency < ApplicationRecord
   # == Extensions ===========================================================
 
   has_many :withdraws
+  has_many :deposits
+  has_many :transactions
 
   serialize :options, JSON unless Rails.configuration.database_support_json
 
@@ -106,7 +108,7 @@ class Currency < ApplicationRecord
   before_update { update_position(self) if position_changed? }
 
   delegate :key, to: :blockchain, prefix: true
-  delegate :base_factor, :precision, :to_money, to: :money_currency
+  delegate :base_factor, :precision, :to_money_from_decimal, :to_money_from_units, to: :money_currency
 
   after_commit :wipe_cache
 
@@ -213,6 +215,14 @@ class Currency < ApplicationRecord
                                   base_factor:           base_factor,
                                   min_collection_amount: min_collection_amount,
                                   options:               opt)
+  end
+
+  def min_deposit_amount_money
+    money_currency.to_money_from_decimal min_deposit_amount
+  end
+
+  def min_withdraw_amount_money
+    money_currency.to_money_from_decimal min_withdraw_amount
   end
 
   def dependent_markets

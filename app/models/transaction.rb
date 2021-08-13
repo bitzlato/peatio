@@ -1,7 +1,10 @@
 class Transaction < ApplicationRecord
   # == Constants ============================================================
 
-  STATUSES = %w[pending succeed].freeze
+  PENDING_STATUS = 'pending'
+  SUCCESS_STATUS = 'succeed'
+  FAIL_STATUS = 'failed'
+  STATUSES = [PENDING_STATUS, SUCCESS_STATUS, FAIL_STATUS].freeze
 
   alias_attribute :hash, :txid
 

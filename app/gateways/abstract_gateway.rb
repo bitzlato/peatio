@@ -40,7 +40,7 @@ class AbstractGateway
     self.class.name
   end
 
-  def fetch_block(block_number)
+  def fetch_block_transactions(block_number)
     raise "not implemented #{self.class}"
   end
 

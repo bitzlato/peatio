@@ -1,6 +1,8 @@
 class EthereumGateway
   class AbstractCommand
     include NumericHelpers
+    STATUS_SUCCESS = '0x1'
+    STATUS_FAILED = '0x0'
 
     attr_reader :client
 
@@ -9,6 +11,20 @@ class EthereumGateway
     end
 
     private
+
+    def transaction_status(block_txn)
+      if block_txn.dig('status') == STATUS_SUCCESS
+        Transaction::SUCCESS_STATUS
+      elsif block_txn.dig('status') == STATUS_FAILED
+        Transaction::FAIL_STATUS
+      else
+        Transaction::PENDING_STATUS
+      end
+    end
+
+    def logger
+      Rails.logger
+    end
 
     def normalize_address(address)
       address.downcase

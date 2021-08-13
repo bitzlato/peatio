@@ -14,6 +14,9 @@ class Blockchain < ApplicationRecord
   has_many :whitelisted_smart_contracts
   has_many :withdraws
   has_many :currencies
+  has_many :payment_addresses
+  has_many :transactions, through: :currencies
+  has_many :deposits, through: :currencies
 
   validates :key, :name, presence: true, uniqueness: true
   validates :status, inclusion: { in: %w[active disabled] }
@@ -44,6 +47,28 @@ class Blockchain < ApplicationRecord
 
   def service
     @blockchain_service ||= BlockchainService.new(self)
+  end
+
+  def find_money_currency(contract_address=nil)
+    currencies.map(&:money_currency)
+      .find { |mc| mc.contract_address.presence == contract_address.presence } ||
+      raise("No found currency for '#{contract_address || :empty}' contract address in blockchain #{self}")
+  end
+
+  def wallets_addresses
+    @wallets_addresses ||= wallets.where.not(address: nil).pluck(:address)
+  end
+
+  def deposit_addresses
+    @deposit_addresses ||= payment_addresses.where.not(address: nil).pluck(:address)
+  end
+
+  def follow_addresses
+    @follow_addresses ||= wallets_addresses + deposit_addresses
+  end
+
+  def contract_addresses
+    @contract_addresses ||= currencies.tokens.map(&:contract_address)
   end
 
   def active?

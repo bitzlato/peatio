@@ -264,7 +264,7 @@ class Withdraw < ApplicationRecord
   end
 
   def money_amount
-    currency.money_currency.to_money amount
+    currency.money_currency.to_money_from_decimal amount
   end
 
   private

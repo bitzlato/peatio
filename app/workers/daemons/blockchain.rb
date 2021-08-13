@@ -39,8 +39,8 @@ module Workers
 
                 (from_block..bc_service.latest_block_number).each do |block_id|
                   Rails.logger.info { "Started processing #{@blockchain.key} block number #{block_id}." }
-                  block_json = bc_service.process_block(block_id)
-                  Rails.logger.info { "Fetch #{block_json.transactions.count} transactions in block number #{block_id}." }
+                  transactions_count = bc_service.process_block(block_id)
+                  Rails.logger.info { "Fetch #{transactions_count} transactions in block number #{block_id}." }
                   bc_service.update_height(block_id)
                   Rails.logger.info { "Finished processing #{@blockchain.key} block number #{block_id}." }
                 end

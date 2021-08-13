@@ -19,6 +19,7 @@ class Deposit < ApplicationRecord
   belongs_to :currency, required: true, touch: false
   belongs_to :member, required: true
   belongs_to :blockchain, touch: false
+  has_many :deposit_spreads
 
   acts_as_eventable prefix: 'deposit', on: %i[create update]
 
@@ -46,6 +47,11 @@ class Deposit < ApplicationRecord
 
   delegate :key, to: :blockchain, prefix: true
 
+  aasm :collection_state, namespace: :collection, whiny_transitions: true, requires_lock: true do
+    state :pending, initial: true
+    state :processing
+    state :collected
+  end
   aasm whiny_transitions: true, requires_lock: true do
     state :submitted, initial: true
     state :invoiced
@@ -191,6 +197,10 @@ class Deposit < ApplicationRecord
     update! spread: DepositSpreader.call(self).map(&:as_json)
   end
 
+  def spread_transactions_ids
+    spread.map { |s| s.fetch(:hash) }
+  end
+
   def spread
     super.map(&:symbolize_keys)
   end
@@ -237,6 +247,15 @@ class Deposit < ApplicationRecord
   def process!
     # только для совместимости
     # TODO удалить
+  end
+
+  def money_amount
+    currency.money_currency.to_money_from_decimal amount
+  end
+
+  def money_amount=(value)
+    raise 'must be Money' unless value.is_a? Money
+    self.amount = value.to_d
   end
 
   private

@@ -68,26 +68,11 @@ class EthereumGateway < AbstractGateway
            #)
   #end
 
-  def fetch_block(block_number)
-    amount_converter = -> (amount, contract_address = nil) do
-      (
-        blockchain.
-        currencies.
-        map(&:money_currency).
-        find { |mc| mc.contract_address.presence == contract_address.presence } ||
-        raise("No found currency for #{contract_address} in blockchain #{blockchain}")
-      ).
-        to_money(amount)
-    end
+  def fetch_block_transactions(block_number)
     BlockFetcher
       .new(client)
-      .call(block_number,
-            contract_addresses: blockchain.currencies.tokens.map(&:contract_address),
-            system_addresses: blockchain.wallets.pluck(:address).compact,
-            allowed_contracts: blockchain.whitelisted_smart_contracts.active,
-            deposit_checker: -> (address) { PaymentAddress.where(address: address).present? },
-            amount_converter: amount_converter
-           )
+      .call(block_number, contract_addresses: blockchain.contract_addresses, follow_addresses: blockchain.follow_addresses)
+      .map(&method(:hash_to_transaction))
   end
 
   def latest_block_number
@@ -97,10 +82,17 @@ class EthereumGateway < AbstractGateway
   end
 
   def fetch_transaction(txid, txout = nil)
-    TransactionFetcher.new(client).call(txid, txout)
+    hash_to_transaction(
+      TransactionFetcher.new(client).call(txid, txout)
+    )
   end
 
   private
+
+  def hash_to_transaction(hash)
+    currency = blockchain.find_money_currency(hash.fetch(:contract_address))
+    Peatio::Transaction.new hash.merge(currency_id: currency.id, amount: currency.to_money_from_units(hash.fetch(:amount)))
+  end
 
   def build_client
     ::Ethereum::Client.new(blockchain.server, idle_timeout: IDLE_TIMEOUT)
