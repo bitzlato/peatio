@@ -11,7 +11,7 @@ class EthereumGateway
       @follow_txids = follow_txids
       block_json = client.json_rpc(:eth_getBlockByNumber, ["0x#{block_number.to_s(16)}", true])
 
-      return if block_json.blank? || block_json['transactions'].blank?
+      return [] if block_json.blank? || block_json['transactions'].blank?
 
       transactions = []
       block_json.fetch('transactions').each do |tx|
