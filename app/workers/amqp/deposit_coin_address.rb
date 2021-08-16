@@ -11,7 +11,7 @@ module Workers
         blockchain = Blockchain.find payload[:blockchain_id]
 
         if blockchain.native_currency.enable_invoice?
-          Rails.warn "Skip deposit coin address for invoicable blockchain #{payload}"
+          Rails.logger.warn "Skip deposit coin address for invoicable blockchain #{payload}"
           return
         end
 
