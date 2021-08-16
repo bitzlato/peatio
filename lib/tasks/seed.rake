@@ -22,10 +22,9 @@ namespace :seed do
         if currency.present?
           currency.update! hash
         else
+          hash[:base_factor] = Money::Currency.find(hash.fetch('id')).base_factor
           Currency.create!(hash)
         end
-      rescue => err
-        binding.pry
       end
     end
   end
