@@ -1,20 +1,6 @@
 describe Bitzlato::Wallet do
-  let(:uri) { 'http://127.0.0.1:8000' }
-  let(:key) {
-    {"kty":"EC","alg":"ES256","crv":"P-256",
-     "x":"wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus",
-     "y":"OL-0AqcTNoaCBVAEpDNsU1bpZA7eQ9CtGPZGmEEg5QI",
-     "d":"nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk"}
-  }
-
-  before do
-    ENV['BITZLATO_API_KEY']=key.to_json
-    ENV['BITZLATO_API_URL']=uri
-    ENV['BITZLATO_API_CLIENT_UID']='merchant_uid'
-    ENV['BITZLATO_WITHDRAW_POLLING_METHODS']='voucher,payment'
-  end
-
   let(:wallet) { Bitzlato::Wallet.new }
+  let(:uri) { ENV.fetch('BITZLATO_API_URL') }
 
   describe :requests do
     around do |example|
