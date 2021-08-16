@@ -6,11 +6,11 @@ class BitzlatoGateway < AbstractGateway
   end
 
   def load_balance(_address, currency)
-    client.load_balance(currency.id.upcase)
+    client.load_balance(currency.id)
   end
 
   def load_balances
-    client.load_balances
+    client.load_balances.transform_keys(&:downcase)
   end
 
   def poll_deposits!

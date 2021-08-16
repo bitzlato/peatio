@@ -61,6 +61,7 @@ module Bitzlato
     end
 
     def load_balance(currency_id)
+      currency_id = currency_id.upcase
       load_balances.select { |k| k.upcase==currency_id }.values.try(:first)
     end
 
