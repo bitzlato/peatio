@@ -145,7 +145,7 @@ class Wallet < ApplicationRecord
     end
   end
 
-  def current_balance_for_wallet(currency = nil)
+  def current_balance_for_gateway(currency = nil)
     if currency.present?
       blockchain.gateway.load_balance[currency.id.upcase]
     else
