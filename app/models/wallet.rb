@@ -137,7 +137,23 @@ class Wallet < ApplicationRecord
     self.blockchain = Blockchain.find_by(key: key) || raise("No blockchain with key #{key}")
   end
 
-  def current_balance(currency = nil)
+  def current_balance(currency)
+    if blockchain.gateway.is_a? BitzlatoGateway
+      current_balance_for_gateway currency
+    else
+      current_balance_for_wallet currency
+    end
+  end
+
+  def current_balance_for_wallet(currency = nil)
+    if currency.present?
+      blockchain.gateway.load_balance[currency.id.upcase]
+    else
+      blockchain.gateway.load_balance
+    end
+  end
+
+  def current_balance_for_wallet(currency = nil)
     if currency.present?
       begin
         currency = currency.money_currency unless currency.is_a? Money::Currency
