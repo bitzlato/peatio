@@ -16,7 +16,6 @@ class PaymentAddress < ApplicationRecord
   vault_attribute :secret
 
   # TODO Migrate association from wallet to blockchain and remove Wallet.deposit*
-  belongs_to :wallet
   belongs_to :member
   belongs_to :blockchain
 
