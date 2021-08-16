@@ -10,12 +10,10 @@ module Bitzlato
     WITHDRAW_METHOD = ENV.fetch('BITZLATO_WITHDRAW_METHOD', WITHDRAW_METHODS.first)
 
     def initialize
-      unless Rails.env.test?
-        @home_url= ENV.fetch('BITZLATO_API_URL')
-        @key = ENV.fetch('BITZLATO_API_KEY').yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym)
-        @uid = ENV.fetch('BITZLATO_API_CLIENT_UID').to_i
-        @logger = ENV.true?('BITZLATO_API_LOGGER')
-      end
+      @home_url= ENV.fetch('BITZLATO_API_URL')
+      @key = ENV.fetch('BITZLATO_API_KEY').yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym)
+      @uid = ENV.fetch('BITZLATO_API_CLIENT_UID').to_i
+      @logger = ENV.true?('BITZLATO_API_LOGGER')
     end
 
     def create_transaction!(transaction, options = {})
@@ -90,7 +88,7 @@ module Bitzlato
     def create_invoice!(amount: , comment:, currency_id: )
       response = client
         .post('/api/gate/v1/invoices/', {
-        cryptocurrency: currency_id,
+        cryptocurrency: currency_id.to_s.upcase,
         amount: amount,
         comment: comment
         })

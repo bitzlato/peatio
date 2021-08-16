@@ -1,4 +1,19 @@
 describe Bitzlato::Wallet do
+  let(:uri) { 'http://127.0.0.1:8000' }
+  let(:key) {
+    {"kty":"EC","alg":"ES256","crv":"P-256",
+     "x":"wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus",
+     "y":"OL-0AqcTNoaCBVAEpDNsU1bpZA7eQ9CtGPZGmEEg5QI",
+     "d":"nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk"}
+  }
+
+  before do
+    ENV['BITZLATO_API_KEY']=key.to_json
+    ENV['BITZLATO_API_URL']=uri
+    ENV['BITZLATO_API_CLIENT_UID']='merchant_uid'
+    ENV['BITZLATO_WITHDRAW_POLLING_METHODS']='voucher,payment'
+  end
+
   let(:wallet) { Bitzlato::Wallet.new }
 
   describe :requests do
@@ -6,28 +21,6 @@ describe Bitzlato::Wallet do
       WebMock.disable_net_connect!
       example.run
       WebMock.allow_net_connect!
-    end
-
-    before do
-      wallet.configure(settings)
-      ENV['BITZLATO_API_KEY']=key.to_json
-      ENV['BITZLATO_API_URL']=uri
-      ENV['BITZLATO_API_CLIENT_UID']='merchant_uid'
-      ENV['BITZLATO_WITHDRAW_POLLING_METHODS']='voucher,payment'
-    end
-
-    let(:uri) { 'http://127.0.0.1:8000' }
-    let(:key) {
-      {"kty":"EC","alg":"ES256","crv":"P-256",
-       "x":"wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus",
-       "y":"OL-0AqcTNoaCBVAEpDNsU1bpZA7eQ9CtGPZGmEEg5QI",
-       "d":"nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk"}
-    }
-
-    let(:settings) do
-      {
-        currency: { id: :btc },
-      }
     end
 
     context :poll_payments do
@@ -252,7 +245,7 @@ describe Bitzlato::Wallet do
           .with(body: {"cryptocurrency":"BTC","amount":123,"comment":"Exchange service deposit for account uid12312"}.to_json)
           .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
-        result = wallet.create_invoice!(comment: 'Exchange service deposit for account uid12312', amount: 123)
+        result = wallet.create_invoice!(comment: 'Exchange service deposit for account uid12312', amount: 123, currency_id: 'BTC')
 
         expect(result[:id]).to eq '0:21'
         expect(result[:amount]).to eq 1.1
