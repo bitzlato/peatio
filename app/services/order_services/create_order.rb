@@ -14,7 +14,7 @@ module OrderServices
       )
       submit_order!(order)
 
-      order.reload!
+      order
     end
 
     private
