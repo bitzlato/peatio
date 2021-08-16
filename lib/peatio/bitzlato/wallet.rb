@@ -77,10 +77,10 @@ module Bitzlato
         .each_with_object({}) { |record, hash| hash[record['cryptocurrency'].upcase]=record['balance'].to_d }
     end
 
-    def create_invoice!(amount: , comment:)
+    def create_invoice!(amount: , comment:, currency_id: )
       response = client
         .post('/api/gate/v1/invoices/', {
-        cryptocurrency: currency_id.to_s.upcase,
+        cryptocurrency: currency_id,
         amount: amount,
         comment: comment
         })
@@ -155,16 +155,6 @@ module Bitzlato
           w.currency = voucher.dig('cryptocurrency', 'code').downcase
         end
       end
-    end
-
-    def currency
-      @settings.fetch(:currency) do
-       raise Peatio::Wallet::MissingSettingError, :currency
-      end.slice(:id)
-    end
-
-    def currency_id
-      currency.fetch(:id)
     end
 
     def generate_id id

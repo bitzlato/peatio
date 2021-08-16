@@ -69,7 +69,8 @@ class BitzlatoGateway < AbstractGateway
       raise "Depost has wrong state #{deposit.aasm_state}. Must be submitted" unless deposit.submitted?
       invoice = client.create_invoice!(
         amount: deposit.amount,
-        comment: I18n.t('deposit_comment', account_id: deposit.member.uid, deposit_id: deposit.id, email: deposit.member.email)
+        comment: I18n.t('deposit_comment', account_id: deposit.member.uid, deposit_id: deposit.id, email: deposit.member.email),
+        currency_id: deposit.currency_id.to_s.upcase,
       )
       deposit.update!(
         data: invoice.slice(:links, :expires_at),
