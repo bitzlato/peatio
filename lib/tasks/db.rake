@@ -3,6 +3,7 @@
 namespace :db do
   desc 'Nullify Peatio encrypted columns'
   task nullify_encrypted_columns: %i[check_protected_environments environment] do
+    raise "Can't be executed in production" if Rails.env.production?
     Beneficiary.update_all(data_encrypted: nil)
     Blockchain.update_all(server_encrypted: nil)
     Engine.update_all(key_encrypted: nil, secret_encrypted: nil, data_encrypted: nil)

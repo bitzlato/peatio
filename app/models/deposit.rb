@@ -133,7 +133,7 @@ class Deposit < ApplicationRecord
     #end
 
     event :dispatch do
-      transitions from: %i[accepted], to: :dispatched
+      transitions from: %i[errored accepted], to: :dispatched
       after do
         if Peatio::App.config.deposit_funds_locked
           account.unlock_funds(amount)
