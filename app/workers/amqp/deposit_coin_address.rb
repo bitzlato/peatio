@@ -15,6 +15,8 @@ module Workers
           return
         end
 
+        return unless blockchain.implements? :create_address!
+
         member.payment_address(blockchain).tap do |pa|
           pa.with_lock do
             return if pa.address.present?
