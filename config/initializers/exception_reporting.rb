@@ -33,6 +33,7 @@ def report_exception_to_screen(exception)
 end
 
 def report_exception_to_ets(exception, meta = {})
+  return if Rails.env.test? || Rails.env.development?
   Bugsnag.notify exception do |b|
     b.meta_data = meta
   end if defined?(Bugsnag)

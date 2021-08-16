@@ -25,7 +25,8 @@ module Workers
           return
         end
 
-        Withdrawer.new(withdraw, @logger).call withdraw
+        raise "turned off" if Rails.env.production?
+        Withdrawer.new(wallet, @logger).call withdraw
       rescue AASM::InvalidTransition => err
         @logger.error id: payload[:id], message: err.message
         report_exception err

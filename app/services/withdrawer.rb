@@ -24,6 +24,7 @@ class Withdrawer
 
   def call(withdraw)
     raise 'turned off' if Rails.env.production?
+
     withdraw.lock!.transfer!
 
     withdraw.with_lock do
@@ -39,16 +40,19 @@ class Withdrawer
 
       transaction = push_transaction_to_blockchain! withdraw
 
-      # TODO create withdrawal transaction from blockchain service
-      #Transaction.create!(
-        #from_address: transaction.from_address,
-        #to_address: transaction.to_address,
-        #reference: withdraw,
-        #currency: withdraw.currency,
-        #amount: withdraw.currency.to_money(transaction.amount),
-        #options: transaction.options,
-      #)
-      #
+      logger.warn id: withdraw.id,
+        txid: transaction.id,
+        transcation: transaction,
+        message: 'Blockchain transcation created'
+
+      Transaction.create!(
+        from_address: transaction.from_address,
+        to_address: transaction.to_address,
+        reference: withdraw,
+        currency: withdraw.currency,
+        amount: transaction.amount,
+        options: transaction.options,
+      ) unless Rails.env.test?
 
       withdraw.update!(
         metadata: (withdraw.metadata.presence || {}).merge(transaction.options || {}), # Saves links and etc
@@ -84,11 +88,11 @@ class Withdrawer
   def push_transaction_to_blockchain!(withdraw)
     transaction = withdraw.blockchain.gateway.
       create_transaction!(
-        from_address: wallet.address,
-        to_address: withdraw.to_address,
-        amount: withdraw.money_amount,
-        contract_address: withdraw.money_amount.currency.contract_address,
-        secret: wallet.secret,
+        from_address:     wallet.address,
+        to_address:       withdraw.to_address,
+        amount:           withdraw.money_amount,
+        contract_address: withdraw.currency.contract_address,
+        secret:           wallet.secret,
     ) || raise("No transaction returned for withdraw (#{withdraw.id})")
 
     raise "transaction.from_address (#{transaction.from_address})<> wallet.address (#{wallet.address})" unless transaction.from_address == wallet.address

@@ -23,7 +23,7 @@ describe Withdrawer do
     end
     context 'succesful withdraw' do
       let(:transaction) do
-        Peatio::Transaction.new(amount: withdraw.amount,
+        Peatio::Transaction.new(amount: withdraw.money_amount,
                                 from_address: wallet.address,
                                 to_address: withdraw.to_address,
                                 hash: SecureRandom.hex(5))

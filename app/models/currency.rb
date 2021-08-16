@@ -45,6 +45,10 @@ class Currency < ApplicationRecord
   belongs_to :parent, class_name: 'Currency'
 
   # == Validations ==========================================================
+  #
+  before_validation on: :create do
+    self.base_factor = money_currency.try(:base_factor)
+  end
 
   validate on: :create do
     if ENV['MAX_CURRENCIES'].present? && Currency.count >= ENV['MAX_CURRENCIES'].to_i
