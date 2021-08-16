@@ -141,7 +141,7 @@ class Wallet < ApplicationRecord
     if currency.present?
       begin
         currency = currency.money_currency unless currency.is_a? Money::Currency
-        gateway.load_balance(uri, address, currency) || NOT_AVAILABLE
+        gateway.load_balance(address, currency) || NOT_AVAILABLE
       rescue Peatio::Wallet::ClientError
         NOT_AVAILABLE
       end

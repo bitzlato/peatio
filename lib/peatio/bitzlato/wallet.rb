@@ -9,17 +9,6 @@ module Bitzlato
     WITHDRAW_METHODS = %w[payment voucher]
     WITHDRAW_METHOD = ENV.fetch('BITZLATO_WITHDRAW_METHOD', WITHDRAW_METHODS.first)
 
-    def initialize(features = {})
-      @features = features
-      @settings = {}
-    end
-
-    def configure(settings = {})
-      # Clean client state during configure.
-      @client = nil
-      @settings = settings
-    end
-
     def create_transaction!(transaction, options = {})
       case WITHDRAW_METHOD
       when 'voucher'
@@ -64,10 +53,13 @@ module Bitzlato
       raise Peatio::Wallet::ClientError, e
     end
 
+    def load_balance(currency_id)
+      load_balances.select { |k| k.upcase==currency_id }.values.try(:first)
+    end
+
     def load_balances
       response = client
         .get('/api/p2p/wallets/v2/')
-
       # [
         #{
           #"cryptocurrency": "BTC",
@@ -82,9 +74,7 @@ module Bitzlato
           #}
         #},
       response
-        .find { |r| r['cryptocurrency'] == currency_id.upcase }
-        .fetch('balance')
-        .to_d
+        .each_with_object({}) { |record, hash| hash[record['cryptocurrency'].upcase]=record['balance'].to_d }
     end
 
     def create_invoice!(amount: , comment:)

@@ -20,6 +20,10 @@ class AbstractGateway
     @client = build_client
   end
 
+  def enable_personal_address_balance?
+    true
+  end
+
   def enable_block_fetching?
     false
   end
