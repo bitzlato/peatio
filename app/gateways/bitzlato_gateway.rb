@@ -25,7 +25,7 @@ class BitzlatoGateway < AbstractGateway
         next
       end
       deposit.with_lock do
-        next if deposit.accepted?
+        next if deposit.dispatched?
         unless deposit.amount==intention[:amount]
           Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} for #{currency.id} in blockchain #{blockchain.name}")
           next
@@ -35,6 +35,7 @@ class BitzlatoGateway < AbstractGateway
           next
         end
         deposit.accept!
+        deposit.dispatch!
 
         save_beneficiary currency, deposit, intention[:address]
       end
