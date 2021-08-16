@@ -3,13 +3,11 @@ module Jobs
     module WalletBalances
       def self.process
         Wallet.active.find_each do |w|
-          Sentry.with_scope do |scope|
-            scope.set_tags(wallet_id: w.id)
-            w.update!(balance: w.current_balance)
-          rescue StandardError => e
-            report_exception(e)
-            next
-          end
+          scope.set_tags(wallet_id: w.id)
+          w.update!(balance: w.current_balance)
+        rescue StandardError => e
+          report_exception(e, true, wallet_id: w.id)
+          next
         end
         sleep 30
       end

@@ -22,9 +22,9 @@ def report_api_error(exception, request)
   Rails.logger.info message: exception.message, path: request.path, params: request.params
 end
 
-def report_exception(exception, report_to_ets = true)
+def report_exception(exception, report_to_ets = true, meta = {})
   report_exception_to_screen(exception)
-  report_exception_to_ets(exception) if report_to_ets
+  report_exception_to_ets(exception, meta) if report_to_ets
 end
 
 def report_exception_to_screen(exception)
@@ -32,8 +32,10 @@ def report_exception_to_screen(exception)
   Rails.logger.error(exception.backtrace.join("\n")) if exception.respond_to?(:backtrace)
 end
 
-def report_exception_to_ets(exception)
-  Bugsnag.notify(exception) if defined?(Bugsnag)
+def report_exception_to_ets(exception, meta = {})
+  Bugsnag.notify exception do |b|
+    b.meta_data = meta
+  end if defined?(Bugsnag)
   Sentry.capture_exception(exception) if defined?(Sentry)
 rescue => ets_exception
   report_exception(ets_exception, false)
