@@ -9,6 +9,13 @@ module Bitzlato
     WITHDRAW_METHODS = %w[payment voucher]
     WITHDRAW_METHOD = ENV.fetch('BITZLATO_WITHDRAW_METHOD', WITHDRAW_METHODS.first)
 
+    def initialize
+      @home_url= ENV.fetch('BITZLATO_API_URL')
+      @key = ENV.fetch('BITZLATO_API_KEY').yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym)
+      @uid = ENV.fetch('BITZLATO_API_CLIENT_UID').to_i
+      @logger = ENV.true?('BITZLATO_API_LOGGER')
+    end
+
     def create_transaction!(transaction, options = {})
       case WITHDRAW_METHOD
       when 'voucher'
@@ -163,10 +170,7 @@ module Bitzlato
 
     def client
       @client ||= Bitzlato::Client
-        .new(home_url: ENV.fetch('BITZLATO_API_URL'),
-             key: ENV.fetch('BITZLATO_API_KEY').yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym),
-             uid: ENV.fetch('BITZLATO_API_CLIENT_UID').to_i,
-             logger: ENV.true?('BITZLATO_API_LOGGER'))
+        .new(home_url: @home_url, key: @key, uid: @uid, logger: @logger)
     end
   end
 end
