@@ -1,6 +1,10 @@
 require 'peatio/bitzlato/wallet'
 
 class BitzlatoGateway < AbstractGateway
+  def load_balances(address, currency_id)
+    client.load_balances
+  end
+
   def poll_deposits!
     client.poll_deposits.each do |intention|
       unless intention[:currency] == currency.id

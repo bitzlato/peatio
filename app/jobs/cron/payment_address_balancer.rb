@@ -6,14 +6,31 @@ module Jobs
         sleep 10
       end
 
-      def self.update_balance payment_address
+      def self.update_balance
+        if payment_address.blockchain.gateway.implements?(:load_balances)
+          update_balances payment_address
+        else
+          update_balance_by_currency payment_address
+        end
+      end
+
+      def self.update_balances payment_address
+        payment_address.update!(
+          balances: payment_address.blockchain.gateway.load_balances,
+          balances_updated_at: Time.zone.now
+        )
+      rescue StandardError => err
+        Rails.logger.warn "#{err} for payment_address id #{payment_address.id}"
+        report_exception err, true, payment_address_id: payment_address.id
+      end
+
+      def self.update_balance_by_currency payment_address
         balances = payment_address.currencies.each_with_object({}).each do |currency, hash|
           hash[currency.id] =
             payment_address.
-            wallet.
             blockchain.
-            blockchain_api.
-            load_balance!(payment_address.address, currency.id)
+            gateway.
+            load_balance(payment_address.address, currency)
         end
         payment_address.update!(
           balances: balances,

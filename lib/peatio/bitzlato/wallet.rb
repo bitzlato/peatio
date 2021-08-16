@@ -64,7 +64,7 @@ module Bitzlato
       raise Peatio::Wallet::ClientError, e
     end
 
-    def load_balance!
+    def load_balances
       response = client
         .get('/api/p2p/wallets/v2/')
 
