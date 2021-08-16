@@ -10,10 +10,12 @@ module Bitzlato
     WITHDRAW_METHOD = ENV.fetch('BITZLATO_WITHDRAW_METHOD', WITHDRAW_METHODS.first)
 
     def initialize
-      @home_url= ENV.fetch('BITZLATO_API_URL')
-      @key = ENV.fetch('BITZLATO_API_KEY').yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym)
-      @uid = ENV.fetch('BITZLATO_API_CLIENT_UID').to_i
-      @logger = ENV.true?('BITZLATO_API_LOGGER')
+      unless Rails.env.test?
+        @home_url= ENV.fetch('BITZLATO_API_URL')
+        @key = ENV.fetch('BITZLATO_API_KEY').yield_self { |key| key.is_a?(String) ? JSON.parse(key) : key }.transform_keys(&:to_sym)
+        @uid = ENV.fetch('BITZLATO_API_CLIENT_UID').to_i
+        @logger = ENV.true?('BITZLATO_API_LOGGER')
+      end
     end
 
     def create_transaction!(transaction, options = {})

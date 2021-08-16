@@ -52,7 +52,7 @@ class Withdrawer
         currency: withdraw.currency,
         amount: transaction.amount,
         options: transaction.options,
-      ) unless Rails.env.test?
+      )
 
       withdraw.update!(
         metadata: (withdraw.metadata.presence || {}).merge(transaction.options || {}), # Saves links and etc

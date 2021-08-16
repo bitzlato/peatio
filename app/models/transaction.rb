@@ -6,8 +6,6 @@ class Transaction < ApplicationRecord
   FAIL_STATUS = 'failed'
   STATUSES = [PENDING_STATUS, SUCCESS_STATUS, FAIL_STATUS].freeze
 
-  alias_attribute :hash, :txid
-
   # == Attributes ===========================================================
 
   # == Extensions ===========================================================

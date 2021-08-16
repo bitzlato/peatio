@@ -161,3 +161,11 @@ xagm.cx:
   contract_address: fake
   subunit_to_unit: 1_000_000
   precision: 6
+
+test:
+  name: test
+  base_factor_subunits: 8
+  is_crypto: true
+  precision:              8
+  blockchain_key: 'fake-testnet'
+

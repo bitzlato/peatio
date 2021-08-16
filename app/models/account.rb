@@ -150,22 +150,3 @@ class Account < ApplicationRecord
     balance + locked
   end
 end
-
-# == Schema Information
-# Schema version: 20201125134745
-#
-# Table name: accounts
-#
-#  id          :integer          not null, primary key
-#  member_id   :integer          not null
-#  currency_id :string(10)       not null
-#  balance     :decimal(32, 16)  default(0.0), not null
-#  locked      :decimal(32, 16)  default(0.0), not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#
-# Indexes
-#
-#  index_accounts_on_currency_id_and_member_id  (currency_id,member_id) UNIQUE
-#  index_accounts_on_member_id                  (member_id)
-#
