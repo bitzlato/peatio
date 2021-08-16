@@ -301,7 +301,8 @@ CREATE TABLE public.currencies (
     price numeric(32,16) DEFAULT 1.0 NOT NULL,
     parent_id character varying,
     blockchain_id bigint NOT NULL,
-    enable_invoice boolean DEFAULT false NOT NULL
+    enable_invoice boolean DEFAULT false NOT NULL,
+    base_factor bigint NOT NULL
 );
 
 
@@ -2608,6 +2609,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210813085546'),
 ('20210813093012'),
 ('20210813125626'),
-('20210813150209');
+('20210813150209'),
+('20210816044928');
 
 

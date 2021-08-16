@@ -108,7 +108,7 @@ class Currency < ApplicationRecord
   before_update { update_position(self) if position_changed? }
 
   delegate :key, to: :blockchain, prefix: true
-  delegate :base_factor, :precision, :to_money_from_decimal, :to_money_from_units, to: :money_currency
+  delegate :to_money_from_decimal, :to_money_from_units, to: :money_currency
 
   after_commit :wipe_cache
 
@@ -192,6 +192,9 @@ class Currency < ApplicationRecord
     self.base_factor = 10 ** n
   end
 
+  def subunits
+    Math.log(base_factor, 10).round
+  end
   # This method defines that token currency need to have parent_id and coin type
   # We use parent_id for token type to inherit some useful info such as blockchain_key from parent currency
   # For coin currency enough to have only coin type
@@ -227,9 +230,5 @@ class Currency < ApplicationRecord
 
   def dependent_markets
     Market.where('base_unit = ? OR quote_unit = ?', id, id)
-  end
-
-  def subunits
-    Math.log(base_factor, 10).round
   end
 end
