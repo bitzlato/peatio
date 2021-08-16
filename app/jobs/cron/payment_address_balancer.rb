@@ -6,7 +6,7 @@ module Jobs
         sleep 10
       end
 
-      def self.update_balance
+      def self.update_balance(payment_address)
         if payment_address.blockchain.gateway.enable_personal_address_balance?
           update_balance_by_currency payment_address
         else
