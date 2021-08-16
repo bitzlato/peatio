@@ -32,6 +32,14 @@ class Account < ApplicationRecord
     }
   end
 
+  def deposits
+    Deposit.where(member_id: member_id, currency_id: currency_id)
+  end
+
+  def withdraws
+    Withdraw.where(member_id: member_id, currency_id: currency_id)
+  end
+
   def payment_address
     member.payment_address blockchain
   end
