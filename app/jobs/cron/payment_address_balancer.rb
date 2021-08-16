@@ -7,7 +7,7 @@ module Jobs
       end
 
       def self.update_balance(payment_address)
-        if payment_address.blockchain.gateway.enable_personal_address_balance?
+        if payment_address.address.present? && payment_address.blockchain.gateway.enable_personal_address_balance?
           update_balance_by_currency payment_address
         else
           payment_address.update! balances: {}, balances_updated_at: Time.zone.now
