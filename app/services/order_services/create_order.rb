@@ -86,7 +86,10 @@ module OrderServices
       when 'limit'
         volume
       when 'market'
-        estimate_required_funds(OrderBid.get_depth(market.id)) { |_, value| v }
+        estimate_required_funds(
+          price_levels: OrderBid.get_depth(market.id),
+          volume: volume,
+        ) { |_, value| value }
       end
     end
 
@@ -96,7 +99,8 @@ module OrderServices
                 price * volume
               when 'market'
                 funds = estimate_required_funds(
-                  OrderAsk.get_depth(market.id)
+                  price_levels: OrderAsk.get_depth(market.id),
+                  volume: volume,
                 ) { |price, volume| price * volume }
                 # Maximum funds precision defined in Market::FUNDS_PRECISION.
                 funds.round(Market::FUNDS_PRECISION, BigDecimal::ROUND_UP)
@@ -111,6 +115,26 @@ module OrderServices
       currency_unit = side == 'sell' ? market.base_unit : market.quote_unit
       currency = Currency.find(currency_unit)
       @member.get_account(currency)
+    end
+
+    def estimate_required_funds(price_levels:, volume:)
+      required_funds = Account::ZERO
+      expected_volume = volume
+
+      until expected_volume.zero? || price_levels.empty?
+        level_price, level_volume = price_levels.shift
+
+        actual_volume = [expected_volume, level_volume].min
+        required_funds += yield level_price, actual_volume
+        expected_volume -= actual_volume
+      end
+
+      raise(
+        InsufficientMarketLiquidity,
+        "Insufficient market liquidity for volume = #{volume}",
+      ) if expected_volume.nonzero?
+
+      required_funds
     end
 
     def submit_order!(order)
