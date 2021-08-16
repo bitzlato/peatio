@@ -16,7 +16,7 @@ module Jobs
 
       def self.update_balances payment_address
         payment_address.update!(
-          balances: payment_address.blockchain.gateway.load_balances,
+          balances: payment_address.blockchain.gateway.load_balances.transform_keys(&:downcase),
           balances_updated_at: Time.zone.now
         )
       rescue StandardError => err
@@ -26,7 +26,7 @@ module Jobs
 
       def self.update_balance_by_currency payment_address
         balances = payment_address.currencies.each_with_object({}).each do |currency, hash|
-          hash[currency.id] =
+          hash[currency.id.downcase] =
             payment_address.
             blockchain.
             gateway.
