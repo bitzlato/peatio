@@ -312,7 +312,6 @@ class Order < ApplicationRecord
     errors.add(:price, 'must not be present') if price.present?
   end
 
-  FUSE = '0.9'.to_d
   def estimate_required_funds(price_levels)
     required_funds = Account::ZERO
     expected_volume = volume
