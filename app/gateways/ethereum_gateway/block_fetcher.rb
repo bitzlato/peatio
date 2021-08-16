@@ -1,6 +1,5 @@
 class EthereumGateway
   class BlockFetcher < AbstractCommand
-    ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
     TOKEN_EVENT_IDENTIFIER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 
     def call(block_number, contract_addresses: [], follow_addresses: [], follow_txids: [])

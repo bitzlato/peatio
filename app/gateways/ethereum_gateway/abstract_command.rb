@@ -3,6 +3,7 @@ class EthereumGateway
     include NumericHelpers
     STATUS_SUCCESS = '0x1'
     STATUS_FAILED = '0x0'
+    ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
     attr_reader :client
 
