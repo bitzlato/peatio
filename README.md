@@ -1,3 +1,5 @@
+[![Ruby](https://github.com/bitzlato/peatio/actions/workflows/ruby.yml/badge.svg)](https://github.com/bitzlato/peatio/actions/workflows/ruby.yml)
+
 ![Cryptocurrency Exchange Platform - Baseapp](https://github.com/openware/meta/raw/main/images/github_peatio.png)
 
 <h3 align="center">
