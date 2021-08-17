@@ -11,7 +11,7 @@ class EthereumGateway < AbstractGateway
     true
   end
 
-  def refuel_gas!(target_address:)
+  def refuel_gas!(target_address)
     gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
     balances = load_balances(target_address)
     tokens_transactions = balances.select { |currency, balance| currency.token? && balance > 0 }.count

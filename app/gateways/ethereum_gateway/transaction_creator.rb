@@ -67,6 +67,12 @@ class EthereumGateway
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= gas_limit.to_i * gas_price.to_i if subtract_fee
 
+      if amount.positive?
+        logger.info("Create eth transcation #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
+      else
+        logger.warn("Skip eth transcation (amount is not positive) #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
+        raise Ethereum::Client::Error.new("Amount is not positive (#{amount}) for #{from_address} to #{to_address}")
+      end
       txid = validate_txid!(
         client
         .json_rpc(:personal_sendTransaction,
@@ -101,6 +107,7 @@ class EthereumGateway
                                   gas_price:)
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
+      logger.info("Create erc20 transcation #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       txid = validate_txid!(
         client.json_rpc(:personal_sendTransaction,
                         [{
