@@ -56,7 +56,7 @@ class Wallet < ApplicationRecord
   scope :active,   -> { where(status: :active) }
   scope :active_retired, -> { where(status: %w[active retired]) }
   scope :deposit,  -> { where(kind: kinds(deposit: true, values: true)) }
-  scope :fee,      -> { where(kind: kinds(fee: true, values: true)) }
+  scope :fee,      -> { where(use_as_fee_source: true) }
   scope :withdraw, -> { where(kind: kinds(withdraw: true, values: true)) }
   scope :with_currency, ->(currency) { joins(:currencies).where(currencies: { id: currency }) }
   scope :with_withdraw_currency, ->(currency) { with_currency(currency).where(currencies: { withdrawal_enabled: true }) }

@@ -65,6 +65,7 @@ FactoryBot.define do
         CurrencyWallet.create(currency_id: 'eth', wallet_id: w.id)
       end
       association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
+      use_as_fee_source  { true }
       name               { 'Ethereum Fee Wallet' }
       address            { '0x45a31b15a2ab8a8477375b36b6f5a0c63733dce8' }
       kind               { 'fee' }
@@ -186,6 +187,7 @@ FactoryBot.define do
       after(:create) do |w|
         CurrencyWallet.create(currency_id: 'fake', wallet_id: w.id)
       end
+      use_as_fee_source  { true }
       association :blockchain, strategy: :find_or_create, key: 'fake-testnet'
       name               { 'Fake Currency Fee Wallet' }
       address            { 'fake-fee' }
