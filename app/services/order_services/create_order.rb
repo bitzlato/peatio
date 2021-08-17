@@ -5,7 +5,7 @@ module OrderServices
     end
 
     def perform(market:, side:, ord_type:, price:, volume:)
-      order = build_order(
+      order = create_order(
         market: market,
         side: side,
         ord_type: ord_type,
@@ -19,7 +19,7 @@ module OrderServices
 
     private
 
-    def build_order(market: ,side:, ord_type:, price:, volume:)
+    def create_order(market: ,side:, ord_type:, price:, volume:)
       uuid = UUID.generate
       member_account = get_member_account(side: side, market: market)
       # Single Order can produce multiple Trades
