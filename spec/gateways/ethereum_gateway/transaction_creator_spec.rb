@@ -63,47 +63,18 @@ describe ::EthereumGateway::TransactionCreator do
     example.run
     WebMock.allow_net_connect!
   end
+
   let(:result) do
     subject.call(
-      amount: amount,
-      gas_limit: gas_limit,
-      from_address: from_address,
-      to_address: to_address,
-      secret: secret,
-      subtract_fee: subtract_fee,
-      gas_factor: gas_factor,
+      amount:           amount,
+      gas_limit:        gas_limit,
+      from_address:     from_address,
+      to_address:       to_address,
+      secret:           secret,
+      subtract_fee:     subtract_fee,
+      gas_factor:       gas_factor,
       contract_address: contract_address
     )
-  end
-
-  context 'refuel_gas!' do
-    let(:value) { (EthereumGateway::TransactionCreator::DEFAULT_ETH_GAS_LIMIT * fetched_gas_price * EthereumGateway::TransactionCreator::REFUEL_GAS_FACTOR).to_i }
-    let(:transaction_gas_price) { (fetched_gas_price * EthereumGateway::TransactionCreator::REFUEL_GAS_FACTOR).to_i }
-    let(:result) do
-      subject.refuel_gas!(
-        gas_wallet_address: from_address,
-        gas_wallet_secret: secret,
-        target_address: to_address,
-        ethereum_transactions: 1,
-        tokens_transactions: 0
-      )
-    end
-    let(:result_transaction_hash) do
-      {
-        amount: 23100000000000,
-        to_address: to_address,
-        hash: txid,
-        status: 'pending',
-        from_addresses: [from_address],
-        options: {
-          'gas_factor' => EthereumGateway::TransactionCreator::REFUEL_GAS_FACTOR,
-          'gas_limit' => EthereumGateway::TransactionCreator::DEFAULT_ETH_GAS_LIMIT,
-          'gas_price' => transaction_gas_price,
-          'subtract_fee' => false
-        }
-      }
-    end
-    it { expect(result.as_json.symbolize_keys).to eq(result_transaction_hash) }
   end
 
   context 'eth transaction' do
