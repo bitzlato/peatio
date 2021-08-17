@@ -1,6 +1,6 @@
 module OrderServices
   class CreateOrder
-    def initialize(member)
+    def initialize(member:)
       @member = member
     end
 
@@ -28,12 +28,13 @@ module OrderServices
       # Market fees configuration can change we need
       # to store fees on Order creation.
       trading_fee = TradingFee.for(
-        group: member.group,
+        group: @member.group,
         market_id: market.id,
         market_type: ::Market::DEFAULT_TYPE
       )
       maker_fee = trading_fee.maker
       taker_fee = trading_fee.taker
+      locked_value, order_subclass = nil
 
       member_account.with_lock do
         if side == 'sell'
