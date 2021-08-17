@@ -13,6 +13,12 @@ class EthereumGateway
 
     private
 
+    def load_basic_balance(address)
+      client.json_rpc(:eth_getBalance, [normalize_address(address), 'latest'])
+        .hex
+        .to_i
+    end
+
     def transaction_status(block_txn)
       if block_txn.dig('status') == STATUS_SUCCESS
         Transaction::SUCCESS_STATUS
