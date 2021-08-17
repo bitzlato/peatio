@@ -24,8 +24,10 @@ class EthereumGateway < AbstractGateway
 
   def refuel_gas!(target_address)
     gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
-    balances = load_balances(target_address)
-    tokens_count = balances.select { |currency, balance| currency.token? && balance > 0 }.count
+
+    tokens_count = load_balances(target_address)
+      .select { |currency, balance| currency.token? && balance.positive? }
+      .count
     transaction = hash_to_transaction(
       EthereumGateway::GasRefueler
       .new(client)
@@ -38,10 +40,12 @@ class EthereumGateway < AbstractGateway
     )
 
     # Refueling is not required
-    return if transaction.nil?
     transaction['txid'] = transaction.delete('hash')
     reference = nil # TODO create GasRefuel record
     Transaction.create!(transaction.merge(reference: reference, options: { tokens_count: tokens_count, ethereum_balance: ethereum_balance }))
+
+  rescue EthereumGateway::GasRefueler::Error => err
+    logger.info("Canceled refueling address #{target_address} with #{err}")
   end
 
   def load_balances(address)
