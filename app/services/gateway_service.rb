@@ -1,2 +1,0 @@
-class GatewayService
-end

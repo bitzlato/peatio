@@ -17,6 +17,7 @@ class Blockchain < ApplicationRecord
   has_many :payment_addresses
   has_many :transactions, through: :currencies
   has_many :deposits, through: :currencies
+  has_many :gas_refuels
 
   validates :key, :name, presence: true, uniqueness: true
   validates :status, inclusion: { in: %w[active disabled] }
@@ -68,6 +69,10 @@ class Blockchain < ApplicationRecord
     currencies.map(&:money_currency)
       .find { |mc| mc.contract_address.presence == contract_address.presence } ||
       raise("No found currency for '#{contract_address || :empty}' contract address in blockchain #{self}")
+  end
+
+  def fee_wallet
+    wallets.active.fee.take
   end
 
   def wallets_addresses

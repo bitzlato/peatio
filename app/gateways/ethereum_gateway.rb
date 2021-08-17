@@ -1,14 +1,48 @@
+# Proxy to Ethereum.
+#
+# Converts amounts from money to ethereum base units.
+# Knows about peatio database models.
+#
 class EthereumGateway < AbstractGateway
+  include NumericHelpers
   IDLE_TIMEOUT = 1
 
   def enable_block_fetching?
     true
   end
 
+  def refuel_gas!(target_address:)
+    gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
+    balances = load_balances(target_address)
+    tokens_transactions = balances.select { |currency, balance| currency.token? && balance > 0 }.count
+    ethereum_transactions = balances.select { |currency, balance| !currency.token? && balance > 0 }.count
+    transaction = hash_to_transaction(
+      EthereumGateway::TransactionCreator
+      .new(client)
+      .refuel_gas!(
+        gas_wallet_address: gas_wallet.address,
+        gas_wallet_secret: gas_wallet.secret,
+        target_address: target_address,
+        tokens_transactions: tokens_transactions,
+        ethereum_transactions: ethereum_transactions
+      )
+    )
+    transaction['txid'] = transaction.delete('hash')
+    reference = nil # TODO GasRefuel record
+    Transaction.create!(transaction.merge(reference: reference, options: { tokens_transactions: tokens_transactions, ethereum_transactions: ethereum_transactions }))
+  end
+
+  def load_balances(address)
+    blockchain.currencies.each_with_object({}) do |currency, a|
+      a[currency] = load_balance(address, currency)
+    end
+  end
+
   def load_balance(address, currency)
     BalanceLoader
       .new(client)
-      .call(address, currency.base_factor, currency.contract_address)
+      .call(address, currency.contract_address)
+      .yield_self { |amount| convert_from_base_unit(amount, currency.base_factor) }
   end
 
   def create_address!(secret = nil)
