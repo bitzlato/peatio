@@ -3,7 +3,6 @@
 
 describe ::EthereumGateway::BalanceLoader do
   let(:address) { 'address' }
-  let(:base_factor) { currency.base_factor }
 
   let(:uri) { 'http://127.0.0.1:8545' }
   let(:client) { ::Ethereum::Client.new(uri) }
@@ -16,7 +15,7 @@ describe ::EthereumGateway::BalanceLoader do
   end
 
   context 'get eth balance' do
-    let(:currency) { Money::Currency.find('eth') }
+    let(:base_factor) { 10**18 }
     let(:response) do
       {
         jsonrpc: '2.0',
@@ -35,14 +34,14 @@ describe ::EthereumGateway::BalanceLoader do
     end
 
     it 'requests rpc eth_getBalance and get balance' do
-      result = subject.call(address, base_factor)
-      expect(result).to be_a(BigDecimal)
-      expect(result).to eq('0.51182300042'.to_d)
+      result = subject.call(address)
+      expect(result).to be_a(Integer)
+      expect(result).to eq('0.51182300042'.to_d * base_factor)
     end
   end
 
   context 'get token balance' do
-    let(:currency) { Money::Currency.find('usdt-erc20') }
+    let(:base_factor) { 10**6 }
     let(:response) do
       {
         jsonrpc: '2.0',
@@ -69,9 +68,9 @@ describe ::EthereumGateway::BalanceLoader do
     end
 
     it 'requests rpc eth_call and get token balance' do
-      result = subject.call(address, base_factor, contract_address)
-      expect(result).to be_a(BigDecimal)
-      expect(result).to eq('0.5'.to_d)
+      result = subject.call(address, contract_address)
+      expect(result).to be_a(Integer)
+      expect(result).to eq('0.5'.to_d * base_factor)
     end
   end
 end

@@ -1,14 +1,48 @@
+# Proxy to Ethereum.
+#
+# Converts amounts from money to ethereum base units.
+# Knows about peatio database models.
+#
 class EthereumGateway < AbstractGateway
+  include NumericHelpers
   IDLE_TIMEOUT = 1
 
   def enable_block_fetching?
     true
   end
 
+  def refuel_gas!(target_address)
+    gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
+    balances = load_balances(target_address)
+    tokens_transactions = balances.select { |currency, balance| currency.token? && balance > 0 }.count
+    ethereum_transactions = balances.select { |currency, balance| !currency.token? && balance > 0 }.count
+    transaction = hash_to_transaction(
+      EthereumGateway::TransactionCreator
+      .new(client)
+      .refuel_gas!(
+        gas_wallet_address: gas_wallet.address,
+        gas_wallet_secret: gas_wallet.secret,
+        target_address: target_address,
+        tokens_transactions: tokens_transactions,
+        ethereum_transactions: ethereum_transactions
+      )
+    )
+    transaction['txid'] = transaction.delete('hash')
+    reference = nil # TODO GasRefuel record
+    Transaction.create!(transaction.merge(reference: reference, options: { tokens_transactions: tokens_transactions, ethereum_transactions: ethereum_transactions }))
+  end
+
+  def load_balances(address)
+    blockchain.currencies.each_with_object({}) do |currency, a|
+      a[currency] = load_balance(address, currency)
+    end
+  end
+
   def load_balance(address, currency)
     BalanceLoader
       .new(client)
-      .call(address, currency.base_factor, currency.contract_address)
+      .call(address, currency.contract_address)
+      .yield_self { |amount| convert_from_base_unit(amount, currency.base_factor) }
   end
 
   def create_address!(secret = nil)
@@ -26,7 +60,8 @@ class EthereumGateway < AbstractGateway
 
 
     raise 'amount must be a Money' unless amount.is_a? Money
-    t = TransactionCreator
+    hash_to_transaction(
+      TransactionCreator
       .new(client)
       .call(from_address: from_address,
             to_address: to_address,
@@ -34,10 +69,7 @@ class EthereumGateway < AbstractGateway
             secret: secret,
             contract_address: contract_address,
             subtract_fee: subtract_fee)
-
-    return unless t
-    t.amount =  amount.currency.to_money_from_units(t.amount)
-    t
+    )
   end
 
   def collect_deposit!(deposit)
@@ -95,6 +127,8 @@ class EthereumGateway < AbstractGateway
   private
 
   def hash_to_transaction(hash)
+    return if hash.nil?
+    hash = hash.as_json if hash.is_a? Peatio::Transaction
     currency = blockchain.find_money_currency(hash.fetch(:contract_address))
     Peatio::Transaction.new hash.merge(currency_id: currency.id, amount: currency.to_money_from_units(hash.fetch(:amount)))
   end

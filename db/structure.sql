@@ -477,6 +477,46 @@ ALTER SEQUENCE public.expenses_id_seq OWNED BY public.expenses.id;
 
 
 --
+-- Name: gas_refuels; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.gas_refuels (
+    id bigint NOT NULL,
+    blockchain_id bigint NOT NULL,
+    txid character varying NOT NULL,
+    gas_wallet_address character varying NOT NULL,
+    target_address character varying NOT NULL,
+    amount bigint NOT NULL,
+    status character varying NOT NULL,
+    gas_price bigint NOT NULL,
+    gas_limit bigint NOT NULL,
+    gas_factor bigint DEFAULT 1 NOT NULL,
+    result_transaction jsonb,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: gas_refuels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.gas_refuels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: gas_refuels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.gas_refuels_id_seq OWNED BY public.gas_refuels.id;
+
+
+--
 -- Name: internal_transfers; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1121,7 +1161,8 @@ CREATE TABLE public.wallets (
     balance jsonb,
     enable_invoice boolean DEFAULT false NOT NULL,
     plain_settings json,
-    blockchain_id bigint NOT NULL
+    blockchain_id bigint NOT NULL,
+    use_as_fee_source boolean DEFAULT false NOT NULL
 );
 
 
@@ -1317,6 +1358,13 @@ ALTER TABLE ONLY public.engines ALTER COLUMN id SET DEFAULT nextval('public.engi
 --
 
 ALTER TABLE ONLY public.expenses ALTER COLUMN id SET DEFAULT nextval('public.expenses_id_seq'::regclass);
+
+
+--
+-- Name: gas_refuels id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.gas_refuels ALTER COLUMN id SET DEFAULT nextval('public.gas_refuels_id_seq'::regclass);
 
 
 --
@@ -1545,6 +1593,14 @@ ALTER TABLE ONLY public.engines
 
 ALTER TABLE ONLY public.expenses
     ADD CONSTRAINT expenses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: gas_refuels gas_refuels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.gas_refuels
+    ADD CONSTRAINT gas_refuels_pkey PRIMARY KEY (id);
 
 
 --
@@ -1937,6 +1993,34 @@ CREATE INDEX index_expenses_on_currency_id ON public.expenses USING btree (curre
 --
 
 CREATE INDEX index_expenses_on_reference_type_and_reference_id ON public.expenses USING btree (reference_type, reference_id);
+
+
+--
+-- Name: index_gas_refuels_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_gas_refuels_on_blockchain_id ON public.gas_refuels USING btree (blockchain_id);
+
+
+--
+-- Name: index_gas_refuels_on_blockchain_id_and_gas_wallet_address; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_gas_refuels_on_blockchain_id_and_gas_wallet_address ON public.gas_refuels USING btree (blockchain_id, gas_wallet_address);
+
+
+--
+-- Name: index_gas_refuels_on_blockchain_id_and_target_address; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_gas_refuels_on_blockchain_id_and_target_address ON public.gas_refuels USING btree (blockchain_id, target_address);
+
+
+--
+-- Name: index_gas_refuels_on_blockchain_id_and_txid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_gas_refuels_on_blockchain_id_and_txid ON public.gas_refuels USING btree (blockchain_id, txid);
 
 
 --
@@ -2389,6 +2473,14 @@ ALTER TABLE ONLY public.withdraws
 
 
 --
+-- Name: gas_refuels fk_rails_74ca68fd87; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.gas_refuels
+    ADD CONSTRAINT fk_rails_74ca68fd87 FOREIGN KEY (blockchain_id) REFERENCES public.blockchains(id);
+
+
+--
 -- Name: currencies fk_rails_a7ead03da9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2610,6 +2702,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210813093012'),
 ('20210813125626'),
 ('20210813150209'),
-('20210816044928');
+('20210816044928'),
+('20210817050515'),
+('20210817100325');
 
 

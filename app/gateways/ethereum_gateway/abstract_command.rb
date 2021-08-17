@@ -38,5 +38,18 @@ class EthereumGateway
     def valid_txid?(txid)
       txid.to_s.match?(/\A0x[A-F0-9]{64}\z/i)
     end
+
+    def validate_txid!(txid)
+      raise Ethereum::Client::Error, \
+        "Transaction from #{from_address} to #{to_address} for #{amount} failed (invalid txid #{txid})." unless valid_txid? txid
+      txid
+    end
+
+    # ex calculate_gas_price
+    def fetch_gas_price
+      client.json_rpc(:eth_gasPrice, []).to_i(16).tap do |gas_price|
+        Rails.logger.info { "Current gas price #{gas_price}" }
+      end
+    end
   end
 end

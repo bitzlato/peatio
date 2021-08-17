@@ -1,8 +1,7 @@
-require_relative 'abstract_command'
 class EthereumGateway
   class TransactionCreator < AbstractCommand
-    DEFAULT_ETH_GAS_LIMIT = Settings.eth.gas_limit
-    DEFAULT_ERC20_GAS_LIMIT = Settings.erc20.gas_limit
+    DEFAULT_ETH_GAS_LIMIT = Settings.ethereum.eth_gas_limit
+    DEFAULT_ERC20_GAS_LIMIT = Settings.ethereum.erc20_gas_limit
 
     # @param amount - in base units (cents)
     def call(amount:,
@@ -36,6 +35,27 @@ class EthereumGateway
       peatio_transaction
     end
 
+    REFUEL_GAS_FACTOR = Settings.ethereum.refuel_gas_factor
+
+    def refuel_gas!(gas_wallet_address:, gas_wallet_secret:, target_address: , ethereum_transactions: , tokens_transactions: )
+      gas_price ||= (fetch_gas_price * REFUEL_GAS_FACTOR).to_i
+      amount = 0
+
+      amount += ethereum_transactions * DEFAULT_ETH_GAS_LIMIT * gas_price
+      amount += tokens_transactions * DEFAULT_ERC20_GAS_LIMIT * gas_price
+
+      tx = create_eth_transaction!(
+          amount:       amount,
+          from_address: gas_wallet_address,
+          secret:       gas_wallet_secret,
+          to_address:   target_address,
+          subtract_fee: false,
+          gas_limit:    DEFAULT_ETH_GAS_LIMIT,
+          gas_price:    gas_price)
+      tx.options.merge! gas_factor: REFUEL_GAS_FACTOR
+      tx
+    end
+
     def create_eth_transaction!(from_address:,
                                 to_address:,
                                 amount:,
@@ -47,6 +67,12 @@ class EthereumGateway
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= gas_limit.to_i * gas_price.to_i if subtract_fee
 
+      if amount.positive?
+        logger.info("Create eth transcation #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
+      else
+        logger.warn("Skip eth transcation (amount is not positive) #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
+        raise Ethereum::Client::Error.new("Amount is not positive (#{amount}) for #{from_address} to #{to_address}")
+      end
       txid = validate_txid!(
         client
         .json_rpc(:personal_sendTransaction,
@@ -81,6 +107,7 @@ class EthereumGateway
                                   gas_price:)
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
+      logger.info("Create erc20 transcation #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       txid = validate_txid!(
         client.json_rpc(:personal_sendTransaction,
                         [{
@@ -102,21 +129,6 @@ class EthereumGateway
           gas_limit: gas_limit,
         }
       )
-    end
-
-    private
-
-    def validate_txid!(txid)
-      raise Ethereum::Client::Error, \
-        "Transaction from #{from_address} to #{to_address} for #{amount} failed (invalid txid #{txid})." unless valid_txid? txid
-      txid
-    end
-
-    # ex calculate_gas_price
-    def fetch_gas_price
-      client.json_rpc(:eth_gasPrice, []).to_i(16).tap do |gas_price|
-        Rails.logger.info { "Current gas price #{gas_price}" }
-      end
     end
   end
 end

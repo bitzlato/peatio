@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_16_044928) do
+ActiveRecord::Schema.define(version: 2021_08_17_100325) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -199,6 +199,25 @@ ActiveRecord::Schema.define(version: 2021_08_16_044928) do
     t.datetime "updated_at", null: false
     t.index ["currency_id"], name: "index_expenses_on_currency_id"
     t.index ["reference_type", "reference_id"], name: "index_expenses_on_reference_type_and_reference_id"
+  end
+
+  create_table "gas_refuels", force: :cascade do |t|
+    t.bigint "blockchain_id", null: false
+    t.string "txid", null: false
+    t.string "gas_wallet_address", null: false
+    t.string "target_address", null: false
+    t.bigint "amount", null: false
+    t.string "status", null: false
+    t.bigint "gas_price", null: false
+    t.bigint "gas_limit", null: false
+    t.bigint "gas_factor", default: 1, null: false
+    t.jsonb "result_transaction"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blockchain_id", "gas_wallet_address"], name: "index_gas_refuels_on_blockchain_id_and_gas_wallet_address"
+    t.index ["blockchain_id", "target_address"], name: "index_gas_refuels_on_blockchain_id_and_target_address"
+    t.index ["blockchain_id", "txid"], name: "index_gas_refuels_on_blockchain_id_and_txid", unique: true
+    t.index ["blockchain_id"], name: "index_gas_refuels_on_blockchain_id"
   end
 
   create_table "internal_transfers", force: :cascade do |t|
@@ -474,6 +493,7 @@ ActiveRecord::Schema.define(version: 2021_08_16_044928) do
     t.json "plain_settings"
     t.boolean "enable_invoice", default: false, null: false
     t.bigint "blockchain_id", null: false
+    t.boolean "use_as_fee_source", default: false, null: false
     t.index ["blockchain_id"], name: "index_wallets_on_blockchain_id"
     t.index ["kind"], name: "index_wallets_on_kind"
     t.index ["status"], name: "index_wallets_on_status"
@@ -535,5 +555,6 @@ ActiveRecord::Schema.define(version: 2021_08_16_044928) do
 
   add_foreign_key "currencies", "currencies", column: "parent_id"
   add_foreign_key "deposit_spreads", "deposits"
+  add_foreign_key "gas_refuels", "blockchains"
   add_foreign_key "withdraws", "blockchains"
 end
