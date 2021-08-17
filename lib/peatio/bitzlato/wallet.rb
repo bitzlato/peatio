@@ -61,6 +61,7 @@ module Bitzlato
     end
 
     def load_balance(currency_id)
+      currency_id = currency_id.upcase
       load_balances.select { |k| k.upcase==currency_id }.values.try(:first)
     end
 
@@ -87,7 +88,7 @@ module Bitzlato
     def create_invoice!(amount: , comment:, currency_id: )
       response = client
         .post('/api/gate/v1/invoices/', {
-        cryptocurrency: currency_id,
+        cryptocurrency: currency_id.to_s.upcase,
         amount: amount,
         comment: comment
         })

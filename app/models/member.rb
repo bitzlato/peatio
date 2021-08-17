@@ -206,26 +206,3 @@ class Member < ApplicationRecord
     end
   end
 end
-
-# == Schema Information
-# Schema version: 20210721093857
-#
-# Table name: members
-#
-#  id         :bigint           not null, primary key
-#  uid        :string(32)       not null
-#  email      :string(255)
-#  level      :integer          not null
-#  role       :string(16)       not null
-#  group      :string(32)       default("vip-0"), not null
-#  state      :string(16)       not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  username   :string(255)
-#
-# Indexes
-#
-#  index_members_on_email     (email) UNIQUE
-#  index_members_on_uid       (uid) UNIQUE
-#  index_members_on_username  (username) UNIQUE
-#

@@ -23,19 +23,21 @@ class EthereumGateway < AbstractGateway
                           secret:,
                           contract_address: nil,
                           subtract_fee: false)
-    if amount.is_a? Money
-      amount = amount.base_units
-    elsif !amount.is_a? Integer
-      raise "amount (#{amount} #{amount.class}) must be an Integer (base units)"
-    end
-    TransactionCreator
+
+
+    raise 'amount must be a Money' unless amount.is_a? Money
+    t = TransactionCreator
       .new(client)
       .call(from_address: from_address,
             to_address: to_address,
-            amount: amount,
+            amount: amount.base_units,
             secret: secret,
             contract_address: contract_address,
             subtract_fee: subtract_fee)
+
+    return unless t
+    t.amount =  amount.currency.to_money_from_units(t.amount)
+    t
   end
 
   def collect_deposit!(deposit)

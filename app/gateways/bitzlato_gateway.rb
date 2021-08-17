@@ -6,28 +6,24 @@ class BitzlatoGateway < AbstractGateway
   end
 
   def load_balance(_address, currency)
-    client.load_balance(currency.id.upcase)
+    client.load_balance(currency.id)
   end
 
   def load_balances
-    client.load_balances
+    client.load_balances.transform_keys(&:downcase)
   end
 
   def poll_deposits!
     client.poll_deposits.each do |intention|
-      unless intention[:currency] == currency.id
-        Rails.logger.debug("Intention has wrong currency #{intention[:currency]}<>#{currency.id}")
-        next
-      end
       deposit = Deposit.find_by(currency_id: intention[:currency], invoice_id: intention[:id])
       if deposit.nil?
-        Rails.logger.warn("No such deposit intention ##{intention[:id]} for #{currency.id} in blockchain #{blockchain.name}")
+        Rails.logger.warn("No such deposit intention ##{intention[:id]} in blockchain #{blockchain.name}")
         next
       end
       deposit.with_lock do
         next if deposit.dispatched?
         unless deposit.amount==intention[:amount]
-          Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} for #{currency.id} in blockchain #{blockchain.name}")
+          Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} in blockchain #{blockchain.name}")
           next
         end
         unless deposit.invoiced? || deposit.submitted?
@@ -37,7 +33,7 @@ class BitzlatoGateway < AbstractGateway
         deposit.accept!
         deposit.dispatch!
 
-        save_beneficiary currency, deposit, intention[:address]
+        save_beneficiary deposit, intention[:address]
       end
     end
   end
@@ -84,7 +80,7 @@ class BitzlatoGateway < AbstractGateway
   private
 
   # Save beneficiary for future withdraws
-  def save_beneficiary(currency, deposit, address)
+  def save_beneficiary(deposit, address)
     unless address.present?
       Rails.logger.warn("Deposit #{deposit.id} has no address to save beneficiaries")
       return

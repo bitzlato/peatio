@@ -97,7 +97,7 @@ class BlockchainService
 
     # Fetch transaction from a blockchain that has `pending` status.
     transaction = gateway.fetch_transaction(transaction.txid, transaction.txout) if transaction.status.pending?
-    return unless transaction.status.success?
+    return unless transaction.status.succeed?
 
     # Skip deposit tx if there is tx for deposit collection process
     # TODO: select only pending transactions

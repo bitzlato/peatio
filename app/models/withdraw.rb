@@ -244,6 +244,10 @@ class Withdraw < ApplicationRecord
     'N/A'
   end
 
+  def find_appropriate_wallet
+    blockchain.wallets.with_withdraw_currency(currency).take
+  end
+
   def completed?
     aasm_state.in?(COMPLETED_STATES.map(&:to_s))
   end
