@@ -11,25 +11,37 @@ class EthereumGateway < AbstractGateway
     true
   end
 
+  # Collect all tokens and coins from from_address to to_address
+  def collect!(from_address:, to_address:)
+    raise 'not implemented'
+
+    refuel_gas! from_address
+
+    # 1. Check transaction status in blockchain or transactions network.
+    # 2. Create transactions from from_address to to_address for all existen coins
+
+  end
+
   def refuel_gas!(target_address)
     gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
     balances = load_balances(target_address)
-    tokens_transactions = balances.select { |currency, balance| currency.token? && balance > 0 }.count
-    ethereum_transactions = balances.select { |currency, balance| !currency.token? && balance > 0 }.count
+    tokens_count = balances.select { |currency, balance| currency.token? && balance > 0 }.count
     transaction = hash_to_transaction(
-      EthereumGateway::TransactionCreator
+      EthereumGateway::GasRefueler
       .new(client)
-      .refuel_gas!(
+      .call(
         gas_wallet_address: gas_wallet.address,
         gas_wallet_secret: gas_wallet.secret,
         target_address: target_address,
-        tokens_transactions: tokens_transactions,
-        ethereum_transactions: ethereum_transactions
+        tokens_count: tokens_count,
       )
     )
+
+    # Refueling is not required
+    return if transaction.nil?
     transaction['txid'] = transaction.delete('hash')
-    reference = nil # TODO GasRefuel record
-    Transaction.create!(transaction.merge(reference: reference, options: { tokens_transactions: tokens_transactions, ethereum_transactions: ethereum_transactions }))
+    reference = nil # TODO create GasRefuel record
+    Transaction.create!(transaction.merge(reference: reference, options: { tokens_count: tokens_count, ethereum_balance: ethereum_balance }))
   end
 
   def load_balances(address)

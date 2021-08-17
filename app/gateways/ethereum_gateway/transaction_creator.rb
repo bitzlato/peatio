@@ -35,27 +35,6 @@ class EthereumGateway
       peatio_transaction
     end
 
-    REFUEL_GAS_FACTOR = Settings.ethereum.refuel_gas_factor
-
-    def refuel_gas!(gas_wallet_address:, gas_wallet_secret:, target_address: , ethereum_transactions: , tokens_transactions: )
-      gas_price ||= (fetch_gas_price * REFUEL_GAS_FACTOR).to_i
-      amount = 0
-
-      amount += ethereum_transactions * DEFAULT_ETH_GAS_LIMIT * gas_price
-      amount += tokens_transactions * DEFAULT_ERC20_GAS_LIMIT * gas_price
-
-      tx = create_eth_transaction!(
-          amount:       amount,
-          from_address: gas_wallet_address,
-          secret:       gas_wallet_secret,
-          to_address:   target_address,
-          subtract_fee: false,
-          gas_limit:    DEFAULT_ETH_GAS_LIMIT,
-          gas_price:    gas_price)
-      tx.options.merge! gas_factor: REFUEL_GAS_FACTOR
-      tx
-    end
-
     def create_eth_transaction!(from_address:,
                                 to_address:,
                                 amount:,
@@ -68,9 +47,9 @@ class EthereumGateway
       amount -= gas_limit.to_i * gas_price.to_i if subtract_fee
 
       if amount.positive?
-        logger.info("Create eth transcation #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
+        logger.info("Create eth transaction #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       else
-        logger.warn("Skip eth transcation (amount is not positive) #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
+        logger.warn("Skip eth transaction (amount is not positive) #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
         raise Ethereum::Client::Error.new("Amount is not positive (#{amount}) for #{from_address} to #{to_address}")
       end
       txid = validate_txid!(
@@ -107,7 +86,7 @@ class EthereumGateway
                                   gas_price:)
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
-      logger.info("Create erc20 transcation #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
+      logger.info("Create erc20 transaction #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       txid = validate_txid!(
         client.json_rpc(:personal_sendTransaction,
                         [{
