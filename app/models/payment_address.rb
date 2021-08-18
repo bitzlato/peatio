@@ -31,6 +31,9 @@ class PaymentAddress < ApplicationRecord
     report_exception err, true, member_id: member.id, blockchain_id: blockchain_id
   end
 
+  def explorer_url
+  end
+
   def format_address(format)
     format == 'legacy' ? to_legacy_address : to_cash_address
   end

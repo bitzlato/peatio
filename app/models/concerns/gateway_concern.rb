@@ -5,7 +5,7 @@ module GatewayConcern
   included do
     validates :gateway_klass, presence: true, inclusion: { in: AVAILABLE_GATEWAYS }
     delegate :create_address!, to: :gateway
-    delegate :implements?, :normalize_address, :case_sensitive?, to: :gateway_class
+    delegate :implements?, :normalize_address, :normalize_txid, :valid_address?, to: :gateway_class
   end
 
   def gateway_class

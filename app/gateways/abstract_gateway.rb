@@ -93,7 +93,7 @@ class AbstractGateway
       currency = blockchain.find_money_currency(hash.contract_address)
       hash.dup.tap do |t|
         t.currency_id = currency.id
-        t.amount = currency.to_money_from_units hash.amoount
+        t.amount = currency.to_money_from_units hash.amount
       end.freeze
     else
       currency = blockchain.find_money_currency(hash.fetch(:contract_address))
