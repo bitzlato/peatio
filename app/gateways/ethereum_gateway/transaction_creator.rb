@@ -104,8 +104,8 @@ class EthereumGateway
         to_address:   to_address,
         amount:       amount,
         hash:         normalize_address(txid),
+        contract_address: contract_address,
         options: {
-          contract_address: contract_address,
           gas_price: gas_price,
           gas_limit: gas_limit,
         }

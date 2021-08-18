@@ -41,6 +41,7 @@ class EthereumGateway < AbstractGateway
     base_currencies = balances.reject { |c| c.token? }.keys
     base_currencies = [] if Rails.env.production? # TODO
 
+    # TODO Сообщать о том что не хватает газа ДО выполнения, так как он потратися
     # Не выводить базовую валюту пока не счету есть токены
     # Базовую валюту откидывать за вычетом необходимой суммы газа для токенов
     (token_currencies + base_currencies).map do |currency|
