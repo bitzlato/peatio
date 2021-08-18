@@ -86,8 +86,9 @@ class AbstractGateway
         block_number: transaction.block_number,
         amount: transaction.amount,
         status: transaction.status,
-        txout: transaction.txout
-      }.merge(extra)
+        txout: transaction.txout,
+        options: transaction.options,
+      }.deep_merge(extra)
     )
   end
 
