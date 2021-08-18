@@ -62,6 +62,8 @@ gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
 gem 'composite_primary_keys'
 gem 'dotenv'
 
+gem 'adequate_crypto_address'
+
 # Security versions of deep dependencies
 gem "addressable", ">= 2.8.0"
 gem "rexml", ">= 3.2.5"

@@ -118,6 +118,9 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
+    adequate_crypto_address (0.1.5)
+      base58 (~> 0.2.3)
+      digest-sha3 (~> 1.1.0)
     after_commit_everywhere (1.1.0)
       activerecord (>= 4.2)
       activesupport
@@ -554,6 +557,7 @@ PLATFORMS
 DEPENDENCIES
   aasm (~> 5.2.0)
   addressable (>= 2.8.0)
+  adequate_crypto_address
   after_commit_everywhere (~> 1.1)
   annotate
   arel-is-blank (~> 1.0.0)
