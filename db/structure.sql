@@ -1162,7 +1162,8 @@ CREATE TABLE public.wallets (
     enable_invoice boolean DEFAULT false NOT NULL,
     plain_settings json,
     blockchain_id bigint NOT NULL,
-    use_as_fee_source boolean DEFAULT false NOT NULL
+    use_as_fee_source boolean DEFAULT false NOT NULL,
+    balance_updated_at timestamp without time zone
 );
 
 
@@ -2704,6 +2705,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210813150209'),
 ('20210816044928'),
 ('20210817050515'),
-('20210817100325');
+('20210817100325'),
+('20210818074322');
 
 

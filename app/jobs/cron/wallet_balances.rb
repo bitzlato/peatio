@@ -3,7 +3,7 @@ module Jobs
     module WalletBalances
       def self.process
         Wallet.active.find_each do |w|
-          w.update!(balance: w.current_balance)
+          w.update!(balance: w.current_balance, balance_updated_at: Time.zone.now)
         rescue StandardError => e
           report_exception(e, true, wallet_id: w.id)
           next
