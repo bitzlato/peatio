@@ -3,6 +3,15 @@
 describe OrderServices::CreateOrder do
   let(:market) { Market.find_spot_by_symbol('btcusd') }
   let(:service) { described_class.new(member: account.member) }
+  let(:account) { create(:account, :usd, balance: 10.to_d) }
+  let(:default_params) {
+    {
+      market: market,
+      side: 'buy', # buy/sell
+      volume: '1'.to_d,
+      ord_type: 'market', # limit/market
+    }
+  }
 
   let!(:ask_orders) do
     create(:order_ask, :btcusd, price: '200', volume: '10.0', state: :wait)
@@ -48,22 +57,35 @@ describe OrderServices::CreateOrder do
             'market.order.insufficient_market_liquidity',
           )
           order = service.perform(**ton_of_btc_params)
+
           expect(order).to be_nil
         end
       end
     end
 
-    context 'buy btc' do
-      let(:account) { create(:account, :usd, balance: 10.to_d) }
-      let(:default_params) {
-        {
-          market: market,
-          side: 'buy', # buy/sell
-          volume: '1'.to_d,
-          ord_type: 'market', # limit/market
-        }
-      }
+    describe 'sumbit order' do
+      context 'not peatio market engine' do
+        it 'calls order.trigger_third_party_creation and returns nil' do
+          Engine.any_instance.stubs(:peatio_engine?).returns(false)
+          Order.any_instance.expects(:trigger_third_party_creation)
+          order = service.perform(**default_params)
 
+          expect(order).to be_nil
+        end
+      end
+
+      it 'sends all needed notifications' do
+        Order.any_instance.expects(:trigger_private_event)
+        EventAPI.expects(:notify)
+        AMQP::Queue.expects(:enqueue).with(
+          :order_processor,
+          any_parameters
+        )
+        order = service.perform(**default_params)
+      end
+    end
+
+    context 'buy btc' do
       include_examples 'creates an order without exceptions' do
         let(:params) {
           default_params

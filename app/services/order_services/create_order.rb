@@ -12,9 +12,7 @@ module OrderServices
         price: price,
         volume: volume,
       )
-      submit_order!(order)
-
-      order
+      submit_and_return_order(order)
     rescue ::Order::InsufficientMarketLiquidity
       ::AMQP::Queue.enqueue_event(
         'private',
@@ -139,7 +137,7 @@ module OrderServices
       required_funds
     end
 
-    def submit_order!(order)
+    def submit_and_return_order(order)
       return order.trigger_third_party_creation unless order.market.engine.peatio_engine?
       order.trigger_private_event
 
@@ -151,6 +149,7 @@ module OrderServices
       AMQP::Queue.enqueue(:order_processor,
                           { action: 'submit', order: order.attributes },
                           { persistent: true })
+      order
     end
   end
 end

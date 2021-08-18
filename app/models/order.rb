@@ -157,6 +157,15 @@ class Order < ApplicationRecord
     end
   end
 
+  def trigger_third_party_creation
+    return unless new_record?
+
+    self.uuid ||= UUID.generate
+    self.created_at ||= Time.now
+
+    AMQP::Queue.publish(market.engine.driver, data: as_json_for_third_party, type: THIRD_PARTY_ORDER_ACTION_TYPE['submit_single'])
+  end
+
   def trigger_cancellation
     market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
   end
