@@ -77,10 +77,12 @@ class Money::Currency
 
   # TODO rename from_units_to_money
   def to_money_from_decimal(value)
+    raise "Value must be an Decimal (#{value})" unless value.is_a? Decimal
     value.to_money(self).freeze
   end
 
   def to_money_from_units(value)
+    raise "Value must be an Integer (#{value})" unless value.is_a? Integer
     Money.new(value, self).freeze
   end
 
