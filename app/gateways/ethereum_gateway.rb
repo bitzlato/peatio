@@ -71,7 +71,7 @@ class EthereumGateway < AbstractGateway
 
     logger.info("#{target_address} refueled with transaction #{transaction}")
     # TODO save GasRefuel record as reference
-    save_transaction transaction, options: { tokens_count: tokens_count, ethereum_balance: ethereum_balance }
+    save_transaction transaction, options: { tokens_count: tokens_count }
 
   rescue EthereumGateway::GasRefueler::Error => err
     logger.info("Canceled refueling address #{target_address} with #{err}")
