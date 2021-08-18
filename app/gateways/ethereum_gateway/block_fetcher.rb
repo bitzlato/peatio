@@ -87,6 +87,11 @@ class EthereumGateway
           txout:          block_txn.fetch('transactionIndex').to_i(16),
           block_number:   block_txn.fetch('blockNumber').to_i(16),
           status:         transaction_status(block_txn),
+          options: {
+            gas:            block_txn.fetch('gas').to_i(16),
+            gas_price:      block_txn.fetch('gasPrice').to_i(16),
+          },
+          fee:            block_txn.fetch('gas').to_i(16) * block_txn.fetch('gasPrice').to_i(16),
           contract_address: nil
         }
     end
@@ -115,7 +120,9 @@ class EthereumGateway
           txout:           log['logIndex'].to_i(16),
           block_number:    txn_receipt.fetch('blockNumber').to_i(16),
           contract_address: log.fetch('address'),
-          status:          transaction_status(txn_receipt)
+          status:          transaction_status(txn_receipt),
+          options: { gas_price: txn_receipt.fetch('effectiveGasPrice').to_i(16) },
+          fee:  txn_receipt.fetch('effectiveGasPrice').to_i(16) * txn_receipt.fetch('gasUsed').to_i(16)
         }
       end
     end
