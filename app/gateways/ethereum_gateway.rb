@@ -38,8 +38,10 @@ class EthereumGateway < AbstractGateway
 
     # First collect tokens (save base currency to last step for gas)
     token_currencies = balances.filter { |c| c.token? }.keys
-    base_currencies = [] # TODO balances.reject { |c| c.token? }.keys
+    base_currencies = balances.reject { |c| c.token? }.keys
+    base_currencies = [] if Rails.env.production? # TODO
 
+    # Не выводить базовую валюту пока не счету есть токены
     # Базовую валюту откидывать за вычетом необходимой суммы газа для токенов
     (token_currencies + base_currencies).map do |currency|
       amount = balances[currency]
