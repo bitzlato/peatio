@@ -50,6 +50,40 @@ class AbstractGateway
 
   private
 
+  def logger
+    Rails.logger
+  end
+
+  def save_transaction(transaction, extra = {})
+    raise 'transaction must be a Peatio::Transaction' unless transaction.is_a? Peatio::Transaction
+    Transaction.create!(
+      {
+        from_address: transaction.from_address,
+        to_address: transaction.to_address,
+        currency_id: transaction.currency_id,
+        txid: transaction.txid,
+        block_number: transaction.block_number,
+        amount: transaction.amount,
+        status: transaction.status,
+        txout: transaction.txout
+      }.merge(extra)
+    )
+  end
+
+  def hash_to_transaction(hash)
+    return if hash.nil?
+    if hash.is_a? Peatio::Transaction
+      currency = blockchain.find_money_currency(hash.contract_address)
+      hash.dup.tap do |t|
+        t.currency_id = currency.id
+        t.amount = currency.to_money_from_units hash.amoount
+      end.freeze
+    else
+      currency = blockchain.find_money_currency(hash.fetch(:contract_address))
+      Peatio::Transaction.new(hash.merge(currency_id: currency.id, amount: currency.to_money_from_units(hash.fetch(:amount)))).freeze
+    end
+  end
+
   def build_client
     raise "not implemented #{self.class}"
   end
