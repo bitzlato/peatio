@@ -2,7 +2,7 @@ module Jobs
   module Cron
     class PaymentAddressBalancer
       def self.process
-        PaymentAddress.where.not(address: nil).find_each(&method(:update_balance))
+        PaymentAddress.where.not(address: nil).find_each(&method(:update_balances))
         sleep 10
       end
 
