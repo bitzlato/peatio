@@ -388,7 +388,7 @@ describe Withdraw do
                                     member: member,
                                     currency: coin,
                                     state: :active,
-                                    data: generate(:coin_beneficiary_data).merge(address: address)) }
+                                    data: generate(:btc_beneficiary_data).merge(address: address)) }
 
         before do
           subject.update!(aasm_state: :processing)
