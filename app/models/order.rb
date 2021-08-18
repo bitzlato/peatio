@@ -81,6 +81,13 @@ class Order < ApplicationRecord
     parent.table[:state]
   end
 
+  before_create do
+    raise(
+      ::Account::AccountError,
+      "member_balance > locked = #{member_balance} > #{locked}"
+    ) if member_balance < locked
+  end
+
   after_commit on: :update do
     next unless ord_type == 'limit'
 

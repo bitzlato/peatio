@@ -4,7 +4,7 @@ module OrderServices
       @member = member
     end
 
-    def perform(market:, side:, ord_type:, price:, volume:)
+    def perform(market:, side:, ord_type:, price: nil, volume:)
       order = create_order(
         market: market,
         side: side,
@@ -29,7 +29,7 @@ module OrderServices
       # to store fees on Order creation.
       trading_fee = TradingFee.for(
         group: @member.group,
-        market_id: market.id,
+        market_id: market.symbol,
         market_type: ::Market::DEFAULT_TYPE
       )
       maker_fee = trading_fee.maker
@@ -38,7 +38,7 @@ module OrderServices
 
       member_account.with_lock do
         if side == 'sell'
-          order_subclass = OrderAsk,
+          order_subclass = OrderAsk
           locked_value = calc_sell_compute_locked(
             ord_type: ord_type,
             volume: volume,
@@ -56,11 +56,6 @@ module OrderServices
         end
       end
 
-      raise(
-        ::Account::AccountError,
-        "member_balance > locked = #{member_account.balance} > #{locked_value}"
-      ) if member_account.balance < locked_value
-
       order_subclass.create!(
         state:         ::Order::PENDING,
         member:        @member,
@@ -77,8 +72,6 @@ module OrderServices
         uuid:          uuid,
         maker_fee:     maker_fee,
         taker_fee:     taker_fee,
-        locked:        locked_value,
-        origin_locked: locked_value,
       )
     end
 
@@ -88,7 +81,7 @@ module OrderServices
         volume
       when 'market'
         estimate_required_funds(
-          price_levels: OrderBid.get_depth(market.id),
+          price_levels: OrderBid.get_depth(market.symbol),
           volume: volume,
         ) { |_, value| value }
       end
@@ -100,7 +93,7 @@ module OrderServices
                 price * volume
               when 'market'
                 funds = estimate_required_funds(
-                  price_levels: OrderAsk.get_depth(market.id),
+                  price_levels: OrderAsk.get_depth(market.symbol),
                   volume: volume,
                 ) { |price, volume| price * volume }
                 # Maximum funds precision defined in Market::FUNDS_PRECISION.
@@ -131,7 +124,7 @@ module OrderServices
       end
 
       raise(
-        InsufficientMarketLiquidity,
+        ::Order::InsufficientMarketLiquidity,
         "Insufficient market liquidity for volume = #{volume}",
       ) if expected_volume.nonzero?
 
