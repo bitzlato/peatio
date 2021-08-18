@@ -36,10 +36,13 @@ class BlockchainService
     transactions.each do |tx|
       if tx.to_address.in?(blockchain.deposit_addresses)
         update_or_create_deposit tx
+        update_or_create_transaction! tx
       elsif tx.hash.in?(withdraw_txids)
         update_or_create_withdraw tx
+        update_or_create_transaction! tx
+      else
+        update_transaction! tx
       end
-      update_or_create_transaction! tx
     end.count
   end
 
@@ -62,6 +65,12 @@ class BlockchainService
   end
 
   private
+
+  def update_transaction!(tx)
+    Transaction.
+      where(currency_id: tx.currency_id, txid: tx.id, block_number: nil).
+      update_all( fee: tx.fee, block_number: tx.block_number, status: tx.status, txout: tx.txout )
+  end
 
   def update_or_create_transaction!(tx)
     # TODO fetch_transaction if status is pending
