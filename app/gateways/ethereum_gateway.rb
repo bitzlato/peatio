@@ -34,16 +34,17 @@ class EthereumGateway < AbstractGateway
   def collect!(payment_address)
     hot_wallet = blockchain.hot_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
 
-    balances = load_balances payment_address.address
+    balances = load_balances(payment_address.address).reject { |c, a| a.zero? }
 
     # First collect tokens (save base currency to last step for gas)
-    tokens_balances = balances.filter { |c| c.token? }
-    base_balances = balances.reject { |c| c.token? }
+    token_currencies = balances.filter { |c| c.token? }.keys
+    base_currencies = balances.reject { |c| c.token? }.keys
 
-    (tokens_balances + base_balances).each_pair do |currency, amount|
+    (token_currencies + base_currencies).each do |currency|
+      amount = balances[currency]
       next if amount.zero?
       logger.info("Collect #{currency} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
-      transaction hash_to_transaction(
+      transaction = hash_to_transaction(
         TransactionCreator
         .new(client)
         .call(from_address: payment_address.address,
@@ -55,6 +56,7 @@ class EthereumGateway < AbstractGateway
       )
       save_transaction transaction
     rescue EthereumGateway::TransactionCreator::Error => err
+      binding.pry
       logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
       nil
     end.compact
