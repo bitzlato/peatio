@@ -25,6 +25,8 @@ class EthereumGateway < AbstractGateway
 
   def refuel_and_collect!(payment_address)
     refuel_gas!(payment_address.address)
+    # TODO подождать пока транзакция придет
+    sleep 60
     collect!(payment_address)
   end
 
@@ -32,10 +34,16 @@ class EthereumGateway < AbstractGateway
   def collect!(payment_address)
     hot_wallet = blockchain.hot_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
 
-    # TODO refuel if need?
-    load_balances(payment_address.address).each_pair do |currency, amount|
+    balances = load_balances payment_address.address
+
+    # First collect tokens (save base currency to last step for gas)
+    tokens_balances = balances.filter { |c| c.token? }
+    base_balances = balances.reject { |c| c.token? }
+
+    (tokens_balances + base_balances).each_pair do |currency, amount|
+      next if amount.zero?
       logger.info("Collect #{currency} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
-      hash_to_transaction(
+      transaction hash_to_transaction(
         TransactionCreator
         .new(client)
         .call(from_address: payment_address.address,
@@ -45,6 +53,7 @@ class EthereumGateway < AbstractGateway
               contract_address: currency.contract_address,
               subtract_fee: currency.contract_address.nil?)
       )
+      save_transaction transaction
     rescue EthereumGateway::TransactionCreator::Error => err
       logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
       nil
