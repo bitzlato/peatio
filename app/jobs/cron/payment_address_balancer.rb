@@ -9,7 +9,7 @@ module Jobs
       def self.update_balances payment_address
         if payment_address.blockchain.gateway_class.enable_personal_address_balance?
           payment_address.update!(
-            balances: convert_balances(payment_address.blockchain.load_balances(payment_address.address)),
+            balances: convert_balances(payment_address.blockchain.gateway.load_balances(payment_address.address)),
             balances_updated_at: Time.zone.now
           )
         else
