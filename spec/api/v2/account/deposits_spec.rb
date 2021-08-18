@@ -246,12 +246,12 @@ describe API::V2::Account::Deposits, type: :request do
       context 'eth address' do
         let(:currency) { eth }
         let(:blockchain) { find_or_create :blockchain, 'eth-rinkeby', key: 'eth-rinkeby' }
-        let(:address) { '2N2wNXrdo4oEngp498XGnGCbru29MycHogR' }
+        let(:address) { Faker::Blockchain::Ethereum.address  }
         before { member.payment_address(blockchain).update!(address: address) }
 
         it 'expose data about eth address' do
           api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
-          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":"' + address.downcase + '","state":"active"}'
+          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":"' + blockchain.normalize(address) + '","state":"active"}'
         end
 
         it 'pending user address state' do
