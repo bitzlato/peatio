@@ -3,7 +3,6 @@
 
 FactoryBot.define do
   factory :order_bid do
-
     # Create liability history by passing with_deposit_liability trait.
     trait :with_deposit_liability do
       before(:create) do |order|
@@ -39,7 +38,7 @@ FactoryBot.define do
       origin_volume { volume.to_d }
       locked { price.to_d *  volume.to_d }
       origin_locked { locked.to_d }
-      member { create(:member) }
+      member { create(:member, :with_usd_balance) }
     end
 
     trait :btceth do
@@ -54,7 +53,7 @@ FactoryBot.define do
       origin_volume { volume.to_d }
       locked { price.to_d *  volume.to_d }
       origin_locked { locked.to_d }
-      member { create(:member) }
+      member { create(:member, :with_eth_balance) }
     end
 
     trait :btceth_qe do
@@ -69,12 +68,11 @@ FactoryBot.define do
       origin_volume { volume.to_d }
       locked { price.to_d *  volume.to_d }
       origin_locked { locked.to_d }
-      member { create(:member) }
+      member { create(:member, :with_eth_balance) }
     end
   end
 
   factory :order_ask do
-
     # Create liability history by passing with_deposit_liability trait.
     trait :with_deposit_liability do
       before(:create) do |order|
@@ -110,7 +108,7 @@ FactoryBot.define do
       origin_volume { volume.to_d }
       locked { volume.to_d }
       origin_locked { locked.to_d }
-      member { create(:member) }
+      member { create(:member, :with_btc_balance) }
     end
 
     trait :btceth do
@@ -125,7 +123,7 @@ FactoryBot.define do
       origin_volume { volume.to_d }
       locked { volume.to_d }
       origin_locked { locked.to_d }
-      member { create(:member) }
+      member { create(:member, :with_btc_balance) }
     end
 
     trait :btceth_qe do
@@ -140,7 +138,7 @@ FactoryBot.define do
       origin_volume { volume.to_d }
       locked { volume.to_d }
       origin_locked { locked.to_d }
-      member { create(:member) }
+      member { create(:member, :with_btc_balance) }
     end
   end
 end

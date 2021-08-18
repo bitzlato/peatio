@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe OrderServices::CreateOrder do
-  let(:account) { create_account(:usd, balance: 10.to_d) }
+  let(:account) { create(:account, :usd, balance: 10.to_d) }
   let(:market) { Market.find_spot_by_symbol('btcusd') }
   let(:service) { described_class.new(member: account.member) }
 

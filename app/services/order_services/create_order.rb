@@ -56,6 +56,9 @@ module OrderServices
         end
       end
 
+      puts @member.get_account(market.base_unit).balance.inspect
+      puts @member.get_account(market.quote_unit).balance.inspect
+
       order_subclass.create!(
         state:         ::Order::PENDING,
         member:        @member,

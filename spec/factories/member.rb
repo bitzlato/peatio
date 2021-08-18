@@ -34,6 +34,18 @@ FactoryBot.define do
       level { 3 }
     end
 
+    trait :with_usd_balance do
+      accounts { [create(:account, :usd, balance: 10000.to_d)] }
+    end
+
+    trait :with_btc_balance do
+      accounts { [create(:account, :btc, balance: 10000.to_d)] }
+    end
+
+    trait :with_eth_balance do
+      accounts { [create(:account, :eth, balance: 10000.to_d)] }
+    end
+
     factory :admin_member, traits: %i[admin]
   end
 end
