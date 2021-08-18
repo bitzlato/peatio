@@ -34,6 +34,10 @@ class PaymentAddress < ApplicationRecord
   def explorer_url
   end
 
+  def update_balances!
+    Jobs::Cron::PaymentAddressBalancer.update_balances self
+  end
+
   def format_address(format)
     blockchain.gateway_class.format_address(address, format)
   end

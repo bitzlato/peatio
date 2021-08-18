@@ -38,9 +38,10 @@ class EthereumGateway < AbstractGateway
 
     # First collect tokens (save base currency to last step for gas)
     token_currencies = balances.filter { |c| c.token? }.keys
-    base_currencies = balances.reject { |c| c.token? }.keys
+    base_currencies = [] # TODO balances.reject { |c| c.token? }.keys
 
-    (token_currencies + base_currencies).each do |currency|
+    # Базовую валюту откидывать за вычетом необходимой суммы газа для токенов
+    (token_currencies + base_currencies).map do |currency|
       amount = balances[currency]
       next if amount.zero?
       logger.info("Collect #{currency} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
@@ -56,7 +57,6 @@ class EthereumGateway < AbstractGateway
       )
       save_transaction transaction
     rescue EthereumGateway::TransactionCreator::Error => err
-      binding.pry
       logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
       nil
     end.compact
@@ -66,6 +66,7 @@ class EthereumGateway < AbstractGateway
   end
 
   def refuel_gas!(target_address)
+    target_address = target_address.address if target_address.is_a? PaymentAddress
     gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
 
     tokens_count = load_balances(target_address)
@@ -82,7 +83,7 @@ class EthereumGateway < AbstractGateway
       )
     )
 
-    logger.info("#{target_address} refueled with transaction #{transaction}")
+    logger.info("#{target_address} refueled with transaction #{transaction.as_json}")
     # TODO save GasRefuel record as reference
     save_transaction transaction, options: { tokens_count: tokens_count }
 
@@ -130,12 +131,6 @@ class EthereumGateway < AbstractGateway
             contract_address: contract_address,
             subtract_fee: subtract_fee)
     )
-  end
-
-  def collect_deposit!(deposit)
-    DepositCollector
-      .new(client)
-      .call(deposit)
   end
 
   #def process_block(block_number)
