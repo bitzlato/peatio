@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 describe OrderServices::CreateOrder do
-  let(:account) { create(:account, :usd, balance: 10.to_d) }
   let(:market) { Market.find_spot_by_symbol('btcusd') }
   let(:service) { described_class.new(member: account.member) }
 
@@ -18,58 +17,106 @@ describe OrderServices::CreateOrder do
     create(:order_bid, :btcusd, price: '100', volume: '10.0', state: :wait)
   end
 
-  describe '#perform' do
-    let(:default_params) {
-      {
-        market: market,
-        side: 'buy', # buy/sell
-        volume: '1'.to_d,
-        ord_type: 'market', # limit/market
-      }
-    }
-
-    context 'limit price' do
-      let(:limit_price_params) {
-        default_params.merge(
-          ord_type: 'limit',
-          price: '15'.to_d,
-        )
-      }
-
-      it 'creates an order' do
-        order = service.perform(**limit_price_params)
-        expect(order).to be_present
-      end
-
-      it 'processes without exceptions' do
-        expect { service.perform(**limit_price_params) }.not_to raise_error
-      end
-
-    end
-
+  shared_examples 'creates an order without exceptions' do
     it 'creates an order' do
-      #puts OrderAsk.get_depth(market.symbol).inspect
-      order = service.perform(**default_params)
+      order = nil
+      expect {
+        order = service.perform(**params)
+      }.not_to raise_error
       expect(order).to be_present
     end
+  end
 
-    it 'processes without exceptions' do
-      expect { service.perform(**default_params) }.not_to raise_error
+  describe '#perform' do
+    context 'insufficient liquidity' do
+      context 'buy btc' do
+        let(:account) { create(:account, :usd, balance: 10000000.to_d) }
+        let(:ton_of_btc_params) {
+          {
+            market: market,
+            side: 'buy', # buy/sell
+            volume: '1000'.to_d,
+            ord_type: 'market', # limit/market
+          }
+        }
+
+        it 'return nil and send error into amqp' do
+          ::AMQP::Queue.expects(:enqueue_event).with(
+            'private',
+            account.member.uid,
+            'order_error',
+            'market.order.insufficient_market_liquidity',
+          )
+          order = service.perform(**ton_of_btc_params)
+          expect(order).to be_nil
+        end
+      end
     end
 
-    # context 'out of balance' do
-    #   before do
-    #     # account.sub_funds!(960)
-    #   end
+    context 'buy btc' do
+      let(:account) { create(:account, :usd, balance: 10.to_d) }
+      let(:default_params) {
+        {
+          market: market,
+          side: 'buy', # buy/sell
+          volume: '1'.to_d,
+          ord_type: 'market', # limit/market
+        }
+      }
 
-    #   it 'raises Account::AccountError' do
-    #     expect {
-    #       service.perform(**default_params)
-    #     }.to raise_error(
-    #       Account::AccountError,
-    #       "member_balance > locked = 3 > 5"
-    #     )
-    #   end
-    # end
+      include_examples 'creates an order without exceptions' do
+        let(:params) {
+          default_params
+        }
+      end
+
+      context 'limit price' do
+        let(:limit_price_params) {
+          default_params.merge(
+            ord_type: 'limit',
+            price: '10'.to_d,
+          )
+        }
+
+        include_examples 'creates an order without exceptions' do
+          let(:params) {
+            limit_price_params
+          }
+        end
+      end
+    end
+
+    context 'sell btc' do
+      let(:account) { create(:account, :btc, balance: 10.to_d) }
+      let(:default_params) {
+        {
+          market: market,
+          side: 'buy', # buy/sell
+          volume: '1'.to_d,
+          ord_type: 'market', # limit/market
+        }
+      }
+
+      include_examples 'creates an order without exceptions' do
+        let(:params) {
+          default_params
+        }
+      end
+
+      context 'limit price' do
+        let(:limit_price_params) {
+          default_params.merge(
+            ord_type: 'limit',
+            price: '15'.to_d,
+          )
+        }
+
+        include_examples 'creates an order without exceptions' do
+          let(:params) {
+            limit_price_params
+          }
+        end
+      end
+    end
   end
 end

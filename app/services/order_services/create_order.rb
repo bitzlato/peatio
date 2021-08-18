@@ -15,6 +15,14 @@ module OrderServices
       submit_order!(order)
 
       order
+    rescue ::Order::InsufficientMarketLiquidity
+      ::AMQP::Queue.enqueue_event(
+        'private',
+        @member.uid,
+        'order_error',
+        'market.order.insufficient_market_liquidity',
+      )
+      nil
     end
 
     private
@@ -55,9 +63,6 @@ module OrderServices
           )
         end
       end
-
-      puts @member.get_account(market.base_unit).balance.inspect
-      puts @member.get_account(market.quote_unit).balance.inspect
 
       order_subclass.create!(
         state:         ::Order::PENDING,
