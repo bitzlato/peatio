@@ -22,7 +22,7 @@ module Jobs
 
       def self.convert_balances(balances)
         balances.each_with_object({}) do |(k,v), a|
-          currency_id = k.is_a?(Money::Currency) ? k.id.downcase : k
+          currency_id = (k.is_a?(Money::Currency) || k.is_a?(Currency)) ? k.id.downcase : k
           a[currency_id] = v.to_d
         end
       end

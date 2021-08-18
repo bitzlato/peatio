@@ -75,7 +75,7 @@ class EthereumGateway < AbstractGateway
 
   def load_balances(address)
     blockchain.currencies.each_with_object({}) do |currency, a|
-      a[currency] = load_balance(address, currency)
+      a[currency.money_currency] = load_balance(address, currency)
     end
   end
 
