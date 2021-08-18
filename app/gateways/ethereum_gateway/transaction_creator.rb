@@ -3,6 +3,8 @@ class EthereumGateway
     DEFAULT_ETH_GAS_LIMIT = Settings.ethereum.eth_gas_limit
     DEFAULT_ERC20_GAS_LIMIT = Settings.ethereum.erc20_gas_limit
 
+    Error = Class.new StandardError
+
     # @param amount - in base units (cents)
     def call(amount:,
              from_address:,
@@ -50,7 +52,7 @@ class EthereumGateway
         logger.info("Create eth transaction #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       else
         logger.warn("Skip eth transaction (amount is not positive) #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
-        raise Ethereum::Client::Error.new("Amount is not positive (#{amount}) for #{from_address} to #{to_address}")
+        raise Error.new("Amount is not positive (#{amount}) for #{from_address} to #{to_address}")
       end
       txid = validate_txid!(
         client
