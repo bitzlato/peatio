@@ -39,7 +39,7 @@ class EthereumGateway < AbstractGateway
       )
     )
 
-    # Refueling is not required
+    logger.info("#{target_address} refueled with transaction #{transaction}")
     transaction['txid'] = transaction.delete('hash')
     reference = nil # TODO create GasRefuel record
     Transaction.create!(transaction.merge(reference: reference, options: { tokens_count: tokens_count, ethereum_balance: ethereum_balance }))
@@ -142,11 +142,22 @@ class EthereumGateway < AbstractGateway
 
   private
 
+  def logger
+    Rails.logger
+  end
+
   def hash_to_transaction(hash)
     return if hash.nil?
-    hash = hash.as_json if hash.is_a? Peatio::Transaction
-    currency = blockchain.find_money_currency(hash.fetch(:contract_address))
-    Peatio::Transaction.new hash.merge(currency_id: currency.id, amount: currency.to_money_from_units(hash.fetch(:amount)))
+    if hash.is_a? Peatio::Transaction
+      currency = blockchain.find_money_currency(hash.contract_address)
+      hash.dup.tap do |t|
+        t.currency_id = currency.id
+        t.amount = currency.to_money_from_units hash.amoount
+      end.freeze
+    else
+      currency = blockchain.find_money_currency(hash.fetch(:contract_address))
+      Peatio::Transaction.new(hash.merge(currency_id: currency.id, amount: currency.to_money_from_units(hash.fetch(:amount)))).freeze
+    end
   end
 
   def build_client
