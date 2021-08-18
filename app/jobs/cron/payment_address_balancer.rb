@@ -10,13 +10,13 @@ module Jobs
         if payment_address.blockchain.gateway.enable_personal_address_balance?
           update_balance_by_currency payment_address
         else
-          payment_address.update! balances: {}, balances_updated_at: Time.zone.now
+          update_balances(payment_address)
         end
       end
 
       def self.update_balances payment_address
         payment_address.update!(
-          balances: payment_address.blockchain.gateway.load_balances.transform_keys(&:downcase),
+          balances: payment_address.blockchain.gateway.load_balances(payment_address.address).select { |c,v| v.positive? }.transform_keys { |k| k.id },
           balances_updated_at: Time.zone.now
         )
       rescue StandardError => err
