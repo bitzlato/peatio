@@ -9,12 +9,9 @@ module Deposits
     validates :address, :txid, presence: true
     validates :txid, uniqueness: { scope: %i[currency_id txout] }
 
-    before_validation if: :gateway do
-      unless gateway.case_sensitive?
-        self.txid = txid.try(:downcase)
-        self.address = address.try(:downcase) if address?
-      end
-      self.address = CashAddr::Converter.to_cash_address(address) if gateway.supports_cash_addr_format? && address?
+    before_validation if: :blockchain do
+      self.txid = blockchain.normalize_txid txid if txid?
+      self.address = blockchain.normalize_address address if address?
     end
 
     def as_json_for_event_api

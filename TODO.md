@@ -4,3 +4,4 @@
 * [ ] disable update currency of wallet
 * [ ] PaymentAddress.where(blockchain_id: 4).update_all blockchain_id: 7
 * [ ] Withdraw.where(blockchain_id: 4).update_all blockchain_id: 7
+* [ ] Peatio::Transcation заменить на BlockchainTransaction entity
