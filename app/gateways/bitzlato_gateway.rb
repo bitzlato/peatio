@@ -1,7 +1,7 @@
 require 'peatio/bitzlato/wallet'
 
 class BitzlatoGateway < AbstractGateway
-  def enable_personal_address_balance?
+  def self.enable_personal_address_balance?
     false
   end
 

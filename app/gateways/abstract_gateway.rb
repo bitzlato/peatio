@@ -34,6 +34,10 @@ class AbstractGateway
     instance_methods(false).include?(method_name)
   end
 
+  def self.enable_personal_address_balance?
+    true
+  end
+
   attr_reader :client
 
   def latest_block_number
@@ -43,10 +47,6 @@ class AbstractGateway
   def initialize(blockchain)
     @blockchain = blockchain
     @client = build_client
-  end
-
-  def enable_personal_address_balance?
-    true
   end
 
   def enable_block_fetching?
