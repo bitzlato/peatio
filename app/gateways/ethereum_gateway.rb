@@ -37,7 +37,7 @@ class EthereumGateway < AbstractGateway
               amount: amount.base_units,
               secret: payment_address.secret,
               contract_address: currency.contract_address,
-              subtract_fee: true)
+              subtract_fee: currency.contract_address.nil?)
       )
     rescue EthereumGateway::TransactionCreator::Error => err
       logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
