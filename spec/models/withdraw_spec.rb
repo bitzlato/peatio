@@ -379,7 +379,7 @@ describe Withdraw do
 
       context 'with archived beneficiary' do
         let(:member) { create(:member) }
-        let(:address) { Faker::Blockchain::Ethereum.address }
+        let(:address) { Faker::Blockchain::Bitcoin.address }
         let(:coin) { Currency.find(:btc) }
 
         subject { create(:btc_withdraw, :with_deposit_liability, member: member, rid: address, beneficiary: beneficiary) }
@@ -531,7 +531,7 @@ describe Withdraw do
   context 'validate note length' do
     let(:member)    { create(:member) }
     let!(:account)   { member.get_account(:btc).tap { |x| x.update!(balance: 1.0.to_d) } }
-    let(:address)   { 'bitcoincash:qqkv9wr69ry2p9l53lxp635va4h86wv435995w8p2h' }
+    let(:address) { Faker::Blockchain::Bitcoin.address }
 
     let :record do
       Withdraws::Coin.new \
