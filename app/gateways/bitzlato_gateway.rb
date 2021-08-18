@@ -6,11 +6,16 @@ class BitzlatoGateway < AbstractGateway
   end
 
   def load_balance(_address, currency)
-    client.load_balance(currency.id)
+    client.load_balance(currency.id).tap do |amount|
+      currency.to_money_from_decimal amount
+    end
   end
 
   def load_balances
-    client.load_balances.transform_keys(&:downcase)
+    client.load_balances.each_with_object({}) do |(k, v), a|
+      currency = Money::Currency.find k
+      a[currency] = currency.to_money_from_decimal a
+    end
   end
 
   def poll_deposits!
