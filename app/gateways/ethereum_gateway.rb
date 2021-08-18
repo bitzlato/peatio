@@ -44,7 +44,7 @@ class EthereumGateway < AbstractGateway
     reference = nil # TODO create GasRefuel record
     Transaction.create!(transaction.merge(reference: reference, options: { tokens_count: tokens_count, ethereum_balance: ethereum_balance }))
 
-  rescue EthereumGateway::GasRefuel::Error => err
+  rescue EthereumGateway::GasRefueler::Error => err
     logger.info("Canceled refueling address #{target_address} with #{err}")
   end
 
