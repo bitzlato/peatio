@@ -20,10 +20,7 @@ class PaymentAddress < ApplicationRecord
   belongs_to :blockchain
 
   before_validation if: :address do
-    if blockchain.present?
-      self.address = address.downcase unless gateway.case_sensitive?
-      self.address = CashAddr::Converter.to_cash_address(address) if gateway.supports_cash_addr_format?
-    end
+    self.address = blockchain.normalize_address address if blockchain.present?
   end
 
   delegate :gateway, :currencies, to: :blockchain
@@ -34,16 +31,11 @@ class PaymentAddress < ApplicationRecord
     report_exception err, true, member_id: member.id, blockchain_id: blockchain_id
   end
 
+  def explorer_url
+  end
+
   def format_address(format)
-    format == 'legacy' ? to_legacy_address : to_cash_address
-  end
-
-  def to_legacy_address
-    CashAddr::Converter.to_legacy_address(address)
-  end
-
-  def to_cash_address
-    CashAddr::Converter.to_cash_address(address)
+    blockchain.gateway_class.format_address(address, format)
   end
 
   def status

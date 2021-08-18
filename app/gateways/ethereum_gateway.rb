@@ -7,15 +7,41 @@ class EthereumGateway < AbstractGateway
   include NumericHelpers
   IDLE_TIMEOUT = 1
 
+  def self.valid_address?(address)
+    AdequateCryptoAddress.valid? address, :ethereum
+  end
+
+  def self.normalize_address(address)
+    AdequateCryptoAddress.address(address, :eth).address
+  end
+
+  def self.normalize_txid(id)
+    id.downcase
+  end
+
   def enable_block_fetching?
     true
   end
 
-  # Collect all tokens and coins from from_address to to_address
-  def collect!(from_address:, to_address:)
-    raise 'not implemented'
+  # Collect all tokens and coins from payment_address to hot wallet
+  def collect!(payment_address)
+    hot_wallet = blockchain.hot_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
 
-    refuel_gas! from_address
+    # TODO refuel if need?
+    load_balances(payment_address.address).each_pair do |currency, amount|
+      hash_to_transaction(
+        TransactionCreator
+        .new(client)
+        .call(from_address: payment_address.address,
+              to_address: hot_wallet.address,
+              amount: amount.base_units,
+              secret: payment_address.secret,
+              contract_address: currency.contract_address,
+              subtract_fee: true)
+      )
+    rescue EthereumGateway::TransactionCreator::Error => err
+      logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
+    end
 
     # 1. Check transaction status in blockchain or transactions network.
     # 2. Create transactions from from_address to to_address for all existen coins
@@ -39,12 +65,11 @@ class EthereumGateway < AbstractGateway
       )
     )
 
-    # Refueling is not required
-    transaction['txid'] = transaction.delete('hash')
-    reference = nil # TODO create GasRefuel record
-    Transaction.create!(transaction.merge(reference: reference, options: { tokens_count: tokens_count, ethereum_balance: ethereum_balance }))
+    logger.info("#{target_address} refueled with transaction #{transaction}")
+    # TODO save GasRefuel record as reference
+    save_transaction transaction, options: { tokens_count: tokens_count, ethereum_balance: ethereum_balance }
 
-  rescue EthereumGateway::GasRefuel::Error => err
+  rescue EthereumGateway::GasRefueler::Error => err
     logger.info("Canceled refueling address #{target_address} with #{err}")
   end
 
@@ -54,11 +79,12 @@ class EthereumGateway < AbstractGateway
     end
   end
 
+  # @return balance of addrese in Money
   def load_balance(address, currency)
     BalanceLoader
       .new(client)
       .call(address, currency.contract_address)
-      .yield_self { |amount| convert_from_base_unit(amount, currency.base_factor) }
+      .yield_self { |amount| currency.to_money_from_units(amount) }
   end
 
   def create_address!(secret = nil)
@@ -76,6 +102,7 @@ class EthereumGateway < AbstractGateway
 
 
     raise 'amount must be a Money' unless amount.is_a? Money
+    # TODO save transaction
     hash_to_transaction(
       TransactionCreator
       .new(client)
@@ -141,13 +168,6 @@ class EthereumGateway < AbstractGateway
   end
 
   private
-
-  def hash_to_transaction(hash)
-    return if hash.nil?
-    hash = hash.as_json if hash.is_a? Peatio::Transaction
-    currency = blockchain.find_money_currency(hash.fetch(:contract_address))
-    Peatio::Transaction.new hash.merge(currency_id: currency.id, amount: currency.to_money_from_units(hash.fetch(:amount)))
-  end
 
   def build_client
     ::Ethereum::Client.new(blockchain.server, idle_timeout: IDLE_TIMEOUT)
