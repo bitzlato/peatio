@@ -40,5 +40,9 @@ class Transaction < ApplicationRecord
     self.status = :pending if status.blank?
   end
 
+  def transaction_url
+    blockchain.explore_transaction_url txid if blockchain
+  end
+
   # TODO Validate txid by blockchain
 end

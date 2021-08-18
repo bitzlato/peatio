@@ -178,9 +178,8 @@ class Wallet < ApplicationRecord
     settings.compact.deep_symbolize_keys.merge(address: address)
   end
 
-  # Rename to exlporer_url
-  def wallet_url
-    blockchain.explorer_address.gsub('#{address}', address) if blockchain
+  def address_url
+    blockchain.explore_address_url address if blockchain
   end
 
   def native_currency

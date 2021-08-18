@@ -31,7 +31,8 @@ class PaymentAddress < ApplicationRecord
     report_exception err, true, member_id: member.id, blockchain_id: blockchain_id
   end
 
-  def explorer_url
+  def address_url
+    blockchain.explore_address_url address if blockchain
   end
 
   def update_balances!
