@@ -74,7 +74,7 @@ class EthereumGateway
           gas_limit: gas_limit,
           subtract_fee: subtract_fee
         }
-      )
+      ).freeze
     end
 
     def create_erc20_transaction!(from_address:,
@@ -107,7 +107,7 @@ class EthereumGateway
           gas_price: gas_price,
           gas_limit: gas_limit,
         }
-      )
+      ).freeze
     end
   end
 end
