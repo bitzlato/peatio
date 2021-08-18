@@ -1,7 +1,7 @@
 defaults: &defaults
   ethereum:
     refuel_gas_factor: 1.1
-    eth_gas_limit: 21_560
+    eth_gas_limit: 22_000
     erc20_gas_limit: 90_000
     # Medium is 30-40-50 k
 
