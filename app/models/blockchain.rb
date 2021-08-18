@@ -34,10 +34,6 @@ class Blockchain < ApplicationRecord
     write_attribute(:explorer_transaction, hash.fetch('transaction'))
   end
 
-  def supports_cash_addr_format?
-    implements? :cash_addr
-  end
-
   def native_currency
     currencies.find { |c| c.parent_id.nil? } || raise("No native currency for wallet id #{id}")
   end
@@ -73,6 +69,10 @@ class Blockchain < ApplicationRecord
 
   def fee_wallet
     wallets.active.fee.take
+  end
+
+  def hot_wallet
+    wallets.active.hot.take
   end
 
   def wallets_addresses

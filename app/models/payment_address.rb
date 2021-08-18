@@ -20,10 +20,7 @@ class PaymentAddress < ApplicationRecord
   belongs_to :blockchain
 
   before_validation if: :address do
-    if blockchain.present?
-      self.address = address.downcase unless gateway.case_sensitive?
-      self.address = CashAddr::Converter.to_cash_address(address) if gateway.supports_cash_addr_format?
-    end
+    self.address = blockchain.normalize_address address if blockchain.present?
   end
 
   delegate :gateway, :currencies, to: :blockchain
