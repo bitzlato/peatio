@@ -1,8 +1,25 @@
 class AbstractGateway
   attr_reader :blockchain
 
+  def self.normalize_address(address)
+    # self.address = CashAddr::Converter.to_cash_address(address) if gateway.supports_cash_addr_format?
+    #if blockchain.supports_cash_addr_format? && rid? && CashAddr::Converter.is_valid?(rid)
+      #self.rid = CashAddr::Converter.to_cash_address(rid)
+    #end
+    address
+  end
+
+  def self.normalize_txid(txid)
+    txid
+  end
+
   def self.case_sensitive?
-    false
+    raise 'not implemented'
+  end
+
+  def self.valid_address?(address)
+    # CashAddr::Converter.is_valid?(rid)
+    raise 'not implemented'
   end
 
   def self.implements?(method_name)
