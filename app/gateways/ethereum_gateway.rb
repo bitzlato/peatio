@@ -34,6 +34,7 @@ class EthereumGateway < AbstractGateway
 
     # TODO refuel if need?
     load_balances(payment_address.address).each_pair do |currency, amount|
+      logger.info("Collect #{currency} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
       hash_to_transaction(
         TransactionCreator
         .new(client)
@@ -46,7 +47,8 @@ class EthereumGateway < AbstractGateway
       )
     rescue EthereumGateway::TransactionCreator::Error => err
       logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
-    end
+      nil
+    end.compact
 
     # 1. Check transaction status in blockchain or transactions network.
     # 2. Create transactions from from_address to to_address for all existen coins
