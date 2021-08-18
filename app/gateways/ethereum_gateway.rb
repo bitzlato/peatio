@@ -23,6 +23,11 @@ class EthereumGateway < AbstractGateway
     true
   end
 
+  def refuel_and_collect!(payment_address)
+    refuel_gas!(payment_address.address)
+    collect!(payment_address)
+  end
+
   # Collect all tokens and coins from payment_address to hot wallet
   def collect!(payment_address)
     hot_wallet = blockchain.hot_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
@@ -45,7 +50,6 @@ class EthereumGateway < AbstractGateway
 
     # 1. Check transaction status in blockchain or transactions network.
     # 2. Create transactions from from_address to to_address for all existen coins
-
   end
 
   def refuel_gas!(target_address)
