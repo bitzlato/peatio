@@ -76,7 +76,7 @@ class BlockchainService
     # TODO fetch_transaction if status is pending
     attrs = { fee: tx.fee, block_number: tx.block_number, status: tx.status, txout: tx.txout }
     t = Transaction.
-      create_with(attrs.merge(from_address: tx.from_address, to_address: tx.to_address)).
+      create_with(attrs.merge(from_address: tx.from_address, amount: tx.amount, to_address: tx.to_address)).
       find_or_create_by!(currency_id: tx.currency_id, txid: tx.id, block_number: nil) # TODO для bitcoin наверное важен txout
 
     t.assign_attributes attrs
