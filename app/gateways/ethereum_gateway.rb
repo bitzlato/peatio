@@ -24,7 +24,7 @@ class EthereumGateway < AbstractGateway
     true
   end
 
-  # Collect all tokens and coins from from_address to to_address
+  # Collect all tokens and coins from payment_address to hot wallet
   def collect!(payment_address)
     hot_wallet = blockchain.hot_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
 
@@ -37,10 +37,11 @@ class EthereumGateway < AbstractGateway
               to_address: hot_wallet.address,
               amount: amount.base_units,
               secret: payment_address.secret,
-              contract_address: currency.contract_address)
+              contract_address: currency.contract_address,
+              subtract_fee: true)
       )
-    rescue => err
-      logger.info("Errored collecting #{currency} #{amount} from address #{address} with #{err}")
+    rescue EthereumGateway::TransactionCreator::Error => err
+      logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
     end
 
     # 1. Check transaction status in blockchain or transactions network.
