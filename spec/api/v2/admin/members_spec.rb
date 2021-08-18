@@ -98,14 +98,14 @@ describe API::V2::Admin::Members, type: :request do
 
     context 'get user by uid' do
       let!(:account) { member.touch_accounts }
-      let(:address) { Faker::Blockchain::Ethereum.address }
+      let(:address) { Faker::Blockchain::Bitcoin.address }
       let(:coin) { Currency.find(:btc) }
 
       let!(:beneficiary) { create(:beneficiary,
                                   member: member,
                                   currency: coin,
                                   state: :active,
-                                  data: generate(:coin_beneficiary_data).merge(address: address)) }
+                                  data: generate(:btc_beneficiary_data).merge(address: address)) }
 
 
       it 'returns user entities' do

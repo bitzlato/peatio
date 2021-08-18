@@ -23,7 +23,7 @@ FactoryBot.define do
 
     trait :with_beneficiary do
       beneficiary do
-        create(:beneficiary,
+        create(:beneficiary, :btc,
                currency: currency,
                member: member,
                state: :active)

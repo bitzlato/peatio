@@ -130,13 +130,13 @@ describe Beneficiary, 'Instance Methods' do
     end
 
     context 'coin' do
-      let(:address) { Faker::Blockchain::Ethereum.address }
+      let(:address) { Faker::Blockchain::Bitcoin.address }
       let(:coin) { Currency.find(:btc) }
 
       subject do
         create(:beneficiary,
                currency: coin,
-               data: generate(:coin_beneficiary_data).merge(address: address))
+               data: generate(:btc_beneficiary_data).merge(address: address))
       end
 
       it do

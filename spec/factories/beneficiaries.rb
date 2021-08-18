@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  sequence(:coin_beneficiary_data) do
+  sequence(:btc_beneficiary_data) do
+    { address: Faker::Blockchain::Bitcoin.address }
+  end
+
+  sequence(:eth_beneficiary_data) do
     { address: Faker::Blockchain::Ethereum.address }
   end
 
@@ -31,9 +35,15 @@ FactoryBot.define do
     data do
       # Use save navigation operator for cases when currency is nil.
       if currency&.coin?
-        generate(:coin_beneficiary_data)
+        generate(:eth_beneficiary_data)
       elsif currency&.fiat?
         generate(:fiat_beneficiary_data).merge(currency: currency.id)
+      end
+    end
+
+    trait :btc do
+      data do
+        generate(:btc_beneficiary_data)
       end
     end
   end

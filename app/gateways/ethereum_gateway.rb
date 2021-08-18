@@ -7,17 +7,16 @@ class EthereumGateway < AbstractGateway
   include NumericHelpers
   IDLE_TIMEOUT = 1
 
+  def self.valid_address?(address)
+    AdequateCryptoAddress.valid? address, :ethereum
+  end
+
   def self.normalize_address(address)
-    address.downcase
+    AdequateCryptoAddress.address(address, :eth).address
   end
 
   def self.normalize_txid(id)
     id.downcase
-  end
-
-  def self.valid_address?(address)
-    # TODO
-    true
   end
 
   def enable_block_fetching?
