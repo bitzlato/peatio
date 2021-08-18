@@ -17,13 +17,13 @@ describe ::EthereumGateway do
     let(:blockchain) { hot_wallet.blockchain }
     let(:peatio_transaction) { Peatio::Transaction.new(
       currency_id: 'eth',
-      amount: 1.2,
+      amount: 12,
       from_address: '123',
       to_address: '145',
       block_number: 1,
       status: 'pending'
     )}
-    let(:payment_address) { create :payment_address, :eth_address }
+    let!(:payment_address) { create :payment_address, :eth_address }
     let(:balances) {
       {
         Money::Currency.find('eth') => 1.to_money('eth'),
@@ -31,7 +31,29 @@ describe ::EthereumGateway do
       }
     }
     it do
-      EthereumGateway::TransactionCreator.any_instance.expects(:call).returns(peatio_transaction)
+      Blockchain.any_instance.expects(:hot_wallet).returns hot_wallet
+      EthereumGateway::TransactionCreator.
+        any_instance.
+        stubs(:call).
+        with(from_address:  payment_address.address,
+             to_address: hot_wallet.address,
+             amount: 1000000,
+             secret: nil,
+            subtract_fee: true,
+             contract_address: Money::Currency.find('usdt-erc20').contract_address).
+             once.
+             returns(peatio_transaction)
+      EthereumGateway::TransactionCreator.
+        any_instance.
+        stubs(:call).
+        with(from_address:  payment_address.address,
+             to_address: hot_wallet.address,
+             amount: 1000000000000000000,
+             secret: nil,
+             subtract_fee: true,
+             contract_address: nil).
+             once.
+             returns(peatio_transaction)
       EthereumGateway.any_instance.expects(:load_balances).returns(balances)
       subject.send(:collect!, payment_address)
     end
