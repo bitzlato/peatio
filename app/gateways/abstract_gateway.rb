@@ -1,12 +1,20 @@
 class AbstractGateway
   attr_reader :blockchain
 
+  def self.supports_cash_addr_format?
+    false
+  end
+
   def self.normalize_address(address)
     # self.address = CashAddr::Converter.to_cash_address(address) if gateway.supports_cash_addr_format?
     #if blockchain.supports_cash_addr_format? && rid? && CashAddr::Converter.is_valid?(rid)
       #self.rid = CashAddr::Converter.to_cash_address(rid)
     #end
     address
+  end
+
+  def self.format_address(address)
+    not_implemented!
   end
 
   def self.normalize_txid(txid)
@@ -42,10 +50,6 @@ class AbstractGateway
   end
 
   def enable_block_fetching?
-    false
-  end
-
-  def supports_cash_addr_format?
     false
   end
 

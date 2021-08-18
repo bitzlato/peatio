@@ -251,7 +251,7 @@ describe API::V2::Account::Deposits, type: :request do
 
         it 'expose data about eth address' do
           api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
-          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":"' + blockchain.normalize(address) + '","state":"active"}'
+          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":"' + blockchain.normalize_address(address) + '","state":"active"}'
         end
 
         it 'pending user address state' do
