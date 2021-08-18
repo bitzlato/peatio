@@ -14,12 +14,12 @@ class AbstractGateway
   end
 
   def self.case_sensitive?
-    raise 'not implemented'
+    not_implemented!
   end
 
   def self.valid_address?(address)
     # CashAddr::Converter.is_valid?(rid)
-    raise 'not implemented'
+    not_implemented!
   end
 
   def self.implements?(method_name)
@@ -102,6 +102,10 @@ class AbstractGateway
   end
 
   def build_client
+    not_implemented!
+  end
+
+  def not_implemented!
     raise "not implemented #{self.class}"
   end
 end
