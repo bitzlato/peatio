@@ -20,7 +20,7 @@ module OrderServices
       ord_type:,
       volume:,
       price: nil,
-      uuid: UUID.generate,
+      uuid: UUID.generate
     )
       order = create_order(
         market: market,
@@ -197,7 +197,7 @@ module OrderServices
 
       raise(
         IncorrectSideValue,
-        "side = #{side}. Possible side values: #{POSSIBLE_SIDE_VALUES.join(' or ')}"
+        "side = #{side}. Possible side values: #{POSSIBLE_SIDE_VALUES.join(' or ')}",
       ) unless POSSIBLE_SIDE_VALUES.include?(side)
 
       symbol
