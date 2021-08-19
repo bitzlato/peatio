@@ -72,15 +72,16 @@ class BlockchainService
   def update_or_create_transaction!(tx)
     # TODO fetch_transaction if status is pending
     attrs = { fee: tx.fee, block_number: tx.block_number, status: tx.status, txout: tx.txout }
-    Bugsnag.notify "transaction has no from_address" do |b|
-      b.meta_data = tx
-    end if tx.from_address.blank?
     t = Transaction.
       create_with(attrs.merge(from_address: tx.from_address, amount: tx.amount, to_address: tx.to_address)).
       find_or_create_by!(currency_id: tx.currency_id, txid: tx.id, block_number: nil) # TODO для bitcoin наверное важен txout
 
     t.assign_attributes attrs
     t.save! if t.changed?
+  rescue ActiveRecord::RecordInvalid => err
+    Bugsnag.notify err do |b|
+      b.meta_data = { tx: tx, record: err.record.as_json }
+    end
   end
 
   def dispatch_deposits! block_number
