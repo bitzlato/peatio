@@ -77,19 +77,7 @@ class AbstractGateway
 
   def save_transaction(transaction, extra = {})
     raise 'transaction must be a Peatio::Transaction' unless transaction.is_a? Peatio::Transaction
-    Transaction.create!(
-      {
-        from_address: transaction.from_address,
-        to_address: transaction.to_address,
-        currency_id: transaction.currency_id,
-        txid: transaction.txid,
-        block_number: transaction.block_number,
-        amount: transaction.amount,
-        status: transaction.status,
-        txout: transaction.txout,
-        options: transaction.options,
-      }.deep_merge(extra)
-    )
+    Transaction.create_from_blockchain_transaction!(transaction, extra)
   end
 
   def hash_to_transaction(hash)
