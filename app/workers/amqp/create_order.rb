@@ -15,13 +15,6 @@ module Workers
           market: market,
           **payload[:data].slice(:side, :ord_type, :price, :volume)
         )
-      rescue ::Account::AccountError => e
-        ::AMQP::Queue.enqueue_event(
-          'private',
-          @member.uid,
-          'order_error',
-          'market.account.insufficient_balance',
-        )
       rescue StandardError => e
         ::AMQP::Queue.enqueue_event(
           'private',
