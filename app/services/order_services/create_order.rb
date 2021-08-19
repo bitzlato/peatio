@@ -4,13 +4,21 @@ module OrderServices
       @member = member
     end
 
-    def perform(market:, side:, ord_type:, price: nil, volume:)
+    def perform(
+      market:,
+      side:,
+      ord_type:,
+      volume:,
+      price: nil,
+      uuid: UUID.generate,
+    )
       order = create_order(
         market: market,
         side: side,
         ord_type: ord_type,
         price: price,
         volume: volume,
+        uuid: uuid,
       )
       submit_and_return_order(order)
     rescue ::Order::InsufficientMarketLiquidity
@@ -18,15 +26,36 @@ module OrderServices
         'private',
         @member.uid,
         'order_error',
-        'market.order.insufficient_market_liquidity',
+        amqp_event_payload_with_uuid(
+          uuid: uuid,
+          payload: 'market.order.insufficient_market_liquidity',
+        ),
       )
+      nil
+    rescue StandardError => e
+      ::AMQP::Queue.enqueue_event(
+        'private',
+        @member.uid,
+        'order_error',
+        amqp_event_payload_with_uuid(
+          uuid: uuid,
+          payload: 'market.order.create_error',
+        ),
+      )
+      report_exception(e)
       nil
     end
 
     private
 
-    def create_order(market: ,side:, ord_type:, price:, volume:)
-      uuid = UUID.generate
+    def amqp_event_payload_with_uuid(uuid:, payload:)
+      {
+        uuid: uuid,
+        payload: payload,
+      }
+    end
+
+    def create_order(market: ,side:, ord_type:, price:, volume:, uuid:)
       member_account = get_member_account(side: side, market: market)
       # Single Order can produce multiple Trades
       # with different fee types (maker and taker).
