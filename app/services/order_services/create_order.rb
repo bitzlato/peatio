@@ -1,5 +1,7 @@
 module OrderServices
   class CreateOrder
+    POSSIBLE_SIDE_VALUES = %i[sell buy]
+
     def initialize(member:)
       @member = member
     end
@@ -7,8 +9,8 @@ module OrderServices
     ##
     # Creates an order and sumbits it
     #
-    # @param side     [String] possible values: "sell", "buy"
-    # @param ord_type [String] possible values: "limit", "market"
+    # @param side     [String|Symbol] possible values: "sell", "buy"
+    # @param ord_type [String]        possible values: "limit", "market"
     #
     # @return [Order] if success or [nil] if failed
 
@@ -64,7 +66,9 @@ module OrderServices
     end
 
     def create_order(market: ,side:, ord_type:, price:, volume:, uuid:)
-      member_account = get_member_account(side: side, market: market)
+      symbolized_side = symbolize_and_check_side!(side)
+
+      member_account = get_member_account(side: symbolized_side, market: market)
       # Single Order can produce multiple Trades
       # with different fee types (maker and taker).
       # Since we can't predict fee types on order creation step and
@@ -80,7 +84,7 @@ module OrderServices
       locked_value, order_subclass = nil
 
       member_account.with_lock do
-        if side == 'sell'
+        if symbolized_side == :sell
           order_subclass = OrderAsk
           locked_value = calc_sell_compute_locked(
             ord_type: ord_type,
@@ -149,7 +153,7 @@ module OrderServices
     end
 
     def get_member_account(side:, market:)
-      currency_unit = side == 'sell' ? market.base_unit : market.quote_unit
+      currency_unit = side == :sell ? market.base_unit : market.quote_unit
       currency = Currency.find(currency_unit)
       @member.get_account(currency)
     end
@@ -187,5 +191,18 @@ module OrderServices
                           { persistent: true })
       order
     end
+
+    def symbolize_and_check_side!(side)
+      symbol = side.to_sym
+
+      raise(
+        IncorrectSideValue,
+        "side = #{side}. Possible side values: #{POSSIBLE_SIDE_VALUES.join(' or ')}"
+      ) unless POSSIBLE_SIDE_VALUES.include?(side)
+
+      symbol
+    end
+
+    class IncorrectSideValue < StandardError; end
   end
 end
