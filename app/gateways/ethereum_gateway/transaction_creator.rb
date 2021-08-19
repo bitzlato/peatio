@@ -24,14 +24,14 @@ class EthereumGateway
                                   to_address: to_address,
                                   contract_address: contract_address,
                                   secret: secret,
-                                  gas_limit: gas_limit || DEFAULT_ETH_GAS_LIMIT,
+                                  gas_limit: gas_limit || DEFAULT_ERC20_GAS_LIMIT,
                                   gas_price: gas_price)
       : create_eth_transaction!(amount: amount,
                                 from_address: from_address,
                                 to_address: to_address,
                                 subtract_fee: subtract_fee,
                                 secret: secret,
-                                gas_limit: gas_limit || DEFAULT_ERC20_GAS_LIMIT,
+                                gas_limit: gas_limit || DEFAULT_ETH_GAS_LIMIT,
                                 gas_price: gas_price)
       peatio_transaction.options.merge! gas_factor: gas_factor
       peatio_transaction
@@ -104,8 +104,8 @@ class EthereumGateway
         to_address:   to_address,
         amount:       amount,
         hash:         normalize_address(txid),
+        contract_address: contract_address,
         options: {
-          contract_address: contract_address,
           gas_price: gas_price,
           gas_limit: gas_limit,
         }

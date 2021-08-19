@@ -39,11 +39,7 @@ class BlockchainService
       elsif tx.hash.in?(withdraw_txids)
         update_or_create_withdraw tx
       end
-      # TODO Add fee
-      #Transaction
-        #.where(currency_id: tx.currency_id, txid: tx.hash, txout: tx.txout)
-        #.where('fee is null or block_number is null')
-        #.update_all fee: tx.fee, block_number: tx.block_number
+      update_or_create_transaction! tx
     end.count
   end
 
@@ -66,6 +62,23 @@ class BlockchainService
   end
 
   private
+
+  def update_transaction!(tx)
+    Transaction.
+      where(currency_id: tx.currency_id, txid: tx.id, block_number: nil).
+      update_all( fee: tx.fee, block_number: tx.block_number, status: tx.status, txout: tx.txout )
+  end
+
+  def update_or_create_transaction!(tx)
+    # TODO fetch_transaction if status is pending
+    attrs = { fee: tx.fee, block_number: tx.block_number, status: tx.status, txout: tx.txout }
+    t = Transaction.
+      create_with(attrs.merge(from_address: tx.from_address, amount: tx.amount, to_address: tx.to_address)).
+      find_or_create_by!(currency_id: tx.currency_id, txid: tx.id, block_number: nil) # TODO для bitcoin наверное важен txout
+
+    t.assign_attributes attrs
+    t.save! if t.changed?
+  end
 
   def dispatch_deposits! block_number
     blockchain.deposits.accepted.where('block_number <= ?', latest_block_number - blockchain.min_confirmations).lock.find_each do |deposit|

@@ -23,13 +23,32 @@ class EthereumGateway < AbstractGateway
     true
   end
 
+  def refuel_and_collect!(payment_address)
+    refuel_gas!(payment_address.address)
+    # TODO подождать пока транзакция придет
+    sleep 60
+    collect!(payment_address)
+  end
+
   # Collect all tokens and coins from payment_address to hot wallet
   def collect!(payment_address)
     hot_wallet = blockchain.hot_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
 
-    # TODO refuel if need?
-    load_balances(payment_address.address).each_pair do |currency, amount|
-      hash_to_transaction(
+    balances = load_balances(payment_address.address).reject { |c, a| a.zero? }
+
+    # First collect tokens (save base currency to last step for gas)
+    token_currencies = balances.filter { |c| c.token? }.keys
+    base_currencies = balances.reject { |c| c.token? }.keys
+    base_currencies = [] if Rails.env.production? # TODO
+
+    # TODO Сообщать о том что не хватает газа ДО выполнения, так как он потратися
+    # Не выводить базовую валюту пока не счету есть токены
+    # Базовую валюту откидывать за вычетом необходимой суммы газа для токенов
+    (token_currencies + base_currencies).map do |currency|
+      amount = balances[currency]
+      next if amount.zero?
+      logger.info("Collect #{currency} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
+      transaction = hash_to_transaction(
         TransactionCreator
         .new(client)
         .call(from_address: payment_address.address,
@@ -37,18 +56,20 @@ class EthereumGateway < AbstractGateway
               amount: amount.base_units,
               secret: payment_address.secret,
               contract_address: currency.contract_address,
-              subtract_fee: true)
+              subtract_fee: currency.contract_address.nil?)
       )
+      save_transaction transaction
     rescue EthereumGateway::TransactionCreator::Error => err
       logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
-    end
+      nil
+    end.compact
 
     # 1. Check transaction status in blockchain or transactions network.
     # 2. Create transactions from from_address to to_address for all existen coins
-
   end
 
   def refuel_gas!(target_address)
+    target_address = target_address.address if target_address.is_a? PaymentAddress
     gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
 
     tokens_count = load_balances(target_address)
@@ -65,9 +86,9 @@ class EthereumGateway < AbstractGateway
       )
     )
 
-    logger.info("#{target_address} refueled with transaction #{transaction}")
+    logger.info("#{target_address} refueled with transaction #{transaction.as_json}")
     # TODO save GasRefuel record as reference
-    save_transaction transaction, options: { tokens_count: tokens_count, ethereum_balance: ethereum_balance }
+    save_transaction transaction, options: { tokens_count: tokens_count }
 
   rescue EthereumGateway::GasRefueler::Error => err
     logger.info("Canceled refueling address #{target_address} with #{err}")
@@ -75,7 +96,7 @@ class EthereumGateway < AbstractGateway
 
   def load_balances(address)
     blockchain.currencies.each_with_object({}) do |currency, a|
-      a[currency] = load_balance(address, currency)
+      a[currency.money_currency] = load_balance(address, currency)
     end
   end
 
@@ -113,12 +134,6 @@ class EthereumGateway < AbstractGateway
             contract_address: contract_address,
             subtract_fee: subtract_fee)
     )
-  end
-
-  def collect_deposit!(deposit)
-    DepositCollector
-      .new(client)
-      .call(deposit)
   end
 
   #def process_block(block_number)

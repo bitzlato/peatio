@@ -34,6 +34,14 @@ class Blockchain < ApplicationRecord
     write_attribute(:explorer_transaction, hash.fetch('transaction'))
   end
 
+  def explore_address_url(address)
+    explorer_address.gsub('#{address}', address)
+  end
+
+  def explore_transaction_url(txid)
+    explorer_transaction.gsub('#{txid}', txid)
+  end
+
   def native_currency
     currencies.find { |c| c.parent_id.nil? } || raise("No native currency for wallet id #{id}")
   end

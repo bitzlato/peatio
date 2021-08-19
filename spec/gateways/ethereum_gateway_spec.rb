@@ -39,7 +39,7 @@ describe ::EthereumGateway do
              to_address: hot_wallet.address,
              amount: 1000000,
              secret: nil,
-            subtract_fee: true,
+             subtract_fee: false,
              contract_address: Money::Currency.find('usdt-erc20').contract_address).
              once.
              returns(peatio_transaction)

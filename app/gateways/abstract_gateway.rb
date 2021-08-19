@@ -34,6 +34,10 @@ class AbstractGateway
     instance_methods(false).include?(method_name)
   end
 
+  def self.enable_personal_address_balance?
+    true
+  end
+
   attr_reader :client
 
   def latest_block_number
@@ -43,10 +47,6 @@ class AbstractGateway
   def initialize(blockchain)
     @blockchain = blockchain
     @client = build_client
-  end
-
-  def enable_personal_address_balance?
-    true
   end
 
   def enable_block_fetching?
@@ -77,18 +77,7 @@ class AbstractGateway
 
   def save_transaction(transaction, extra = {})
     raise 'transaction must be a Peatio::Transaction' unless transaction.is_a? Peatio::Transaction
-    Transaction.create!(
-      {
-        from_address: transaction.from_address,
-        to_address: transaction.to_address,
-        currency_id: transaction.currency_id,
-        txid: transaction.txid,
-        block_number: transaction.block_number,
-        amount: transaction.amount,
-        status: transaction.status,
-        txout: transaction.txout
-      }.merge(extra)
-    )
+    Transaction.create_from_blockchain_transaction!(transaction, extra)
   end
 
   def hash_to_transaction(hash)

@@ -1,7 +1,7 @@
 require 'peatio/bitzlato/wallet'
 
 class BitzlatoGateway < AbstractGateway
-  def enable_personal_address_balance?
+  def self.enable_personal_address_balance?
     false
   end
 
@@ -14,7 +14,11 @@ class BitzlatoGateway < AbstractGateway
   def load_balances
     client.load_balances.each_with_object({}) do |(k, v), a|
       currency = Money::Currency.find k
-      a[currency] = currency.to_money_from_decimal a
+      if currency.nil?
+        logger.debug("Skip not found currency #{k}")
+        next
+      end
+      a[currency] = currency.to_money_from_decimal v
     end
   end
 

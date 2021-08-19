@@ -32,12 +32,28 @@ class Transaction < ApplicationRecord
 
   # TODO: record expenses for succeed transactions
 
-  # == Class Methods ========================================================
-
-  # == Instance Methods =====================================================
+  def self.create_from_blockchain_transaction!(tx, extra = {})
+    create!(
+      {
+        from_address: tx.from_address,
+        to_address: tx.to_address,
+        currency_id: tx.currency_id,
+        txid: tx.txid,
+        block_number: tx.block_number,
+        amount: tx.amount,
+        status: tx.status,
+        txout: tx.txout,
+        options: tx.options,
+      }.deep_merge(extra)
+    )
+  end
 
   def initialize_defaults
     self.status = :pending if status.blank?
+  end
+
+  def transaction_url
+    blockchain.explore_transaction_url txid if blockchain
   end
 
   # TODO Validate txid by blockchain

@@ -23,8 +23,6 @@ class Withdrawer
   end
 
   def call(withdraw)
-    raise 'turned off' if Rails.env.production?
-
     withdraw.lock!.transfer!
 
     withdraw.with_lock do
@@ -45,14 +43,8 @@ class Withdrawer
         transcation: transaction,
         message: 'Blockchain transcation created'
 
-      Transaction.create!(
-        from_address: transaction.from_address,
-        to_address: transaction.to_address,
-        reference: withdraw,
-        currency: withdraw.currency,
-        amount: transaction.amount,
-        options: transaction.options,
-      )
+      Transaction.
+        create_from_blockchain_transaction!(transaction, reference: withdraw, currency: withdraw.currency)
 
       withdraw.update!(
         metadata: (withdraw.metadata.presence || {}).merge(transaction.options || {}), # Saves links and etc

@@ -32,11 +32,6 @@ class EthereumGateway
         end
       end
     end
-
-    private
-
-    def save_transaction(transaction, reference)
-    end
   end
 end
 
