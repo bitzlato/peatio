@@ -78,7 +78,7 @@ class BlockchainService
 
     t.assign_attributes attrs
     t.save! if t.changed?
-  rescue ActiveRecord::RecordInvalid => err
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
     Bugsnag.notify err do |b|
       b.meta_data = { tx: tx, record: err.record.as_json }
     end
