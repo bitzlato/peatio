@@ -23,7 +23,10 @@ class Transaction < ApplicationRecord
 
   # == Validations ==========================================================
 
-  validates :currency, :amount, :from_address, :to_address, :status, presence: true
+  validates :currency, :amount, :from_address, :status, presence: true
+
+  # In ethereum there can be no to_addres if this failed contract transaction
+  validates :to_address, presence:true, unless: :failed?
 
   validates :status, inclusion: { in: STATUSES }
 
@@ -49,6 +52,10 @@ class Transaction < ApplicationRecord
         options: tx.options,
       }.deep_merge(extra)
     )
+  end
+
+  def failed?
+    status == FAIL_STATUS
   end
 
   def initialize_defaults

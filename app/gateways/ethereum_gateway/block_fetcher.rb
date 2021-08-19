@@ -98,7 +98,7 @@ class EthereumGateway
 
     def build_erc20_transactions(txn_receipt)
       # Build invalid transaction for failed withdrawals
-      return [build_invalid_erc20_transaction(txn_receipt)] if transaction_status(txn_receipt) == 'failed' && txn_receipt.fetch('logs').blank?
+      return [build_invalid_erc20_transaction(txn_receipt)] if txn_receipt.fetch('logs').blank?
 
       txn_receipt.fetch('logs').each_with_object([]) do |log, formatted_txs|
         next if log['blockHash'].blank? && log['blockNumber'].blank?
@@ -134,8 +134,11 @@ class EthereumGateway
         hash:         normalize_txid(txn_receipt.fetch('transactionHash')),
         block_number: txn_receipt.fetch('blockNumber').to_i(16),
         contract_address: txn_receipt.fetch('to'),
+        from_addresses:  [normalize_address(txn_receipt['from'])],
         amount: 0,
         status:       transaction_status(txn_receipt),
+        options: { gas_price: txn_receipt.fetch('effectiveGasPrice').to_i(16) },
+        fee:  txn_receipt.fetch('effectiveGasPrice').to_i(16) * txn_receipt.fetch('gasUsed').to_i(16)
       }
     end
   end
