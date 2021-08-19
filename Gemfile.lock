@@ -98,6 +98,9 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
+    active_record_upsert (0.10.1)
+      activerecord (>= 5.0, < 6.2)
+      pg (>= 0.18, < 2.0)
     activejob (5.2.4.6)
       activesupport (= 5.2.4.6)
       globalid (>= 0.3.6)
@@ -556,6 +559,7 @@ PLATFORMS
 
 DEPENDENCIES
   aasm (~> 5.2.0)
+  active_record_upsert
   addressable (>= 2.8.0)
   adequate_crypto_address
   after_commit_everywhere (~> 1.1)

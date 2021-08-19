@@ -16,10 +16,6 @@ class BlockchainService
     @latest_block_number ||= gateway.latest_block_number
   end
 
-  def fetch_transaction(transaction)
-    gateway.fetch_transaction transaction.txid
-  end
-
   def process_block(block_number)
     dispatch_deposits! block_number
 
@@ -34,23 +30,19 @@ class BlockchainService
     end
 
     transactions.each do |tx|
+      @withdrawal = @deposit = @fetched_transaction = nil
       if tx.to_address.in?(blockchain.deposit_addresses)
         update_or_create_deposit tx
       elsif tx.hash.in?(withdraw_txids)
         update_or_create_withdraw tx
       end
-      update_or_create_transaction! tx
+      upsert_transaction! tx, (deposit || withdrawal)
     end.count
   end
 
   # Resets current cached state.
   def reset!
     @latest_block_number = nil
-  end
-
-  def update_fees!(block)
-    block.each do |tx|
-    end
   end
 
   def update_height(block_number)
@@ -63,21 +55,25 @@ class BlockchainService
 
   private
 
-  def update_transaction!(tx)
-    Transaction.
-      where(currency_id: tx.currency_id, txid: tx.id, block_number: nil).
-      update_all( fee: tx.fee, block_number: tx.block_number, status: tx.status, txout: tx.txout )
-  end
+  attr_reader :withdrawal, :deposit, :fetched_transaction
 
-  def update_or_create_transaction!(tx)
+  def upsert_transaction!(tx, reference = nil)
+    tx = fetch_transaction(tx)
     # TODO fetch_transaction if status is pending
-    attrs = { fee: tx.fee, block_number: tx.block_number, status: tx.status, txout: tx.txout }
-    t = Transaction.
-      create_with(attrs.merge(from_address: tx.from_address, amount: tx.amount, to_address: tx.to_address)).
-      find_or_create_by!(currency_id: tx.currency_id, txid: tx.id, block_number: nil) # TODO для bitcoin наверное важен txout
-
-    t.assign_attributes attrs
-    t.save! if t.changed?
+    # TODO change currency_to blockchain_id
+    Transaction.upsert!(
+      fee: tx.fee,
+      block_number: tx.block_number,
+      status: tx.status,
+      txout: tx.txout,
+      from_address: tx.from_address,
+      amount: tx.amount,
+      to_address: tx.to_address,
+      currency_id: tx.currency_id,
+      txid: tx.id,
+      reference: reference
+    )
+    logger.debug("Transaction is saved to database")
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
     Bugsnag.notify err do |b|
       b.meta_data = { tx: tx, record: err.record.as_json }
@@ -85,8 +81,13 @@ class BlockchainService
   end
 
   def dispatch_deposits! block_number
-    blockchain.deposits.accepted.where('block_number <= ?', latest_block_number - blockchain.min_confirmations).lock.find_each do |deposit|
-      Rails.logger.info("Dispatch deposit #{deposit.id}, confirmation #{latest_block_number - deposit.block_number}>=#{blockchain.min_confirmations}")
+    blockchain.
+      deposits.
+      accepted.
+      where('block_number <= ?', latest_block_number - blockchain.min_confirmations).
+      lock.
+      find_each do |deposit|
+      logger.info("Dispatch deposit #{deposit.id}, confirmation #{latest_block_number - deposit.block_number}>=#{blockchain.min_confirmations}")
       deposit.dispatch!
     end
   end
@@ -98,13 +99,13 @@ class BlockchainService
     return if address.blank?
 
     if DepositSpread.find_by(txid: transaction.id).present?
-      Rails.logger.debug("Catched spread transaction. Skip it #{transaction.id}")
+      logger.debug("Catched spread transaction. Skip it #{transaction.id}")
       return
     end
 
     if transaction.amount < Currency.find(transaction.amount.currency.id).min_deposit_amount_money
       # Currently we just skip tiny deposits.
-      Rails.logger.info do
+      logger.info do
         "Skipped deposit with txid: #{transaction.hash}"\
         " to #{transaction.to_address} in block number #{transaction.block_number}"\
         " because of low amount (#{transaction.amount.format} < #{Currency.find(transaction.amount.currency.id).min_deposit_amount_money.format})"
@@ -113,8 +114,8 @@ class BlockchainService
     end
 
     # Fetch transaction from a blockchain that has `pending` status.
-    transaction = gateway.fetch_transaction(transaction.txid, transaction.txout) if transaction.status.pending?
-    return unless transaction.status.succeed?
+    transaction = fetch_transaction(transaction)
+    return unless transaction.status.success?
 
     # Skip deposit tx if there is tx for deposit collection process
     # TODO: select only pending transactions
@@ -127,7 +128,7 @@ class BlockchainService
       #transaction.from_addresses = gateway.transaction_sources(transaction)
     #end
 
-    deposit = Deposits::Coin.find_or_create_by!(
+    @deposit = Deposits::Coin.find_or_create_by!(
       currency_id: transaction.currency_id,
       txid: transaction.hash,
       txout: transaction.txout # what for? it is usable for blockchain only?
@@ -140,54 +141,31 @@ class BlockchainService
     end
     deposit.with_lock do
       if deposit.block_number.nil?
-        Rails.logger.debug("Set block_number #{transaction.block_number} for deposit #{deposit.id}")
+        logger.debug("Set block_number #{transaction.block_number} for deposit #{deposit.id}")
         deposit.update! block_number: transaction.block_number
       end
       raise "Amounts different #{deposit.id}" unless transaction.amount == deposit.money_amount
-      Rails.logger.info("Found or created suitable deposit #{deposit.id} for txid #{transaction.id}, amount #{transaction.amount}")
+      logger.info("Found or created suitable deposit #{deposit.id} for txid #{transaction.id}, amount #{transaction.amount}")
       if deposit.submitted?
-        Rails.logger.info("Accepting deposit #{deposit.id}")
+        logger.info("Accepting deposit #{deposit.id}")
         deposit.accept!
       end
-      ::Transaction
-        .create_with(amount: transaction.amount,
-                     to_address: transaction.to_address,
-                     from_address: transaction.from_address,
-                     block_number: transaction.block_number,
-                     txout: transaction.txout,
-                     reference: deposit,
-                     status: transaction.status,
-                    )
-        .find_or_create_by!(currency_id: deposit.currency_id, txid: transaction.id)
     end
   end
 
   def update_or_create_withdraw(transaction)
-    withdrawal = blockchain.withdraws.confirming
+    @withdrawal = blockchain.withdraws.confirming
       .find_by(currency_id: transaction.currency_id, txid: transaction.hash)
 
     # Skip non-existing in database withdrawals.
     if withdrawal.blank?
-      Rails.logger.info { "Skipped withdrawal: #{transaction.hash}." }
+      logger.info { "Skipped withdrawal: #{transaction.hash}." }
       return
     end
-    # TODO save contract_address
-    ::Transaction
-      .create_with(amount: transaction.amount,
-                   to_address: transaction.to_address,
-                   from_address: transaction.from_address,
-                   block_number: transaction.block_number,
-                   txout: transaction.txout,
-                   reference: withdrawal,
-                   status: transaction.status
-                  )
-      .find_or_create_by!(currency_id: withdrawal.currency_id, txid: transaction.id)
-
     withdrawal.with_lock do
       withdrawal.update_column :block_number, transaction.block_number if withdrawal.block_number.nil?
 
-      # Fetch transaction from a blockchain that has `pending` status.
-      transaction = gateway.fetch_transaction(transaction.hash, transaction.txout) if transaction.status.pending?
+      transaction = fetch_transaction(transaction)
 
       # Manually calculating withdrawal confirmations, because blockchain height is not updated yet.
       if transaction.status.failed?
@@ -195,6 +173,20 @@ class BlockchainService
       elsif transaction.status.success? && latest_block_number - withdrawal.block_number >= blockchain.min_confirmations
         withdrawal.success!
       end
+    rescue => err
+      Bugsnag.notify err do |b|
+        b.meta_data = { tx: transaction }
+      end
+      logger.error "#{err.message} for #{transaction}"
     end
+  end
+
+  def fetch_transaction(tx)
+    return tx unless tx.status.pending?
+    @fetched_transaction ||= gateway.fetch_transaction tx.txid, tx.txout
+  end
+
+  def logger
+    Rails.logger
   end
 end

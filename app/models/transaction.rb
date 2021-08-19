@@ -1,8 +1,11 @@
 class Transaction < ApplicationRecord
+  # TODO change currency_id to blockchain_id
+  upsert_keys [:currency_id, :txid]
+
   # == Constants ============================================================
 
   PENDING_STATUS = 'pending'
-  SUCCESS_STATUS = 'succeed'
+  SUCCESS_STATUS = 'success'
   FAIL_STATUS = 'failed'
   STATUSES = [PENDING_STATUS, SUCCESS_STATUS, FAIL_STATUS].freeze
 

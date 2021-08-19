@@ -3,6 +3,12 @@ class Peatio::Transaction
   alias_attribute :txid, :hash
   attr_accessor :contract_address
 
+  #  %w[success pending failed rejected].freeze
+  def status=(s)
+    raise "Unknown status #{s}" unless STATUSES.include? s.to_s
+    @status = s.to_s
+  end
+
   def from_address=(value)
     self.from_addresses = [value]
   end
