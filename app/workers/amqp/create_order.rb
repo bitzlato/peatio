@@ -13,7 +13,7 @@ module Workers
         service = ::OrderServices::CreateOrder.new(member_id, payload[:data])
         order = service.perform(
           market: market,
-          **payload[:data].slice(:side, :ord_type, :price, :volume)
+          **payload[:data].slice(:side, :ord_type, :price, :volume, :uuid)
         )
       end
     end

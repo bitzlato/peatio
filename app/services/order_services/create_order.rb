@@ -4,6 +4,14 @@ module OrderServices
       @member = member
     end
 
+    ##
+    # Creates an order and sumbits it
+    #
+    # @param side     [String] possible values: "sell", "buy"
+    # @param ord_type [String] possible values: "limit", "market"
+    #
+    # @return [Order] if success or [nil] if failed
+
     def perform(
       market:,
       side:,
@@ -42,7 +50,7 @@ module OrderServices
           payload: 'market.order.create_error',
         ),
       )
-      report_exception(e)
+      report_exception(e, true)
       nil
     end
 
@@ -168,7 +176,6 @@ module OrderServices
 
     def submit_and_return_order(order)
       return order.trigger_third_party_creation unless order.market.engine.peatio_engine?
-      order.trigger_private_event
 
       EventAPI.notify(
         ['market', order.market_id, 'order_created'].join('.'),

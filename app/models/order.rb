@@ -81,6 +81,8 @@ class Order < ApplicationRecord
     parent.table[:state]
   end
 
+  after_commit :trigger_private_event
+
   before_create do
     raise(
       ::Account::AccountError,
