@@ -5,6 +5,10 @@ class BitzlatoGateway < AbstractGateway
     false
   end
 
+  def self.valid_address?(address)
+    address=~/^[a-z0-9_]+$/i
+  end
+
   def load_balance(_address, currency)
     client.load_balance(currency.id).tap do |amount|
       currency.to_money_from_decimal amount
