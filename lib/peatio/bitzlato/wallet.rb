@@ -36,7 +36,7 @@ module Bitzlato
       payment_id = response['paymentId'] || raise("No payment ID in response")
       transaction.hash = transaction.txout = generate_id payment_id
       transaction.options.merge! payment_id: payment_id
-      transaction.status = 'succeed'
+      transaction.status = 'success'
       transaction
     rescue Bitzlato::Client::Error => e
       raise Peatio::Wallet::ClientError, e

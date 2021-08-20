@@ -19,7 +19,7 @@ describe ::AbstractGateway do
       from_address: '123',
       to_address: '145',
       block_number: 1,
-      status: 'succeed'
+      status: 'success'
     )}
     let(:reference) { create :deposit, :deposit_eth }
 
