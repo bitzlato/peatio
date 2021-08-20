@@ -32,7 +32,7 @@ class Blockchain < ApplicationRecord
   def explorer=(hash)
     write_attribute(:explorer_address, hash.fetch('address'))
     write_attribute(:explorer_transaction, hash.fetch('transaction'))
-    write_attribute(:explorer_contract_address, hash.fetch('contract_address'))
+    write_attribute(:explorer_contract_address, hash.fetch('contract_address', nil))
   end
 
   def explore_contract_address_url(contract_address)
