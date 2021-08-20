@@ -35,6 +35,25 @@ module API
         )
 
         expose(
+          :token_name,
+          documentation: {
+              type: String,
+              desc: 'Token name',
+              example: -> { ::Currency.visible.tokens.first.try(:token_name) || 'USDT' }
+          },
+          if: -> (currency){ currency.token? }
+        )
+
+        expose(
+          :icon_id,
+          documentation: {
+              type: String,
+              desc: 'Icon identifier',
+              example: -> { ::Currency.visible.first.try(:icon_key) || 'usdt' }
+          }
+        )
+
+        expose(
           :homepage,
           documentation: {
             type: String,

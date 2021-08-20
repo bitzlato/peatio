@@ -7,6 +7,7 @@ class Currency < ApplicationRecord
 
   OPTIONS_ATTRIBUTES = %i[erc20_contract_address gas_limit gas_price].freeze
   TOP_POSITION = 1
+  ID_SEPARATOR = '-'
 
   # == Attributes ===========================================================
 
@@ -187,6 +188,15 @@ class Currency < ApplicationRecord
   #   code.eth? # true if code equals to "eth".
   def id
     super&.inquiry
+  end
+
+  def token_name
+    return unless token?
+    id.to_s.upcase.split(ID_SEPARATOR).first.presence
+  end
+
+  def icon_id
+    (token_name || id).to_s.downcase
   end
 
   # subunit (or fractional monetary unit) - a monetary unit
