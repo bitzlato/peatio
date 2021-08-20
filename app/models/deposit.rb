@@ -4,6 +4,8 @@
 class Deposit < ApplicationRecord
   STATES = %i[submitted invoiced canceled rejected accepted skipped dispatched].freeze
 
+  # TODO rename dispatched to completed
+  #
   serialize :error, JSON unless Rails.configuration.database_support_json
   serialize :from_addresses, Array
   serialize :data, JSON unless Rails.configuration.database_support_json
