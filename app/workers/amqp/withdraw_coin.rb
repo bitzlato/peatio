@@ -26,9 +26,12 @@ module Workers
         end
 
         Withdrawer.new(wallet, @logger).call withdraw
-      rescue AASM::InvalidTransition => err
+
+        # Пока не понимаю что проихсодит с исключениями не указанными тут, поэтому отключил
+        # rescue AASM::InvalidTransition => err
+      rescue => err
         @logger.error id: payload[:id], message: err.message
-        report_exception err
+        report_exception err, true, payload
         nil
       end
     end
