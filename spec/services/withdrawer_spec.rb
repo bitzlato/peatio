@@ -28,7 +28,7 @@ describe Withdrawer do
                                 to_address: withdraw.to_address,
                                 hash: SecureRandom.hex(5))
       end
-      fit do
+      it do
         subject.call(withdraw)
         expect(withdraw.aasm_state).to eq 'confirming'
       end
