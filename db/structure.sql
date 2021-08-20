@@ -249,7 +249,8 @@ CREATE TABLE public.blockchains (
     server_encrypted character varying(1024),
     id bigint NOT NULL,
     gateway_klass character varying NOT NULL,
-    enable_invoice boolean DEFAULT false NOT NULL
+    enable_invoice boolean DEFAULT false NOT NULL,
+    explorer_contract_address character varying
 );
 
 
@@ -2706,6 +2707,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210816044928'),
 ('20210817050515'),
 ('20210817100325'),
-('20210818074322');
+('20210818074322'),
+('20210820101018');
 
 
