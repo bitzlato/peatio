@@ -23,6 +23,7 @@ describe ::EthereumGateway do
       block_number: 1,
       status: 'pending'
     )}
+    let!('usdt-erc20') { find_or_create :currency, :'usdt-erc20' , id: :'usdt-erc20' }
     let!(:payment_address) { create :payment_address, :eth_address }
     let(:balances) {
       {
@@ -30,7 +31,7 @@ describe ::EthereumGateway do
         Money::Currency.find!('usdt-erc20') => 1.to_money('usdt-erc20'),
       }
     }
-    fit do
+    it do
       Blockchain.any_instance.expects(:hot_wallet).returns hot_wallet
       EthereumGateway::TransactionCreator.
         any_instance.

@@ -5,9 +5,10 @@ class Currency < ApplicationRecord
 
   # == Constants ============================================================
 
+  # TODO remove erc20 contract_address
   OPTIONS_ATTRIBUTES = %i[erc20_contract_address gas_limit gas_price].freeze
   TOP_POSITION = 1
-  ID_SEPARATOR = '-'
+  ID_SEPARATOR = '-'.freeze
 
   # == Attributes ===========================================================
 
@@ -79,6 +80,9 @@ class Currency < ApplicationRecord
             :withdraw_limit_24h,
             :withdraw_limit_72h,
             numericality: { greater_than_or_equal_to: 0 }
+
+  # TODO
+  # validates :contract_address, presence: true, if: :parent_id
 
   # == Scopes ===============================================================
 
@@ -154,10 +158,6 @@ class Currency < ApplicationRecord
 
   def blockchain_key=(key)
     self.blockchain = Blockchain.find_by_key!(key)
-  end
-
-  def contract_address
-    erc20_contract_address
   end
 
   def wipe_cache
@@ -237,6 +237,10 @@ class Currency < ApplicationRecord
                                   base_factor:           base_factor,
                                   min_collection_amount: min_collection_amount,
                                   options:               opt)
+  end
+
+  def precision
+    super || subunits
   end
 
   def min_deposit_amount_money

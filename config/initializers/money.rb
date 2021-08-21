@@ -7,8 +7,8 @@ class Money
 
   class Currency
     module Loader
-      def load!
-        @currencies = []
+      def self.load!(_options = nil)
+        @currencies = {}
       end
     end
 
@@ -17,6 +17,13 @@ class Money
     class << self
       def find!(code)
         find(code) || raise("No #{code} Money::Currency found!")
+      end
+      def all
+        ::Currency.ordered.map &:money_currency
+      end
+      def new(id)
+        id = id.to_s.downcase
+        RequestStore.store['money_currency_'+id] ||= super(id).freeze
       end
     end
 
@@ -48,6 +55,10 @@ class Money
       #raise "No contract_address for #{@id}" if @parent_currency.present? && !@contract_address
 
       #@precision = data[:precision] || @base_factor_subunits
+    end
+
+    def iso_code
+      id
     end
 
    # TODO rename from_units_to_money

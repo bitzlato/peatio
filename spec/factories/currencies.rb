@@ -58,6 +58,7 @@ FactoryBot.define do
           gas_price: 1_000_000_000 }
       end
       association :blockchain, 'bsc-testnet', strategy: :find_or_create, key: 'bsc-testnet'
+      # contract_address: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
     end
 
     trait :eth do
@@ -188,6 +189,13 @@ FactoryBot.define do
       position            { 8 }
       visible             { true }
       options             { {} }
+    end
+
+    trait :'usdt-erc20' do
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
+      name { 'USDT(ERC20)' }
+      subunits { 6 }
+      contract_address { '0xdac17f958d2ee523a2206206994597c13d831ec7' }
     end
   end
 end

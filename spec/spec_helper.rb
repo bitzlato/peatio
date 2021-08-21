@@ -112,9 +112,6 @@ RSpec.configure do |config|
     %i[usd eur btc eth trst ring].each do |code|
       FactoryBot.find_or_create :currency, code, id: code
     end
-    #Money::Currency.all.each do |mc|
-      #FactoryBot.find_or_create :currency, mc.iso_code.downcase, id: mc.iso_code.downcase
-    #end
 
     Wallet.delete_all
     %i[eth_deposit eth_hot eth_warm eth_fee trst_deposit trst_hot btc_hot btc_deposit ].each do |name|
