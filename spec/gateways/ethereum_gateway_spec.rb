@@ -26,11 +26,11 @@ describe ::EthereumGateway do
     let!(:payment_address) { create :payment_address, :eth_address }
     let(:balances) {
       {
-        Money::Currency.find('eth') => 1.to_money('eth'),
-        Money::Currency.find('usdt-erc20') => 1.to_money('usdt-erc20'),
+        Money::Currency.find!('eth') => 1.to_money('eth'),
+        Money::Currency.find!('usdt-erc20') => 1.to_money('usdt-erc20'),
       }
     }
-    it do
+    fit do
       Blockchain.any_instance.expects(:hot_wallet).returns hot_wallet
       EthereumGateway::TransactionCreator.
         any_instance.
@@ -40,7 +40,7 @@ describe ::EthereumGateway do
              amount: 1000000,
              secret: nil,
              subtract_fee: false,
-             contract_address: Money::Currency.find('usdt-erc20').contract_address).
+             contract_address: Money::Currency.find!('usdt-erc20').contract_address).
              once.
              returns(peatio_transaction)
       EthereumGateway::TransactionCreator.

@@ -105,13 +105,6 @@ RSpec.configure do |config|
     %w[bitzlato eth-kovan eth-rinkeby btc-testnet].each do |blockchain|
       FactoryBot.find_or_create(:blockchain, blockchain)
     end
-    #Money::Currency.all.each do |m|
-      #m.instance_variable_set('@blockchain_key', 'eth-rinkeby') if m.blockchain_key == 'eth-mainnet'
-      #m.instance_variable_set('@blockchain_key', 'bsc-testnet') if m.blockchain_key == 'bsc-mainnet'
-    #end
-    #Money::Currency.all.map(&:blockchain_key).uniq.each do |blockchain|
-      #FactoryBot.find_or_create(:blockchain, blockchain, key: blockchain)
-    #end
     %i[btc-testnet].each do |key|
       FactoryBot.find_or_create(:blockchain, key, key: key)
     end
@@ -126,8 +119,6 @@ RSpec.configure do |config|
     Wallet.delete_all
     %i[eth_deposit eth_hot eth_warm eth_fee trst_deposit trst_hot btc_hot btc_deposit ].each do |name|
       FactoryBot.create(:wallet, name)
-    rescue => err
-      binding.pry
     end
 
     %i[btcusd btceth btceth_qe].each do |market|
