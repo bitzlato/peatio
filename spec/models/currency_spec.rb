@@ -157,7 +157,7 @@ describe Currency do
       it 'move to the top of all currencies' do
         expect(Currency.all.ordered.pluck(:id, :position)).to eq [['usd', 1], ['eur', 2], ['btc', 3],
                                                                   ['eth', 4], ['trst', 5], ['ring', 6]]
-        Currency.create(code: 'test', parent_id: coin.id, position: 1)
+        Currency.create!(code: 'test', parent_id: coin.id, position: 1)
         expect(Currency.all.ordered.pluck(:id, :position)).to eq [['test', 1], ['usd', 2], ['eur', 3], ['btc', 4],
                                                                   ['eth', 5], ['trst', 6], ['ring', 7]]
       end

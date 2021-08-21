@@ -141,10 +141,10 @@ describe ::EthereumGateway::TransactionCreator do
         from_addresses: [from_address],
         amount: amount,
         to_address: to_address,
+        contract_address: contract_address,
         hash: txid,
         status: 'pending',
         options: {
-          'contract_address' => contract_address,
           'gas_limit' => gas_limit,
           'gas_factor' => gas_factor,
           'gas_price' => transaction_gas_price,

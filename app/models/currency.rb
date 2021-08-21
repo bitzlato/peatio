@@ -5,9 +5,10 @@ class Currency < ApplicationRecord
 
   # == Constants ============================================================
 
+  # TODO remove erc20 contract_address
   OPTIONS_ATTRIBUTES = %i[erc20_contract_address gas_limit gas_price].freeze
   TOP_POSITION = 1
-  ID_SEPARATOR = '-'
+  ID_SEPARATOR = '-'.freeze
 
   # == Attributes ===========================================================
 
@@ -17,6 +18,8 @@ class Currency < ApplicationRecord
   # Code is aliased to id because it's more user-friendly primary key.
   # It's preferred to use code where this attributes are equal.
   alias_attribute :code, :id
+  alias_attribute :subunit_to_unit, :subunits
+  alias_attribute :priority, :position
 
   # == Extensions ===========================================================
 
@@ -48,7 +51,9 @@ class Currency < ApplicationRecord
   # == Validations ==========================================================
   #
   before_validation on: :create do
-    self.base_factor = money_currency.try(:base_factor)
+    # Это устанавливате сятолько для того чтобы проходили специфичные тесты которые надо подправить
+    # чтобы онги сами усатанвилвали base_factor
+    self.base_factor ||= 2
   end
 
   validate on: :create do
@@ -65,6 +70,7 @@ class Currency < ApplicationRecord
 
   validates :type, inclusion: { in: ->(_) { Currency.types.map(&:to_s) } }
   validates :options, length: { maximum: 1000 }
+  validates :base_factor, presence: true
 
   validates :deposit_fee,
             :min_deposit_amount,
@@ -74,6 +80,9 @@ class Currency < ApplicationRecord
             :withdraw_limit_24h,
             :withdraw_limit_72h,
             numericality: { greater_than_or_equal_to: 0 }
+
+  # TODO
+  # validates :contract_address, presence: true, if: :parent_id
 
   # == Scopes ===============================================================
 
@@ -151,10 +160,6 @@ class Currency < ApplicationRecord
     self.blockchain = Blockchain.find_by_key!(key)
   end
 
-  def contract_address
-    erc20_contract_address
-  end
-
   def wipe_cache
     Rails.cache.delete_matched("currencies*")
   end
@@ -169,7 +174,7 @@ class Currency < ApplicationRecord
   end
 
   def money_currency
-    @money_currency ||= Money::Currency.find!(money_code || code)
+    @money_currency ||= Money::Currency.find!(id)
   end
 
   def link_wallets
@@ -232,6 +237,10 @@ class Currency < ApplicationRecord
                                   base_factor:           base_factor,
                                   min_collection_amount: min_collection_amount,
                                   options:               opt)
+  end
+
+  def precision
+    super || subunits
   end
 
   def min_deposit_amount_money

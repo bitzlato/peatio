@@ -1,5 +1,6 @@
 - id:                     usd
   name:                   US Dollar
+  subunits:               2
   type:                   fiat
   precision:              2
   visible:                true
@@ -16,6 +17,7 @@
   blockchain_key: bitzlato
 
 - id:                     btc
+  subunits:               8
   name:                   Bitcoin
   type:                   coin
   visible:                true
@@ -35,6 +37,7 @@
 
 - id:                     eth
   name:                   Ethereum
+  subunits:               18
   type:                   coin
   visible:                true
   deposit_enabled:        true
@@ -62,6 +65,7 @@
   parent_id:              eth
   type:                   coin
   visible:                true
+  subunits:               6
   deposit_enabled:        true
   withdrawal_enabled:     true
   # Deposits with less amount are skipped during blockchain synchronization.

@@ -7,6 +7,7 @@ FactoryBot.define do
       code                 { 'usd' }
       name                 { 'US Dollar' }
       type                 { 'fiat' }
+      base_factor          { 100 }
       precision            { 2 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
@@ -20,6 +21,7 @@ FactoryBot.define do
       code                 { 'eur' }
       name                 { 'Euro' }
       type                 { 'fiat' }
+      base_factor          { 100 }
       precision            { 8 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
@@ -34,6 +36,7 @@ FactoryBot.define do
       code                 { 'btc' }
       name                 { 'Bitcoin' }
       type                 { 'coin' }
+      subunits             { 8 }
       withdraw_limit_24h   { 0.1 }
       withdraw_limit_72h   { 1 }
       withdraw_fee         { 0.01 }
@@ -55,10 +58,12 @@ FactoryBot.define do
           gas_price: 1_000_000_000 }
       end
       association :blockchain, 'bsc-testnet', strategy: :find_or_create, key: 'bsc-testnet'
+      # contract_address: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
     end
 
     trait :eth do
       association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
+      subunits             { 18 }
       code                 { 'eth' }
       name                 { 'Ethereum' }
       type                 { 'coin' }
@@ -77,6 +82,7 @@ FactoryBot.define do
       code                 { 'trst' }
       name                 { 'WeTrust' }
       type                 { 'coin' }
+      subunits { 6 }
       association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
@@ -126,6 +132,7 @@ FactoryBot.define do
       name                 { 'Evolution Land Global Token' }
       type                 { 'coin' }
       association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
+      subunits { 6 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
@@ -182,6 +189,13 @@ FactoryBot.define do
       position            { 8 }
       visible             { true }
       options             { {} }
+    end
+
+    trait :'usdt-erc20' do
+      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
+      name { 'USDT(ERC20)' }
+      subunits { 6 }
+      contract_address { '0xdac17f958d2ee523a2206206994597c13d831ec7' }
     end
   end
 end

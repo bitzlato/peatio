@@ -140,3 +140,5 @@ gem "active_record_upsert"
 # Fixes:   [DEPRECATION] :after_commit AASM callback is not safe in terms of race conditions and redundant calls.
 #           Please add `gem 'after_commit_everywhere', '~> 1.0'` to your Gemfile in order to fix that.
 gem "after_commit_everywhere", "~> 1.1"
+
+gem "request_store", "~> 1.5"

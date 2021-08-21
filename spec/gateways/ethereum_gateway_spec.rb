@@ -23,11 +23,12 @@ describe ::EthereumGateway do
       block_number: 1,
       status: 'pending'
     )}
+    let!('usdt-erc20') { find_or_create :currency, :'usdt-erc20' , id: :'usdt-erc20' }
     let!(:payment_address) { create :payment_address, :eth_address }
     let(:balances) {
       {
-        Money::Currency.find('eth') => 1.to_money('eth'),
-        Money::Currency.find('usdt-erc20') => 1.to_money('usdt-erc20'),
+        Money::Currency.find!('eth') => 1.to_money('eth'),
+        Money::Currency.find!('usdt-erc20') => 1.to_money('usdt-erc20'),
       }
     }
     it do
@@ -40,7 +41,7 @@ describe ::EthereumGateway do
              amount: 1000000,
              secret: nil,
              subtract_fee: false,
-             contract_address: Money::Currency.find('usdt-erc20').contract_address).
+             contract_address: Money::Currency.find!('usdt-erc20').contract_address).
              once.
              returns(peatio_transaction)
       EthereumGateway::TransactionCreator.
