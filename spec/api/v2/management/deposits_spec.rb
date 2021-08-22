@@ -21,7 +21,7 @@ describe API::V2::Management::Deposits, type: :request do
     let(:members) { create_list(:member, 2, :barong) }
 
     before do
-      Deposit::STATES.tap do |states|
+      Deposit.aasm(:default).states.map(&:name).tap do |states|
         (states.count * 2).times do
           create(:deposit_btc, member: members.sample, aasm_state: states.sample)
           create(:deposit_usd, member: members.sample, aasm_state: states.sample)
@@ -48,7 +48,7 @@ describe API::V2::Management::Deposits, type: :request do
     end
 
     it 'filters by state' do
-      Deposit::STATES.each do |state|
+      Deposit.aasm(:default).states.map(&:name).each do |state|
         data.merge!(state: state)
         request
         expect(response).to have_http_status(200)

@@ -2,17 +2,6 @@
 # frozen_string_literal: true
 
 class Withdraw < ApplicationRecord
-  STATES = %i[ prepared
-               rejected
-               accepted
-               skipped
-               processing
-               succeed
-               canceled
-               failed
-               errored
-               confirming
-               under_review].freeze
   COMPLETED_STATES = %i[succeed rejected canceled failed].freeze
   SUCCEED_PROCESSING_STATES = %i[prepared accepted skipped processing errored confirming succeed under_review].freeze
 
