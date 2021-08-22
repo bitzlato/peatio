@@ -122,16 +122,6 @@ class BlockchainService
       return
     end
 
-    if transaction.amount < Currency.find(transaction.amount.currency.id).min_deposit_amount_money
-      # Currently we just skip tiny deposits.
-      logger.info do
-        "Skipped deposit with txid: #{transaction.hash}"\
-        " to #{transaction.to_address} in block number #{transaction.block_number}"\
-        " because of low amount (#{transaction.amount.format} < #{Currency.find(transaction.amount.currency.id).min_deposit_amount_money.format})"
-      end
-      return
-    end
-
     # Fetch transaction from a blockchain that has `pending` status.
     transaction = fetch_transaction(transaction)
     unless transaction.status.success?
@@ -141,16 +131,6 @@ class BlockchainService
       return
     end
 
-    # Skip deposit tx if there is tx for deposit collection process
-    # TODO: select only pending transactions
-    #tx_collect = blockchain.transactions.find_by(txid: transaction.id)
-    #return if tx_collect.present?
-
-    # Commented it out. Waiting to reproduce raise to check this kind of transactions
-    #
-    #if transaction.from_addresses.blank? && gateway.respond_to?(:transaction_sources)
-      #transaction.from_addresses = gateway.transaction_sources(transaction)
-    #end
 
     @deposit = Deposits::Coin.find_or_create_by!(
       currency_id: transaction.currency_id,
@@ -171,10 +151,20 @@ class BlockchainService
       raise "Amounts different #{deposit.id}" unless transaction.amount == deposit.money_amount
       logger.info("Found or created suitable deposit #{deposit.id} for txid #{transaction.id}, amount #{transaction.amount}")
       if deposit.submitted?
-        logger.info("Accepting deposit #{deposit.id}")
-        deposit.accept!
+        if transaction.amount < Currency.find(transaction.amount.currency.id).min_deposit_amount_money
+          skip_message = "Skipped deposit with txid: #{transaction.hash}"\
+              " to #{transaction.to_address} in block number #{transaction.block_number}"\
+              " because of low amount (#{transaction.amount.format} < #{Currency.find(transaction.amount.currency.id).min_deposit_amount_money.format})"
+          logger.warn skip_message
+          deposit.skip!
+          deposit.add_error skip_message
+        else
+          logger.info("Accepting deposit #{deposit.id}")
+          deposit.accept!
+        end
       end
     end
+
   end
 
   def update_or_create_withdraw(transaction)
