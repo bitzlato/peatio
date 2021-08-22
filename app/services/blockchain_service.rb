@@ -19,8 +19,13 @@ class BlockchainService
   def update_transaction!(txid, txout = nil)
     blockchain_transaction = gateway.fetch_transaction txid, txout
     t = blockchain.transactions.find_by(txid: txid, txout: txout)
-    # TODO lookup for reference if there are no transaction
-    upsert_transaction! blockchain_transaction, t.try(:reference)
+    if blockchain_transaction.nil?
+      t.update status: 'pending' if t.present?
+    else
+      binding.pry
+      # TODO lookup for reference if there are no transaction
+      upsert_transaction! blockchain_transaction, t.try(:reference)
+    end
   end
 
   def process_block(block_number)
@@ -84,9 +89,7 @@ class BlockchainService
     logger.debug("Transaction is saved to database with id=#{t.id}")
     t
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
-    Bugsnag.notify err do |b|
-      b.meta_data = { tx: tx, record: err.record.as_json }
-    end
+    report_exception err, true, tx: tx, record: err.record.as_json
   end
 
   def dispatch_deposits! block_number
@@ -183,10 +186,8 @@ class BlockchainService
         withdrawal.success!
       end
     rescue => err
-      Bugsnag.notify err do |b|
-        b.meta_data = { tx: transaction }
-      end
       logger.error "#{err.message} for #{transaction}"
+      report_exception err, true, tx: transaction
     end
   end
 

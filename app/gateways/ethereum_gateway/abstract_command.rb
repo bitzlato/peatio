@@ -15,7 +15,7 @@ class EthereumGateway
 
     private
 
-    def build_erc20_transactions(txn_receipt, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txout: nil)
+    def build_erc20_transactions(txn_receipt, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txouts: nil)
       # Build invalid transaction for failed withdrawals
       return [build_invalid_erc20_transaction(txn_receipt)] if txn_receipt.fetch('logs').blank?
 
@@ -33,14 +33,14 @@ class EthereumGateway
         next unless follow_addresses.nil? || follow_addresses.include?(to_address) || follow_addresses.include?(from_address)
         next unless follow_txids.nil? || follow_txids.include?(txid)
 
-        fetched_txout = log['logIndex'].to_i(16)
-        return if follow_txout.present? && fetched_txout!=txout
+        txout = log['logIndex'].to_i(16)
+        next unless follow_txouts.nil? || follow_txouts.include?(txout)
         formatted_txs << {
           hash:            txid,
           amount:          log.fetch('data').hex,
           from_addresses:  [from_address],
           to_address:      to_address,
-          txout:           fetched_txout,
+          txout:           txout,
           block_number:    txn_receipt.fetch('blockNumber').to_i(16),
           contract_address: log.fetch('address'),
           status:          transaction_status(txn_receipt),
@@ -83,22 +83,25 @@ class EthereumGateway
       }
     end
 
-    def build_eth_transaction(block_txn)
-        {
-          hash:           normalize_txid(block_txn.fetch('hash')),
-          amount:         block_txn.fetch('value').hex,
-          from_addresses: [normalize_address(block_txn['from'])],
-          to_address:     normalize_address(block_txn['to']),
-          txout:          block_txn.fetch('transactionIndex').to_i(16),
-          block_number:   block_txn.fetch('blockNumber').to_i(16),
-          status:         transaction_status(block_txn),
-          options: {
-            gas:            block_txn.fetch('gas').to_i(16),
-            gas_price:      block_txn.fetch('gasPrice').to_i(16),
-          },
-          fee:            block_txn.fetch('gas').to_i(16) * block_txn.fetch('gasPrice').to_i(16),
-          contract_address: nil
-        }
+    def build_eth_transaction(block_txn, validate_txout = nil)
+      txid = normalize_txid(block_txn.fetch('hash'))
+      txout = block_txn.fetch('transactionIndex').to_i(16)
+      logger.warn("Transcation #{txid} has wrong txout #{txout}<>#{validate_txout}") if validate_txout.present? && txout!=validate_txout
+      {
+        hash:           txid,
+        amount:         block_txn.fetch('value').hex,
+        from_addresses: [normalize_address(block_txn['from'])],
+        to_address:     normalize_address(block_txn['to']),
+        txout:          txout,
+        block_number:   block_txn.fetch('blockNumber').to_i(16),
+        status:         transaction_status(block_txn),
+        options: {
+          gas:            block_txn.fetch('gas').to_i(16),
+          gas_price:      block_txn.fetch('gasPrice').to_i(16),
+        },
+        fee:            block_txn.fetch('gas').to_i(16) * block_txn.fetch('gasPrice').to_i(16),
+        contract_address: nil
+      }
     end
 
     def load_basic_balance(address)

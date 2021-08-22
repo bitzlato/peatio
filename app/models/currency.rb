@@ -18,7 +18,6 @@ class Currency < ApplicationRecord
   # Code is aliased to id because it's more user-friendly primary key.
   # It's preferred to use code where this attributes are equal.
   alias_attribute :code, :id
-  alias_attribute :subunit_to_unit, :subunits
   alias_attribute :priority, :position
 
   # == Extensions ===========================================================
@@ -225,6 +224,10 @@ class Currency < ApplicationRecord
   # For coin currency enough to have only coin type
   def token?
     parent_id.present? && coin?
+  end
+
+  def subunit_to_unit
+    base_factor
   end
 
   def get_price
