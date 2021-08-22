@@ -2,11 +2,10 @@
 # frozen_string_literal: true
 
 describe API::V2::Admin::Blockchains, type: :request do
-  pending
-  #let(:admin) { create(:member, :admin, :level_3, email: 'example@gmail.com', uid: 'ID73BF61C8H0') }
-  #let(:token) { jwt_for(admin) }
-  #let(:level_3_member) { create(:member, :level_3) }
-  #let(:level_3_member_token) { jwt_for(level_3_member) }
+  let(:admin) { create(:member, :admin, :level_3, email: 'example@gmail.com', uid: 'ID73BF61C8H0') }
+  let(:token) { jwt_for(admin) }
+  let(:level_3_member) { create(:member, :level_3) }
+  let(:level_3_member_token) { jwt_for(level_3_member) }
 
   #describe 'GET /api/v2/admin/blockchains/:id' do
     #let(:blockchain) { Blockchain.find_by(key: 'eth-rinkeby') }
@@ -34,170 +33,172 @@ describe API::V2::Admin::Blockchains, type: :request do
     #end
   #end
 
-  #describe 'GET /api/v2/admin/blockchains/clients' do
-    #it 'get list of all available clients' do
-      #api_get '/api/v2/admin/blockchains/clients', token: token
-      #expect(JSON.parse(response.body)).to match_array Blockchain.clients.map &:to_s
-    #end
-  #end
+  describe 'GET /api/v2/admin/blockchains/clients' do
+    it 'get list of all available clients' do
+      api_get '/api/v2/admin/blockchains/clients', token: token
+      expect(JSON.parse(response.body)).to match_array Blockchain.clients.map &:to_s
+    end
+  end
 
-  #describe 'GET /api/v2/admin/blockchains/:id/latest_block' do
-    #let(:blockchain) { Blockchain.find_by(key: "eth-rinkeby") }
+  describe 'GET /api/v2/admin/blockchains/:id/latest_block' do
+    let(:blockchain) { Blockchain.find_by(key: "eth-rinkeby") }
 
-    #it 'returns error in case of invalid id' do
-      #api_get "/api/v2/admin/blockchains/#{Blockchain.last.id + 42}/latest_block", token: token
+    it 'returns error in case of invalid id' do
+      api_get "/api/v2/admin/blockchains/#{Blockchain.last.id + 42}/latest_block", token: token
 
-      #expect(response.code).to eq '422'
-      #expect(response).to include_api_error('admin.blockchain.latest_block')
-    #end
+      expect(response.code).to eq '422'
+      expect(response).to include_api_error('admin.blockchain.latest_block')
+    end
 
-    #it 'returns error in case of node inaccessibility' do
-      #api_get "/api/v2/admin/blockchains/#{blockchain.id}/latest_block", token: token
+    it 'returns error in case of node inaccessibility' do
+      api_get "/api/v2/admin/blockchains/#{blockchain.id}/latest_block", token: token
 
-      #expect(response.code).to eq '422'
-      #expect(response).to include_api_error('admin.blockchain.latest_block')
-    #end
+      expect(response.code).to eq '422'
+      expect(response).to include_api_error('admin.blockchain.latest_block')
+    end
 
-    #context 'get latest_block' do
-      #let(:blockchain) { Blockchain.find_by(key: "eth-rinkeby") }
+    context 'get latest_block' do
+      let(:blockchain) { Blockchain.find_by(key: "eth-rinkeby") }
 
-      #around do |example|
-        #WebMock.disable_net_connect!
-        #example.run
-        #WebMock.allow_net_connect!
-      #end
+      around do |example|
+        WebMock.disable_net_connect!
+        example.run
+        WebMock.allow_net_connect!
+      end
 
-      #let(:eth_blockchain) do
-        #Ethereum::Blockchain.new.tap { |b| b.configure(server: 'http://127.0.0.1:8545') }
-      #end
+      let(:eth_blockchain) do
+        Ethereum::Blockchain.new.tap { |b| b.configure(server: 'http://127.0.0.1:8545') }
+      end
 
-      #it 'returns node latest block' do
-        #block_number = '0x16b916'
+      it 'returns node latest block' do
+        block_number = '0x16b916'
 
-        #stub_request(:post, 'http://127.0.0.1:8545')
-          #.with(body: { jsonrpc: '2.0',
-                        #id: 1,
-                        #method: :eth_blockNumber,
-                        #params:  [] }.to_json)
-          #.to_return(body: { result: block_number,
-                             #error:  nil,
-                             #id:     1 }.to_json)
+        stub_request(:post, 'http://127.0.0.1:8545')
+          .with(body: { jsonrpc: '2.0',
+                        id: 1,
+                        method: :eth_blockNumber,
+                        params:  [] }.to_json)
+          .to_return(body: { result: block_number,
+                             error:  nil,
+                             id:     1 }.to_json)
 
-        #api_get "/api/v2/admin/blockchains/#{blockchain.id}/latest_block", token: token
+        api_get "/api/v2/admin/blockchains/#{blockchain.id}/latest_block", token: token
 
-        #expect(response.code).to eq '200'
-        #expect(response_body).to eq 1489174
-      #end
-    #end
-  #end
+        expect(response.code).to eq '200'
+        expect(response_body).to eq 1489174
+      end
+    end
+  end
 
-  #describe 'GET /api/v2/admin/blockchains' do
-    #it 'lists of blockchains' do
-      #api_get '/api/v2/admin/blockchains', token: token
-      #expect(response).to be_successful
+  describe 'GET /api/v2/admin/blockchains' do
+    it 'lists of blockchains' do
+      api_get '/api/v2/admin/blockchains', token: token
+      expect(response).to be_successful
 
-      #result = JSON.parse(response.body)
-      #expect(result.size).to eq 3
-    #end
+      result = JSON.parse(response.body)
+      expect(result.size).to eq Blockchain.count
+    end
 
-    #it 'returns blockchains by ascending order' do
-      #api_get '/api/v2/admin/blockchains', params: { ordering: 'asc', order_by: 'client'}, token: token
-      #result = JSON.parse(response.body)
+    it 'returns blockchains by ascending order' do
+      api_get '/api/v2/admin/blockchains',
+        params: { ordering: 'asc', order_by: 'client'},
+        token: token
+      result = JSON.parse(response.body)
 
-      #expect(response).to be_successful
-      #expect(result.first['client']).to eq 'bitcoin'
-    #end
+      expect(response).to be_successful
+      expect(result.first['client']).to eq Blockchain.order('client asc').first.client
+    end
 
-    #it 'returns paginated blockchains' do
-      #api_get '/api/v2/admin/blockchains', params: { limit: 2, page: 1 }, token: token
-      #result = JSON.parse(response.body)
+    it 'returns paginated blockchains' do
+      api_get '/api/v2/admin/blockchains', params: { limit: 2, page: 1 }, token: token
+      result = JSON.parse(response.body)
 
-      #expect(response).to be_successful
+      expect(response).to be_successful
 
-      #expect(response.headers.fetch('Total')).to eq '3'
-      #expect(result.size).to eq 2
-      #expect(result.first['key']).to eq 'btc-testnet'
+      expect(response.headers.fetch('Total')).to eq Blockchain.count.to_s
+      expect(result.size).to eq 2
+      expect(result.first['key']).to eq Blockchain.order('id desc').first.key
 
-      #api_get '/api/v2/admin/blockchains', params: { limit: 1, page: 2 }, token: token
-      #result = JSON.parse(response.body)
+      api_get '/api/v2/admin/blockchains', params: { limit: 1, page: 2 }, token: token
+      result = JSON.parse(response.body)
 
-      #expect(response).to be_successful
+      expect(response).to be_successful
 
-      #expect(response.headers.fetch('Total')).to eq '3'
-      #expect(result.size).to eq 1
-      #expect(result.first['key']).to eq 'eth-rinkeby'
-    #end
+      expect(response.headers.fetch('Total')).to eq Blockchain.count.to_s
+      expect(result.size).to eq 1
+      expect(result.first['key']).to eq Blockchain.order('id desc').limit(2).last.key
+    end
 
-    #it 'returns blockchains filtered by key' do
-      #api_get '/api/v2/admin/blockchains', params: { key: "eth-kovan" }, token: token
-      #result = JSON.parse(response.body)
+    it 'returns blockchains filtered by key' do
+      api_get '/api/v2/admin/blockchains', params: { key: "eth-kovan" }, token: token
+      result = JSON.parse(response.body)
 
-      #expect(response).to be_successful
-      #expect(response.headers.fetch('Total')).to eq '1'
-      #expect(result.size).to eq 1
-      #expect(result.first['key']).to eq 'eth-kovan'
-    #end
+      expect(response).to be_successful
+      expect(response.headers.fetch('Total')).to eq '1'
+      expect(result.size).to eq 1
+      expect(result.first['key']).to eq 'eth-kovan'
+    end
 
-    #it 'returns error in case invalid blockchain key' do
-      #api_get '/api/v2/admin/blockchains', params: { key: "inv" }, token: token
-      #expect(response.code).to eq '422'
-      #expect(response).to include_api_error('admin.blockchain.blockchain_key_doesnt_exist')
-    #end
+    it 'returns error in case invalid blockchain key' do
+      api_get '/api/v2/admin/blockchains', params: { key: "inv" }, token: token
+      expect(response.code).to eq '422'
+      expect(response).to include_api_error('admin.blockchain.blockchain_key_doesnt_exist')
+    end
 
-    #it 'returns blockchains filtered by client' do
-      #api_get '/api/v2/admin/blockchains', params: { client: "parity" }, token: token
-      #result = JSON.parse(response.body)
+    it 'returns blockchains filtered by client' do
+      api_get '/api/v2/admin/blockchains', params: { client: Blockchain.first.client }, token: token
+      result = JSON.parse(response.body)
 
-      #expect(response).to be_successful
-      #expect(response.headers.fetch('Total')).to eq '1'
-      #expect(result.size).to eq 1
-      #expect(result.first['name']).to eq 'Ethereum Kovan'
-    #end
+      expect(response).to be_successful
+      expect(response.headers.fetch('Total')).to eq '1'
+      expect(result.size).to eq 1
+      expect(result.first['name']).to eq Blockchain.first.name
+    end
 
-    #it 'returns error in case invalid blockchain client' do
-      #api_get '/api/v2/admin/blockchains', params: { client: "inv" }, token: token
-      #expect(response.code).to eq '422'
-      #expect(response).to include_api_error('admin.blockchain.blockchain_client_doesnt_exist')
-    #end
+    it 'returns error in case invalid blockchain client' do
+      api_get '/api/v2/admin/blockchains', params: { client: "inv" }, token: token
+      expect(response.code).to eq '422'
+      expect(response).to include_api_error('admin.blockchain.blockchain_client_doesnt_exist')
+    end
 
-    #it 'returns blockchains filtered by status' do
-      #api_get '/api/v2/admin/blockchains', params: { status: "active" }, token: token
-      #result = JSON.parse(response.body)
+    it 'returns blockchains filtered by status' do
+      api_get '/api/v2/admin/blockchains', params: { status: "active" }, token: token
+      result = JSON.parse(response.body)
 
-      #expect(response).to be_successful
-      #expect(response.headers.fetch('Total')).to eq '3'
-      #expect(result.size).to eq 3
-      #expect(result.map { |r| r["status"]}).to all eq "active"
-    #end
+      expect(response).to be_successful
+      expect(response.headers.fetch('Total')).to eq Blockchain.count.to_s
+      expect(result.size).to eq Blockchain.count
+      expect(result.map { |r| r["status"]}).to all eq "active"
+    end
 
-    #it 'returns error in case invalid blockchain status' do
-      #api_get '/api/v2/admin/blockchains', params: { status: "inv" }, token: token
-      #expect(response.code).to eq '422'
-      #expect(response).to include_api_error('admin.blockchain.blockchain_status_doesnt_exist')
-    #end
+    it 'returns error in case invalid blockchain status' do
+      api_get '/api/v2/admin/blockchains', params: { status: "inv" }, token: token
+      expect(response.code).to eq '422'
+      expect(response).to include_api_error('admin.blockchain.blockchain_status_doesnt_exist')
+    end
 
-    #it 'returns blockchains filtered by name' do
-      #api_get '/api/v2/admin/blockchains', params: { name: "Ethereum Kovan" }, token: token
-      #result = JSON.parse(response.body)
+    it 'returns blockchains filtered by name' do
+      api_get '/api/v2/admin/blockchains', params: { name: "Ethereum Kovan" }, token: token
+      result = JSON.parse(response.body)
 
-      #expect(response).to be_successful
-      #expect(response.headers.fetch('Total')).to eq '1'
-      #expect(result.size).to eq 1
-      #expect(result.first['name']).to eq 'Ethereum Kovan'
-    #end
+      expect(response).to be_successful
+      expect(response.headers.fetch('Total')).to eq '1'
+      expect(result.size).to eq 1
+      expect(result.first['name']).to eq 'Ethereum Kovan'
+    end
 
-    #it 'returns error in case invalid blockchain name' do
-      #api_get '/api/v2/admin/blockchains', params: { name: "inv" }, token: token
-      #expect(response.code).to eq '422'
-      #expect(response).to include_api_error('admin.blockchain.blockchain_name_doesnt_exist')
-    #end
+    it 'returns error in case invalid blockchain name' do
+      api_get '/api/v2/admin/blockchains', params: { name: "inv" }, token: token
+      expect(response.code).to eq '422'
+      expect(response).to include_api_error('admin.blockchain.blockchain_name_doesnt_exist')
+    end
 
-    #it 'return error in case of not permitted ability' do
-      #api_get "/api/v2/admin/blockchains", token: level_3_member_token
-      #expect(response.code).to eq '403'
-      #expect(response).to include_api_error('admin.ability.not_permitted')
-    #end
-  #end
+    it 'return error in case of not permitted ability' do
+      api_get "/api/v2/admin/blockchains", token: level_3_member_token
+      expect(response.code).to eq '403'
+      expect(response).to include_api_error('admin.ability.not_permitted')
+    end
+  end
 
   #describe 'POST /api/v2/admin/blockchains/new' do
     #it 'creates new blockchain' do

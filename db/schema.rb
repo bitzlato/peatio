@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_21_180954) do
+ActiveRecord::Schema.define(version: 2021_08_22_080438) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -85,9 +85,9 @@ ActiveRecord::Schema.define(version: 2021_08_21_180954) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "server_encrypted", limit: 1024
-    t.string "gateway_klass", null: false
     t.boolean "enable_invoice", default: false, null: false
     t.string "explorer_contract_address"
+    t.string "client", null: false
     t.index ["key"], name: "index_blockchains_on_key", unique: true
     t.index ["status"], name: "index_blockchains_on_status"
   end

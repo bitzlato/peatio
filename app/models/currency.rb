@@ -153,6 +153,7 @@ class Currency < ApplicationRecord
   # == Instance Methods =====================================================
 
   delegate :explorer_transaction, :explorer_address, to: :blockchain
+  delegate :key, to: :blockchain, prefix: true
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
 
