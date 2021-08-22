@@ -134,7 +134,12 @@ class BlockchainService
 
     # Fetch transaction from a blockchain that has `pending` status.
     transaction = fetch_transaction(transaction)
-    return unless transaction.status.success?
+    unless transaction.status.success?
+      logger.info do
+        "Skipped deposit with txid: #{transaction.hash} because of status #{transaction.status}"
+      end
+      return
+    end
 
     # Skip deposit tx if there is tx for deposit collection process
     # TODO: select only pending transactions

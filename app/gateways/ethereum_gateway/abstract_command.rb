@@ -50,7 +50,7 @@ class EthereumGateway
       end
     end
 
-    def fetch_erc20_transaction(tx_id)
+    def fetch_receipt(tx_id)
       # logger.debug "Fetching tx receipt #{tx_id}"
       tx = client.json_rpc(:eth_getTransactionReceipt, [tx_id])
       return if tx.nil? || tx.fetch('to').blank?
@@ -83,7 +83,7 @@ class EthereumGateway
       }
     end
 
-    def build_eth_transaction(block_txn, validate_txout = nil)
+    def build_success_eth_transaction(block_txn, validate_txout = nil)
       txid = normalize_txid(block_txn.fetch('hash'))
       txout = block_txn.fetch('transactionIndex').to_i(16)
       logger.warn("Transcation #{txid} has wrong txout #{txout}<>#{validate_txout}") if validate_txout.present? && txout!=validate_txout
@@ -94,7 +94,7 @@ class EthereumGateway
         to_address:     normalize_address(block_txn['to']),
         txout:          txout,
         block_number:   block_txn.fetch('blockNumber').to_i(16),
-        status:         transaction_status(block_txn),
+        status:         'success',
         options: {
           gas:            block_txn.fetch('gas').to_i(16),
           gas_price:      block_txn.fetch('gasPrice').to_i(16),

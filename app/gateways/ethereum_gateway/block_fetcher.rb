@@ -17,7 +17,7 @@ class EthereumGateway
         if tx.fetch('input').hex <= 0
           from_address = normalize_address(tx['from'])
           to_address = normalize_address(tx['to'])
-          transactions << build_eth_transaction(tx) if follow_addresses.include?(from_address) ||
+          transactions << build_success_eth_transaction(tx) if follow_addresses.include?(from_address) ||
             follow_addresses.include?(to_address) ||
             follow_txids.include?(normalize_txid(tx.fetch('hash')))
         else
@@ -31,7 +31,7 @@ class EthereumGateway
           # 3. Check if the tx is from one of our wallets (to confirm withdrawals)
           next unless contract_addresses.include?(contract_address) || follow_addresses.include?(from_address) || follow_addresses.include?(to_address)
 
-          transactions += build_erc20_transactions(fetch_erc20_transaction tx.fetch('hash'))
+          transactions += build_erc20_transactions(fetch_receipt tx.fetch('hash'))
         end
       end
       logger.info("Fetching block #{block_number} finished with #{transactions.count} transactions catched")
