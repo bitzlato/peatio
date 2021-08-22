@@ -40,11 +40,7 @@ class Deposit < ApplicationRecord
   validates :aasm_state, :type, presence: true
   validates :completed_at, presence: { if: :completed? }
   validates :block_number, allow_blank: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
-  validates :amount,
-            numericality: {
-              greater_than_or_equal_to:
-                -> (deposit){ deposit.currency.min_deposit_amount }
-            }, on: :create
+  validates :amount, numericality: { greater_than: 0.0 }
 
   delegate :key, to: :blockchain, prefix: true
 
@@ -59,13 +55,8 @@ class Deposit < ApplicationRecord
     state :canceled
     state :rejected
     state :accepted
-    # state :aml_processing
-    # state :aml_suspicious
-    state :processing
     state :skipped
-    # state :collected
     state :dispatched
-    # state :fee_processing
     state :errored
     state :refunding
     event(:cancel) { transitions from: :submitted, to: :canceled }
@@ -83,7 +74,7 @@ class Deposit < ApplicationRecord
       end
     end
     event :skip do
-      transitions from: :processing, to: :skipped
+      transitions from: :submitted, to: :skipped
     end
 
     event :invoice do
@@ -119,28 +110,20 @@ class Deposit < ApplicationRecord
   def confirmations
     return 0 if block_number.blank?
     return blockchain.processed_height - block_number if (blockchain.processed_height - block_number) >= 0
-    'N/A'
+    nil
   rescue StandardError => e
     report_exception(e)
-    'N/A'
+    nil
+  end
+
+  def deposit_errors
+    Array(error).freeze
   end
 
   def add_error(e)
-    if error.blank?
-      update!(error: [{ class: e.class.to_s, message: e.message }])
-    else
-      update!(error: error << { class: e.class.to_s, message: e.message })
-    end
+    error_hash = e.is_a?(StandardError) ?  { class: e.class.to_s, message: e.message } : { message: e}
+    update!(error: self.deposit_errors + [error_hash] )
   end
-
-  #def spread_between_wallets!
-    #return false if spread.present?
-    #update! spread: DepositSpreader.call(self).map(&:as_json)
-  #end
-
-  #def spread_transactions_ids
-    #spread.map { |s| s.fetch(:hash) }
-  #end
 
   def account
     member&.get_account(currency)
