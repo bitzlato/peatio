@@ -84,13 +84,23 @@ class AbstractGateway
     return if hash.nil?
     if hash.is_a? Peatio::Transaction
       currency = blockchain.find_money_currency(hash.contract_address)
+      raise "Sourced transaction must be plain #{hash}" if hash.amount.is_a? Money
       hash.dup.tap do |t|
         t.currency_id = currency.id
         t.amount = currency.to_money_from_units hash.amount
+        t.fee_currency_id = blockchain.fee_currency.money_currency.id
+        t.fee = hash.fee.nil? ? nil : blockchain.fee_currency.money_currency.to_money_from_units(hash.fee)
       end.freeze
     else
       currency = blockchain.find_money_currency(hash.fetch(:contract_address))
-      Peatio::Transaction.new(hash.merge(currency_id: currency.id, amount: currency.to_money_from_units(hash.fetch(:amount)))).freeze
+      Peatio::Transaction.new(
+        hash.merge(
+          currency_id: currency.id,
+          amount: currency.to_money_from_units(hash.fetch(:amount)),
+          fee: hash.fetch(:fee, nil) ? blockchain.fee_currency.money_currency.to_money_from_units(hash.fetch(:fee)) : nil,
+          fee_currency_id: blockchain.fee_currency.money_currency.id
+      )
+      ).freeze
     end
   end
 

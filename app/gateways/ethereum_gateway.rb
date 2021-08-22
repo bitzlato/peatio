@@ -136,30 +136,6 @@ class EthereumGateway < AbstractGateway
     )
   end
 
-  #def process_block(block_number)
-    #amount_converter = -> (amount, contract_address = nil) do
-      #(
-        #blockchain.
-        #currencies.
-        #map(&:money_currency).
-        #find { |mc| mc.contract_address.presence == contract_address.presence } ||
-        #binding.pry
-        #raise("No found currency for #{contract_address} in blockchain #{blockchain}")
-      #).
-        #to_money(amount)
-    #end
-    #BlockProcessor
-      #.new(client)
-      #.call(block_number,
-            #contract_addresses: blockchain.currencies.tokens.map(&:contract_address),
-            #system_addresses: blockchain.wallets.pluck(:address).compact,
-            #allowed_contracts: blockchain.whitelisted_smart_contracts.active,
-            #withdraw_checker: -> (address) { Wallet.withdraw.where(address: address).present? },
-            #deposit_checker: -> (address) { PaymentAddress.where(address: address).present? },
-            #amount_converter: amount_converter
-           #)
-  #end
-
   def fetch_block_transactions(block_number)
     BlockFetcher
       .new(client)

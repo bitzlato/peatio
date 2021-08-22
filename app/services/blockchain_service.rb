@@ -16,6 +16,13 @@ class BlockchainService
     @latest_block_number ||= gateway.latest_block_number
   end
 
+  def update_transaction!(txid, txout = nil)
+    blockchain_transaction = gateway.fetch_transaction txid, txout
+    t = blockchain.transactions.find_by(txid: txid, txout: txout)
+    # TODO lookup for reference if there are no transaction
+    upsert_transaction! blockchain_transaction, t.try(:reference)
+  end
+
   def process_block(block_number)
     dispatch_deposits! block_number
 
@@ -36,6 +43,8 @@ class BlockchainService
       elsif tx.hash.in?(withdraw_txids)
         update_or_create_withdraw tx
       end
+      # TODO fetch_transaction if status is pending
+      tx = fetch_transaction(tx)
       upsert_transaction! tx, (deposit || withdrawal)
     end.count
   end
@@ -58,11 +67,10 @@ class BlockchainService
   attr_reader :withdrawal, :deposit, :fetched_transaction
 
   def upsert_transaction!(tx, reference = nil)
-    tx = fetch_transaction(tx)
-    # TODO fetch_transaction if status is pending
     # TODO change currency_to blockchain_id
-    Transaction.upsert!(
+    t = Transaction.upsert!(
       fee: tx.fee,
+      fee_currency_id: tx.fee_currency_id,
       block_number: tx.block_number,
       status: tx.status,
       txout: tx.txout,
@@ -73,7 +81,8 @@ class BlockchainService
       txid: tx.id,
       reference: reference
     )
-    logger.debug("Transaction is saved to database")
+    logger.debug("Transaction is saved to database with id=#{t.id}")
+    t
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
     Bugsnag.notify err do |b|
       b.meta_data = { tx: tx, record: err.record.as_json }

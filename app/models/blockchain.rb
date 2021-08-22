@@ -34,6 +34,10 @@ class Blockchain < ApplicationRecord
     currencies.find { |c| c.parent_id.nil? } || raise("No native currency for wallet id #{id}")
   end
 
+  def fee_currency
+    native_currency
+  end
+
   # Support legacy API for tower
   #
   def status
