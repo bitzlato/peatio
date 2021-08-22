@@ -31,7 +31,7 @@ class Blockchain < ApplicationRecord
   scope :active, -> { where(status: :active) }
 
   def native_currency
-    currencies.find { |c| c.parent_id.nil? } || raise("No native currency for wallet id #{id}")
+    currencies.find_by(parent_id: nil) || raise("No native currency for wallet id #{id}")
   end
 
   def fee_currency
