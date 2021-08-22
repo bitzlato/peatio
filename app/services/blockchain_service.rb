@@ -30,12 +30,13 @@ class BlockchainService
   def delete_unknown_transactions!
     txids = blockchain.deposits.pluck(:txid) + blockchain.withdraws.pluck(:txid)
     addresses = blockchain.follow_addresses
+    destroyed = 0
     blockchain.transactions.where(reference_id: nil).find_each do |t|
-      next if txids.include? t.txid
-      next if addresses.include? t.from_address
-      next if addresses.include? t.to_address
+      next if txids.include?(t.txid) || addresses.include?(t.from_address) || addresses.include?(t.to_address)
+      destroyed +=1
       t.destroy!
     end
+    destroyed
   end
 
   def update_transaction!(txid, txout = nil)
