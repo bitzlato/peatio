@@ -22,7 +22,7 @@ module API
                    default: 100,
                    desc: "Number of withdraws per page (defaults to 100, maximum is 100)."
           optional :state,
-                   values: { value: ->(v) { (Array.wrap(v) - Withdraw.aasm(:default).states.map(&:name)).blank? }, message: 'account.withdraw.invalid_state' },
+                   values: { value: ->(v) { (Array.wrap(v) - Withdraw.aasm(:default).states.map(&:to_s)).blank? }, message: 'account.withdraw.invalid_state' },
                    desc: 'Filter withdrawals by states.'
           optional :rid,
                    type: String,
