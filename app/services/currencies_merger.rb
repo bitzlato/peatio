@@ -28,6 +28,7 @@ class CurrenciesMerger
       Beneficiary,
       DepositSpread,
       Deposit,
+      Transaction,
       Withdraw
     ].each do |model|
       puts "Move #{model} from #{from_currency} to #{to_currency}"
