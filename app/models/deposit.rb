@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 class Deposit < ApplicationRecord
-  STATES = %i[submitted invoiced canceled rejected accepted skipped dispatched].freeze
 
   # TODO rename dispatched to completed
   #

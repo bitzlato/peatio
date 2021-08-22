@@ -42,7 +42,7 @@ module API
                    default: []
 
           optional :withdraw_state,
-                   values: { value: ->(v) { (Array.wrap(v) - Withdraw::STATES.map(&:to_s)).blank? }, message: 'account.transactions.invalid_withdraw_state' },
+                   values: { value: ->(v) { (Array.wrap(v) - ::Withdraw.aasm(:default).states.map(&:to_s)).blank? }, message: 'account.transactions.invalid_withdraw_state' },
                    desc: 'Filter withdraws by states.',
                    default: []
 
