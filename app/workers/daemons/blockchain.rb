@@ -24,31 +24,32 @@ module Workers
             Rails.logger.info { "Processing #{@blockchain.name} blocks." }
 
             loop do
-              begin
-                # Reset blockchain_service state.
-                bc_service.reset!
+              # Reset blockchain_service state.
+              bc_service.reset!
 
-                if @blockchain.reload.height + @blockchain.min_confirmations >= bc_service.latest_block_number
-                  Rails.logger.info { "Skip synchronization. No new blocks detected, height: #{@blockchain.height}, latest_block: #{bc_service.latest_block_number}." }
-                  Rails.logger.info { "Sleeping for 10 seconds" }
-                  sleep(10)
-                  next
-                end
-
-                from_block = @blockchain.height || 0
-
-                (from_block..bc_service.latest_block_number).each do |block_id|
-                  Rails.logger.info { "Started processing #{@blockchain.key} block number #{block_id}." }
-                  transactions_count = bc_service.process_block(block_id)
-                  Rails.logger.info { "Fetch #{transactions_count} transactions in block number #{block_id}." }
-                  bc_service.update_height(block_id)
-                  Rails.logger.info { "Finished processing #{@blockchain.key} block number #{block_id}." }
-                end
-              rescue StandardError => e
-                report_exception(e)
-                Rails.logger.warn { "Error: #{e}. Sleeping for 10 seconds" }
+              if @blockchain.reload.height + @blockchain.min_confirmations >= bc_service.latest_block_number
+                Rails.logger.info { "Skip synchronization. No new blocks detected, height: #{@blockchain.height}, latest_block: #{bc_service.latest_block_number}." }
+                Rails.logger.info { "Sleeping for 10 seconds" }
                 sleep(10)
+                next
               end
+
+              from_block = @blockchain.height || 0
+
+              (from_block..bc_service.latest_block_number).each do |block_id|
+                Rails.logger.info { "Started processing #{@blockchain.key} block number #{block_id}." }
+                transactions_count = bc_service.process_block(block_id)
+                Rails.logger.info { "Fetch #{transactions_count} transactions in block number #{block_id}." }
+                bc_service.update_height(block_id)
+                Rails.logger.info { "Finished processing #{@blockchain.key} block number #{block_id}." }
+              rescue StandardError => e
+                report_exception(e, true, blockchain_id: @blockchain.id, block_number: block_id)
+                raise e
+              end
+            rescue StandardError => e
+              report_exception(e, true, blockchain_id: @blockchain.id)
+              Rails.logger.warn { "Error: #{e}. Sleeping for 10 seconds" }
+              sleep(10)
             end
           end
         end

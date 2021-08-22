@@ -73,6 +73,9 @@ class BlockchainService
       tx = fetch_transaction(tx)
       upsert_transaction! tx, (deposit || withdrawal)
     end.count
+  rescue StandardError => err
+    report_exception err, true, blockchain_id: blockchain.id, block_number: block_number
+    raise err
   end
 
   # Resets current cached state.
