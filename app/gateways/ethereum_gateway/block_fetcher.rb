@@ -31,7 +31,7 @@ class EthereumGateway
           # 3. Check if the tx is from one of our wallets (to confirm withdrawals)
           next unless contract_addresses.include?(contract_address) || follow_addresses.include?(from_address) || follow_addresses.include?(to_address)
 
-          transactions += build_erc20_transactions(fetch_receipt tx.fetch('hash'))
+          transactions += build_erc20_transactions(fetch_receipt(tx.fetch('hash')), tx)
         end
       end
       logger.info("Fetching block #{block_number} finished with #{transactions.count} transactions catched")
@@ -44,13 +44,13 @@ class EthereumGateway
 
     attr_reader :follow_addresses, :contract_addresses, :follow_txids
 
-    def build_erc20_transactions(txn_receipt)
-      super txn_receipt, contract_addresses: contract_addresses, follow_addresses: follow_addresses, follow_txids: follow_txids
+    def build_erc20_transactions(txn_receipt, block_tx)
+      super txn_receipt, block_tx, contract_addresses: contract_addresses, follow_addresses: follow_addresses, follow_txids: follow_txids
     end
 
-    def build_invalid_erc20_transaction(txn_receipt)
+    def build_invalid_erc20_transaction(txn_receipt, block_tx)
       return unless contract_addresses.include? txn_receipt.fetch('to')
-      super txn_receipt
+      super txn_receipt, block_tx
     end
   end
 end

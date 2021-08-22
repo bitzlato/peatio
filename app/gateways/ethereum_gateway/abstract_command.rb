@@ -15,9 +15,9 @@ class EthereumGateway
 
     private
 
-    def build_erc20_transactions(txn_receipt, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txouts: nil)
+    def build_erc20_transactions(txn_receipt, block_txn, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txouts: nil)
       # Build invalid transaction for failed withdrawals
-      return [build_invalid_erc20_transaction(txn_receipt)] if txn_receipt.fetch('logs').blank?
+      return [build_invalid_erc20_transaction(txn_receipt, block_txn)] if txn_receipt.fetch('logs').blank?
 
       txn_receipt.fetch('logs').each_with_object([]) do |log, formatted_txs|
         next if log['blockHash'].blank? && log['blockNumber'].blank?
@@ -70,7 +70,13 @@ class EthereumGateway
       end
     end
 
-    def build_invalid_erc20_transaction(txn_receipt)
+    def build_invalid_erc20_transaction(txn_receipt, block_txn)
+      # Some invalid transaction has no effectiveGasPrice
+      # For example: https://bscscan.com/tx/0x014fd1e933ddfdb1bc44617408e75ee12b656f7d54e7eaf176ae3fd2b92cf401
+      #
+      gas_limit = txn_receipt.fetch('gasUsed').to_i(16)
+      gas_price = txn_receipt.fetch('effectiveGasPrice', block_txn.fetch('gasPrice')).to_i(16)
+
       {
         hash:         normalize_txid(txn_receipt.fetch('transactionHash')),
         block_number: txn_receipt.fetch('blockNumber').to_i(16),
@@ -78,8 +84,8 @@ class EthereumGateway
         from_addresses:  [normalize_address(txn_receipt['from'])],
         amount: 0,
         status:       transaction_status(txn_receipt),
-        options: { gas_price: txn_receipt.fetch('effectiveGasPrice').to_i(16) },
-        fee:  txn_receipt.fetch('effectiveGasPrice').to_i(16) * txn_receipt.fetch('gasUsed').to_i(16)
+        fee:  gas_price * gas_limit,
+        options: { gas_price: gas_price, gas_limit: gas_limit },
       }
     end
 
