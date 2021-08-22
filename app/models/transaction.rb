@@ -40,6 +40,8 @@ class Transaction < ApplicationRecord
 
   after_initialize :initialize_defaults, if: :new_record?
 
+  before_update :update_reference!
+
   # TODO: record expenses for succeed transactions
 
   def self.create_from_blockchain_transaction!(tx, extra = {})
@@ -68,6 +70,19 @@ class Transaction < ApplicationRecord
 
   def transaction_url
     blockchain.explore_transaction_url txid if blockchain
+  end
+
+  def update_reference!
+    if reference.is_a? Withdraw
+      reference.update! txid: txid, txout: txout if reference.txid.nil?
+    elsif reference.is_a? Deposit
+      reference.update! txid: txid, txout: txout if reference.txid.nil? || (reference.txout.nil? && txout.present?)
+    elsif reference.nil?
+      wallet = Wallet.find_by_address(from_address) || Wallet.find_by_address(to_address)
+      self.refefence = wallet if wallet.present?
+    else
+      report_exception "Transction without reference", true, { id: id, txid: txid }
+    end
   end
 
   # TODO Validate txid by blockchain
