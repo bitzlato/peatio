@@ -131,6 +131,10 @@ class Wallet < ApplicationRecord
         array.distinct
       end
     end
+
+    def find_by_address(address)
+      where('lower(address)=?', address.downcase).take
+    end
   end
 
   def blockchain_key=(key)
