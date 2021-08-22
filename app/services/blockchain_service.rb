@@ -20,7 +20,18 @@ class BlockchainService
     blockchain.transactions.each do |t|
       t.blockchain.service.update_transaction!(t.txid, t.txout)
     rescue => err
-      logger.warn "Error updating transcation #{t.id} -> #{err}"
+      logger.warn "Error updating transaction #{t.id} -> #{err}"
+    end
+  end
+
+  def delete_unknown_transactions!
+    txids = blockchain.deposits.pluck(:txid) + blockchain.withdraws.pluck(:txid)
+    addresses = blockchain.follow_addresses
+    blockchain.transactions.where(reference_id: nil).find_each do |t|
+      next if txids.include? t.txid
+      next if addresses.include? t.from_address
+      next if addresses.include? t.to_address
+      t.destroy!
     end
   end
 

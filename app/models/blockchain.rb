@@ -52,7 +52,7 @@ class Blockchain < ApplicationRecord
 
   def follow_txids
     if Rails.env.production?
-      withdraws.confirming.pluck(:txid)
+      (withdraws.confirming.pluck(:txid) + blockchain.transactions.pending.pluck(:txid)).compact.uniq.map { |txid| normalize_txid txid }
     else
       # Check it all. We want to debug it in development
       withdraws.pluck(:txid)
@@ -78,11 +78,11 @@ class Blockchain < ApplicationRecord
   end
 
   def wallets_addresses
-    @wallets_addresses ||= wallets.where.not(address: nil).pluck(:address)
+    @wallets_addresses ||= wallets.where.not(address: nil).pluck(:address).map { |a| normalize_address a }
   end
 
   def deposit_addresses
-    @deposit_addresses ||= payment_addresses.where.not(address: nil).pluck(:address)
+    @deposit_addresses ||= payment_addresses.where.not(address: nil).pluck(:address).map { |a| normalize_address a }
   end
 
   def follow_addresses
@@ -90,7 +90,7 @@ class Blockchain < ApplicationRecord
   end
 
   def contract_addresses
-    @contract_addresses ||= currencies.tokens.map(&:contract_address)
+    @contract_addresses ||= currencies.tokens.map(&:contract_address).map { |a| normalize_address a }
   end
 
   def active?
