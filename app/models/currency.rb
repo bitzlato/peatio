@@ -56,6 +56,11 @@ class Currency < ApplicationRecord
     self.base_factor ||= 2
   end
 
+  # Support for tower
+  before_create if: :erc20_contract_address do
+    self.contract_address ||= erc20_contract_address
+  end
+
   validate on: :create do
     if ENV['MAX_CURRENCIES'].present? && Currency.count >= ENV['MAX_CURRENCIES'].to_i
       errors.add(:max, 'Currency limit has been reached')
