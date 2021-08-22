@@ -18,7 +18,10 @@ class BlockchainService
 
   def update_transactions!
     blockchain.transactions.each do |t|
-      t.blockchain.service.update_transaction!(t.txid, t.txout)
+      next unless blockchain.follow_addresses.include?(t.to_address) ||
+        blockchain.follow_addresses.include?(t.from_address) ||
+        blockchain.follow_txids.include?(t.txid)
+      update_transaction!(t.txid, t.txout)
     rescue => err
       logger.warn "Error updating transaction #{t.id} -> #{err}"
     end
