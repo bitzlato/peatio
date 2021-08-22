@@ -21,6 +21,10 @@ class Transaction < ApplicationRecord
   belongs_to :currency
   has_one :blockchain, through: :currency
 
+  STATUSES.each do |status|
+    scope status, -> { where status: status }
+  end
+
   # == Validations ==========================================================
 
   validates :currency, :amount, :from_address, :status, presence: true

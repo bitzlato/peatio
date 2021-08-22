@@ -51,12 +51,7 @@ class Blockchain < ApplicationRecord
   end
 
   def follow_txids
-    if Rails.env.production?
-      (withdraws.confirming.pluck(:txid) + blockchain.transactions.pending.pluck(:txid)).compact.uniq.map { |txid| normalize_txid txid }
-    else
-      # Check it all. We want to debug it in development
-      withdraws.pluck(:txid)
-    end
+    @follow_txids ||= (withdraws.confirming.pluck(:txid) + transactions.pending.pluck(:txid)).compact.uniq.map { |txid| normalize_txid txid }
   end
 
   def service
