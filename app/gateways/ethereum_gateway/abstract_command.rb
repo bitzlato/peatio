@@ -16,8 +16,15 @@ class EthereumGateway
     private
 
     def build_erc20_transactions(txn_receipt, block_txn, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txouts: nil)
-      # Build invalid transaction for failed withdrawals
-      return [build_invalid_erc20_transaction(txn_receipt, block_txn)] if txn_receipt.fetch('logs').blank?
+      txid = normalize_txid(txn_receipt.fetch('transactionHash'))
+      from_address = normalize_address(txn_receipt['from'])
+
+      if txn_receipt.fetch('logs').blank?
+        return [] unless follow_addresses.nil? || follow_addresses.include?(from_address) ||
+          (follow_txids.present? && follow_txids.include?(txid))
+        # Build invalid transaction for failed withdrawals
+        return [build_invalid_erc20_transaction(txn_receipt, block_txn)]
+      end
 
       txn_receipt.fetch('logs').each_with_object([]) do |log, formatted_txs|
         next if log['blockHash'].blank? && log['blockNumber'].blank?
@@ -27,9 +34,7 @@ class EthereumGateway
         next unless contract_addresses.nil? || contract_addresses.include?(contract_address)
 
         to_address = normalize_address('0x' + log.fetch('topics').last[-40..-1])
-        from_address = normalize_address(txn_receipt['from'])
 
-        txid = normalize_txid(txn_receipt.fetch('transactionHash'))
         next unless follow_addresses.nil? || follow_addresses.include?(to_address) || follow_addresses.include?(from_address) ||
           (follow_txids.present? && follow_txids.include?(txid))
 
