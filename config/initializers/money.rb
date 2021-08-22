@@ -18,9 +18,11 @@ class Money
       def find!(code)
         find(code) || raise("No #{code} Money::Currency found!")
       end
+
       def all
         ::Currency.ordered.map &:money_currency
       end
+
       def new(id)
         id = id.to_s.downcase
         RequestStore.store['money_currency_'+id] ||= super(id).freeze
@@ -32,29 +34,9 @@ class Money
       :crypto?, :token?, :blockchain, to: :currency_record
 
     def initialize_data!
-      # Typical initialization
-      # data = self.class.table[@id] || raise("No #{@id} currency defined in table")
-      @currency_record = ::Currency.find(id) || raise(UnknownCurrency, id)
-
-      #@base_factor_subunits = data[:base_factor_subunits]
-
-      #raise "You can't set base_factor_subunits and subunit_to_unit in same time #{data}" if @base_factor_subunits && @subunit_to_unit
-
-      ## base_factor_subunits - zero's count (for example: 2)
-      ## subunit_to_unit - amount of subunits (cents) in unit (dollar) (for example: 100)
-      ## base_factor is alias of subunit_to_unit
-
-      #if @base_factor_subunits.present?
-        #@subunit_to_unit = 10 ** @base_factor_subunits
-      #elsif @subunit_to_unit.present?
-        #@base_factor_subunits = Math.log(@subunit_to_unit, 10).round
-      #else
-        #raise "No subunit_to_unit or base_factor_subunits for currency '#{@id}'"
-      #end
-
-      #raise "No contract_address for #{@id}" if @parent_currency.present? && !@contract_address
-
-      #@precision = data[:precision] || @base_factor_subunits
+      @currency_record = ::Currency.find(id)
+    rescue ActiveRecord::RecordNotFound
+      raise UnknownCurrency, id
     end
 
     def iso_code
