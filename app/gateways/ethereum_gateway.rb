@@ -142,7 +142,7 @@ class EthereumGateway < AbstractGateway
       .call(block_number,
             contract_addresses: blockchain.contract_addresses,
             follow_addresses: blockchain.follow_addresses,
-            follow_txids: blockchain.follow_txids)
+            follow_txids: blockchain.follow_txids.presence)
       .map(&method(:hash_to_transaction))
   end
 

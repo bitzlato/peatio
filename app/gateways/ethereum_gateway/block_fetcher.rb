@@ -1,7 +1,6 @@
 class EthereumGateway
   class BlockFetcher < AbstractCommand
-    def call(block_number, contract_addresses: [], follow_addresses: [], follow_txids: [])
-      # logger.info("Fetch block #{block_number} with contract_addresses: #{contract_addresses} and follow_addresses #{follow_addresses}")
+    def call(block_number, contract_addresses: nil, follow_addresses: nil, follow_txids: nil)
       logger.debug("Fetch block #{block_number}")
       @contract_addresses = contract_addresses
       @follow_addresses = follow_addresses
@@ -17,19 +16,19 @@ class EthereumGateway
         if tx.fetch('input').hex <= 0
           from_address = normalize_address(tx['from'])
           to_address = normalize_address(tx['to'])
-          transactions << build_success_eth_transaction(tx) if follow_addresses.include?(from_address) ||
-            follow_addresses.include?(to_address) ||
-            follow_txids.include?(normalize_txid(tx.fetch('hash')))
+          transactions << build_success_eth_transaction(tx) if follow_addresses.nil? ||
+            follow_addresses.include?(from_address) || follow_addresses.include?(to_address) ||
+            (follow_txids.present? && follow_txids.include?(normalize_txid(tx.fetch('hash'))))
         else
           contract_address = normalize_address tx.fetch('to')
           from_address = normalize_address tx.fetch('from')
-          to_address = get_address_from_input tx.fetch('input')
+          to_addresses = get_addresses_from_input tx.fetch('input')
 
           # 1. Check if the smart contract destination is in whitelist
           #    The common case is a withdraw from a known smart contract of a major exchange (TODO)
           # 2. Check if the transaction is one of our currencies smart contract
           # 3. Check if the tx is from one of our wallets (to confirm withdrawals)
-          next unless contract_addresses.include?(contract_address) || follow_addresses.include?(from_address) || follow_addresses.include?(to_address)
+          next unless contract_addresses.include?(contract_address) || follow_addresses.include?(from_address) || follow_addresses.intersect?(to_addresses)
 
           transactions += build_erc20_transactions(fetch_receipt(tx.fetch('hash')), tx)
         end

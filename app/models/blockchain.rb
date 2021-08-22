@@ -73,11 +73,11 @@ class Blockchain < ApplicationRecord
   end
 
   def wallets_addresses
-    @wallets_addresses ||= wallets.where.not(address: nil).pluck(:address).map { |a| normalize_address a }
+    @wallets_addresses ||= Set.new(wallets.where.not(address: nil).pluck(:address).map { |a| normalize_address a }).freeze
   end
 
   def deposit_addresses
-    @deposit_addresses ||= payment_addresses.where.not(address: nil).pluck(:address).map { |a| normalize_address a }
+    @deposit_addresses ||= Set.new(payment_addresses.where.not(address: nil).pluck(:address).map { |a| normalize_address a }).freeze
   end
 
   def follow_addresses
@@ -85,7 +85,7 @@ class Blockchain < ApplicationRecord
   end
 
   def contract_addresses
-    @contract_addresses ||= currencies.tokens.map(&:contract_address).map { |a| normalize_address a }
+    @contract_addresses ||= Set.new(currencies.tokens.map(&:contract_address).map { |a| normalize_address a })
   end
 
   def active?

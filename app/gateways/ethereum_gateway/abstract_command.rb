@@ -30,11 +30,15 @@ class EthereumGateway
         from_address = normalize_address(txn_receipt['from'])
 
         txid = normalize_txid(txn_receipt.fetch('transactionHash'))
-        next unless follow_addresses.nil? || follow_addresses.include?(to_address) || follow_addresses.include?(from_address)
-        next unless follow_txids.nil? || follow_txids.include?(txid)
+        next unless follow_addresses.nil? || follow_addresses.include?(to_address) || follow_addresses.include?(from_address) ||
+          (follow_txids.present? && follow_txids.include?(txid))
 
         txout = log['logIndex'].to_i(16)
         next unless follow_txouts.nil? || follow_txouts.include?(txout)
+
+        # BSC has no effectiveGasPrice key
+        gas_price = txn_receipt.fetch('effectiveGasPrice', block_txn.fetch('gasPrice')).to_i(16)
+        gas_used = txn_receipt.fetch('gasUsed').to_i(16)
         formatted_txs << {
           hash:            txid,
           amount:          log.fetch('data').hex,
@@ -44,8 +48,8 @@ class EthereumGateway
           block_number:    txn_receipt.fetch('blockNumber').to_i(16),
           contract_address: log.fetch('address'),
           status:          transaction_status(txn_receipt),
-          options: { gas_price: txn_receipt.fetch('effectiveGasPrice').to_i(16) },
-          fee:  txn_receipt.fetch('effectiveGasPrice').to_i(16) * txn_receipt.fetch('gasUsed').to_i(16)
+          options: { gas_price: gas_price, gas_used: gas_used },
+          fee:  gas_price * gas_used
         }
       end
     end
@@ -63,18 +67,20 @@ class EthereumGateway
     end
 
     # The usual case is a function call transfer(address,uint256) with footprint 'a9059cbb'
-    def get_address_from_input(input)
+    def get_addresses_from_input(input)
       # Check if one of the first params of the function call is one of our deposit addresses
-      ["0x#{input[34...74]}", "0x#{input[75...115]}"].tap do |to_address|
-        to_address.delete(ZERO_ADDRESS)
-      end
+      Set.new(
+        ["0x#{input[34...74]}", "0x#{input[75...115]}"].tap do |to_address|
+          to_address.delete(ZERO_ADDRESS)
+        end
+      )
     end
 
     def build_invalid_erc20_transaction(txn_receipt, block_txn)
       # Some invalid transaction has no effectiveGasPrice
       # For example: https://bscscan.com/tx/0x014fd1e933ddfdb1bc44617408e75ee12b656f7d54e7eaf176ae3fd2b92cf401
       #
-      gas_limit = txn_receipt.fetch('gasUsed').to_i(16)
+      gas_used = txn_receipt.fetch('gasUsed').to_i(16)
       gas_price = txn_receipt.fetch('effectiveGasPrice', block_txn.fetch('gasPrice')).to_i(16)
 
       {
@@ -84,8 +90,8 @@ class EthereumGateway
         from_addresses:  [normalize_address(txn_receipt['from'])],
         amount: 0,
         status:       transaction_status(txn_receipt),
-        fee:  gas_price * gas_limit,
-        options: { gas_price: gas_price, gas_limit: gas_limit },
+        fee:  gas_price * gas_used,
+        options: { gas_price: gas_price, gas_used: gas_used },
       }
     end
 
