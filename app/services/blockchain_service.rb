@@ -16,13 +16,20 @@ class BlockchainService
     @latest_block_number ||= gateway.latest_block_number
   end
 
+  def update_transactions!
+    blockchain.transactions.each do |t|
+      t.blockchain.service.update_transaction!(t.txid, t.txout)
+    rescue => err
+      logger.warn "Error updating transcation #{t.id} -> #{err}"
+    end
+  end
+
   def update_transaction!(txid, txout = nil)
     blockchain_transaction = gateway.fetch_transaction txid, txout
     t = blockchain.transactions.find_by(txid: txid, txout: txout)
     if blockchain_transaction.nil?
       t.update status: 'pending' if t.present?
     else
-      binding.pry
       # TODO lookup for reference if there are no transaction
       upsert_transaction! blockchain_transaction, t.try(:reference)
     end
@@ -74,13 +81,13 @@ class BlockchainService
   def upsert_transaction!(tx, reference = nil)
     # TODO change currency_to blockchain_id
     t = Transaction.upsert!(
-      fee: tx.fee,
+      fee: tx.fee.try(:to_d),
       fee_currency_id: tx.fee_currency_id,
       block_number: tx.block_number,
       status: tx.status,
       txout: tx.txout,
       from_address: tx.from_address,
-      amount: tx.amount,
+      amount: tx.amount.try(:to_d),
       to_address: tx.to_address,
       currency_id: tx.currency_id,
       txid: tx.id,
