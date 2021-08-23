@@ -75,12 +75,7 @@ class AbstractGateway
     Rails.logger
   end
 
-  def save_transaction(transaction, extra = {})
-    raise 'transaction must be a Peatio::Transaction' unless transaction.is_a? Peatio::Transaction
-    Transaction.create_from_blockchain_transaction!(transaction, extra)
-  end
-
-  def hash_to_transaction(hash)
+  def monefy_transaction(hash, extras = {})
     return if hash.nil?
     if hash.is_a? Peatio::Transaction
       currency = blockchain.find_money_currency(hash.contract_address)
@@ -99,7 +94,7 @@ class AbstractGateway
           amount: currency.to_money_from_units(hash.fetch(:amount)),
           fee: hash.fetch(:fee, nil) ? blockchain.fee_currency.money_currency.to_money_from_units(hash.fetch(:fee)) : nil,
           fee_currency_id: blockchain.fee_currency.money_currency.id
-      )
+        )
       ).freeze
     end
   end

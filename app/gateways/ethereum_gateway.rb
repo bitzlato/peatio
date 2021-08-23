@@ -48,7 +48,7 @@ class EthereumGateway < AbstractGateway
       amount = balances[currency]
       next if amount.zero?
       logger.info("Collect #{currency} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
-      transaction = hash_to_transaction(
+      transaction = monefy_transaction(
         TransactionCreator
         .new(client)
         .call(from_address: payment_address.address,
@@ -58,7 +58,7 @@ class EthereumGateway < AbstractGateway
               contract_address: currency.contract_address,
               subtract_fee: currency.contract_address.nil?)
       )
-      save_transaction transaction
+      Transaction.upsert_transaction! transaction
     rescue EthereumGateway::TransactionCreator::Error => err
       logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
       nil
@@ -75,7 +75,7 @@ class EthereumGateway < AbstractGateway
     tokens_count = load_balances(target_address)
       .select { |currency, balance| currency.token? && balance.positive? }
       .count
-    transaction = hash_to_transaction(
+    transaction = monefy_transaction(
       EthereumGateway::GasRefueler
       .new(client)
       .call(
@@ -88,7 +88,7 @@ class EthereumGateway < AbstractGateway
 
     logger.info("#{target_address} refueled with transaction #{transaction.as_json}")
     # TODO save GasRefuel record as reference
-    save_transaction transaction, options: { tokens_count: tokens_count }
+    Transaction.upsert_transaction! transaction, options: { tokens_count: tokens_count }
 
   rescue EthereumGateway::GasRefueler::Error => err
     logger.info("Canceled refueling address #{target_address} with #{err}")
@@ -124,7 +124,7 @@ class EthereumGateway < AbstractGateway
 
     raise 'amount must be a Money' unless amount.is_a? Money
     # TODO save transaction
-    hash_to_transaction(
+    monefy_transaction(
       TransactionCreator
       .new(client)
       .call(from_address: from_address,
@@ -143,7 +143,7 @@ class EthereumGateway < AbstractGateway
             contract_addresses: blockchain.contract_addresses,
             follow_addresses: blockchain.follow_addresses,
             follow_txids: blockchain.follow_txids.presence)
-      .map(&method(:hash_to_transaction))
+      .map(&method(:monefy_transaction))
   end
 
   def latest_block_number
@@ -153,7 +153,7 @@ class EthereumGateway < AbstractGateway
   end
 
   def fetch_transaction(txid, txout = nil)
-    hash_to_transaction(
+    monefy_transaction(
       TransactionFetcher.new(client).call(txid, txout)
     )
   end

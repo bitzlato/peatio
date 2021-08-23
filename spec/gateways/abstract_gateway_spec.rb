@@ -3,7 +3,7 @@
 
 describe ::AbstractGateway do
   let(:address) { 'address' }
-  let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet' }
+  let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet', key: 'btc-testnet' }
   let(:uri) { 'http://127.0.0.1:8545' }
   let(:client) { ::Ethereum::Client.new(uri) }
 
@@ -12,19 +12,41 @@ describe ::AbstractGateway do
     described_class.any_instance.expects(:build_client).returns(client)
   end
 
-  context '#save_transaction' do
-    let(:peatio_transaction) { Peatio::Transaction.new(
-      currency_id: 'eth',
-      amount: 1.2,
-      from_address: '123',
-      to_address: '145',
-      block_number: 1,
-      status: 'success'
-    )}
-    let(:reference) { create :deposit, :deposit_eth }
+  context '#monefy_transaction' do
+    context 'monefy hash transcation' do
+      let(:hash_transaction) { {
+        currency_id: 'eth',
+        amount: 1000000000002,
+        from_address: '123',
+        to_address: '145',
+        block_number: 1,
+        status: 'success',
+        contract_address: nil,
+      }}
+      let(:reference) { create :deposit, :deposit_eth }
 
-    it do
-      expect { subject.send(:save_transaction, peatio_transaction, reference: reference) }.not_to raise_error
+      it do
+        expect do
+          subject.send(:monefy_transaction, hash_transaction, reference: reference)
+        end.not_to raise_error
+      end
+    end
+    context 'monefy peatio transcation' do
+      let(:peatio_transaction) { Peatio::Transaction.new(
+        currency_id: 'eth',
+        amount: 100000000002,
+        from_address: '123',
+        to_address: '145',
+        block_number: 1,
+        status: 'success'
+      )}
+      let(:reference) { create :deposit, :deposit_eth }
+
+      it do
+        expect do
+          subject.send(:monefy_transaction, peatio_transaction, reference: reference)
+        end.not_to raise_error
+      end
     end
   end
 end

@@ -46,7 +46,7 @@ class BlockchainService
       t.update status: 'pending' if t.present?
     else
       # TODO lookup for reference if there are no transaction
-      upsert_transaction! blockchain_transaction, t.try(:reference)
+      Transaction.upsert_transaction! blockchain_transaction, reference: t.reference
     end
   end
 
@@ -72,7 +72,7 @@ class BlockchainService
       end
       # TODO fetch_transaction if status is pending
       tx = fetch_transaction(tx)
-      upsert_transaction! tx, (deposit || withdrawal)
+      Transaction.upsert_transaction! tx, reference: (deposit || withdrawal)
     end.count
   rescue StandardError => err
     report_exception err, true, blockchain_id: blockchain.id, block_number: block_number
@@ -95,27 +95,6 @@ class BlockchainService
   private
 
   attr_reader :withdrawal, :deposit, :fetched_transaction
-
-  def upsert_transaction!(tx, reference = nil)
-    # TODO change currency_to blockchain_id
-    t = Transaction.upsert!(
-      fee: tx.fee.try(:to_d),
-      fee_currency_id: tx.fee_currency_id,
-      block_number: tx.block_number,
-      status: tx.status,
-      txout: tx.txout,
-      from_address: tx.from_address,
-      amount: tx.amount.try(:to_d),
-      to_address: tx.to_address,
-      currency_id: tx.currency_id,
-      txid: tx.id,
-      reference: reference
-    )
-    logger.debug("Transaction is saved to database with id=#{t.id}")
-    t
-  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
-    report_exception err, true, tx: tx, record: err.record.as_json
-  end
 
   def dispatch_deposits! block_number
     blockchain.
