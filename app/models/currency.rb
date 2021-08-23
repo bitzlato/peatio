@@ -126,6 +126,7 @@ class Currency < ApplicationRecord
   before_update { update_position(self) if position_changed? }
 
   delegate :key, to: :blockchain, prefix: true
+  delegate :enable_invoice?, to: :blockchain
   delegate :to_money_from_decimal, :to_money_from_units, to: :money_currency
 
   after_commit :wipe_cache

@@ -6,7 +6,7 @@ describe Workers::AMQP::DepositCoinAddress do
   let(:address) { Faker::Blockchain::Bitcoin.address }
   let(:secret) { PasswordGenerator.generate(64) }
   let(:blockchain) { create(:blockchain, 'eth-rinkeby') }
-  let(:payment_address) { member.payment_address(blockchain.id) }
+  let(:payment_address) { member.payment_address(blockchain) }
   let(:create_address_result) do
     { address: address,
       secret: secret,
