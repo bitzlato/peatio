@@ -68,7 +68,7 @@ set :assets_roles, []
 set :init_system, :systemd
 
 set :systemd_daemon_role, :daemons
-set :systemd_daemon_instances, -> { %i[cron_job blockchain deposit] }
+set :systemd_daemon_instances, -> { %i[cron_job blockchain] }
 
 set :systemd_amqp_daemon_role, :daemons
 set :systemd_amqp_daemon_instances, -> { %i[deposit_coin_address withdraw_coin deposit_intention matching order_processor trade_executor influx_writer] }
