@@ -19,7 +19,7 @@ class Transaction < ApplicationRecord
 
   belongs_to :reference, polymorphic: true
   belongs_to :currency
-  has_one :blockchain, through: :currency
+  belongs_to :blockchain
 
   STATUSES.each do |status|
     scope status, -> { where status: status }
@@ -72,14 +72,22 @@ class Transaction < ApplicationRecord
     blockchain.explore_transaction_url txid if blockchain
   end
 
+  def update_accountable_fee!
+    update_column :accountable_fee, is_accountable_fee?
+  end
+
+  def is_accountable_fee?
+    blockchain.wallets.by_address(from_address).any? || blockchain.payment_addresses.by_address(from_address).any?
+  end
+
   def update_reference!
     if reference.is_a? Withdraw
       reference.update! txid: txid, txout: txout if reference.txid.nil?
     elsif reference.is_a? Deposit
       reference.update! txid: txid, txout: txout if reference.txid.nil? || (reference.txout.nil? && txout.present?)
     elsif reference.nil?
-      wallet = Wallet.find_by_address(from_address) || Wallet.find_by_address(to_address)
-      self.refefence = wallet if wallet.present?
+      wallet = (from_address.present? ? Wallet.find_by_address(from_address) : nil) || (to_address.present? ? Wallet.find_by_address(to_address) : nil )
+      self.reference = wallet if wallet.present?
     else
       report_exception "Transction without reference", true, { id: id, txid: txid }
     end

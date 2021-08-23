@@ -64,6 +64,7 @@ class Wallet < ApplicationRecord
   scope :with_withdraw_currency, ->(currency) { with_currency(currency).where(currencies: { withdrawal_enabled: true }) }
   scope :with_deposit_currency, ->(currency) { with_currency(currency).where(currencies: { deposit_enabled: true }) }
   scope :ordered, -> { order(kind: :asc) }
+  scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
 
   delegate :key, to: :blockchain, prefix: true
   delegate :create_address!, :gateway, to: :blockchain

@@ -17,6 +17,8 @@ class PaymentAddress < ApplicationRecord
   vault_attribute :details, serialize: :json, default: {}
   vault_attribute :secret
 
+  scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
+
   # TODO Migrate association from wallet to blockchain and remove Wallet.deposit*
   belongs_to :member
   belongs_to :blockchain
@@ -26,6 +28,10 @@ class PaymentAddress < ApplicationRecord
   end
 
   delegate :gateway, :currencies, to: :blockchain
+
+  def self.find_by_address(address)
+    where('lower(address)=?', address.downcase).take
+  end
 
   def enqueue_address_generation
     AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain_id }, { persistent: true })
