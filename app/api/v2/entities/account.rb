@@ -44,6 +44,9 @@ module API
           }
         ) do |account, options|
           account.payment_address
+        rescue => err
+          report_exception err, true, account: account, options: options
+          nil
         end
 
         expose(
