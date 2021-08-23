@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_22_080438) do
+ActiveRecord::Schema.define(version: 2021_08_23_045327) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -116,7 +116,6 @@ ActiveRecord::Schema.define(version: 2021_08_22_080438) do
     t.decimal "price", precision: 32, scale: 16, default: "1.0", null: false
     t.string "parent_id"
     t.bigint "blockchain_id", null: false
-    t.boolean "enable_invoice", default: false, null: false
     t.bigint "base_factor", null: false
     t.string "contract_address"
     t.index ["blockchain_id"], name: "index_currencies_on_blockchain_id"
