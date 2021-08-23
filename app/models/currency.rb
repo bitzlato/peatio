@@ -249,10 +249,6 @@ class Currency < ApplicationRecord
                                   options:               opt)
   end
 
-  def precision
-    super || subunits
-  end
-
   def min_deposit_amount_money
     money_currency.to_money_from_decimal min_deposit_amount
   end
