@@ -1,0 +1,3 @@
+bundle exec cap production db:pull && \
+DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:nullify_encrypted_columns && \
+bundle exec cap s2 db:push
