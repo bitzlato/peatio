@@ -75,15 +75,6 @@ module API
           )
 
           expose(
-            :spread,
-            documentation: {
-              type: String,
-              desc: 'Deposit collection spread.'
-            },
-            if: -> (deposit) { !deposit.spread.empty? }
-          )
-
-          expose(
             :updated_at,
             format_with: :iso8601,
             documentation: {
