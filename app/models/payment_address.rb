@@ -3,7 +3,9 @@
 
 # TODO: Rename to DepositAddress
 class PaymentAddress < ApplicationRecord
+  extend PaymentAddressTotals
   include Vault::EncryptedModel
+
   strip_attributes
 
   vault_lazy_decrypt!
