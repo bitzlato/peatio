@@ -2,8 +2,7 @@
 
 set :rails_env, :staging
 set :disallow_pushing, false
-
-set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:application)}" }
+set :application, -> { 'peatio-' + fetch(:stage).to_s }
 
 server '87.98.150.101',
        user: fetch(:user),
