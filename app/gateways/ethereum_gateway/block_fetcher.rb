@@ -16,7 +16,7 @@ class EthereumGateway
         if tx.fetch('input').hex <= 0
           from_address = normalize_address(tx['from'])
           to_address = normalize_address(tx['to'])
-          transactions << build_success_eth_transaction(tx) if follow_addresses.nil? ||
+          transactions << build_success_eth_transaction(fetch_receipt(tx.fetch('hash')), tx) if follow_addresses.nil? ||
             follow_addresses.include?(from_address) || follow_addresses.include?(to_address) ||
             (follow_txids.present? && follow_txids.include?(normalize_txid(tx.fetch('hash'))))
         else

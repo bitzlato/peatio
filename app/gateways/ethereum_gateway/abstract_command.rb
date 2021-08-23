@@ -89,21 +89,24 @@ class EthereumGateway
       gas_price = txn_receipt.fetch('effectiveGasPrice', block_txn.fetch('gasPrice')).to_i(16)
 
       {
-        hash:         normalize_txid(txn_receipt.fetch('transactionHash')),
-        block_number: txn_receipt.fetch('blockNumber').to_i(16),
+        hash:             normalize_txid(txn_receipt.fetch('transactionHash')),
+        block_number:     txn_receipt.fetch('blockNumber').to_i(16),
         contract_address: txn_receipt.fetch('to'),
-        from_addresses:  [normalize_address(txn_receipt['from'])],
-        amount: 0,
-        status:       transaction_status(txn_receipt),
-        fee:  gas_price * gas_used,
-        options: { gas_price: gas_price, gas_used: gas_used },
+        from_addresses:   [normalize_address(txn_receipt['from'])],
+        amount:           0,
+        status:           transaction_status(txn_receipt),
+        fee:              gas_price * gas_used,
+        options:          { gas_price: gas_price, gas_used: gas_used, gas_limit: block_txn.fetch('gas').to_i(16) }
       }
     end
 
-    def build_success_eth_transaction(block_txn, validate_txout = nil)
+    def build_success_eth_transaction(txn_receipt, block_txn, validate_txout = nil)
       txid = normalize_txid(block_txn.fetch('hash'))
       txout = block_txn.fetch('transactionIndex').to_i(16)
       logger.warn("Transcation #{txid} has wrong txout #{txout}<>#{validate_txout}") if validate_txout.present? && txout!=validate_txout
+      gas_used = txn_receipt.fetch('gasUsed').to_i(16)
+      gas_price = txn_receipt.fetch('effectiveGasPrice', block_txn.fetch('gasPrice')).to_i(16)
+
       {
         hash:           txid,
         amount:         block_txn.fetch('value').hex,
@@ -112,11 +115,8 @@ class EthereumGateway
         txout:          txout,
         block_number:   block_txn.fetch('blockNumber').to_i(16),
         status:         'success',
-        options: {
-          gas:            block_txn.fetch('gas').to_i(16),
-          gas_price:      block_txn.fetch('gasPrice').to_i(16),
-        },
-        fee:            block_txn.fetch('gas').to_i(16) * block_txn.fetch('gasPrice').to_i(16),
+        options:        { gas_price: gas_price, gas_used: gas_used, gas_limit: block_txn.fetch('gas').to_i(16) },
+        fee:  gas_price * gas_used,
         contract_address: nil
       }
     end
