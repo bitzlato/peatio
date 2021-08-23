@@ -35,7 +35,7 @@ module API
         expose(
           :deposit_address,
           if: ->(account, _options) do
-            account.currency.coin? && account.payment_address.address.present? && !account.enable_invoice?
+            account.currency.coin? && !account.enable_invoice? && account.payment_address.try(:address).present?
           end,
           using: API::V2::Entities::PaymentAddress,
           documentation: {
