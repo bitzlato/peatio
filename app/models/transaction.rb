@@ -51,23 +51,25 @@ class Transaction < ApplicationRecord
     # TODO just now created transaction has no txout. Available to change txout from nil to number
     Transaction.upsert!(
       {
-        fee: tx.fee.try(:to_d),
+        fee:             tx.fee.nil? ? nil : tx.fee.to_d,
         fee_currency_id: tx.fee_currency_id,
-        block_number: tx.block_number,
-        status: tx.status,
-        txout: tx.txout,
-        from_address: tx.from_address,
-        amount: tx.amount.try(:to_d),
-        to_address: tx.to_address,
-        currency_id: tx.currency_id,
-        blockchain_id: tx.blockchain_id,
-        txid: tx.id,
+        block_number:    tx.block_number,
+        status:          tx.status,
+        txout:           tx.txout,
+        from_address:    tx.from_address,
+        amount:          tx.amount.nil? ? nil : tx.amount.to_d,
+        to_address:      tx.to_address,
+        currency_id:     tx.currency_id,
+        blockchain_id:   tx.blockchain_id,
+        txid:            tx.id,
+        options:         tx.options,
       }.deep_merge(extra)
     ).tap do |t|
       Rails.logger.debug("Transaction #{tx.txid}/#{tx.txout} is saved to database with id=#{t.id}")
     end
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
     report_exception err, true, tx: tx, record: err.record.as_json
+    raise err
   end
 
   def failed?
@@ -99,7 +101,7 @@ class Transaction < ApplicationRecord
       wallet = (from_address.present? ? Wallet.find_by_address(from_address) : nil) || (to_address.present? ? Wallet.find_by_address(to_address) : nil )
       self.reference = wallet if wallet.present?
     else
-      report_exception "Transction without reference", true, { id: id, txid: txid }
+      report_exception "Transaction without reference #{id}", true, { id: id, txid: txid }
     end
   end
 

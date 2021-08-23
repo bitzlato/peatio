@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_23_065105) do
+ActiveRecord::Schema.define(version: 2021_08_23_183710) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -466,10 +466,9 @@ ActiveRecord::Schema.define(version: 2021_08_23_065105) do
     t.datetime "updated_at", null: false
     t.decimal "fee", precision: 32, scale: 16
     t.string "fee_currency_id"
-    t.bigint "deposit_id"
-    t.bigint "deposit_spread_id"
     t.boolean "accountable_fee", default: false, null: false
     t.bigint "blockchain_id", null: false
+    t.boolean "is_followed", default: false, null: false
     t.index ["blockchain_id", "accountable_fee"], name: "index_transactions_on_blockchain_id_and_accountable_fee"
     t.index ["blockchain_id", "txid", "txout"], name: "index_transactions_on_blockchain_id_and_txid_and_txout", unique: true
     t.index ["blockchain_id"], name: "index_transactions_on_blockchain_id"

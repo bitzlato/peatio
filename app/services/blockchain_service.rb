@@ -18,12 +18,16 @@ class BlockchainService
 
   def update_transactions!
     blockchain.transactions.each do |t|
-      next unless blockchain.follow_addresses.include?(t.to_address) ||
+      unless blockchain.valid_address? t.txid
+        logger.debug("Transaction address #{t.txid} is invalid")
+        next
+      end
+      is_followed  = blockchain.follow_addresses.include?(t.to_address) ||
         blockchain.follow_addresses.include?(t.from_address) ||
         blockchain.follow_txids.include?(t.txid)
-      update_transaction!(t.txid, t.txout)
+      update_transaction!(t.txid, t.txout, is_followed)
     rescue => err
-      logger.warn "Error updating transaction #{t.id} -> #{err}"
+      report_exception err, true, transaction_id: t.id
     end
   end
 
@@ -39,14 +43,14 @@ class BlockchainService
     destroyed
   end
 
-  def update_transaction!(txid, txout = nil)
+  def update_transaction!(txid, txout = nil, is_followed = false)
     blockchain_transaction = gateway.fetch_transaction txid, txout
     t = blockchain.transactions.find_by(txid: txid, txout: txout)
     if blockchain_transaction.nil?
       t.update status: 'pending' if t.present?
     else
       # TODO lookup for reference if there are no transaction
-      Transaction.upsert_transaction! blockchain_transaction, reference: t.reference
+      Transaction.upsert_transaction! blockchain_transaction, is_followed: is_followed
     end
   end
 

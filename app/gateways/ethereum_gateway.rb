@@ -12,7 +12,7 @@ class EthereumGateway < AbstractGateway
   end
 
   def self.normalize_address(address)
-    AdequateCryptoAddress.address(address, :eth).address
+    AdequateCryptoAddress.address(address, :eth).address.downcase
   end
 
   def self.normalize_txid(id)
