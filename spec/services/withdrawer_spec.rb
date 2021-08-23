@@ -6,6 +6,7 @@ describe Withdrawer do
   let(:withdraw) { create(:btc_withdraw, :with_deposit_liability).tap(&:accept!).tap(&:process!) }
   let(:wallet) { find_or_create :wallet, :btc_hot, name: 'Bitcoin Hot Wallet' }
   let(:gateway) { wallet.blockchain.gateway }
+  let(:blockchain) { wallet.blockchain }
 
   subject { described_class.new(wallet) }
 
@@ -26,6 +27,7 @@ describe Withdrawer do
         Peatio::Transaction.new(amount: withdraw.money_amount,
                                 from_address: wallet.address,
                                 to_address: withdraw.to_address,
+                                blockchain_id: blockchain.id,
                                 hash: SecureRandom.hex(5))
       end
       it do

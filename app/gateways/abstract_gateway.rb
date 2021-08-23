@@ -82,6 +82,7 @@ class AbstractGateway
       raise "Sourced transaction must be plain #{hash}" if hash.amount.is_a? Money
       hash.dup.tap do |t|
         t.currency_id = currency.id
+        t.blockchain_id = blockchain.id
         t.amount = currency.to_money_from_units hash.amount
         t.fee_currency_id = blockchain.fee_currency.money_currency.id
         t.fee = hash.fee.nil? ? nil : blockchain.fee_currency.money_currency.to_money_from_units(hash.fee)
@@ -93,7 +94,8 @@ class AbstractGateway
           currency_id: currency.id,
           amount: currency.to_money_from_units(hash.fetch(:amount)),
           fee: hash.fetch(:fee, nil) ? blockchain.fee_currency.money_currency.to_money_from_units(hash.fetch(:fee)) : nil,
-          fee_currency_id: blockchain.fee_currency.money_currency.id
+          fee_currency_id: blockchain.fee_currency.money_currency.id,
+          blockchain_id: blockchain.id
         )
       ).freeze
     end

@@ -44,7 +44,9 @@ class Withdrawer
         message: 'Blockchain transcation created'
 
       Transaction.
-        create_from_blockchain_transaction!(transaction, reference: withdraw, currency: withdraw.currency)
+        upsert_transaction!(transaction,
+                            reference: withdraw,
+                            currency_id: withdraw.currency_id)
 
       withdraw.update!(
         metadata: (withdraw.metadata.presence || {}).merge(transaction.options || {}), # Saves links and etc
@@ -91,7 +93,4 @@ class Withdrawer
 
     transaction
   end
-
-  private
-
 end

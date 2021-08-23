@@ -46,8 +46,8 @@ class Transaction < ApplicationRecord
   # Upsert transaction from blockchain
   def self.upsert_transaction!(tx, extra = {})
     raise 'transaction must be a Peatio::Transaction' unless tx.is_a? Peatio::Transaction
-    raise 'transaction amount must be an Money' unless tx.amount.is_a? Money
-    raise 'transaction fee must be an Money' unless tx.fee.is_a? Money
+    raise 'transaction amount must be a Money' unless tx.amount.is_a? Money
+    raise 'transaction fee must be nil or a Money' unless tx.fee.nil? || tx.fee.is_a?(Money)
     # TODO just now created transaction has no txout. Available to change txout from nil to number
     Transaction.upsert!(
       {
