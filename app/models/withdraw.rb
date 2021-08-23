@@ -227,10 +227,10 @@ class Withdraw < ApplicationRecord
   def confirmations
     return 0 if block_number.blank?
     return blockchain.processed_height - block_number if (blockchain.processed_height - block_number) >= 0
-    'N/A'
+    nil
   rescue StandardError => e
     report_exception(e)
-    'N/A'
+    nil
   end
 
   def find_appropriate_wallet

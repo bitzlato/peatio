@@ -37,8 +37,6 @@ class Wallet < ApplicationRecord
     end
   end
 
-  NOT_AVAILABLE = 'N/A'.freeze
-
   vault_attribute :settings, serialize: :json, default: {}
 
   belongs_to :blockchain
@@ -164,9 +162,9 @@ class Wallet < ApplicationRecord
     if currency.present?
       begin
         currency = currency.money_currency unless currency.is_a? Money::Currency
-        gateway.load_balance(address, currency) || NOT_AVAILABLE
+        gateway.load_balance(address, currency)
       rescue Peatio::Wallet::ClientError
-        NOT_AVAILABLE
+        nil
       end
     else
       currencies.each_with_object({}) do |c, balances|

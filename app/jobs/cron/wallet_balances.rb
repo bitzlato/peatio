@@ -5,7 +5,7 @@ module Jobs
         Wallet.active.find_each do |w|
           balances = w.current_balance.each_with_object({}) do |(k,v), a|
             currency_id = k.is_a?(Money::Currency) ? k.id.downcase : k
-            a[currency_id] = v.to_d
+            a[currency_id] = v.nil? ? nil : v.to_d
           end
 
           w.update!(balance: balances, balance_updated_at: Time.zone.now)
