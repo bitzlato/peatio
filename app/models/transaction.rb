@@ -40,6 +40,7 @@ class Transaction < ApplicationRecord
   after_initialize :initialize_defaults, if: :new_record?
 
   before_update :update_reference!
+  before_update :update_accountable_fee
 
   # TODO: record expenses for succeed transactions
 
@@ -82,6 +83,10 @@ class Transaction < ApplicationRecord
 
   def transaction_url
     blockchain.explore_transaction_url txid if blockchain
+  end
+
+  def update_accountable_fee
+    self.accountable_fee = is_accountable_fee?
   end
 
   def update_accountable_fee!
