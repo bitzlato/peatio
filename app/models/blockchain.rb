@@ -61,7 +61,7 @@ class Blockchain < ApplicationRecord
   def find_money_currency(contract_address=nil)
     currencies.map(&:money_currency)
       .find { |mc| mc.contract_address.presence == contract_address.presence } ||
-      raise("No found currency for '#{contract_address || :empty}' contract address in blockchain #{self}")
+      raise("No found currency for '#{contract_address || :nil}' contract address in blockchain '#{key}'")
   end
 
   def fee_wallet

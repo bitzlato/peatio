@@ -1,6 +1,5 @@
 class Transaction < ApplicationRecord
-  # TODO change currency_id to blockchain_id
-  upsert_keys [:currency_id, :txid]
+  upsert_keys [:blockchain_id, :txid, :txout]
 
   # == Constants ============================================================
 
@@ -19,7 +18,7 @@ class Transaction < ApplicationRecord
 
   belongs_to :reference, polymorphic: true
   belongs_to :currency
-  has_one :blockchain, through: :currency
+  belongs_to :blockchain
 
   STATUSES.each do |status|
     scope status, -> { where status: status }
@@ -44,20 +43,31 @@ class Transaction < ApplicationRecord
 
   # TODO: record expenses for succeed transactions
 
-  def self.create_from_blockchain_transaction!(tx, extra = {})
-    create!(
+  # Upsert transaction from blockchain
+  def self.upsert_transaction!(tx, extra = {})
+    raise 'transaction must be a Peatio::Transaction' unless tx.is_a? Peatio::Transaction
+    raise 'transaction amount must be a Money' unless tx.amount.is_a? Money
+    raise 'transaction fee must be nil or a Money' unless tx.fee.nil? || tx.fee.is_a?(Money)
+    # TODO just now created transaction has no txout. Available to change txout from nil to number
+    Transaction.upsert!(
       {
-        from_address: tx.from_address,
-        to_address: tx.to_address,
-        currency_id: tx.currency_id,
-        txid: tx.txid,
+        fee: tx.fee.try(:to_d),
+        fee_currency_id: tx.fee_currency_id,
         block_number: tx.block_number,
-        amount: tx.amount,
         status: tx.status,
         txout: tx.txout,
-        options: tx.options,
+        from_address: tx.from_address,
+        amount: tx.amount.try(:to_d),
+        to_address: tx.to_address,
+        currency_id: tx.currency_id,
+        blockchain_id: tx.blockchain_id,
+        txid: tx.id,
       }.deep_merge(extra)
-    )
+    ).tap do |t|
+      Rails.logger.debug("Transaction #{tx.txid}/#{tx.txout} is saved to database with id=#{t.id}")
+    end
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
+    report_exception err, true, tx: tx, record: err.record.as_json
   end
 
   def failed?
@@ -72,14 +82,22 @@ class Transaction < ApplicationRecord
     blockchain.explore_transaction_url txid if blockchain
   end
 
+  def update_accountable_fee!
+    update_column :accountable_fee, is_accountable_fee?
+  end
+
+  def is_accountable_fee?
+    blockchain.wallets.by_address(from_address).any? || blockchain.payment_addresses.by_address(from_address).any?
+  end
+
   def update_reference!
     if reference.is_a? Withdraw
       reference.update! txid: txid, txout: txout if reference.txid.nil?
     elsif reference.is_a? Deposit
       reference.update! txid: txid, txout: txout if reference.txid.nil? || (reference.txout.nil? && txout.present?)
     elsif reference.nil?
-      wallet = Wallet.find_by_address(from_address) || Wallet.find_by_address(to_address)
-      self.refefence = wallet if wallet.present?
+      wallet = (from_address.present? ? Wallet.find_by_address(from_address) : nil) || (to_address.present? ? Wallet.find_by_address(to_address) : nil )
+      self.reference = wallet if wallet.present?
     else
       report_exception "Transction without reference", true, { id: id, txid: txid }
     end
