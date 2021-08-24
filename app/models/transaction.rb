@@ -40,6 +40,9 @@ class Transaction < ApplicationRecord
 
   after_initialize :initialize_defaults, if: :new_record?
 
+  before_save do
+    self.txout ||= 0 # Because of unique index
+  end
   before_update :update_reference!
   before_update :update_accountable_fee
 
@@ -62,7 +65,7 @@ class Transaction < ApplicationRecord
         fee_currency_id: tx.fee_currency_id,
         block_number:    tx.block_number,
         status:          tx.status,
-        txout:           tx.txout,
+        txout:           tx.txout.to_i, # change nil to zero
         from_address:    tx.from_address,
         amount:          tx.amount.nil? ? nil : tx.amount.to_d,
         to_address:      tx.to_address,
@@ -76,7 +79,7 @@ class Transaction < ApplicationRecord
     ).tap do |t|
       Rails.logger.debug("Transaction #{tx.txid}/#{tx.txout} is saved to database with id=#{t.id}")
     end
-  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
+  rescue ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
     report_exception err, true, tx: tx, record: err.record.as_json
     raise err
   end
