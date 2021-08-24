@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 describe Account do
-  subject { create_account(:btc, balance: '10.0'.to_d, locked: '10.0'.to_d) }
+  subject { create(:account, :btc, balance: '10.0'.to_d, locked: '10.0'.to_d) }
 
   it { expect(subject.amount).to be_d '20' }
   it { expect(subject.sub_funds('1.0'.to_d).balance).to eql '9.0'.to_d }
@@ -44,7 +44,7 @@ describe Account do
 
   describe 'double operation' do
     let(:strike_volume) { '10.0'.to_d }
-    let(:account) { create_account }
+    let(:account) { create(:account) }
 
     it 'expect double operation funds' do
       expect do
@@ -76,9 +76,9 @@ describe Account do
 
   describe '.visible' do
     before do
-      create_account(:usd)
-      create_account(:btc)
-      create_account(:eth)
+      create(:account, :usd)
+      create(:account, :btc)
+      create(:account, :eth)
     end
 
     it 'returns the accounts with currency visible' do

@@ -174,8 +174,8 @@ describe Order, '#done', type: :model do
   let(:order) { order_bid }
   let(:order_bid) { create(:order_bid, :btcusd, price: '1.2'.to_d, volume: '10.0'.to_d) }
   let(:order_ask) { create(:order_ask, :btcusd, price: '1.2'.to_d, volume: '10.0'.to_d) }
-  let(:hold_account) { create_account(:usd, locked: '100.0'.to_d) }
-  let(:expect_account) { create_account(:btc) }
+  let(:hold_account) { create(:account, :usd, locked: '100.0'.to_d) }
+  let(:expect_account) { create(:account, :btc) }
 
   before do
     order_bid.stubs(:hold_account!).returns(hold_account.lock!)
