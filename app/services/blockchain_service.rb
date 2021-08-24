@@ -41,7 +41,6 @@ class BlockchainService
   end
 
   def refetch_and_update_transaction!(txid, txout = nil)
-    binding.pry if txid == '0x21cb69f7e6891b45b6f650b5b8e12d5e094a373796b8d6497fad0ef77bb23248'
     blockchain_transaction = gateway.fetch_transaction txid, txout
     recorded_transaction = blockchain.transactions.find_by(txid: txid, txout: txout)
     if blockchain_transaction.nil?
