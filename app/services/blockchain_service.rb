@@ -54,30 +54,44 @@ class BlockchainService
   def process_block(block_number)
     dispatch_deposits! block_number
 
-    transactions = gateway.fetch_block_transactions(block_number)
+    Blockchain.transaction do
+      bn = blockchain.
+        block_numbers.
+        upsert!(number: block_number, error_message: nil, status: :processing).
+        lock!
 
-    withdraw_scope =  blockchain.withdraws.where.not(txid: nil).where(block_number: [nil,block_number])
-    if Rails.env.production?
-      withdraw_txids = withdraw_scope.confirming.pluck(:txid)
-    else
-      # Check it all, we want debug in development
-      withdraw_txids = withdraw_scope.pluck(:txid)
-    end
+      transactions = gateway.fetch_block_transactions(block_number)
 
-    transactions.each do |tx|
-      @withdrawal = @deposit = @fetched_transaction = nil
-      if tx.to_address.in?(blockchain.deposit_addresses)
-        update_or_create_deposit tx unless tx.from_address.include?(blockchain.wallets_addresses) # Skip gas refueling
-      elsif tx.hash.in?(withdraw_txids)
-        update_or_create_withdraw tx
+      withdraw_scope =  blockchain.withdraws.where.not(txid: nil).where(block_number: [nil,block_number])
+      if Rails.env.production?
+        withdraw_txids = withdraw_scope.confirming.pluck(:txid)
+      else
+        # Check it all, we want debug in development
+        withdraw_txids = withdraw_scope.pluck(:txid)
       end
-      # TODO fetch_transaction if status is pending
-      tx = fetch_transaction(tx)
-      Transaction.upsert_transaction! tx, reference: (deposit || withdrawal)
-    end.count
-  rescue StandardError => err
-    report_exception err, true, blockchain_id: blockchain.id, block_number: block_number
-    raise err
+
+      processed_count = transactions.each do |tx|
+        @withdrawal = @deposit = @fetched_transaction = nil
+        if tx.to_address.in?(blockchain.deposit_addresses)
+          update_or_create_deposit tx unless tx.from_address.in?(blockchain.wallets_addresses) # Skip gas refueling
+        elsif tx.hash.in?(withdraw_txids)
+          update_or_create_withdraw tx
+        end
+        # TODO fetch_transaction if status is pending
+        tx = fetch_transaction(tx)
+        Transaction.upsert_transaction! tx, reference: (deposit || withdrawal)
+      end.count
+
+      bn.update!(
+        transactions_processed_count: processed_count, error_message: nil, status: :success
+      )
+    rescue StandardError => err
+      bn.update!(
+        transactions_processed_count: 0, error_message: err.message, status: :error
+      )
+      report_exception err, true, blockchain_id: blockchain.id, block_number: block_number
+      raise err
+    end
   end
 
   # Resets current cached state.

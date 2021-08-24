@@ -19,6 +19,7 @@ class Blockchain < ApplicationRecord
   has_many :transactions, through: :currencies
   has_many :deposits, through: :currencies
   has_many :gas_refuels
+  has_many :block_numbers
 
   validates :key, :name, presence: true, uniqueness: true
   validates :status, inclusion: { in: %w[active disabled] }
