@@ -10,9 +10,10 @@ module API
           ActiveRecord::RecordInvalid => 'market.order.invalid_volume_or_price'
         }
 
-        service = ::OrderServices::CreateOrder.new(current_user)
-        order = service.perform(attrs)
-        order
+        market = ::Market.active.find_spot_by_symbol(attrs[:market])
+        service = ::OrderServices::CreateOrder.new(member: current_user)
+        result = service.perform(attrs.merge(market: market))
+        result.data
         
         # TODO: Make more specific error message for ActiveRecord::RecordInvalid.
       rescue StandardError => e
