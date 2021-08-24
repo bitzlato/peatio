@@ -15,6 +15,10 @@ class EthereumGateway < AbstractGateway
     AdequateCryptoAddress.address(address, :eth).address.downcase
   end
 
+  def self.valid_txid?(txid)
+    txid.to_s.match?(/\A0x[A-F0-9]{64}\z/i)
+  end
+
   def self.normalize_txid(id)
     id.downcase
   end

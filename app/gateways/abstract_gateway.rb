@@ -30,6 +30,10 @@ class AbstractGateway
     not_implemented!
   end
 
+  def self.valid_txid?(txid)
+    not_implemented
+  end
+
   def self.implements?(method_name)
     instance_methods(false).include?(method_name)
   end

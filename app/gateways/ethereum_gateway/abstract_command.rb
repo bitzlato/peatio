@@ -149,7 +149,7 @@ class EthereumGateway
       txid.downcase
     end
 
-    def valid_txid?(txid)
+    def self.valid_txid?(txid)
       txid.to_s.match?(/\A0x[A-F0-9]{64}\z/i)
     end
 

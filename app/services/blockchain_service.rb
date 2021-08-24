@@ -18,8 +18,8 @@ class BlockchainService
 
   def update_transactions!
     blockchain.transactions.each do |t|
-      unless blockchain.valid_address? t.txid
-        logger.debug("Transaction address #{t.txid} is invalid")
+      unless blockchain.valid_txid? t.txid
+        logger.info("Transaction address #{t.txid} is invalid")
         next
       end
       refetch_and_update_transaction!(t.txid, t.txout)
