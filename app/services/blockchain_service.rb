@@ -70,7 +70,7 @@ class BlockchainService
     transactions.each do |tx|
       @withdrawal = @deposit = @fetched_transaction = nil
       if tx.to_address.in?(blockchain.deposit_addresses)
-        update_or_create_deposit tx
+        update_or_create_deposit tx unless tx.from_address.include?(blockchain.wallets_addresses) # Skip gas refueling
       elsif tx.hash.in?(withdraw_txids)
         update_or_create_withdraw tx
       end
