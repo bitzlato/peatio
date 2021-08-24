@@ -87,8 +87,16 @@ class AbstractGateway
       else
         :deposit
       end
+    elsif tx.to_address.in?(blockchain.wallets_addresses)
+      if tx.from_address.in?(blockchain.wallets_addresses)
+        :collect
+      else
+        :refill
+      end
     elsif tx.from_address.in?(blockchain.wallets_addresses)
       :withdraw
+    elsif tx.from_address.in?(blockchain.deposit_addresses)
+      :unauthorized_withdraw
     else
       :unknown
     end

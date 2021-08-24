@@ -42,7 +42,7 @@ class Transaction < ApplicationRecord
   before_update :update_reference!
   before_update :update_accountable_fee
 
-  KINDS = %w(none internal gas_refuel withdraw deposit collect unknown)
+  KINDS = %w(none refill internal gas_refuel withdraw unauthorized_withdraw deposit collect unknown)
   FEE_ACCOUNTING_KINDS=%w(gas_refuel withdraw collect internal)
   before_validation { self.kind ||= 'none'; self.kind=self.kind.to_s }
   validates :kind, presence: true, inclusion: { in: KINDS }
@@ -78,6 +78,11 @@ class Transaction < ApplicationRecord
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => err
     report_exception err, true, tx: tx, record: err.record.as_json
     raise err
+  end
+
+  def refetch!
+    blockchain.service.refetch_and_update_transaction! txid, txout
+    reload
   end
 
   def failed?
