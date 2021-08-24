@@ -165,7 +165,7 @@ class Order < ApplicationRecord
     self.uuid ||= UUID.generate
     self.created_at ||= Time.now
 
-    AMQP::Queue.publish(market.engine.driver, data: as_json_for_third_party, type: THIRD_PARTY_ORDER_ACTION_TYPE['submit_single'])
+    AMQP::Queue.publish(market.engine.driver, data: as_json_for_third_party, type: THIRD_PARTY_ORDER_ACTION_TYPE[:submit_single])
   end
 
   def trigger_cancellation
