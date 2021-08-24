@@ -9,6 +9,7 @@ describe Transaction do
   context 'upsert_transaction' do
     let(:peatio_transaction) { Peatio::Transaction.new(
       txid: '1',
+      txout: '2',
       currency_id: 'eth',
       amount: 1.2.to_money('eth'),
       fee: 0.001.to_money('eth'),

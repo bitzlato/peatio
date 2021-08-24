@@ -8,7 +8,7 @@ class EthereumGateway
         load_basic_balance(address)
       end
     rescue ::Ethereum::Client::Error => e
-      raise Peatio::Wallet::ClientError, e
+      raise Peatio::Wallet::ClientError, e.message
     end
 
     def load_erc20_balance(address, contract_address)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_24_105826) do
+ActiveRecord::Schema.define(version: 2021_08_24_110350) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -354,9 +354,9 @@ ActiveRecord::Schema.define(version: 2021_08_24_105826) do
     t.string "details_encrypted", limit: 1024
     t.bigint "member_id"
     t.boolean "remote", default: false, null: false
+    t.bigint "blockchain_id", null: false
     t.jsonb "balances", default: {}
     t.datetime "balances_updated_at"
-    t.bigint "blockchain_id", null: false
     t.index ["blockchain_id", "address"], name: "index_payment_addresses_on_blockchain_id_and_address", unique: true, where: "(address IS NOT NULL)"
     t.index ["blockchain_id"], name: "index_payment_addresses_on_blockchain_id"
     t.index ["member_id"], name: "index_payment_addresses_on_member_id"
@@ -459,7 +459,7 @@ ActiveRecord::Schema.define(version: 2021_08_24_105826) do
     t.string "to_address"
     t.decimal "amount", precision: 32, scale: 16, default: "0.0", null: false
     t.integer "block_number"
-    t.integer "txout"
+    t.integer "txout", null: false
     t.string "status"
     t.json "options"
     t.datetime "created_at", null: false
@@ -472,8 +472,7 @@ ActiveRecord::Schema.define(version: 2021_08_24_105826) do
     t.string "kind", default: "none", null: false
     t.index ["blockchain_id", "accountable_fee"], name: "index_transactions_on_blockchain_id_and_accountable_fee"
     t.index ["blockchain_id", "kind"], name: "index_transactions_on_blockchain_id_and_kind"
-    t.index ["blockchain_id", "txid", "txout"], name: "index_transactions_on_blockchain_id_and_txid_and_txout", unique: true, where: "(txout IS NOT NULL)"
-    t.index ["blockchain_id", "txid"], name: "index_transactions_on_blockchain_id_and_txid", unique: true, where: "(txout IS NULL)"
+    t.index ["blockchain_id", "txid", "txout"], name: "index_transactions_on_blockchain_id_and_txid_and_txout", unique: true
     t.index ["blockchain_id"], name: "index_transactions_on_blockchain_id"
     t.index ["currency_id"], name: "index_transactions_on_currency_id"
     t.index ["fee_currency_id"], name: "index_transactions_on_fee_currency_id"
@@ -501,8 +500,8 @@ ActiveRecord::Schema.define(version: 2021_08_24_105826) do
     t.integer "kind", null: false
     t.string "settings_encrypted", limit: 1024
     t.jsonb "balance"
-    t.boolean "enable_invoice", default: false, null: false
     t.json "plain_settings"
+    t.boolean "enable_invoice", default: false, null: false
     t.bigint "blockchain_id", null: false
     t.boolean "use_as_fee_source", default: false, null: false
     t.datetime "balance_updated_at"
@@ -556,6 +555,7 @@ ActiveRecord::Schema.define(version: 2021_08_24_105826) do
     t.json "metadata"
     t.string "remote_id"
     t.bigint "blockchain_id", null: false
+    t.jsonb "tx_dump"
     t.index ["aasm_state"], name: "index_withdraws_on_aasm_state"
     t.index ["blockchain_id"], name: "index_withdraws_on_blockchain_id"
     t.index ["currency_id", "txid"], name: "index_withdraws_on_currency_id_and_txid", unique: true

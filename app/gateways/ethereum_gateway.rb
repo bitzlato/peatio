@@ -5,23 +5,8 @@
 #
 class EthereumGateway < AbstractGateway
   include NumericHelpers
+  extend Concern
   IDLE_TIMEOUT = 1
-
-  def self.valid_address?(address)
-    AdequateCryptoAddress.valid? address, :ethereum
-  end
-
-  def self.normalize_address(address)
-    AdequateCryptoAddress.address(address, :eth).address.downcase
-  end
-
-  def self.valid_txid?(txid)
-    txid.to_s.match?(/\A0x[A-F0-9]{64}\z/i)
-  end
-
-  def self.normalize_txid(id)
-    id.downcase
-  end
 
   def enable_block_fetching?
     true
@@ -62,7 +47,8 @@ class EthereumGateway < AbstractGateway
               contract_address: currency.contract_address,
               subtract_fee: currency.contract_address.nil?)
       )
-      Transaction.upsert_transaction! transaction
+      logger.info("Collect transaction created #{transaction.as_json}")
+      # TODO Save CollectRecord with transaction dump
     rescue EthereumGateway::TransactionCreator::Error => err
       logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
       nil
@@ -91,8 +77,9 @@ class EthereumGateway < AbstractGateway
     )
 
     logger.info("#{target_address} refueled with transaction #{transaction.as_json}")
+
     # TODO save GasRefuel record as reference
-    Transaction.upsert_transaction! transaction, options: { tokens_count: tokens_count }
+    # Transaction.upsert_transaction! transaction, options: { tokens_count: tokens_count }
 
   rescue EthereumGateway::GasRefueler::Error => err
     logger.info("Canceled refueling address #{target_address} with #{err}")
@@ -100,7 +87,7 @@ class EthereumGateway < AbstractGateway
 
   def load_balances(address)
     blockchain.currencies.each_with_object({}) do |currency, a|
-      a[currency.money_currency] = load_balance(address, currency)
+      a[currency.id] = load_balance(address, currency)
     end
   end
 
