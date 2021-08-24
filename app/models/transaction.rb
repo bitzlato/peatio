@@ -118,7 +118,7 @@ class Transaction < ApplicationRecord
       wallet = (from_address.present? ? Wallet.find_by_address(from_address) : nil) || (to_address.present? ? Wallet.find_by_address(to_address) : nil )
       self.reference = wallet if wallet.present?
     else
-      report_exception "Transaction without reference #{id}", true, { id: id, txid: txid }
+      report_exception "Can't detect transction reference #{id}", true, { id: id, txid: txid }
     end
   end
 
