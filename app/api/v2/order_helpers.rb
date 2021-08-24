@@ -3,28 +3,30 @@
 module API
   module V2
     module OrderHelpers
-      def create_order(attrs)
-        create_order_errors = {
-          ::Account::AccountError => 'market.account.insufficient_balance',
-          ::Order::InsufficientMarketLiquidity => 'market.order.insufficient_market_liquidity',
-          ActiveRecord::RecordInvalid => 'market.order.invalid_volume_or_price'
-        }
+      DESCRIBED_ERRORS_MESSAGES = %i[
+        market.account.insufficient_balance
+        market.order.insufficient_market_liquidity
+        market.order.invalid_volume_or_price
+      ]
 
+      def create_order(attrs)
         market = ::Market.active.find_spot_by_symbol(attrs[:market])
         service = ::OrderServices::CreateOrder.new(member: current_user)
         result = service.perform(attrs.merge(market: market))
-        result.data
-        
-        # TODO: Make more specific error message for ActiveRecord::RecordInvalid.
-      rescue StandardError => e
-        if create_order_errors.include?(e.class)
-          report_api_error(e, request)
-        else
-          report_exception(e)
-        end
 
-        message = create_order_errors.fetch(e.class, 'market.order.create_error')
-        error!({ errors: [message] }, 422)
+        if result.successful?
+          result.data
+        else
+          error_message = result.errors.first
+
+          if DESCRIBED_ERRORS_MESSAGES.include?(error_message)
+            report_api_error(error_message, request)
+          else
+            report_exception(error_message)
+          end
+
+          error!({ errors: [error_message] }, 422)
+        end
       end
 
       def order_param

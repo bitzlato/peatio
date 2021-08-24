@@ -19,7 +19,8 @@ end
 # {"message":"Account balance is insufficient","path":"/api/v2/account/withdraws","params":{"uid":"ID5DE7A981C4","currency":"usd","amount":"100.0","beneficiary_id":1,"otp":123456},"level":"INFO","time":"2019-09-18 12:54:36"}
 
 def report_api_error(exception, request)
-  Rails.logger.info message: exception.message, path: request.path, params: request.params
+  message = exception.kind_of?(String) : exception : exception.message
+  Rails.logger.info message: message, path: request.path, params: request.params
 end
 
 def report_exception(exception, report_to_ets = true, meta = {})
