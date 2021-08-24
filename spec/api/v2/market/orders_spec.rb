@@ -421,6 +421,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'validates enough funds' do
+      OrderAsk.expects(:create!).raises(::Account::AccountError)
       member.get_account(:btc).update_attributes(balance: 1)
       api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: '2014' }
       expect(response.code).to eq '422'
