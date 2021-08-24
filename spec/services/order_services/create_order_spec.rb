@@ -52,7 +52,7 @@ describe OrderServices::CreateOrder do
           }
         }
 
-        it 'return nil and send error into amqp' do
+        it 'fails with error message and send error into amqp' do
           ::AMQP::Queue.expects(:enqueue_event).with(
             'private',
             account.member.uid,
@@ -65,7 +65,7 @@ describe OrderServices::CreateOrder do
           result = service.perform(**ton_of_btc_params)
 
           expect(result).to be_failed
-          expect(result.errors.first).to match(/Insufficient market liquidity/)
+          expect(result.errors.first).to eq('market.order.insufficient_market_liquidity')
         end
       end
     end
@@ -89,7 +89,7 @@ describe OrderServices::CreateOrder do
 
     describe 'sumbit order' do
       context 'not peatio market engine' do
-        it 'calls order.trigger_third_party_creation and returns nil' do
+        it 'calls order.trigger_third_party_creation' do
           Engine.any_instance.stubs(:peatio_engine?).returns(false)
           Order.any_instance.expects(:trigger_third_party_creation)
           result = service.perform(**default_params)

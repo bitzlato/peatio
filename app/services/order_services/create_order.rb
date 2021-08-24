@@ -35,28 +35,26 @@ module OrderServices
       order = submit_and_return_order(order)
       success(data: order)
     rescue ::Order::InsufficientMarketLiquidity => e
-      ::AMQP::Queue.enqueue_event(
-        'private',
-        @member.uid,
-        'order_error',
-        amqp_event_payload_with_uuid(
-          uuid: uuid,
-          payload: 'market.order.insufficient_market_liquidity',
-        ),
+      trigger_amqp_and_failure(
+        error_message: 'market.order.insufficient_market_liquidity',
+        uuid: uuid,
       )
-      failure(errors: [e.message])
+    rescue ::Account::AccountError => e
+      trigger_amqp_and_failure(
+        error_message: 'market.account.insufficient_balance',
+        uuid: uuid,
+      )
+    rescue ActiveRecord::RecordInvalid => e
+      trigger_amqp_and_failure(
+        error_message: 'market.order.invalid_volume_or_price',
+        uuid: uuid,
+      )
     rescue StandardError => e
-      ::AMQP::Queue.enqueue_event(
-        'private',
-        @member.uid,
-        'order_error',
-        amqp_event_payload_with_uuid(
-          uuid: uuid,
-          payload: 'market.order.create_error',
-        ),
-      )
       report_exception(e, true)
-      failure(errors: [e.message])
+      trigger_amqp_and_failure(
+        error_message: e.message,
+        uuid: uuid,
+      )
     end
 
     private
@@ -66,6 +64,19 @@ module OrderServices
         uuid: uuid,
         payload: payload,
       }
+    end
+
+    def trigger_amqp_and_failure(error_message:, uuid:)
+      ::AMQP::Queue.enqueue_event(
+        'private',
+        @member.uid,
+        'order_error',
+        amqp_event_payload_with_uuid(
+          uuid: uuid,
+          payload: error_message,
+        ),
+      )
+      failure(errors: [error_message])
     end
 
     def create_order(market: ,side:, ord_type:, price:, volume:, uuid:)
