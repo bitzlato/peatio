@@ -16,7 +16,8 @@ describe Transaction do
       to_address: to_address,
       block_number: 1,
       blockchain_id: blockchain.id,
-      status: 'success'
+      status: 'success',
+      kind: 'unknown'
     )}
     let(:reference) { create :deposit, :deposit_eth }
 
