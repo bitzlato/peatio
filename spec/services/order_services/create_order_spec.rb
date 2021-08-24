@@ -28,11 +28,12 @@ describe OrderServices::CreateOrder do
 
   shared_examples 'creates an order without exceptions' do
     it 'creates an order' do
-      order = nil
+      result = nil
       expect {
-        order = service.perform(**params)
+        result = service.perform(**params)
       }.not_to raise_error
-      expect(order).to be_present
+      expect(result).to be_successful
+      expect(result.data).to be_a_kind_of(Order)
     end
   end
 
@@ -40,12 +41,14 @@ describe OrderServices::CreateOrder do
     context 'insufficient liquidity' do
       context 'buy btc' do
         let(:account) { create(:account, :usd, balance: 10000000.to_d) }
+        let(:uuid) { UUID.generate }
         let(:ton_of_btc_params) {
           {
             market: market,
             side: 'buy', # buy/sell
             volume: '1000'.to_d,
             ord_type: 'market', # limit/market
+            uuid: uuid,
           }
         }
 
@@ -54,11 +57,15 @@ describe OrderServices::CreateOrder do
             'private',
             account.member.uid,
             'order_error',
-            'market.order.insufficient_market_liquidity',
+            {
+              uuid: uuid,
+              payload: 'market.order.insufficient_market_liquidity',
+            }
           )
-          order = service.perform(**ton_of_btc_params)
+          result = service.perform(**ton_of_btc_params)
 
-          expect(order).to be_nil
+          expect(result).to be_failed
+          expect(result.errors.first).to match(/Insufficient market liquidity/)
         end
       end
     end
@@ -68,9 +75,9 @@ describe OrderServices::CreateOrder do
         it 'calls order.trigger_third_party_creation and returns nil' do
           Engine.any_instance.stubs(:peatio_engine?).returns(false)
           Order.any_instance.expects(:trigger_third_party_creation)
-          order = service.perform(**default_params)
+          result = service.perform(**default_params)
 
-          expect(order).to be_nil
+          expect(result).to be_successful
         end
       end
 
@@ -81,7 +88,7 @@ describe OrderServices::CreateOrder do
           :order_processor,
           any_parameters
         )
-        order = service.perform(**default_params)
+        service.perform(**default_params)
       end
     end
 

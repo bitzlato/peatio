@@ -1,5 +1,7 @@
 module OrderServices
   class CreateOrder
+    include ServiceBase
+
     POSSIBLE_SIDE_VALUES = %i[sell buy]
 
     def initialize(member:)
@@ -30,8 +32,9 @@ module OrderServices
         volume: volume,
         uuid: uuid,
       )
-      submit_and_return_order(order)
-    rescue ::Order::InsufficientMarketLiquidity
+      order = submit_and_return_order(order)
+      success(data: order)
+    rescue ::Order::InsufficientMarketLiquidity => e
       ::AMQP::Queue.enqueue_event(
         'private',
         @member.uid,
@@ -41,7 +44,7 @@ module OrderServices
           payload: 'market.order.insufficient_market_liquidity',
         ),
       )
-      nil
+      failure(errors: [e.message])
     rescue StandardError => e
       ::AMQP::Queue.enqueue_event(
         'private',
@@ -53,7 +56,7 @@ module OrderServices
         ),
       )
       report_exception(e, true)
-      nil
+      failure(errors: [e.message])
     end
 
     private
@@ -179,16 +182,19 @@ module OrderServices
     end
 
     def submit_and_return_order(order)
-      return order.trigger_third_party_creation unless order.market.engine.peatio_engine?
+      if order.market.engine.peatio_engine?
+        EventAPI.notify(
+          ['market', order.market_id, 'order_created'].join('.'),
+          Serializers::EventAPI::OrderCreated.call(order),
+        ) if order.is_limit_order?
 
-      EventAPI.notify(
-        ['market', order.market_id, 'order_created'].join('.'),
-        Serializers::EventAPI::OrderCreated.call(order),
-      ) if order.is_limit_order?
-
-      AMQP::Queue.enqueue(:order_processor,
-                          { action: 'submit', order: order.attributes },
-                          { persistent: true })
+        AMQP::Queue.enqueue(:order_processor,
+                            { action: 'submit', order: order.attributes },
+                            { persistent: true })
+      else
+        order.trigger_third_party_creation
+      end
+      
       order
     end
 
@@ -197,8 +203,8 @@ module OrderServices
 
       raise(
         IncorrectSideValue,
-        "side = #{side}. Possible side values: #{POSSIBLE_SIDE_VALUES.join(' or ')}",
-      ) unless POSSIBLE_SIDE_VALUES.include?(side)
+        "side = #{symbol}. Possible side values: #{POSSIBLE_SIDE_VALUES.join(' or ')}",
+      ) unless POSSIBLE_SIDE_VALUES.include?(symbol)
 
       symbol
     end
