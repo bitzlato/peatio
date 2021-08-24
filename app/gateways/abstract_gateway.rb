@@ -75,6 +75,21 @@ class AbstractGateway
     Rails.logger
   end
 
+  def kind_of_transaction(tx)
+    raise 'tx must be a Peatio::Transcation' unless tx.is_a? Peatio::Transaction
+    if tx.to_address.in?(blockchain.deposit_addresses)
+      if tx.from_address.in?(blockchain.wallets_addresses)
+        :gas_refuel
+      else
+        :deposit
+      end
+    elsif tx.from_address.in?(blockchain.wallets_addresses)
+      :withdraw
+    else
+      :unknown
+    end
+  end
+
   def monefy_transaction(hash, extras = {})
     return if hash.nil?
     if hash.is_a? Peatio::Transaction
@@ -86,6 +101,7 @@ class AbstractGateway
         t.amount = currency.to_money_from_units hash.amount
         t.fee_currency_id = blockchain.fee_currency.money_currency.id
         t.fee = hash.fee.nil? ? nil : blockchain.fee_currency.money_currency.to_money_from_units(hash.fee)
+        t.kind = kind_of_transaction(t)
       end.freeze
     else
       currency = blockchain.find_money_currency(hash.fetch(:contract_address))
@@ -95,9 +111,11 @@ class AbstractGateway
           amount: currency.to_money_from_units(hash.fetch(:amount)),
           fee: hash.fetch(:fee, nil) ? blockchain.fee_currency.money_currency.to_money_from_units(hash.fetch(:fee)) : nil,
           fee_currency_id: blockchain.fee_currency.money_currency.id,
-          blockchain_id: blockchain.id
+          blockchain_id: blockchain.id,
         )
-      ).freeze
+      ).tap do |t|
+        t.kind = kind_of_transaction(t)
+      end.freeze
     end
   end
 

@@ -29,7 +29,7 @@ class Transaction < ApplicationRecord
   validates :currency, :amount, :from_address, :status, presence: true
 
   # In ethereum there can be no to_addres if this failed contract transaction
-  validates :to_address, presence:true, unless: :failed?
+  validates :to_address, presence: true, unless: :failed?
 
   validates :status, inclusion: { in: STATUSES }
 
@@ -41,6 +41,11 @@ class Transaction < ApplicationRecord
 
   before_update :update_reference!
   before_update :update_accountable_fee
+
+  KINDS = %w(none internal gas_refuel withdraw deposit collect unknown)
+  FEE_ACCOUNTING_KINDS=%w(gas_refuel withdraw collect internal)
+  before_validation { self.kind ||= 'none'; self.kind=self.kind.to_s }
+  validates :kind, presence: true, inclusion: { in: KINDS }
 
   # TODO: record expenses for succeed transactions
 
@@ -64,6 +69,8 @@ class Transaction < ApplicationRecord
         blockchain_id:   tx.blockchain_id,
         txid:            tx.id,
         options:         tx.options,
+        kind:            tx.kind || raise("No kind in tx #{tx.as_json}"),
+        accountable_fee: FEE_ACCOUNTING_KINDS.include?(tx.kind),
       }.deep_merge(extra)
     ).tap do |t|
       Rails.logger.debug("Transaction #{tx.txid}/#{tx.txout} is saved to database with id=#{t.id}")
