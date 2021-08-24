@@ -329,23 +329,6 @@ class Order < ApplicationRecord
   def market_order_validations
     errors.add(:price, 'must not be present') if price.present?
   end
-
-  def estimate_required_funds(price_levels)
-    required_funds = Account::ZERO
-    expected_volume = volume
-
-    until expected_volume.zero? || price_levels.empty?
-      level_price, level_volume = price_levels.shift
-
-      v = [expected_volume, level_volume].min
-      required_funds += yield level_price, v
-      expected_volume -= v
-    end
-
-    raise InsufficientMarketLiquidity if expected_volume.nonzero?
-
-    required_funds
-  end
 end
 
 # == Schema Information
