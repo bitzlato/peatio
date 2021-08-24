@@ -42,14 +42,16 @@ class Transaction < ApplicationRecord
 
   before_save do
     self.txout ||= 0 # Because of unique index
+    self.kind = define_kind
   end
-  before_update :update_reference!
-  before_update :update_accountable_fee
+  before_save :update_reference!
 
-  KINDS = %w(none refill internal gas_refuel withdraw unauthorized_withdraw deposit collect unknown)
-  FEE_ACCOUNTING_KINDS=%w(gas_refuel withdraw collect unauthorized_withdraw internal)
-  before_validation { self.kind ||= 'none'; self.kind=self.kind.to_s }
-  validates :kind, presence: true, inclusion: { in: KINDS }
+  KINDS = %w(refill internal gas_refuel withdraw unauthorized_withdraw deposit collection unknown)
+  enum kind: KINDS
+
+  ADDRESS_KINDS = { unknown: 1, wallet: 2, deposit: 3, absence: 4 }
+  enum to: ADDRESS_KINDS, _prefix: true
+  enum from: ADDRESS_KINDS, _prefix: true
 
   # TODO: record expenses for succeed transactions
 
@@ -61,20 +63,20 @@ class Transaction < ApplicationRecord
     # TODO just now created transaction has no txout. Available to change txout from nil to number
     Transaction.upsert!(
       {
-        fee:             tx.fee.nil? ? nil : tx.fee.to_d,
-        fee_currency_id: tx.fee_currency_id,
-        block_number:    tx.block_number,
-        status:          tx.status,
-        txout:           tx.txout.to_i, # change nil to zero
-        from_address:    tx.from_address,
-        amount:          tx.amount.nil? ? nil : tx.amount.to_d,
-        to_address:      tx.to_address,
-        currency_id:     tx.currency_id,
-        blockchain_id:   tx.blockchain_id,
-        txid:            tx.id,
-        options:         tx.options,
-        kind:            tx.kind || raise("No kind in tx #{tx.as_json}"),
-        accountable_fee: FEE_ACCOUNTING_KINDS.include?(tx.kind.to_s),
+        fee:               tx.fee.nil? ? nil : tx.fee.to_d,
+        fee_currency_id:   tx.fee_currency_id,
+        block_number:      tx.block_number,
+        status:            tx.status,
+        txout:             tx.txout.to_i, # change nil to zero
+        from_address:      tx.from_address,
+        from: tx.from,
+        amount:            tx.amount.nil? ? nil : tx.amount.to_d,
+        to_address:        tx.to_address,
+        to:   tx.to,
+        currency_id:       tx.currency_id,
+        blockchain_id:     tx.blockchain_id,
+        txid:              tx.id,
+        options:           tx.options
       }.deep_merge(extra)
     ).tap do |t|
       Rails.logger.debug("Transaction #{tx.txid}/#{tx.txout} is saved to database with id=#{t.id}")
@@ -83,6 +85,41 @@ class Transaction < ApplicationRecord
     report_exception err, true, tx: tx, record: err.record.as_json
     raise err
   end
+
+  def define_kind
+    if to_deposit?
+      if from_wallet?
+        :gas_refuel
+      elsif from_deposit?
+        :internal
+      elsif from_unknown?
+        :deposit
+      else
+        :unknown
+      end
+    elsif to_wallet?
+      if from_deposit?
+        :collection
+      elsif from_wallet?
+        :internal
+      elsif from_unknown?
+        :refill
+      else
+        :unknown
+      end
+    elsif to_unknown?
+      if from_wallet?
+        :withdraw
+      elsif from_deposit?
+        :unauthorized_withdraw
+      else
+        :unknown
+      end
+    else
+      :unknown
+    end
+  end
+
 
   def refetch!
     blockchain.service.refetch_and_update_transaction! txid, txout
@@ -99,18 +136,6 @@ class Transaction < ApplicationRecord
 
   def transaction_url
     blockchain.explore_transaction_url txid if blockchain
-  end
-
-  def update_accountable_fee
-    self.accountable_fee = is_accountable_fee?
-  end
-
-  def update_accountable_fee!
-    update_column :accountable_fee, is_accountable_fee?
-  end
-
-  def is_accountable_fee?
-    blockchain.wallets.by_address(from_address).any? || blockchain.payment_addresses.by_address(from_address).any?
   end
 
   def update_reference!

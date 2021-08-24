@@ -1,7 +1,7 @@
 class Peatio::Transaction
   alias_attribute :id, :hash
   alias_attribute :txid, :hash
-  attr_accessor :contract_address, :fee, :fee_currency_id, :blockchain_id, :kind
+  attr_accessor :contract_address, :fee, :fee_currency_id, :blockchain_id, :to, :from
 
   #  %w[success pending failed rejected].freeze
   def status=(s)
