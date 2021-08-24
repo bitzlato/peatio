@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_24_105826) do
+ActiveRecord::Schema.define(version: 2021_08_24_110350) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -556,6 +556,7 @@ ActiveRecord::Schema.define(version: 2021_08_24_105826) do
     t.json "metadata"
     t.string "remote_id"
     t.bigint "blockchain_id", null: false
+    t.jsonb "tx_dump"
     t.index ["aasm_state"], name: "index_withdraws_on_aasm_state"
     t.index ["blockchain_id"], name: "index_withdraws_on_blockchain_id"
     t.index ["currency_id", "txid"], name: "index_withdraws_on_currency_id_and_txid", unique: true

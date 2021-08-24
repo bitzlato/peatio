@@ -1,6 +1,8 @@
 class EthereumGateway
   class AbstractCommand
     include NumericHelpers
+    include Concern
+
     STATUS_SUCCESS = '0x1'
     STATUS_FAILED = '0x0'
     ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -116,7 +118,7 @@ class EthereumGateway
         block_number:   block_txn.fetch('blockNumber').to_i(16),
         status:         'success',
         options:        { gas_price: gas_price, gas_used: gas_used, gas_limit: block_txn.fetch('gas').to_i(16) },
-        fee:  gas_price * gas_used,
+        fee:            gas_price * gas_used,
         contract_address: nil
       }
     end
@@ -139,24 +141,6 @@ class EthereumGateway
 
     def logger
       Rails.logger
-    end
-
-    def normalize_address(address)
-      address.downcase
-    end
-
-    def normalize_txid(txid)
-      txid.downcase
-    end
-
-    def self.valid_txid?(txid)
-      txid.to_s.match?(/\A0x[A-F0-9]{64}\z/i)
-    end
-
-    def validate_txid!(txid)
-      raise Ethereum::Client::Error, \
-        "Transaction from #{from_address} to #{to_address} for #{amount} failed (invalid txid #{txid})." unless valid_txid? txid
-      txid
     end
 
     # ex calculate_gas_price

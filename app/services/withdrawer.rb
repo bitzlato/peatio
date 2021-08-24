@@ -43,14 +43,10 @@ class Withdrawer
         transcation: transaction,
         message: 'Blockchain transcation created'
 
-      Transaction.
-        upsert_transaction!(transaction,
-                            reference: withdraw,
-                            currency_id: withdraw.currency_id)
-
       withdraw.update!(
         metadata: (withdraw.metadata.presence || {}).merge(transaction.options || {}), # Saves links and etc
-        txid: transaction.hash || raise("transaction does not have hash #{transaction} for withdraw #{withdraw.id}")
+        txid: transaction.hash || raise("transaction does not have hash #{transaction} for withdraw #{withdraw.id}"),
+        tx_dump: transaction.as_json
       )
 
       logger.warn id: withdraw.id,
