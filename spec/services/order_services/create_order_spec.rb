@@ -70,6 +70,23 @@ describe OrderServices::CreateOrder do
       end
     end
 
+    context 'wrong side value' do
+      let(:wrong_side_params) {
+        default_params.merge(
+          side: 'foobar',
+        )
+      }
+
+      it 'fails with error message' do
+        result = service.perform(**wrong_side_params)
+
+        expect(result).to be_failed
+        expect(result.errors.first).to(
+          match(/side = foobar. Possible side values:/)
+        )
+      end
+    end
+
     describe 'sumbit order' do
       context 'not peatio market engine' do
         it 'calls order.trigger_third_party_creation and returns nil' do
