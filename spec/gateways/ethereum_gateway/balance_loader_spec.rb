@@ -2,8 +2,7 @@
 # frozen_string_literal: true
 
 describe ::EthereumGateway::BalanceLoader do
-  let(:address) { 'address' }
-
+  let(:address) { Faker::Blockchain::Ethereum.address }
   let(:uri) { 'http://127.0.0.1:8545' }
   let(:client) { ::Ethereum::Client.new(uri) }
   subject { described_class.new(client) }
@@ -60,7 +59,7 @@ describe ::EthereumGateway::BalanceLoader do
                       [
                         {
                           to: contract_address,
-                          data: '0x70a08231000000000000000000000000000000000000000000000000000000000' + address
+                          data: '0x70a08231000000000000000000000000' + address.remove('0x')
                         },
                         'latest'
                       ] }.to_json)
