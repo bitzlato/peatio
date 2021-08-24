@@ -42,12 +42,12 @@ class BlockchainService
 
   def refetch_and_update_transaction!(txid, txout = nil)
     blockchain_transaction = gateway.fetch_transaction txid, txout
-    t = blockchain.transactions.find_by(txid: txid, txout: txout)
+    recorded_transaction = blockchain.transactions.find_by(txid: txid, txout: txout)
     if blockchain_transaction.nil?
-      t.update status: 'pending' if t.present?
+      recorded_transaction.update! status: 'pending' if recorded_transaction.present?
     else
       # TODO lookup for reference if there are no transaction
-      Transaction.upsert_transaction! blockchain_transaction, kind: kind
+      Transaction.upsert_transaction! blockchain_transaction
     end
   end
 
