@@ -10,7 +10,7 @@ module Workers
         @member = ::Member.find_by!(uid: payload[:member_uid])
         market = ::Market.active.find_spot_by_symbol(payload[:data][:market])
 
-        service = ::OrderServices::CreateOrder.new(member_id, payload[:data])
+        service = ::OrderServices::CreateOrder.new(member: @member)
         order = service.perform(
           market: market,
           **payload[:data].slice(:side, :ord_type, :price, :volume, :uuid)
