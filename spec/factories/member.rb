@@ -9,13 +9,6 @@ FactoryBot.define do
     role { "member" }
     group { "vip-0" }
     state { "active" }
-    accounts {
-      [
-        build(:account, :eth, balance: 1000000.to_d),
-        build(:account, :btc, balance: 1000000.to_d),
-        build(:account, :usd, balance: 1000000.to_d),
-      ]
-    }
 
     trait :level_3 do
       level { 3 }

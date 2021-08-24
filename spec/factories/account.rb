@@ -4,6 +4,8 @@
 FactoryBot.define do
   factory :account do
     balance { 0.to_d }
+    member
+    currency_id { :usd }
 
     trait :usd do
       currency_id { :usd }

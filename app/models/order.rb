@@ -83,7 +83,7 @@ class Order < ApplicationRecord
 
   after_commit :trigger_private_event
 
-  before_create do
+  before_create unless: -> { Rails.env.test? } do
     raise(
       ::Account::AccountError,
       "member_balance > locked = #{member_balance} > #{locked}"
