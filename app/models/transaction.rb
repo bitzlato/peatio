@@ -47,7 +47,7 @@ class Transaction < ApplicationRecord
   before_update :update_accountable_fee
 
   KINDS = %w(none refill internal gas_refuel withdraw unauthorized_withdraw deposit collect unknown)
-  FEE_ACCOUNTING_KINDS=%w(gas_refuel withdraw collect internal)
+  FEE_ACCOUNTING_KINDS=%w(gas_refuel withdraw collect unauthorized_withdraw internal)
   before_validation { self.kind ||= 'none'; self.kind=self.kind.to_s }
   validates :kind, presence: true, inclusion: { in: KINDS }
 
@@ -74,7 +74,7 @@ class Transaction < ApplicationRecord
         txid:            tx.id,
         options:         tx.options,
         kind:            tx.kind || raise("No kind in tx #{tx.as_json}"),
-        accountable_fee: FEE_ACCOUNTING_KINDS.include?(tx.kind),
+        accountable_fee: FEE_ACCOUNTING_KINDS.include?(tx.kind.to_s),
       }.deep_merge(extra)
     ).tap do |t|
       Rails.logger.debug("Transaction #{tx.txid}/#{tx.txout} is saved to database with id=#{t.id}")
