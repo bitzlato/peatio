@@ -12,7 +12,9 @@ module API
       def create_order(attrs)
         market = ::Market.active.find_spot_by_symbol(attrs[:market])
         service = ::OrderServices::CreateOrder.new(member: current_user)
-        result = service.perform(attrs.merge(market: market))
+        service_params = attrs.merge(market: market).symbolize_keys
+
+        result = service.perform(**service_params)
 
         if result.successful?
           result.data

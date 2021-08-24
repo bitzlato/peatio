@@ -160,8 +160,6 @@ class Order < ApplicationRecord
   end
 
   def trigger_third_party_creation
-    return unless new_record?
-
     self.uuid ||= UUID.generate
     self.created_at ||= Time.now
 

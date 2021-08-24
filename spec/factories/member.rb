@@ -9,6 +9,13 @@ FactoryBot.define do
     role { "member" }
     group { "vip-0" }
     state { "active" }
+    accounts {
+      [
+        build(:account, :eth, balance: 1000000.to_d),
+        build(:account, :btc, balance: 1000000.to_d),
+        build(:account, :usd, balance: 1000000.to_d),
+      ]
+    }
 
     trait :level_3 do
       level { 3 }
@@ -32,18 +39,6 @@ FactoryBot.define do
 
     trait :barong do
       level { 3 }
-    end
-
-    trait :with_usd_balance do
-      accounts { [create(:account, :usd, balance: 10000.to_d)] }
-    end
-
-    trait :with_btc_balance do
-      accounts { [create(:account, :btc, balance: 10000.to_d)] }
-    end
-
-    trait :with_eth_balance do
-      accounts { [create(:account, :eth, balance: 10000.to_d)] }
     end
 
     factory :admin_member, traits: %i[admin]
