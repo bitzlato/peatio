@@ -233,6 +233,41 @@ ALTER SEQUENCE public.beneficiaries_id_seq OWNED BY public.beneficiaries.id;
 
 
 --
+-- Name: block_numbers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.block_numbers (
+    id bigint NOT NULL,
+    blockchain_id bigint NOT NULL,
+    transactions_processed_count integer DEFAULT 0 NOT NULL,
+    number bigint NOT NULL,
+    status character varying NOT NULL,
+    error_message character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: block_numbers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.block_numbers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: block_numbers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.block_numbers_id_seq OWNED BY public.block_numbers.id;
+
+
+--
 -- Name: blockchains; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -248,9 +283,9 @@ CREATE TABLE public.blockchains (
     updated_at timestamp without time zone NOT NULL,
     server_encrypted character varying(1024),
     id bigint NOT NULL,
-    gateway_klass character varying NOT NULL,
     enable_invoice boolean DEFAULT false NOT NULL,
-    explorer_contract_address character varying
+    explorer_contract_address character varying,
+    client character varying NOT NULL
 );
 
 
@@ -302,8 +337,8 @@ CREATE TABLE public.currencies (
     price numeric(32,16) DEFAULT 1.0 NOT NULL,
     parent_id character varying,
     blockchain_id bigint NOT NULL,
-    enable_invoice boolean DEFAULT false NOT NULL,
-    base_factor bigint NOT NULL
+    base_factor bigint NOT NULL,
+    contract_address character varying
 );
 
 
@@ -1087,8 +1122,11 @@ CREATE TABLE public.transactions (
     updated_at timestamp without time zone NOT NULL,
     fee numeric(32,16),
     fee_currency_id character varying,
-    deposit_id bigint,
-    deposit_spread_id bigint
+    blockchain_id bigint NOT NULL,
+    is_followed boolean DEFAULT false NOT NULL,
+    "to" integer,
+    "from" integer,
+    kind integer
 );
 
 
@@ -1282,7 +1320,8 @@ CREATE TABLE public.withdraws (
     transfer_type integer,
     metadata json,
     remote_id character varying,
-    blockchain_id bigint NOT NULL
+    blockchain_id bigint NOT NULL,
+    tx_dump jsonb
 );
 
 
@@ -1325,6 +1364,13 @@ ALTER TABLE ONLY public.assets ALTER COLUMN id SET DEFAULT nextval('public.asset
 --
 
 ALTER TABLE ONLY public.beneficiaries ALTER COLUMN id SET DEFAULT nextval('public.beneficiaries_id_seq'::regclass);
+
+
+--
+-- Name: block_numbers id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.block_numbers ALTER COLUMN id SET DEFAULT nextval('public.block_numbers_id_seq'::regclass);
 
 
 --
@@ -1547,6 +1593,14 @@ ALTER TABLE ONLY public.assets
 
 ALTER TABLE ONLY public.beneficiaries
     ADD CONSTRAINT beneficiaries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: block_numbers block_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.block_numbers
+    ADD CONSTRAINT block_numbers_pkey PRIMARY KEY (id);
 
 
 --
@@ -1827,6 +1881,20 @@ CREATE INDEX index_beneficiaries_on_currency_id ON public.beneficiaries USING bt
 --
 
 CREATE INDEX index_beneficiaries_on_member_id ON public.beneficiaries USING btree (member_id);
+
+
+--
+-- Name: index_block_numbers_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_block_numbers_on_blockchain_id ON public.block_numbers USING btree (blockchain_id);
+
+
+--
+-- Name: index_block_numbers_on_blockchain_id_and_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_block_numbers_on_blockchain_id_and_number ON public.block_numbers USING btree (blockchain_id, number);
 
 
 --
@@ -2327,6 +2395,48 @@ CREATE UNIQUE INDEX index_trading_fees_on_market_id_and_market_type_and_group ON
 
 
 --
+-- Name: index_transactions_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_transactions_on_blockchain_id ON public.transactions USING btree (blockchain_id);
+
+
+--
+-- Name: index_transactions_on_blockchain_id_and_from; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_transactions_on_blockchain_id_and_from ON public.transactions USING btree (blockchain_id, "from");
+
+
+--
+-- Name: index_transactions_on_blockchain_id_and_kind; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_transactions_on_blockchain_id_and_kind ON public.transactions USING btree (blockchain_id, kind);
+
+
+--
+-- Name: index_transactions_on_blockchain_id_and_to; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_transactions_on_blockchain_id_and_to ON public.transactions USING btree (blockchain_id, "to");
+
+
+--
+-- Name: index_transactions_on_blockchain_id_and_txid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_transactions_on_blockchain_id_and_txid ON public.transactions USING btree (blockchain_id, txid) WHERE (txout IS NULL);
+
+
+--
+-- Name: index_transactions_on_blockchain_id_and_txid_and_txout; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_transactions_on_blockchain_id_and_txid_and_txout ON public.transactions USING btree (blockchain_id, txid, txout) WHERE (txout IS NOT NULL);
+
+
+--
 -- Name: index_transactions_on_currency_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2334,10 +2444,10 @@ CREATE INDEX index_transactions_on_currency_id ON public.transactions USING btre
 
 
 --
--- Name: index_transactions_on_currency_id_and_txid; Type: INDEX; Schema: public; Owner: -
+-- Name: index_transactions_on_fee_currency_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_transactions_on_currency_id_and_txid ON public.transactions USING btree (currency_id, txid);
+CREATE INDEX index_transactions_on_fee_currency_id ON public.transactions USING btree (fee_currency_id);
 
 
 --
@@ -2708,6 +2818,22 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210817050515'),
 ('20210817100325'),
 ('20210818074322'),
-('20210820101018');
+('20210820101018'),
+('20210821180954'),
+('20210822080438'),
+('20210823045327'),
+('20210823052207'),
+('20210823053134'),
+('20210823065105'),
+('20210823183710'),
+('20210824045320'),
+('20210824105826'),
+('20210824110350'),
+('20210824162834'),
+('20210824183549'),
+('20210824190605'),
+('20210824190750'),
+('20210825114229'),
+('20210825114751');
 
 

@@ -366,9 +366,9 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.string "details_encrypted", limit: 1024
     t.bigint "member_id"
     t.boolean "remote", default: false, null: false
-    t.bigint "blockchain_id", null: false
     t.jsonb "balances", default: {}
     t.datetime "balances_updated_at"
+    t.bigint "blockchain_id", null: false
     t.index ["blockchain_id", "address"], name: "index_payment_addresses_on_blockchain_id_and_address", unique: true, where: "(address IS NOT NULL)"
     t.index ["blockchain_id"], name: "index_payment_addresses_on_blockchain_id"
     t.index ["member_id"], name: "index_payment_addresses_on_member_id"
@@ -514,8 +514,8 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.integer "kind", null: false
     t.string "settings_encrypted", limit: 1024
     t.jsonb "balance"
-    t.json "plain_settings"
     t.boolean "enable_invoice", default: false, null: false
+    t.json "plain_settings"
     t.bigint "blockchain_id", null: false
     t.boolean "use_as_fee_source", default: false, null: false
     t.datetime "balance_updated_at"
