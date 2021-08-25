@@ -50,5 +50,7 @@ module Peatio
     config.action_controller.allow_forgery_protection = false
 
     config.middleware.use ActionDispatch::Flash
+
+    config.active_record.schema_format = :sql
   end
 end
