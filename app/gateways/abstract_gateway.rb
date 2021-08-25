@@ -92,31 +92,21 @@ class AbstractGateway
   def monefy_transaction(hash, extras = {})
     return if hash.nil?
     if hash.is_a? Peatio::Transaction
-      currency = blockchain.find_money_currency(hash.contract_address)
       raise "Sourced transaction must be plain #{hash}" if hash.amount.is_a? Money
-      hash.dup.tap do |t|
-        t.currency_id = currency.id
-        t.blockchain_id = blockchain.id
-        t.amount = currency.to_money_from_units hash.amount
-        t.fee_currency_id = blockchain.fee_currency.money_currency.id
-        t.fee = hash.fee.nil? ? nil : blockchain.fee_currency.money_currency.to_money_from_units(hash.fee)
-        t.to = kind_of_address(hash.to_address)
-        t.from = kind_of_address(hash.from_address)
-      end.freeze
+      tx = hash
     else
-      currency = blockchain.find_money_currency(hash.fetch(:contract_address))
-      Peatio::Transaction.new(
-        hash.merge(
-          currency_id: currency.id,
-          amount: currency.to_money_from_units(hash.fetch(:amount)),
-          fee: hash.fetch(:fee, nil) ? blockchain.fee_currency.money_currency.to_money_from_units(hash.fetch(:fee)) : nil,
-          fee_currency_id: blockchain.fee_currency.money_currency.id,
-          blockchain_id: blockchain.id,
-          to: kind_of_address(hash.fetch(:to_address)),
-          from: kind_of_address(hash.fetch(:from_address)),
-        )
-      ).freeze
+      tx = Peatio::Transaction.new(hash)
     end
+    currency = blockchain.find_money_currency(tx.contract_address)
+    tx.dup.tap do |tx|
+      tx.currency_id = currency.id
+      tx.blockchain_id = blockchain.id
+      tx.amount = currency.to_money_from_units tx.amount
+      tx.fee_currency_id = blockchain.fee_currency.money_currency.id
+      tx.fee = tx.fee.nil? ? nil : blockchain.fee_currency.money_currency.to_money_from_units(tx.fee)
+      tx.to = kind_of_address(tx.to_address)
+      tx.from = kind_of_address(tx.from_address)
+    end.freeze
   end
 
   def build_client
