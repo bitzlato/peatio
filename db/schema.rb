@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_24_190750) do
+ActiveRecord::Schema.define(version: 2021_08_25_114751) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -471,7 +471,7 @@ ActiveRecord::Schema.define(version: 2021_08_24_190750) do
     t.string "to_address"
     t.decimal "amount", precision: 32, scale: 16, default: "0.0", null: false
     t.integer "block_number"
-    t.integer "txout", null: false
+    t.integer "txout"
     t.string "status"
     t.json "options"
     t.datetime "created_at", null: false
@@ -486,7 +486,8 @@ ActiveRecord::Schema.define(version: 2021_08_24_190750) do
     t.index ["blockchain_id", "from"], name: "index_transactions_on_blockchain_id_and_from"
     t.index ["blockchain_id", "kind"], name: "index_transactions_on_blockchain_id_and_kind"
     t.index ["blockchain_id", "to"], name: "index_transactions_on_blockchain_id_and_to"
-    t.index ["blockchain_id", "txid", "txout"], name: "index_transactions_on_blockchain_id_and_txid_and_txout", unique: true
+    t.index ["blockchain_id", "txid", "txout"], name: "index_transactions_on_blockchain_id_and_txid_and_txout", unique: true, where: "(txout IS NOT NULL)"
+    t.index ["blockchain_id", "txid"], name: "index_transactions_on_blockchain_id_and_txid", unique: true, where: "(txout IS NULL)"
     t.index ["blockchain_id"], name: "index_transactions_on_blockchain_id"
     t.index ["currency_id"], name: "index_transactions_on_currency_id"
     t.index ["fee_currency_id"], name: "index_transactions_on_fee_currency_id"

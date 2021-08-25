@@ -41,10 +41,9 @@ class BlockchainService
   end
 
   def refetch_and_update_transaction!(txid, txout = nil)
-    monyfied_blockchain_transaction = gateway.fetch_transaction txid, txout.zero? ? nil : txout
-    recorded_transaction = blockchain.transactions.find_by(txid: txid, txout: txout)
+    monyfied_blockchain_transaction = gateway.fetch_transaction txid, txout
     if monyfied_blockchain_transaction.nil?
-      recorded_transaction.update! status: 'pending' if recorded_transaction.present?
+      logger.error("Unknown transcsation #{txid}/#{txout} for #{blockchain.key}")
     else
       # TODO lookup for reference if there are no transaction
       Transaction.upsert_transaction! monyfied_blockchain_transaction
