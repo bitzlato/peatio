@@ -3,7 +3,7 @@
 
 FactoryBot.define do
   factory :order_bid do
-    member { create(:member) }
+    member
     uuid { UUID.generate }
 
     # Create liability history by passing with_deposit_liability trait.
@@ -72,7 +72,7 @@ FactoryBot.define do
   end
 
   factory :order_ask do
-    member { create(:member) }
+    member
     uuid { UUID.generate }
 
     # Create liability history by passing with_deposit_liability trait.
