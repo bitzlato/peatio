@@ -79,27 +79,14 @@ class AbstractGateway
     Rails.logger
   end
 
-  def kind_of_transaction(tx)
-    raise 'tx must be a Peatio::Transcation' unless tx.is_a? Peatio::Transaction
-    if tx.to_address.in?(blockchain.deposit_addresses)
-      if tx.from_address.in?(blockchain.wallets_addresses)
-        :gas_refuel
-      else
-        :deposit
-      end
-    elsif tx.to_address.in?(blockchain.wallets_addresses)
-      if tx.from_address.in?(blockchain.wallets_addresses)
-        :collect
-      else
-        :refill
-      end
-    elsif tx.from_address.in?(blockchain.wallets_addresses)
-      :withdraw
-    elsif tx.from_address.in?(blockchain.deposit_addresses)
-      :unauthorized_withdraw
-    else
-      :unknown
+  def kind_of_address(address)
+    if address.is_a?(Enumerable)
+      raise 'multiple addresses' if address.many?
+      address = address.first
     end
+    return :wallet if address.in? blockchain.wallets_addresses
+    return :deposit if address.in? blockchain.deposit_addresses
+    :unknown
   end
 
   def monefy_transaction(hash, extras = {})
@@ -113,7 +100,8 @@ class AbstractGateway
         t.amount = currency.to_money_from_units hash.amount
         t.fee_currency_id = blockchain.fee_currency.money_currency.id
         t.fee = hash.fee.nil? ? nil : blockchain.fee_currency.money_currency.to_money_from_units(hash.fee)
-        t.kind = kind_of_transaction(t)
+        t.to = kind_of_address(hash.to_address)
+        t.from = kind_of_address(hash.from_address)
       end.freeze
     else
       currency = blockchain.find_money_currency(hash.fetch(:contract_address))
@@ -124,10 +112,10 @@ class AbstractGateway
           fee: hash.fetch(:fee, nil) ? blockchain.fee_currency.money_currency.to_money_from_units(hash.fetch(:fee)) : nil,
           fee_currency_id: blockchain.fee_currency.money_currency.id,
           blockchain_id: blockchain.id,
+          to: kind_of_address(hash.fetch(:to_address)),
+          from: kind_of_address(hash.fetch(:from_address)),
         )
-      ).tap do |t|
-        t.kind = kind_of_transaction(t)
-      end.freeze
+      ).freeze
     end
   end
 
