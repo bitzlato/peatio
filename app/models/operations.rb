@@ -8,7 +8,16 @@ module Operations
     end
 
     def split_account_number(account_number:)
-      currency_id, code, member_uid = account_number.split('-')
+      splitted_account_number = account_number.split('-')
+      if splitted_account_number[1].to_i.to_s == splitted_account_number[1]
+        currency_id = splitted_account_number[0]
+        code = splitted_account_number[1]
+        member_uid = splitted_account_number[2]
+      else
+        currency_id = [splitted_account_number[0], splitted_account_number[1]].join('-')
+        code = splitted_account_number[2]
+        member_uid = splitted_account_number[3]
+      end
       { currency_id: currency_id,
         code: code,
         member_uid: member_uid }
