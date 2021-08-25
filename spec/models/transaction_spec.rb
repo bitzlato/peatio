@@ -23,8 +23,20 @@ describe Transaction do
     )}
     let(:reference) { create :deposit, :deposit_eth }
 
-    it do
-      expect(described_class.upsert_transaction! peatio_transaction).to be_a Transaction
+    context 'creates first time' do
+      subject { described_class.upsert_transaction! peatio_transaction }
+      it { expect(subject).to be_a Transaction }
+      it { expect(subject.kind).to eq 'deposit' }
+    end
+
+    context 'upsert second time' do
+      before do
+        tx = described_class.upsert_transaction! peatio_transaction
+        tx.update_columns kind: nil
+      end
+      subject { described_class.upsert_transaction! peatio_transaction }
+      it { expect(subject.kind).to eq 'deposit' }
+      it { expect(subject.txout).to eq 2 }
     end
   end
 end
