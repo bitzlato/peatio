@@ -28,7 +28,8 @@ describe Withdrawer do
                                 from_address: wallet.address,
                                 to_address: withdraw.to_address,
                                 blockchain_id: blockchain.id,
-                                kind: 'withdraw',
+                                from: 'unknown',
+                                to: 'deposit',
                                 hash: SecureRandom.hex(5))
       end
       it do

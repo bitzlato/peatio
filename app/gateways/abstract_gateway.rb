@@ -113,7 +113,7 @@ class AbstractGateway
           fee_currency_id: blockchain.fee_currency.money_currency.id,
           blockchain_id: blockchain.id,
           to: kind_of_address(hash.fetch(:to_address)),
-          from: kind_of_address(hash.fetch(:from_addresses)),
+          from: kind_of_address(hash.fetch(:from_address)),
         )
       ).freeze
     end
