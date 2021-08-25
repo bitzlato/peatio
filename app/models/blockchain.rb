@@ -52,7 +52,7 @@ class Blockchain < ApplicationRecord
   end
 
   def follow_txids
-    @follow_txids ||= (withdraws.confirming.pluck(:txid) + transactions.pending.pluck(:txid)).compact.uniq.map { |txid| normalize_txid txid }
+    @follow_txids ||= withdraws.confirming.pluck(:txid)
   end
 
   def service
