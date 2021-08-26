@@ -6,14 +6,16 @@ module Workers
     class CreateOrder < Base
       def process(payload)
         payload.symbolize_keys!
+        member_uid = payload[:member_uid]
+        order_data = payload[:data].symbolize_keys
 
-        @member = ::Member.find_by!(uid: payload[:member_uid])
-        market = ::Market.active.find_spot_by_symbol(payload[:data][:market])
+        member = ::Member.find_by!(uid: member_uid)
+        market = ::Market.active.find_spot_by_symbol(order_data[:market])
 
-        service = ::OrderServices::CreateOrder.new(member: @member)
+        service = ::OrderServices::CreateOrder.new(member: member)
         order = service.perform(
           market: market,
-          **payload[:data].slice(:side, :ord_type, :price, :volume, :uuid)
+          **data.slice(:side, :ord_type, :price, :volume, :uuid)
         )
       end
     end
