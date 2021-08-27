@@ -26,8 +26,8 @@ exchange:
   opendax:
     name: finex.orderapi
     type: direct
-  new_orders:
-    name: new_orders
+  ranger:
+    name: peatio.ranger
     type: direct
 
 queue:
@@ -55,8 +55,8 @@ queue:
   new_trade:
     name: peatio.trade.new
     durable: true
-  new_orders:
-    name: new_orders
+  create_order:
+    name: peatio.ranger.new_orders
     durable: true
   order_processor:
     name: peatio.order.processor
@@ -96,8 +96,8 @@ binding:
     queue: new_trade
     exchange: matching
   create_order:
-    queue: new_orders
-    exchange: new_orders
+    queue: create_order
+    exchange: ranger
   order_processor:
     queue: order_processor
     exchange: matching
