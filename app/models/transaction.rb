@@ -22,6 +22,7 @@ class Transaction < ApplicationRecord
     scope status, -> { where status: status }
   end
 
+  scope :by_address, ->(address) { where 'lower(from_address) = ? or lower(to_address) = ?', address.downcase, address.downcase }
   # == Validations ==========================================================
 
   validates :currency, :amount, :from_address, :status, presence: true
@@ -40,6 +41,7 @@ class Transaction < ApplicationRecord
 
   before_validation do
     self.kind = define_kind
+    self.direction = define_direction
   end
   before_save do
     update_reference
@@ -53,9 +55,13 @@ class Transaction < ApplicationRecord
   enum to: ADDRESS_KINDS, _prefix: true
   enum from: ADDRESS_KINDS, _prefix: true
 
+  DIRECTIONS = { unknown: 0, income: 1, outcome: 2, internal: 3, failed: 4 }
+  enum direction: DIRECTIONS, _prefix: true
+
   validates :to, inclusion: { in: tos.keys }
   validates :to, presence: true, unless: :failed?
   validates :from, presence: true, inclusion: { in: froms.keys }
+  validates :direction, presence: true, inclusion: { in: directions.keys }
 
   # TODO: record expenses for succeed transactions
 

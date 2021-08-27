@@ -59,6 +59,17 @@ class PaymentAddress < ApplicationRecord
     end
   end
 
+  def transactions
+    if address.nil?
+      Transaction.none
+    else
+      return Transaction.none if blockchain.nil?
+
+      # TODO: blockchain normalize
+      blockchain.transactions.by_address(address.downcase)
+    end
+  end
+
   def trigger_address_event
     ::AMQP::Queue.enqueue_event('private', member.uid, :deposit_address,
                                 type: :create,

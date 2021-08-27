@@ -58,6 +58,7 @@ class Deposit < ApplicationRecord
     state :dispatched
     state :errored
     state :refunding
+    state :rolledback
     event(:cancel) { transitions from: %i[submitted invoiced], to: :canceled }
     event(:reject) { transitions from: %i[submitted invoiced], to: :rejected }
     event :accept do
@@ -93,6 +94,15 @@ class Deposit < ApplicationRecord
     event :refund do
       transitions from: %i[skipped], to: :refunding do
         guard { currency.coin? }
+      end
+    end
+
+    event :rollback do
+      transitions from: %i[dispatched], to: :rolledback
+      after do
+        account.unlock_funds(account.locked)
+        account.sub_funds! amount
+        # TODO rollback operations
       end
     end
   end
