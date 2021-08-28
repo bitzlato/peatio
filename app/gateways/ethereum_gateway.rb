@@ -23,7 +23,12 @@ class EthereumGateway < AbstractGateway
   def collect!(payment_address)
     hot_wallet = blockchain.hot_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
 
-    balances = load_balances(payment_address.address).reject { |c, a| a.zero? }
+    raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
+
+    balances = load_balances(payment_address.address).
+      reject { |c, a| a.zero? }.
+      transform_keys { |k| blockchain.currencies.find_by(id: k) }.
+      compact
 
     # First collect tokens (save base currency to last step for gas)
     token_currencies = balances.filter { |c| c.token? }.keys
