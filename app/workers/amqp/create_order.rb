@@ -15,8 +15,10 @@ module Workers
         service = ::OrderServices::CreateOrder.new(member: member)
         order = service.perform(
           market: market,
-          **data.slice(:side, :ord_type, :price, :volume, :uuid)
+          **order_data.slice(:side, :ord_type, :price, :volume, :uuid)
         )
+      rescue ActiveRecord::RecordNotFound => e
+        report_exception(e, true, payload)
       end
     end
   end
