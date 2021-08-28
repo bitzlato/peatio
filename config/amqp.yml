@@ -28,7 +28,7 @@ exchange:
     type: direct
   ranger:
     name: peatio.ranger
-    type: direct
+    type: topic
 
 queue:
   matching:
@@ -98,6 +98,7 @@ binding:
   create_order:
     queue: create_order
     exchange: ranger
+    topics: peatio.ranger.new_orders
   order_processor:
     queue: order_processor
     exchange: matching
