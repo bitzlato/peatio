@@ -28,8 +28,8 @@ module OrderServices
         market: market,
         side: side,
         ord_type: ord_type,
-        price: price,
-        volume: volume,
+        price: price.to_d,
+        volume: volume.to_i,
         uuid: uuid,
       )
       order = submit_and_return_order(order)
