@@ -69,6 +69,10 @@ class Blockchain < ApplicationRecord
     wallets.active.fee.take
   end
 
+  def client_options
+    super.with_indifferent_access
+  end
+
   def hot_wallet
     wallets.active.hot.take
   end

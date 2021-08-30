@@ -42,16 +42,12 @@ class EthereumGateway < AbstractGateway
       amount = balances.fetch(currency)
       next if amount.zero?
       logger.info("Collect #{currency.id} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
-      transaction = monefy_transaction(
-        TransactionCreator
-        .new(client)
-        .call(from_address: payment_address.address,
-              to_address: hot_wallet.address,
-              amount: amount.base_units,
-              secret: payment_address.secret,
-              gas_factor: blockchain.client_options[:gas_factor] || 1,
-              contract_address: currency.contract_address,
-              subtract_fee: currency.contract_address.nil?)
+      transaction = create_transaction!(
+        from_address: payment_address.address,
+        to_address: hot_wallet.address,
+        amount: amount,
+        secret: payment_address.secret,
+        contract_address: currency.contract_address
       )
       logger.info("Collect transaction created #{transaction.as_json}")
       # TODO Save CollectRecord with transaction dump
@@ -76,6 +72,9 @@ class EthereumGateway < AbstractGateway
       EthereumGateway::GasRefueler
       .new(client)
       .call(
+        gas_factor: blockchain.client_options[:refuel_gas_factor],
+        base_gas_limit: blockchain.client_options[:base_gas_limit],
+        token_gas_limit: blockchain.client_options[:token_gas_limit],
         gas_wallet_address: gas_wallet.address,
         gas_wallet_secret: gas_wallet.secret,
         target_address: target_address,
@@ -117,11 +116,10 @@ class EthereumGateway < AbstractGateway
                           amount:,
                           secret:,
                           contract_address: nil,
-                          subtract_fee: false)
-
+                          subtract_fee: nil)
 
     raise 'amount must be a Money' unless amount.is_a? Money
-    # TODO save transaction
+    gas_limit = amount.currency.token? ? blockchain.client_options[:token_gas_limit] : blockchain.client_options[:base_gas_limit]
     monefy_transaction(
       TransactionCreator
       .new(client)
@@ -129,8 +127,11 @@ class EthereumGateway < AbstractGateway
             to_address: to_address,
             amount: amount.base_units,
             secret: secret,
+            gas_factor: blockchain.client_options[:gas_factor] || 1,
+            gas_limit: gas_limit,
             contract_address: contract_address,
-            subtract_fee: subtract_fee)
+            subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee
+           )
     )
   end
 

@@ -9,8 +9,9 @@ class EthereumGateway
              secret:,
              contract_address: nil,
              subtract_fee: false,
-             gas_limit: nil,
+             gas_limit: ,
              gas_factor: 1)
+      raise "undefined gas_limit" if gas_limit.nil? || gas_limit.zero?
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
       gas_price ||= (fetch_gas_price * gas_factor).to_i
@@ -21,14 +22,14 @@ class EthereumGateway
                                   to_address: to_address,
                                   contract_address: contract_address,
                                   secret: secret,
-                                  gas_limit: gas_limit || token_gas_limit,
+                                  gas_limit: gas_limit,
                                   gas_price: gas_price)
       : create_eth_transaction!(amount: amount,
                                 from_address: from_address,
                                 to_address: to_address,
                                 subtract_fee: subtract_fee,
                                 secret: secret,
-                                gas_limit: gas_limit || base_gas_limit,
+                                gas_limit: gas_limit,
                                 gas_price: gas_price)
       peatio_transaction.options.merge! gas_factor: gas_factor
       peatio_transaction
@@ -38,7 +39,7 @@ class EthereumGateway
                                 to_address:,
                                 amount:,
                                 secret:,
-                                gas_limit: base_gas_limit,
+                                gas_limit:,
                                 gas_price:,
                                 subtract_fee: false)
 

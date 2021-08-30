@@ -4,6 +4,7 @@
 FactoryBot.define do
   factory :blockchain do
     gateway_klass { DummyGateway.name }
+    client_options          { {token_gas_limit: 110_000, base_gas_limit: 11_000, gas_factor: 1} }
 
     trait 'bitzlato' do
       key                     { 'bitzlato' }

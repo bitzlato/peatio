@@ -10,16 +10,11 @@ class EthereumGateway
 
     attr_reader :client
 
-    def initialize(client, refuel_gas_factor: 1, base_gas_limit: 21_000, token_gas_limit: 110_000)
+    def initialize(client)
       @client = client || raise("No gateway client")
-      @refuel_gas_factor = refuel_gas_factor
-      @base_gas_limit = base_gas_limit
-      @token_gas_limit = token_gas_limit
     end
 
     private
-
-    attr_reader :refuel_gas_factor, :base_gas_limit, :token_gas_limit
 
     def build_erc20_transactions(txn_receipt, block_txn, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txouts: nil)
       txid = normalize_txid(txn_receipt.fetch('transactionHash'))

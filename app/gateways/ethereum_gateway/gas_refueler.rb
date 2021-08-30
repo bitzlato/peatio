@@ -6,7 +6,7 @@ class EthereumGateway
     NoTokens = Class.new Error
     Balanced = Class.new Error
 
-    def call(gas_wallet_address:, gas_wallet_secret:, target_address: , tokens_count: )
+    def call(gas_wallet_address:, gas_wallet_secret:, base_gas_limit:, token_gas_limit:, gas_factor:, target_address: , tokens_count: )
       ethereum_balance = load_basic_balance target_address
       raise "ethereum_balance #{ethereum_balance} must be an Integer" unless ethereum_balance.is_a? Integer
 
@@ -16,7 +16,7 @@ class EthereumGateway
       end
 
       gas_limit = base_gas_limit
-      gas_price ||= (fetch_gas_price * refuel_gas_factor).to_i
+      gas_price ||= (fetch_gas_price * gas_factor).to_i
 
       transaction_amount = tokens_count * token_gas_limit * gas_price - ethereum_balance
 
@@ -41,7 +41,7 @@ class EthereumGateway
           subtract_fee: false,
           gas_limit:    gas_limit,
           gas_price:    gas_price)
-      tx.options.merge! gas_factor: refuel_gas_factor
+      tx.options.merge! gas_factor: gas_factor
       tx
     end
 

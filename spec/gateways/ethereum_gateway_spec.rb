@@ -31,6 +31,10 @@ describe ::EthereumGateway do
         'usdt-erc20' => 1.to_money('usdt-erc20'),
       }
     }
+    let(:token_gas_limit) { blockchain.client_options.fetch(:token_gas_limit) }
+    let(:base_gas_limit) { blockchain.client_options.fetch(:base_gas_limit) }
+    let(:gas_factor) { blockchain.client_options.fetch(:gas_factor) }
+
     it do
       Blockchain.any_instance.expects(:hot_wallet).returns hot_wallet
       EthereumGateway::TransactionCreator.
@@ -41,6 +45,8 @@ describe ::EthereumGateway do
              amount: 1000000,
              secret: nil,
              subtract_fee: false,
+             gas_limit: token_gas_limit,
+             gas_factor: gas_factor,
              contract_address: Money::Currency.find!('usdt-erc20').contract_address).
              once.
              returns(peatio_transaction)
@@ -51,6 +57,8 @@ describe ::EthereumGateway do
              to_address: hot_wallet.address,
              amount: 1000000000000000000,
              secret: nil,
+             gas_factor: 1,
+             gas_limit: base_gas_limit,
              subtract_fee: true,
              contract_address: nil).
              once.
