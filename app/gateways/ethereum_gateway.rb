@@ -27,7 +27,7 @@ class EthereumGateway < AbstractGateway
 
     balances = load_balances(payment_address.address).
       reject { |c, a| a.zero? }.
-      transform_keys { |k| blockchain.currencies.find_by(id: k) }.
+      transform_keys { |k| blockchain.currencies.find_by(id: k) || raise("Unknown currency in balance #{k} for #{blockchain.key}") }.
       compact
 
     # First collect tokens (save base currency to last step for gas)
@@ -39,9 +39,9 @@ class EthereumGateway < AbstractGateway
     # Не выводить базовую валюту пока не счету есть токены
     # Базовую валюту откидывать за вычетом необходимой суммы газа для токенов
     (token_currencies + base_currencies).map do |currency|
-      amount = balances[currency]
+      amount = balances.fetch(currency)
       next if amount.zero?
-      logger.info("Collect #{currency} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
+      logger.info("Collect #{currency.id} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
       transaction = monefy_transaction(
         TransactionCreator
         .new(client)
@@ -55,6 +55,7 @@ class EthereumGateway < AbstractGateway
       logger.info("Collect transaction created #{transaction.as_json}")
       # TODO Save CollectRecord with transaction dump
     rescue EthereumGateway::TransactionCreator::Error => err
+      report_exception err, true, payment_address_id: payment_address.id, currency: currency
       logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
       nil
     end.compact
