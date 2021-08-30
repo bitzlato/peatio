@@ -14,6 +14,7 @@ class EthereumGateway
       raise "undefined gas_limit" if gas_limit.nil? || gas_limit.zero?
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
+
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
       peatio_transaction = contract_address.present? ?

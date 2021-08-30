@@ -135,6 +135,14 @@ class EthereumGateway < AbstractGateway
     )
   end
 
+  def fetch_gas_price
+    blockchain.fee_currency.to_money_from_units(
+      TransactionCreator
+      .new(client)
+      .send(:fetch_gas_price)
+    )
+  end
+
   def fetch_block_transactions(block_number)
     BlockFetcher
       .new(client)
