@@ -72,7 +72,7 @@ class EthereumGateway < AbstractGateway
       EthereumGateway::GasRefueler
       .new(client)
       .call(
-        gas_factor: blockchain.client_options[:refuel_gas_factor],
+        gas_factor: blockchain.client_options[:gas_factor],
         base_gas_limit: blockchain.client_options[:base_gas_limit],
         token_gas_limit: blockchain.client_options[:token_gas_limit],
         gas_wallet_address: gas_wallet.address,

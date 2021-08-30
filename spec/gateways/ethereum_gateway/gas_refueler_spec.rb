@@ -16,7 +16,7 @@ describe ::EthereumGateway::GasRefueler do
   let(:to_address) { Faker::Blockchain::Ethereum.address }
   let(:gas_limit) { 21000 }
   let(:token_gas_limit) { 110_000 }
-  let(:refuel_gas_factor) { 1 }
+  let(:gas_factor) { 1 }
 
   subject { described_class.new(client) }
 
@@ -81,7 +81,7 @@ describe ::EthereumGateway::GasRefueler do
     subject.call(
       base_gas_limit: gas_limit,
       token_gas_limit: token_gas_limit,
-      gas_factor: refuel_gas_factor,
+      gas_factor: gas_factor,
       gas_wallet_address: from_address,
       gas_wallet_secret: secret,
       target_address: to_address,
@@ -114,8 +114,8 @@ describe ::EthereumGateway::GasRefueler do
         stub_personal_sendTransaction
       end
       let(:ethereum_balance) { 10000 }
-      let(:value) { (fetched_gas_price * tokens_count * token_gas_limit * refuel_gas_factor).to_i - ethereum_balance }
-      let(:transaction_gas_price) { (fetched_gas_price * refuel_gas_factor).to_i }
+      let(:value) { (fetched_gas_price * tokens_count * token_gas_limit * gas_factor).to_i - ethereum_balance }
+      let(:transaction_gas_price) { (fetched_gas_price * gas_factor).to_i }
       let(:result_transaction_hash) do
         {
           amount: value,
@@ -124,7 +124,7 @@ describe ::EthereumGateway::GasRefueler do
           status: 'pending',
           from_addresses: [from_address],
           options: {
-            'gas_factor' => refuel_gas_factor,
+            'gas_factor' => gas_factor,
             'gas_limit' =>  gas_limit,
             'gas_price' =>  transaction_gas_price,
             'subtract_fee' => false
