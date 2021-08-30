@@ -49,6 +49,7 @@ class EthereumGateway < AbstractGateway
               to_address: hot_wallet.address,
               amount: amount.base_units,
               secret: payment_address.secret,
+              gas_factor: blockchain.client_options[:gas_factor] || 1,
               contract_address: currency.contract_address,
               subtract_fee: currency.contract_address.nil?)
       )
