@@ -107,10 +107,12 @@ describe ::EthereumGateway::GasRefueler do
       before do
         stub_personal_sendTransaction
       end
-      let(:gas_limit) { EthereumGateway::TransactionCreator::DEFAULT_ETH_GAS_LIMIT }
+      let(:gas_limit) { 21000 }
+      let(:token_gas_limit) { 110_000 }
       let(:ethereum_balance) { 10000 }
-      let(:value) { (fetched_gas_price * tokens_count * EthereumGateway::TransactionCreator::DEFAULT_ERC20_GAS_LIMIT * EthereumGateway::GasRefueler::REFUEL_GAS_FACTOR).to_i - ethereum_balance }
-      let(:transaction_gas_price) { (fetched_gas_price * EthereumGateway::GasRefueler::REFUEL_GAS_FACTOR).to_i }
+      let(:refuel_gas_factor) { 1 }
+      let(:value) { (fetched_gas_price * tokens_count * token_gas_limit * refuel_gas_factor).to_i - ethereum_balance }
+      let(:transaction_gas_price) { (fetched_gas_price * refuel_gas_factor).to_i }
       let(:result_transaction_hash) do
         {
           amount: value,
@@ -119,7 +121,7 @@ describe ::EthereumGateway::GasRefueler do
           status: 'pending',
           from_addresses: [from_address],
           options: {
-            'gas_factor' => EthereumGateway::GasRefueler::REFUEL_GAS_FACTOR,
+            'gas_factor' => refuel_gas_factor,
             'gas_limit' =>  gas_limit,
             'gas_price' =>  transaction_gas_price,
             'subtract_fee' => false

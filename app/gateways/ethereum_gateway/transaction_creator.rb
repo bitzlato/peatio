@@ -1,8 +1,5 @@
 class EthereumGateway
   class TransactionCreator < AbstractCommand
-    DEFAULT_ETH_GAS_LIMIT = Settings.ethereum.eth_gas_limit
-    DEFAULT_ERC20_GAS_LIMIT = Settings.ethereum.erc20_gas_limit
-
     Error = Class.new StandardError
 
     # @param amount - in base units (cents)
@@ -24,14 +21,14 @@ class EthereumGateway
                                   to_address: to_address,
                                   contract_address: contract_address,
                                   secret: secret,
-                                  gas_limit: gas_limit || DEFAULT_ERC20_GAS_LIMIT,
+                                  gas_limit: gas_limit || token_gas_limit,
                                   gas_price: gas_price)
       : create_eth_transaction!(amount: amount,
                                 from_address: from_address,
                                 to_address: to_address,
                                 subtract_fee: subtract_fee,
                                 secret: secret,
-                                gas_limit: gas_limit || DEFAULT_ETH_GAS_LIMIT,
+                                gas_limit: gas_limit || base_gas_limit,
                                 gas_price: gas_price)
       peatio_transaction.options.merge! gas_factor: gas_factor
       peatio_transaction
@@ -41,7 +38,7 @@ class EthereumGateway
                                 to_address:,
                                 amount:,
                                 secret:,
-                                gas_limit: DEFAULT_ETH_GAS_LIMIT,
+                                gas_limit: base_gas_limit,
                                 gas_price:,
                                 subtract_fee: false)
 
@@ -84,8 +81,9 @@ class EthereumGateway
                                   amount:,
                                   contract_address:,
                                   secret:,
-                                  gas_limit: DEFAULT_ERC20_GAS_LIMIT,
+                                  gas_limit: nil,
                                   gas_price:)
+      gas_limit ||= token_gas_limit
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
       logger.info("Create erc20 transaction #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")

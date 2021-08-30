@@ -2,8 +2,6 @@ class EthereumGateway
   # Refuel address to have enough gas for future token's and ethereum transfer
   #
   class GasRefueler < AbstractCommand
-    REFUEL_GAS_FACTOR = Settings.ethereum.refuel_gas_factor
-
     Error = Class.new StandardError
     NoTokens = Class.new Error
     Balanced = Class.new Error
@@ -17,10 +15,10 @@ class EthereumGateway
         raise NoTokens
       end
 
-      gas_limit = TransactionCreator::DEFAULT_ETH_GAS_LIMIT
-      gas_price ||= (fetch_gas_price * REFUEL_GAS_FACTOR).to_i
+      gas_limit = base_gas_limit
+      gas_price ||= (fetch_gas_price * refuel_gas_factor).to_i
 
-      transaction_amount = tokens_count * TransactionCreator::DEFAULT_ERC20_GAS_LIMIT * gas_price - ethereum_balance
+      transaction_amount = tokens_count * token_gas_limit * gas_price - ethereum_balance
 
       if transaction_amount.positive?
         logger.info("Create gas refueling eth transaction #{gas_wallet_address} -> #{target_address}"\
@@ -43,7 +41,7 @@ class EthereumGateway
           subtract_fee: false,
           gas_limit:    gas_limit,
           gas_price:    gas_price)
-      tx.options.merge! gas_factor: REFUEL_GAS_FACTOR
+      tx.options.merge! gas_factor: refuel_gas_factor
       tx
     end
 

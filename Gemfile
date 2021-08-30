@@ -31,7 +31,6 @@ gem 'faye', '~> 1.4'
 gem 'eventmachine', '~> 1.2'
 gem 'em-synchrony', '~> 1.0'
 gem "strip_attributes"
-gem 'settingslogic'
 gem 'amazing_print'
 
 # We use 2.3.0.dev for bitzlato client

@@ -510,7 +510,6 @@ GEM
       parser
     sd_notify (0.1.1)
     semver2 (3.4.2)
-    settingslogic (2.0.9)
     shellany (0.0.1)
     slackistrano (4.0.1)
       capistrano (>= 3.8.1)
@@ -653,7 +652,6 @@ DEPENDENCIES
   scout_apm (~> 2.4)
   sd_notify (~> 0.1.1)
   semver2 (~> 3.4)
-  settingslogic
   slackistrano
   strip_attributes
   timecop (~> 0.9)

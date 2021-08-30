@@ -27,8 +27,8 @@ describe ::EthereumGateway do
     let!(:payment_address) { create :payment_address, :eth_address }
     let(:balances) {
       {
-        Money::Currency.find!('eth') => 1.to_money('eth'),
-        Money::Currency.find!('usdt-erc20') => 1.to_money('usdt-erc20'),
+        'eth' => 1.to_money('eth'),
+        'usdt-erc20' => 1.to_money('usdt-erc20'),
       }
     }
     it do

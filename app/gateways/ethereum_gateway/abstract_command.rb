@@ -8,14 +8,18 @@ class EthereumGateway
     ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
     TOKEN_EVENT_IDENTIFIER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 
-
     attr_reader :client
 
-    def initialize(client)
+    def initialize(client, refuel_gas_factor: 1, base_gas_limit: 21_000, token_gas_limit: 110_000)
       @client = client || raise("No gateway client")
+      @refuel_gas_factor = refuel_gas_factor
+      @base_gas_limit = base_gas_limit
+      @token_gas_limit = token_gas_limit
     end
 
     private
+
+    attr_reader :refuel_gas_factor, :base_gas_limit, :token_gas_limit
 
     def build_erc20_transactions(txn_receipt, block_txn, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txouts: nil)
       txid = normalize_txid(txn_receipt.fetch('transactionHash'))

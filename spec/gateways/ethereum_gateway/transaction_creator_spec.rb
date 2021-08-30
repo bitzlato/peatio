@@ -14,7 +14,7 @@ describe ::EthereumGateway::TransactionCreator do
   let(:fetched_gas_price) { 1_000_000_000 }
   let(:from_address) { Faker::Blockchain::Ethereum.address }
   let(:to_address) { Faker::Blockchain::Ethereum.address }
-  let(:gas_limit) { EthereumGateway::TransactionCreator::DEFAULT_ETH_GAS_LIMIT }
+  let(:gas_limit) { 22_000 }
   let(:gas_factor) { 1 }
 
   subject { described_class.new(client) }
