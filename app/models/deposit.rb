@@ -187,6 +187,10 @@ class Deposit < ApplicationRecord
     self.amount = value.to_d
   end
 
+  def recorded_transaction
+    blockchain.transactions.find_by(txid: txid, txout: txout)
+  end
+
   private
 
   # Creates dependant operations for deposit.
