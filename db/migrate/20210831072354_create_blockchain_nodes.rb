@@ -14,7 +14,7 @@ class CreateBlockchainNodes < ActiveRecord::Migration[5.2]
       t.timestamps
     end
 
-    if Rails.env.prodution?
+    if Rails.env.production?
       Blockchain.find_each do |b|
         b.nodes.create!(server: b.server, client: b.client, has_accounts: true, use_for_withdraws: true, is_public: false) if b.server.present?
       end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_25_114751) do
+ActiveRecord::Schema.define(version: 2021_08_31_072354) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -21,8 +21,8 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
   create_table "accounts", primary_key: ["currency_id", "member_id"], force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
-    t.decimal "balance", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "locked", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "balance", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "locked", precision: 36, scale: 18, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["currency_id", "member_id"], name: "index_accounts_on_currency_id_and_member_id", unique: true
@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.text "description", null: false
     t.bigint "creator_id", null: false
     t.bigint "validator_id"
-    t.decimal "amount", precision: 32, scale: 16, null: false
+    t.decimal "amount", precision: 36, scale: 18, null: false
     t.integer "asset_account_code", limit: 2, null: false
     t.string "receiving_account_number", limit: 64, null: false
     t.string "currency_id", null: false
@@ -51,8 +51,8 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.string "currency_id", null: false
     t.string "reference_type"
     t.bigint "reference_id"
-    t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "debit", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "credit", precision: 36, scale: 18, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["currency_id"], name: "index_assets_on_currency_id"
@@ -86,6 +86,21 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.index ["blockchain_id"], name: "index_block_numbers_on_blockchain_id"
   end
 
+  create_table "blockchain_nodes", force: :cascade do |t|
+    t.bigint "blockchain_id"
+    t.string "client", null: false
+    t.string "server_encrypted", null: false
+    t.bigint "latest_block_number"
+    t.datetime "info_updated_at"
+    t.boolean "is_public", default: false, null: false
+    t.boolean "has_accounts", default: false, null: false
+    t.boolean "use_for_withdraws", default: false, null: false
+    t.datetime "archived_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blockchain_id"], name: "index_blockchain_nodes_on_blockchain_id"
+  end
+
   create_table "blockchains", force: :cascade do |t|
     t.string "key", null: false
     t.string "name"
@@ -100,32 +115,35 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.boolean "enable_invoice", default: false, null: false
     t.string "explorer_contract_address"
     t.string "client", null: false
+    t.jsonb "client_options", default: {}, null: false
+    t.datetime "height_updated_at"
+    t.string "client_version"
     t.index ["key"], name: "index_blockchains_on_key", unique: true
     t.index ["status"], name: "index_blockchains_on_status"
   end
 
   create_table "currencies", id: :string, limit: 10, force: :cascade do |t|
     t.string "type", limit: 30, default: "coin", null: false
-    t.decimal "withdraw_limit_24h", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "withdraw_limit_24h", precision: 36, scale: 18, default: "0.0", null: false
     t.json "options"
     t.boolean "visible", default: true, null: false
     t.integer "precision", limit: 2, default: 8, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "withdraw_fee", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "deposit_fee", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "withdraw_fee", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "deposit_fee", precision: 36, scale: 18, default: "0.0", null: false
     t.string "icon_url"
-    t.decimal "min_deposit_amount", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "withdraw_limit_72h", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "min_collection_amount", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "min_withdraw_amount", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "min_deposit_amount", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "withdraw_limit_72h", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "min_collection_amount", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "min_withdraw_amount", precision: 36, scale: 18, default: "0.0", null: false
     t.string "name"
     t.integer "position", null: false
     t.boolean "deposit_enabled", default: true, null: false
     t.boolean "withdrawal_enabled", default: true, null: false
     t.text "description"
     t.string "homepage"
-    t.decimal "price", precision: 32, scale: 16, default: "1.0", null: false
+    t.decimal "price", precision: 36, scale: 18, default: "1.0", null: false
     t.string "parent_id"
     t.bigint "blockchain_id", null: false
     t.bigint "base_factor", null: false
@@ -160,8 +178,8 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
   create_table "deposits", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
-    t.decimal "amount", precision: 32, scale: 16, null: false
-    t.decimal "fee", precision: 32, scale: 16, null: false
+    t.decimal "amount", precision: 36, scale: 18, null: false
+    t.decimal "fee", precision: 36, scale: 18, null: false
     t.citext "txid"
     t.string "aasm_state", limit: 30, null: false
     t.datetime "created_at", precision: 3, null: false
@@ -206,8 +224,8 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.string "currency_id", null: false
     t.string "reference_type"
     t.bigint "reference_id"
-    t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "debit", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "credit", precision: 36, scale: 18, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["currency_id"], name: "index_expenses_on_currency_id"
@@ -235,7 +253,7 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
 
   create_table "internal_transfers", force: :cascade do |t|
     t.string "currency_id", null: false
-    t.decimal "amount", precision: 32, scale: 16, null: false
+    t.decimal "amount", precision: 36, scale: 18, null: false
     t.bigint "sender_id", null: false
     t.bigint "receiver_id", null: false
     t.integer "state", default: 1, null: false
@@ -260,8 +278,8 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.bigint "member_id"
     t.string "reference_type"
     t.bigint "reference_id"
-    t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "debit", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "credit", precision: 36, scale: 18, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["currency_id"], name: "index_liabilities_on_currency_id"
@@ -277,9 +295,9 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.bigint "engine_id", null: false
     t.integer "amount_precision", limit: 2, default: 4, null: false
     t.integer "price_precision", limit: 2, default: 4, null: false
-    t.decimal "min_price", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "max_price", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "min_amount", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "min_price", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "max_price", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "min_amount", precision: 36, scale: 18, default: "0.0", null: false
     t.integer "position", null: false
     t.json "data"
     t.string "state", limit: 32, default: "enabled", null: false
@@ -328,25 +346,25 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.string "bid", limit: 10, null: false
     t.string "ask", limit: 10, null: false
     t.string "market_id", limit: 20, null: false
-    t.decimal "price", precision: 32, scale: 16
-    t.decimal "volume", precision: 32, scale: 16, null: false
-    t.decimal "origin_volume", precision: 32, scale: 16, null: false
+    t.decimal "price", precision: 36, scale: 18
+    t.decimal "volume", precision: 36, scale: 18, null: false
+    t.decimal "origin_volume", precision: 36, scale: 18, null: false
     t.integer "state", null: false
     t.string "type", limit: 8, null: false
     t.bigint "member_id", null: false
     t.datetime "created_at", precision: 0, null: false
     t.datetime "updated_at", precision: 0, null: false
     t.string "ord_type", limit: 30, null: false
-    t.decimal "locked", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "origin_locked", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "funds_received", precision: 32, scale: 16, default: "0.0"
+    t.decimal "locked", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "origin_locked", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "funds_received", precision: 36, scale: 18, default: "0.0"
     t.integer "trades_count", default: 0, null: false
-    t.decimal "maker_fee", precision: 17, scale: 16, default: "0.0", null: false
-    t.decimal "taker_fee", precision: 17, scale: 16, default: "0.0", null: false
+    t.decimal "maker_fee", precision: 19, scale: 18, default: "0.0", null: false
+    t.decimal "taker_fee", precision: 19, scale: 18, default: "0.0", null: false
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.string "remote_id"
     t.string "market_type", default: "spot", null: false
-    t.decimal "trigger_price", precision: 32, scale: 16
+    t.decimal "trigger_price", precision: 36, scale: 18
     t.datetime "triggered_at"
     t.index ["member_id"], name: "index_orders_on_member_id"
     t.index ["state"], name: "index_orders_on_state"
@@ -389,8 +407,8 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.string "currency_id", null: false
     t.string "reference_type"
     t.bigint "reference_id"
-    t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "debit", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "credit", precision: 36, scale: 18, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "member_id"
@@ -402,14 +420,14 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.bigint "member_id", null: false
     t.string "pnl_currency_id", limit: 10, null: false
     t.string "currency_id", limit: 10, null: false
-    t.decimal "total_credit", precision: 48, scale: 16, default: "0.0"
-    t.decimal "total_credit_fees", precision: 48, scale: 16, default: "0.0"
-    t.decimal "total_debit_fees", precision: 48, scale: 16, default: "0.0"
-    t.decimal "total_debit", precision: 48, scale: 16, default: "0.0"
-    t.decimal "total_credit_value", precision: 48, scale: 16, default: "0.0"
-    t.decimal "total_debit_value", precision: 48, scale: 16, default: "0.0"
-    t.decimal "total_balance_value", precision: 48, scale: 16, default: "0.0"
-    t.decimal "average_balance_price", precision: 48, scale: 16, default: "0.0"
+    t.decimal "total_credit", precision: 50, scale: 18, default: "0.0"
+    t.decimal "total_credit_fees", precision: 50, scale: 18, default: "0.0"
+    t.decimal "total_debit_fees", precision: 50, scale: 18, default: "0.0"
+    t.decimal "total_debit", precision: 50, scale: 18, default: "0.0"
+    t.decimal "total_credit_value", precision: 50, scale: 18, default: "0.0"
+    t.decimal "total_debit_value", precision: 50, scale: 18, default: "0.0"
+    t.decimal "total_balance_value", precision: 50, scale: 18, default: "0.0"
+    t.decimal "average_balance_price", precision: 50, scale: 18, default: "0.0"
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["pnl_currency_id", "currency_id", "member_id"], name: "index_currency_ids_and_member_id", unique: true
@@ -427,8 +445,8 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
   end
 
   create_table "trades", force: :cascade do |t|
-    t.decimal "price", precision: 32, scale: 16, null: false
-    t.decimal "amount", precision: 32, scale: 16, null: false
+    t.decimal "price", precision: 36, scale: 18, null: false
+    t.decimal "amount", precision: 36, scale: 18, null: false
     t.bigint "maker_order_id", null: false
     t.bigint "taker_order_id", null: false
     t.string "market_id", limit: 20, null: false
@@ -436,7 +454,7 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.datetime "updated_at", precision: 3, null: false
     t.bigint "maker_id", null: false
     t.bigint "taker_id", null: false
-    t.decimal "total", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "total", precision: 36, scale: 18, default: "0.0", null: false
     t.string "taker_type", limit: 20, default: "", null: false
     t.string "market_type", default: "spot", null: false
     t.index ["created_at"], name: "index_trades_on_created_at"
@@ -469,20 +487,21 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.string "txid"
     t.string "from_address"
     t.string "to_address"
-    t.decimal "amount", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "amount", precision: 36, scale: 18, default: "0.0", null: false
     t.integer "block_number"
     t.integer "txout"
     t.string "status"
     t.json "options"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "fee", precision: 32, scale: 16
+    t.decimal "fee", precision: 36, scale: 18
     t.string "fee_currency_id"
     t.bigint "blockchain_id", null: false
     t.boolean "is_followed", default: false, null: false
     t.integer "to"
     t.integer "from"
     t.integer "kind"
+    t.integer "direction"
     t.index ["blockchain_id", "from"], name: "index_transactions_on_blockchain_id_and_from"
     t.index ["blockchain_id", "kind"], name: "index_transactions_on_blockchain_id_and_kind"
     t.index ["blockchain_id", "to"], name: "index_transactions_on_blockchain_id_and_to"
@@ -510,7 +529,7 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.string "status", limit: 32
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "max_balance", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "max_balance", precision: 36, scale: 18, default: "0.0", null: false
     t.integer "kind", null: false
     t.string "settings_encrypted", limit: 1024
     t.jsonb "balance"
@@ -538,8 +557,8 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
   create_table "withdraw_limits", force: :cascade do |t|
     t.string "group", limit: 32, default: "any", null: false
     t.string "kyc_level", limit: 32, default: "any", null: false
-    t.decimal "limit_24_hour", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "limit_1_month", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "limit_24_hour", precision: 36, scale: 18, default: "0.0", null: false
+    t.decimal "limit_1_month", precision: 36, scale: 18, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["group", "kyc_level"], name: "index_withdraw_limits_on_group_and_kyc_level", unique: true
@@ -550,14 +569,14 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
   create_table "withdraws", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
-    t.decimal "amount", precision: 32, scale: 16, null: false
-    t.decimal "fee", precision: 32, scale: 16, null: false
+    t.decimal "amount", precision: 36, scale: 18, null: false
+    t.decimal "fee", precision: 36, scale: 18, null: false
     t.datetime "created_at", precision: 3, null: false
     t.datetime "updated_at", precision: 3, null: false
     t.datetime "completed_at", precision: 3
     t.citext "txid"
     t.string "aasm_state", limit: 30, null: false
-    t.decimal "sum", precision: 32, scale: 16, null: false
+    t.decimal "sum", precision: 36, scale: 18, null: false
     t.string "type", limit: 30, null: false
     t.citext "tid", null: false
     t.string "rid", limit: 256, null: false
@@ -579,6 +598,7 @@ ActiveRecord::Schema.define(version: 2021_08_25_114751) do
     t.index ["type"], name: "index_withdraws_on_type"
   end
 
+  add_foreign_key "blockchain_nodes", "blockchains"
   add_foreign_key "currencies", "currencies", column: "parent_id"
   add_foreign_key "deposit_spreads", "deposits"
   add_foreign_key "gas_refuels", "blockchains"
