@@ -14,6 +14,17 @@ class EthereumGateway
       @client = client || raise("No gateway client")
     end
 
+    # ex calculate_gas_price
+    def fetch_gas_price
+      client.json_rpc(:eth_gasPrice, []).to_i(16).tap do |gas_price|
+        Rails.logger.info { "Current gas price #{gas_price}" }
+      end
+    end
+
+    def client_version
+      client.json_rpc(:web3_clientVersion)
+    end
+
     private
 
     def build_erc20_transactions(txn_receipt, block_txn, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txouts: nil)
@@ -140,13 +151,6 @@ class EthereumGateway
 
     def logger
       Rails.logger
-    end
-
-    # ex calculate_gas_price
-    def fetch_gas_price
-      client.json_rpc(:eth_gasPrice, []).to_i(16).tap do |gas_price|
-        Rails.logger.info { "Current gas price #{gas_price}" }
-      end
     end
   end
 end

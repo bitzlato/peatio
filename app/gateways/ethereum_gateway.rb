@@ -12,6 +12,11 @@ class EthereumGateway < AbstractGateway
     true
   end
 
+  # Returns SemVer object of client's version
+  def client_version
+    AbstractCommand.new(client).client_version
+  end
+
   def refuel_and_collect!(payment_address)
     refuel_gas!(payment_address.address)
     # TODO подождать пока транзакция придет
@@ -137,9 +142,7 @@ class EthereumGateway < AbstractGateway
 
   def fetch_gas_price
     blockchain.fee_currency.to_money_from_units(
-      TransactionCreator
-      .new(client)
-      .send(:fetch_gas_price)
+      AbstractCommand.new(client).fetch_gas_price
     )
   end
 

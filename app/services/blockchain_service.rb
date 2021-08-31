@@ -105,7 +105,7 @@ class BlockchainService
 
     # NOTE: We use update_column to not change updated_at timestamp
     # because we use it for detecting blockchain configuration changes see Workers::Daemon::Blockchain#run.
-    blockchain.update_column(:height, block_number) if latest_block_number - block_number >= blockchain.min_confirmations
+    blockchain.update_columns height: block_number, height_updated_at: Time.zone.now, client_version: gateway.client_version if latest_block_number - block_number >= blockchain.min_confirmations
   end
 
   private

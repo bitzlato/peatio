@@ -286,7 +286,9 @@ CREATE TABLE public.blockchains (
     enable_invoice boolean DEFAULT false NOT NULL,
     explorer_contract_address character varying,
     client character varying NOT NULL,
-    client_options jsonb DEFAULT '{}'::jsonb NOT NULL
+    client_options jsonb DEFAULT '{}'::jsonb NOT NULL,
+    height_updated_at timestamp without time zone,
+    client_version character varying
 );
 
 
@@ -2838,6 +2840,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210825114751'),
 ('20210826123059'),
 ('20210827173257'),
-('20210829111838');
+('20210829111838'),
+('20210831043113'),
+('20210831045259');
 
 
