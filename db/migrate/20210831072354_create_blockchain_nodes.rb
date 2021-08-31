@@ -3,9 +3,9 @@ class CreateBlockchainNodes < ActiveRecord::Migration[5.2]
     create_table :blockchain_nodes do |t|
       t.references :blockchain, foreign_key: true
       t.string :client, null: false
-      t.string :server_encrypted, null: false
+      t.string :server_encrypted, limit: 1024
       t.bigint :latest_block_number
-      t.timestamp :info_updated_at
+      t.timestamp :server_touched_at
       t.boolean :is_public, null: false, default: false
       t.boolean :has_accounts, null: false, default: false
       t.boolean :use_for_withdraws, null: false, default: false

@@ -89,9 +89,10 @@ ActiveRecord::Schema.define(version: 2021_08_31_072354) do
   create_table "blockchain_nodes", force: :cascade do |t|
     t.bigint "blockchain_id"
     t.string "client", null: false
-    t.string "server_encrypted", null: false
+    t.string "server_encrypted", limit: 1024
+    t.string "false", limit: 1024
     t.bigint "latest_block_number"
-    t.datetime "info_updated_at"
+    t.datetime "server_touched_at"
     t.boolean "is_public", default: false, null: false
     t.boolean "has_accounts", default: false, null: false
     t.boolean "use_for_withdraws", default: false, null: false
