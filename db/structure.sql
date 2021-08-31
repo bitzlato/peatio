@@ -268,6 +268,45 @@ ALTER SEQUENCE public.block_numbers_id_seq OWNED BY public.block_numbers.id;
 
 
 --
+-- Name: blockchain_nodes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.blockchain_nodes (
+    id bigint NOT NULL,
+    blockchain_id bigint,
+    client character varying NOT NULL,
+    server_encrypted character varying NOT NULL,
+    latest_block_number bigint,
+    info_updated_at timestamp without time zone,
+    is_public boolean DEFAULT false NOT NULL,
+    has_accounts boolean DEFAULT false NOT NULL,
+    use_for_withdraws boolean DEFAULT false NOT NULL,
+    archived_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: blockchain_nodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.blockchain_nodes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: blockchain_nodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.blockchain_nodes_id_seq OWNED BY public.blockchain_nodes.id;
+
+
+--
 -- Name: blockchains; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -847,9 +886,9 @@ CREATE TABLE public.payment_addresses (
     details_encrypted character varying(1024),
     member_id bigint,
     remote boolean DEFAULT false NOT NULL,
-    blockchain_id bigint NOT NULL,
     balances jsonb DEFAULT '{}'::jsonb,
-    balances_updated_at timestamp without time zone
+    balances_updated_at timestamp without time zone,
+    blockchain_id bigint NOT NULL
 );
 
 
@@ -1202,8 +1241,8 @@ CREATE TABLE public.wallets (
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
-    plain_settings json,
     enable_invoice boolean DEFAULT false NOT NULL,
+    plain_settings json,
     blockchain_id bigint NOT NULL,
     use_as_fee_source boolean DEFAULT false NOT NULL,
     balance_updated_at timestamp without time zone
@@ -1375,6 +1414,13 @@ ALTER TABLE ONLY public.beneficiaries ALTER COLUMN id SET DEFAULT nextval('publi
 --
 
 ALTER TABLE ONLY public.block_numbers ALTER COLUMN id SET DEFAULT nextval('public.block_numbers_id_seq'::regclass);
+
+
+--
+-- Name: blockchain_nodes id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_nodes ALTER COLUMN id SET DEFAULT nextval('public.blockchain_nodes_id_seq'::regclass);
 
 
 --
@@ -1605,6 +1651,14 @@ ALTER TABLE ONLY public.beneficiaries
 
 ALTER TABLE ONLY public.block_numbers
     ADD CONSTRAINT block_numbers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: blockchain_nodes blockchain_nodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_nodes
+    ADD CONSTRAINT blockchain_nodes_pkey PRIMARY KEY (id);
 
 
 --
@@ -1899,6 +1953,13 @@ CREATE INDEX index_block_numbers_on_blockchain_id ON public.block_numbers USING 
 --
 
 CREATE UNIQUE INDEX index_block_numbers_on_blockchain_id_and_number ON public.block_numbers USING btree (blockchain_id, number);
+
+
+--
+-- Name: index_blockchain_nodes_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_blockchain_nodes_on_blockchain_id ON public.blockchain_nodes USING btree (blockchain_id);
 
 
 --
@@ -2597,6 +2658,14 @@ ALTER TABLE ONLY public.gas_refuels
 
 
 --
+-- Name: blockchain_nodes fk_rails_86c4fbb9f7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_nodes
+    ADD CONSTRAINT fk_rails_86c4fbb9f7 FOREIGN KEY (blockchain_id) REFERENCES public.blockchains(id);
+
+
+--
 -- Name: currencies fk_rails_a7ead03da9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2798,6 +2867,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210722125206'),
 ('20210727101029'),
 ('20210803084921'),
+('20210803134756'),
 ('20210806112457'),
 ('20210806112458'),
 ('20210806131828'),
@@ -2842,6 +2912,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210827173257'),
 ('20210829111838'),
 ('20210831043113'),
-('20210831045259');
+('20210831045259'),
+('20210831072354');
 
 
