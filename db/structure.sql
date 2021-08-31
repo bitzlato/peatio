@@ -274,8 +274,14 @@ ALTER SEQUENCE public.block_numbers_id_seq OWNED BY public.block_numbers.id;
 CREATE TABLE public.blockchain_nodes (
     id bigint NOT NULL,
     blockchain_id bigint,
-    client character varying,
-    server_encrypted character varying,
+    client character varying NOT NULL,
+    server_encrypted character varying NOT NULL,
+    latest_block_number bigint,
+    info_updated_at timestamp without time zone,
+    is_public boolean DEFAULT false NOT NULL,
+    has_accounts boolean DEFAULT false NOT NULL,
+    use_for_withdraws boolean DEFAULT false NOT NULL,
+    archived_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
