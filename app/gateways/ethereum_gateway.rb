@@ -93,6 +93,7 @@ class EthereumGateway < AbstractGateway
     # Transaction.upsert_transaction! transaction, options: { tokens_count: tokens_count }
 
   rescue EthereumGateway::GasRefueler::Error => err
+    report_exception err, true, target_address: target_address, blockchain_key: blockchain.key
     logger.info("Canceled refueling address #{target_address} with #{err}")
   end
 
@@ -158,8 +159,6 @@ class EthereumGateway < AbstractGateway
 
   def latest_block_number
     client.json_rpc(:eth_blockNumber).to_i(16)
-  rescue Ethereum::Client::Error => e
-    raise Peatio::Blockchain::ClientError, e
   end
 
   def fetch_transaction(txid, txout = nil)
