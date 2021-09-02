@@ -81,7 +81,7 @@ class BitzlatoGateway < AbstractGateway
         to_address: to_address,
         cryptocurrency: amount.currency.id.upcase,
         amount: amount.to_d,
-    ).dup.tap do |t|
+    ).dup.tap do |tx|
       tx.currency_id = amount.currency.id
       tx.blockchain_id = blockchain.id
       tx.amount = amount
