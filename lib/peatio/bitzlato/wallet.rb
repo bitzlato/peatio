@@ -33,7 +33,7 @@ module Bitzlato
         { clientProvidedId: clientProvidedId, client: client, cryptocurrency: cryptocurrency, amount: amount, payedBefore: true }
       )
       Peatio::Transaction.new(
-        txid: response[:payment_id]|| raise("No payment ID in response") },
+        txid: response[:payment_id]|| raise("No payment ID in response"),
         to_address: client,
         amount: amount
       ).freeze
