@@ -5,6 +5,14 @@ class Money
     currency.convert_to_base_unit to_d
   end
 
+  # We often use in on loggin this way
+  def as_json
+    {
+      fractional: fractional.to_i,
+      currency_id: currency.id
+    }
+  end
+
   class Currency
     module Loader
       def self.load!(_options = nil)
