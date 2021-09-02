@@ -62,14 +62,11 @@ class Withdrawer
       withdraw.fail!
       logger.warn e.as_json.merge( id: withdraw.id )
     rescue StandardError => e
-      logger.warn id: withdraw.id, message: 'Failed to process withdraw. See exception details below.'
-      report_exception(e)
+      logger.warn id: withdraw.id, message: 'Setting withdraw state to errored.'
+      report_exception e, true, withdraw_id: withdraw.id
       withdraw.err! e
 
       raise e if is_db_connection_error?(e)
-
-      logger.warn id: withdraw.id,
-                   message: 'Setting withdraw state to errored.'
     end
   end
 
