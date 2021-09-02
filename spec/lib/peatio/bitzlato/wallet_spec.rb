@@ -129,13 +129,6 @@ describe Bitzlato::Wallet do
 
 
     context :create_transaction! do
-      let(:source_transaction) {
-        Peatio::Transaction.new(to_address: 1,
-                                amount:     123,
-                                currency_id: 'BTC',
-                                options: { withdrawal_id: 12, tid: 'tid' })
-      }
-
       context :voucher do
         before do
           Bitzlato::Wallet.send(:remove_const, :WITHDRAW_METHOD)
@@ -144,7 +137,7 @@ describe Bitzlato::Wallet do
 
         it 'create withdrawal transaction' do
           wallet.expects(:create_voucher!)
-          wallet.create_transaction!(source_transaction)
+          wallet.create_transaction!(key: 1, to_address: 2, cryptocurrency: 'BTC', amount: 123)
         end
       end
 
@@ -156,7 +149,7 @@ describe Bitzlato::Wallet do
 
         it 'create withdrawal transaction' do
           wallet.expects(:create_payment!)
-          wallet.create_transaction!(source_transaction)
+          wallet.create_transaction!(key: 1, to_address: 2, cryptocurrency: 'BTC', amount: 123)
         end
       end
 
@@ -197,10 +190,9 @@ describe Bitzlato::Wallet do
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
 
-          transaction = wallet.create_voucher!(source_transaction)
+          transaction = wallet.create_voucher!(cryptocurrency: 'BTC', amount: 123)
 
           expect(transaction).to be_a Peatio::Transaction
-          expect(transaction.txout).to be_present
           expect(transaction.hash).to be_present
           expect(transaction.options['voucher']).to be_present
           expect(transaction.options['links']).to be_a(Array)

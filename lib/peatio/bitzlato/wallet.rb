@@ -16,12 +16,12 @@ module Bitzlato
       @logger = ENV.true?('BITZLATO_API_LOGGER')
     end
 
-    def create_transaction!(transaction, options = {})
+    def create_transaction!(key:, to_address:, cryptocurrency: , amount:)
       case WITHDRAW_METHOD
       when 'voucher'
-        create_voucher! transaction, options
+        create_voucher! cryptocurrency: cryptocurrency, amount: amount
       when 'payment'
-        create_payment! transaction, options
+        create_payment! key: key, to_address: to_address, cryptocurrency: cryptocurrency, amount: amount
       else
         raise Peatio::Wallet::ClientError, "Unknown withdraw_polling_method specified (#{WITHDRAW_METHOD})"
       end
@@ -41,20 +41,19 @@ module Bitzlato
       raise Peatio::Wallet::ClientError, e
     end
 
-    def create_voucher!(transaction, options = {})
+    def create_voucher!(cryptocurrency: , amount: )
       voucher = client.post(
         '/api/p2p/vouchers/',
-        { cryptocurrency: transaction.currency_id.upcase, amount: transaction.amount, method: 'crypto', currency: 'USD'}
+        { cryptocurrency: cryptocurrency, amount: amount, method: 'crypto', currency: 'USD'}
       )
 
-      transaction.options.merge!(
-        'voucher' => voucher,
-        'links' => voucher['links'].map { |link| { 'title' => link['type'], 'url' => link['url'] } }
-      )
-
-      transaction.txout = voucher['deepLinkCode']
-      transaction.hash = voucher['deepLinkCode']
-      transaction
+      Peatio::Transaction.new(
+        txid: voucher['deepLinkCode'],
+        options: {
+          'voucher' => voucher,
+          'links' => voucher['links'].map { |link| { 'title' => link['type'], 'url' => link['url'] } }
+        }
+      ).freeze
     rescue Bitzlato::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
