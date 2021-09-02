@@ -73,18 +73,14 @@ class Withdrawer
   private
 
   def push_transaction_to_gateway!(withdraw)
-    transaction = withdraw.blockchain.gateway.
+    withdraw.blockchain.gateway.
       create_transaction!(
         from_address:     wallet.address,
         to_address:       withdraw.to_address,
         amount:           withdraw.money_amount,
         contract_address: withdraw.currency.contract_address,
         secret:           wallet.secret,
-        meta: { withdraw_id: withdraw.id }
+        meta:             { withdraw_tid: withdraw.tid }
     ) || raise("No transaction returned for withdraw (#{withdraw.id})")
-
-    raise "transaction.from_address (#{transaction.from_address})<> wallet.address (#{wallet.address})" unless transaction.from_address == wallet.address
-
-    transaction
   end
 end
