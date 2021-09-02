@@ -29,12 +29,14 @@ module Ethereum
       response = JSON.parse(response.body)
       response['error'].tap { |error| raise ResponseError.new(error['code'], error['message']) if error }
       response.fetch('result')
-    rescue Faraday::Error => e
-      report_exception e, true, method: method
-      raise ConnectionError, e
-    rescue StandardError => e
-      report_exception e, true, method: method
-      raise Error, e
+
+      # We don't want to masquerade errors any more
+    #rescue Faraday::Error => e
+      #report_exception e, true, method: method
+      #raise ConnectionError, e
+    #rescue StandardError => e
+      #report_exception e, true, method: method
+      #raise Error, e
     end
 
     private
