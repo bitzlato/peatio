@@ -47,6 +47,10 @@ class PaymentAddress < ApplicationRecord
     Jobs::Cron::PaymentAddressBalancer.update_balances self
   end
 
+  def collect!
+    blockchain.gateway.collect! self
+  end
+
   def format_address(format)
     blockchain.gateway_class.format_address(address, format)
   end

@@ -45,6 +45,10 @@ class EthereumGateway < AbstractGateway
     (token_currencies + base_currencies).map do |currency|
       amount = balances.fetch(currency)
       next if amount.zero?
+
+      # Skip base currency collection until we have tokens on balance. To have enough gase
+      next if base_currencies.include?(currency) && token_currencies.any?
+
       # TODO Пропускать если стоимость монет меньше чем стоимость газа X2
       logger.info("Collect #{currency.id} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
       transaction = create_transaction!(
