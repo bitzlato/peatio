@@ -167,10 +167,9 @@ describe Bitzlato::Wallet do
             .with( body: "{\"clientProvidedId\":12,\"client\":1,\"cryptocurrency\":\"BTC\",\"amount\":123,\"payedBefore\":true}" )
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
-          transaction = wallet.create_payment!(source_transaction)
+          transaction = wallet.create_payment!(key: 12, to_address: 1, cryptocurrency: 'BTC', amount: 123)
 
           expect(transaction).to be_a Peatio::Transaction
-          expect(transaction.txout).to be_present
           expect(transaction.hash).to be_present
         end
       end

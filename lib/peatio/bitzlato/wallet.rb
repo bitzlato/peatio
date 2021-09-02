@@ -27,15 +27,15 @@ module Bitzlato
       end
     end
 
-    def create_payment!(clientProvidedId:, client:, cryptocurrency:, amount:)
+    def create_payment!(key:, to_address:, cryptocurrency:, amount:)
       response = client.post(
         '/api/gate/v1/payments/create',
-        { clientProvidedId: clientProvidedId, client: client, cryptocurrency: cryptocurrency, amount: amount, payedBefore: true }
+        { clientProvidedId: key, client: to_address, cryptocurrency: cryptocurrency, amount: amount, payedBefore: true }
       )
       Peatio::Transaction.new(
-        txid: response[:payment_id]|| raise("No payment ID in response"),
+        txid: generate_id(response['paymentId'] || raise("No payment ID in response")),
         to_address: client,
-        amount: amount
+        amount: amount,
       ).freeze
     rescue Bitzlato::Client::Error => e
       raise Peatio::Wallet::ClientError, e
