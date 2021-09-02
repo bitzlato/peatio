@@ -35,7 +35,7 @@ describe ::EthereumGateway do
     let(:base_gas_limit) { blockchain.client_options.fetch(:base_gas_limit) }
     let(:gas_factor) { blockchain.client_options.fetch(:gas_factor) }
 
-    it do
+    it 'collects tokens first' do
       Blockchain.any_instance.expects(:fee_wallet).returns hot_wallet
       EthereumGateway::TransactionCreator.
         any_instance.
@@ -50,19 +50,19 @@ describe ::EthereumGateway do
              contract_address: Money::Currency.find!('usdt-erc20').contract_address).
              once.
              returns(peatio_transaction)
-      EthereumGateway::TransactionCreator.
-        any_instance.
-        stubs(:call).
-        with(from_address:  payment_address.address,
-             to_address: hot_wallet.address,
-             amount: 1000000000000000000,
-             secret: nil,
-             gas_factor: 1,
-             gas_limit: base_gas_limit,
-             subtract_fee: true,
-             contract_address: nil).
-             once.
-             returns(peatio_transaction)
+      #EthereumGateway::TransactionCreator.
+        #any_instance.
+        #stubs(:call).
+        #with(from_address:  payment_address.address,
+             #to_address: hot_wallet.address,
+             #amount: 1000000000000000000,
+             #secret: nil,
+             #gas_factor: 1,
+             #gas_limit: base_gas_limit,
+             #subtract_fee: true,
+             #contract_address: nil).
+             #once.
+             #returns(peatio_transaction)
       EthereumGateway.any_instance.expects(:load_balances).returns(balances)
       subject.send(:collect!, payment_address)
     end
