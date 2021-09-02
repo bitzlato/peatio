@@ -38,7 +38,6 @@ class EthereumGateway < AbstractGateway
     # First collect tokens (save base currency to last step for gas)
     token_currencies = balances.filter { |c| c.token? }.keys
     base_currencies = balances.reject { |c| c.token? }.keys
-    base_currencies = [] if Rails.env.production? # TODO
 
     # TODO Сообщать о том что не хватает газа ДО выполнения, так как он потратися
     # Не выводить базовую валюту пока не счету есть токены
@@ -46,15 +45,18 @@ class EthereumGateway < AbstractGateway
     (token_currencies + base_currencies).map do |currency|
       amount = balances.fetch(currency)
       next if amount.zero?
+      # TODO Пропускать если стоимость монет меньше чем стоимость газа X2
       logger.info("Collect #{currency.id} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
       transaction = create_transaction!(
         from_address: payment_address.address,
         to_address: hot_wallet.address,
         amount: amount,
         secret: payment_address.secret,
-        contract_address: currency.contract_address
+        contract_address: currency.contract_address,
+        subtract_fee: currency.contract_address.nil?
       )
       logger.info("Collect transaction created #{transaction.as_json}")
+      transaction.txid
       # TODO Save CollectRecord with transaction dump
     rescue EthereumGateway::TransactionCreator::Error => err
       report_exception err, true, payment_address_id: payment_address.id, currency: currency
@@ -124,7 +126,7 @@ class EthereumGateway < AbstractGateway
                           amount:,
                           secret:,
                           contract_address: nil,
-                          subtract_fee: nil,
+                          subtract_fee: false, # nil means auto
                           meta: {})
 
     raise 'amount must be a Money' unless amount.is_a? Money
