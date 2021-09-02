@@ -23,12 +23,12 @@ class EthereumGateway
       if transaction_amount.positive?
         logger.info("Create gas refueling eth transaction #{gas_wallet_address} -> #{target_address}"\
                     " ethereum_balance: #{ethereum_balance}, tokens_count: #{tokens_count},"\
-                    " gas_price:#{gas_price} gas_limit:#{gas_limit}"\
-                    " transaction amount: #{transaction_amount}")
+                    " gas_price:#{gas_price} gas_limit:#{gas_limit} token_gas_limit:#{token_gas_limit}"\
+                    " transaction amount: #{transaction_amount} = tokens_count * token_gas_limit * gas_price - ethereum_balance")
       else
         logger.info("No reason to create gas refueling eth transaction #{gas_wallet_address} -> #{target_address}"\
                     " ethereum_balance: #{ethereum_balance}, tokens_count: #{tokens_count},"\
-                    " gas_price:#{gas_price} gas_limit:#{gas_limit}"\
+                    " gas_price:#{gas_price} gas_limit:#{gas_limit} token_gas_limit:#{token_gas_limit}"\
                     " transaction amount: #{transaction_amount}")
         raise Balanced
       end

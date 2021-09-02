@@ -81,6 +81,7 @@ class EthereumGateway < AbstractGateway
       .transform_keys { |k| blockchain.currencies.find_by(id: k) || raise("Unknown currency in balance #{k} for #{blockchain.key}") }
       .select { |currency, _balance| currency.token? }
       .count
+    logger.info("Refuel #{target_address} for #{tokens_count} tokens")
     transaction = monefy_transaction(
       EthereumGateway::GasRefueler
       .new(client)
