@@ -36,7 +36,7 @@ describe ::EthereumGateway do
     let(:gas_factor) { blockchain.client_options.fetch(:gas_factor) }
 
     it do
-      Blockchain.any_instance.expects(:hot_wallet).returns hot_wallet
+      Blockchain.any_instance.expects(:fee_wallet).returns hot_wallet
       EthereumGateway::TransactionCreator.
         any_instance.
         stubs(:call).

@@ -18,7 +18,7 @@ class EthereumGateway < AbstractGateway
   end
 
   def refuel_and_collect!(payment_address)
-    refuel_gas!(payment_address.address)
+    refuel_gas!(payment_address)
     # TODO подождать пока транзакция придет
     sleep 60
     collect!(payment_address)
@@ -26,7 +26,7 @@ class EthereumGateway < AbstractGateway
 
   # Collect all tokens and coins from payment_address to hot wallet
   def collect!(payment_address)
-    hot_wallet = blockchain.hot_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
+    hot_wallet = blockchain.fee_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
 
     raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
 
@@ -71,7 +71,9 @@ class EthereumGateway < AbstractGateway
     gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
 
     tokens_count = load_balances(target_address)
-      .select { |currency, balance| currency.token? && balance.positive? }
+      .select { |_currency, balance| balance.positive? }
+      .transform_keys { |k| blockchain.currencies.find_by(id: k) || raise("Unknown currency in balance #{k} for #{blockchain.key}") }
+      .select { |currency, _balance| currency.token? }
       .count
     transaction = monefy_transaction(
       EthereumGateway::GasRefueler
