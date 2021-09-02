@@ -62,7 +62,7 @@ class Deposit < ApplicationRecord
     event(:cancel) { transitions from: %i[submitted invoiced], to: :canceled }
     event(:reject) { transitions from: %i[submitted invoiced], to: :rejected }
     event :accept do
-      transitions from: %i[submitted invoiced], to: :accepted
+      transitions from: %i[submitted invoiced skipped], to: :accepted
       after do
         if currency.coin? && (Peatio::App.config.deposit_funds_locked ||
                               Peatio::App.config.manual_deposit_approval)
