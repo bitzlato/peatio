@@ -276,7 +276,6 @@ CREATE TABLE public.blockchain_nodes (
     blockchain_id bigint,
     client character varying NOT NULL,
     server_encrypted character varying(1024),
-    "false" character varying(1024),
     latest_block_number bigint,
     server_touched_at timestamp without time zone,
     is_public boolean DEFAULT false NOT NULL,
@@ -887,9 +886,9 @@ CREATE TABLE public.payment_addresses (
     details_encrypted character varying(1024),
     member_id bigint,
     remote boolean DEFAULT false NOT NULL,
+    blockchain_id bigint NOT NULL,
     balances jsonb DEFAULT '{}'::jsonb,
-    balances_updated_at timestamp without time zone,
-    blockchain_id bigint NOT NULL
+    balances_updated_at timestamp without time zone
 );
 
 
@@ -1242,8 +1241,8 @@ CREATE TABLE public.wallets (
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
-    enable_invoice boolean DEFAULT false NOT NULL,
     plain_settings json,
+    enable_invoice boolean DEFAULT false NOT NULL,
     blockchain_id bigint NOT NULL,
     use_as_fee_source boolean DEFAULT false NOT NULL,
     balance_updated_at timestamp without time zone
@@ -2868,7 +2867,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210722125206'),
 ('20210727101029'),
 ('20210803084921'),
-('20210803134756'),
 ('20210806112457'),
 ('20210806112458'),
 ('20210806131828'),

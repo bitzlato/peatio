@@ -122,7 +122,8 @@ class EthereumGateway < AbstractGateway
                           amount:,
                           secret:,
                           contract_address: nil,
-                          subtract_fee: nil)
+                          subtract_fee: nil,
+                          meta: {})
 
     raise 'amount must be a Money' unless amount.is_a? Money
     gas_limit = amount.currency.token? ? blockchain.client_options[:token_gas_limit] : blockchain.client_options[:base_gas_limit]
