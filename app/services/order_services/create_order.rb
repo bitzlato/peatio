@@ -29,7 +29,7 @@ module OrderServices
         side: side,
         ord_type: ord_type,
         price: price.to_d,
-        volume: volume.to_i,
+        volume: volume.to_d,
         uuid: uuid,
       )
       order = submit_and_return_order(order)
@@ -96,6 +96,7 @@ module OrderServices
       maker_fee = trading_fee.maker
       taker_fee = trading_fee.taker
       locked_value, order_subclass = nil
+      price = ord_type == 'market' ? nil : price
 
       member_account.with_lock do
         if symbolized_side == :sell
