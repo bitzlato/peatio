@@ -2686,7 +2686,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2909,11 +2909,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210825114229'),
 ('20210825114751'),
 ('20210826123059'),
+('20210827090805'),
 ('20210827173257'),
 ('20210829111838'),
 ('20210831043113'),
 ('20210831045259'),
-('20210831072354'),
-('20210827090805');
+('20210831072354');
 
 
