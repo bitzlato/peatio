@@ -55,7 +55,9 @@ class BitzlatoGateway < AbstractGateway
     client.poll_withdraws.each do |withdraw_info|
       next unless withdraw_info.is_done
       next if withdraw_info.withdraw_id.nil?
-      withdraw = Withdraw.find_by(id: withdraw_info.withdraw_id)
+      withdraw = withdraw_info.withdraw_id.start_with?('TID') ?
+        Withdraw.find_by(tid: withdraw_info.withdraw_id) :
+        Withdraw.find_by(id: withdraw_info.withdraw_id)
       if withdraw.nil?
         Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.withdraw_id} in blockchain #{blockchain.name}")
         next
