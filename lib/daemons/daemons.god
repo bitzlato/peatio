@@ -48,6 +48,10 @@ def daemon(name, options = {})
   end
 end
 
+daemon 'amqp:create_order',
+       script:   'amqp_daemon.rb',
+       arguments: %w[ create_order ]
+
 daemon 'amqp:deposit_collection',
        script:   'amqp_daemon.rb',
        arguments: %w[ deposit_collection ]

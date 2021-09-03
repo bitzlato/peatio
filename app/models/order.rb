@@ -4,7 +4,6 @@
 require 'csv'
 
 class Order < ApplicationRecord
-
   belongs_to :market, ->(order) { where(type: order.market_type) }, foreign_key: :market_id, primary_key: :symbol, required: true
   belongs_to :member, required: true
   attribute :uuid, :uuid if Rails.configuration.database_adapter.downcase != 'PostgreSQL'.downcase
@@ -19,14 +18,13 @@ class Order < ApplicationRecord
   TYPES = %w[market limit].freeze
 
   THIRD_PARTY_ORDER_ACTION_TYPE = {
-    'submit_single' => 0,
-    'cancel_single' => 3,
-    'cancel_bulk' => 4
+    submit_single: 0,
+    cancel_single: 3,
+    cancel_bulk: 4
   }.freeze
 
   belongs_to :ask_currency, class_name: 'Currency', foreign_key: :ask
   belongs_to :bid_currency, class_name: 'Currency', foreign_key: :bid
-  after_commit :trigger_event
 
   validates :market_type, presence: true, inclusion: { in: ->(_o) { Market::TYPES } }
 
@@ -83,23 +81,13 @@ class Order < ApplicationRecord
     parent.table[:state]
   end
 
-  # Single Order can produce multiple Trades with different fee types (maker and taker).
-  # Since we can't predict fee types on order creation step and
-  # Market fees configuration can change we need to store fees on Order creation.
-  after_validation(on: :create, if: ->(o) { o.errors.blank? }) do
-    trading_fee = TradingFee.for(group: member.group, market_id: market_id, market_type: market_type)
-    self.maker_fee = trading_fee.maker
-    self.taker_fee = trading_fee.taker
-  end
+  after_commit :trigger_private_event
 
-  before_create do
-    self.uuid = UUID.generate if uuid.blank?
-  end
-
-  after_commit on: :create do
-    next unless ord_type == 'limit'
-    EventAPI.notify ['market', market_id, 'order_created'].join('.'), \
-      Serializers::EventAPI::OrderCreated.call(self)
+  before_create unless: -> { Rails.env.test? } do
+    raise(
+      ::Account::AccountError,
+      "member_balance > locked = #{member_balance} > #{locked}"
+    ) if member_balance < locked
   end
 
   after_commit on: :update do
@@ -153,7 +141,7 @@ class Order < ApplicationRecord
     def trigger_bulk_cancel_third_party(engine_driver, filters = {})
       AMQP::Queue.publish(engine_driver,
                           data: filters,
-                          type: THIRD_PARTY_ORDER_ACTION_TYPE['cancel_bulk'])
+                          type: THIRD_PARTY_ORDER_ACTION_TYPE[:cancel_bulk])
     end
 
     def to_csv
@@ -171,32 +159,11 @@ class Order < ApplicationRecord
     end
   end
 
-  def submit_order
-    return unless new_record?
-
-    self.locked = self.origin_locked = if ord_type == 'market' && side == 'buy'
-                                         [compute_locked * OrderBid::LOCKING_BUFFER_FACTOR, member_balance].min
-                                       else
-                                         compute_locked
-                                       end
-
-    raise ::Account::AccountError, "member_balance > locked = #{member_balance}>#{locked}" unless member_balance >= locked
-
-    return trigger_third_party_creation unless market.engine.peatio_engine?
-
-    save!
-    AMQP::Queue.enqueue(:order_processor,
-                        { action: 'submit', order: attributes },
-                        { persistent: false })
-  end
-
   def trigger_third_party_creation
-    return unless new_record?
-
     self.uuid ||= UUID.generate
     self.created_at ||= Time.now
 
-    AMQP::Queue.publish(market.engine.driver, data: as_json_for_third_party, type: THIRD_PARTY_ORDER_ACTION_TYPE['submit_single'])
+    AMQP::Queue.publish(market.engine.driver, data: as_json_for_third_party, type: THIRD_PARTY_ORDER_ACTION_TYPE[:submit_single])
   end
 
   def trigger_cancellation
@@ -210,7 +177,7 @@ class Order < ApplicationRecord
   def trigger_third_party_cancellation
     AMQP::Queue.publish(market.engine.driver,
                         data: as_json_for_third_party,
-                        type: THIRD_PARTY_ORDER_ACTION_TYPE['cancel_single'])
+                        type: THIRD_PARTY_ORDER_ACTION_TYPE[:cancel_single])
   end
 
   def trades
@@ -221,7 +188,7 @@ class Order < ApplicationRecord
     origin_locked - locked
   end
 
-  def trigger_event
+  def trigger_private_event
     # skip market type orders, they should not appear on trading-ui
     return unless ord_type == 'limit' || state == 'done'
 
@@ -274,7 +241,8 @@ class Order < ApplicationRecord
   end
 
   def as_json_for_events_processor
-    { id:            id,
+    {
+      id:            id,
       member_id:     member_id,
       member_uid:    member.uid,
       ask:           ask,
@@ -288,20 +256,21 @@ class Order < ApplicationRecord
       maker_fee:     maker_fee,
       taker_fee:     taker_fee,
       locked:        locked,
-      state:         read_attribute_before_type_cast(:state) }
+      state:         read_attribute_before_type_cast(:state)
+    }
   end
 
   def as_json_for_third_party
     {
-        uuid:           uuid,
-        market_id:      market_id,
-        member_uid:     member.uid,
-        origin_volume:  origin_volume,
-        volume:         volume,
-        price:          price,
-        side:           type,
-        type:           ord_type,
-        created_at:     created_at.to_i
+      uuid:          uuid,
+      market_id:     market_id,
+      member_uid:    member.uid,
+      origin_volume: origin_volume,
+      volume:        volume,
+      price:         price,
+      side:          type,
+      type:          ord_type,
+      created_at:    created_at.to_i
     }
   end
 
@@ -357,24 +326,6 @@ class Order < ApplicationRecord
 
   def market_order_validations
     errors.add(:price, 'must not be present') if price.present?
-  end
-
-  FUSE = '0.9'.to_d
-  def estimate_required_funds(price_levels)
-    required_funds = Account::ZERO
-    expected_volume = volume
-
-    until expected_volume.zero? || price_levels.empty?
-      level_price, level_volume = price_levels.shift
-
-      v = [expected_volume, level_volume].min
-      required_funds += yield level_price, v
-      expected_volume -= v
-    end
-
-    raise InsufficientMarketLiquidity if expected_volume.nonzero?
-
-    required_funds
   end
 end
 

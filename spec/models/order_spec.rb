@@ -174,8 +174,8 @@ describe Order, '#done', type: :model do
   let(:order) { order_bid }
   let(:order_bid) { create(:order_bid, :btcusd, price: '1.2'.to_d, volume: '10.0'.to_d) }
   let(:order_ask) { create(:order_ask, :btcusd, price: '1.2'.to_d, volume: '10.0'.to_d) }
-  let(:hold_account) { create_account(:usd, locked: '100.0'.to_d) }
-  let(:expect_account) { create_account(:btc) }
+  let(:hold_account) { create(:account, :usd, locked: '100.0'.to_d) }
+  let(:expect_account) { create(:account, :btc) }
 
   before do
     order_bid.stubs(:hold_account!).returns(hold_account.lock!)
@@ -334,7 +334,7 @@ describe Order, '#record_cancel_operations!' do
   end
 end
 
-describe Order, '#trigger_event' do
+describe Order, '#trigger_private_event' do
 
   context 'trigger pusher event for limit order' do
     let!(:order){ create(:order_ask, :with_deposit_liability) }
@@ -363,7 +363,7 @@ describe Order, '#trigger_event' do
 
     before { ::AMQP::Queue.expects(:enqueue_event).with('private', subject.member.uid, 'order', data) }
 
-    it { subject.trigger_event }
+    it { subject.trigger_private_event }
   end
 
   context 'trigger pusher event for market order' do
@@ -393,11 +393,11 @@ describe Order, '#trigger_event' do
 
     it 'doesnt push event for active market order' do
       ::AMQP::Queue.expects(:enqueue_event).with(:order, data).never
-      subject.trigger_event
+      subject.trigger_private_event
     end
 
     it 'pushes event for completed market order' do
-      subject.expects(:trigger_event)
+      subject.expects(:trigger_private_event)
       subject.update!(state: 'done')
     end
 
@@ -405,7 +405,7 @@ describe Order, '#trigger_event' do
       it do
         subject.update!(state: 'done')
         ::AMQP::Queue.expects(:enqueue_event).with('private', subject.member.uid, 'order', data)
-        subject.trigger_event
+        subject.trigger_private_event
       end
     end
   end

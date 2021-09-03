@@ -49,15 +49,6 @@ class OrderAsk < Order
   def outcome_currency
     ask_currency
   end
-
-  def compute_locked
-    case ord_type
-    when 'limit'
-      volume
-    when 'market'
-      estimate_required_funds(OrderBid.get_depth(market_id)) {|_p, v| v}
-    end
-  end
 end
 
 # == Schema Information

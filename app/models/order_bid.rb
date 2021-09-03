@@ -50,18 +50,6 @@ class OrderBid < Order
   def outcome_currency
     bid_currency
   end
-
-  def compute_locked
-    case ord_type
-    when 'limit'
-      price*volume
-    when 'market'
-      funds = estimate_required_funds(OrderAsk.get_depth(market_id)) {|p, v| p*v }
-      # Maximum funds precision defined in Market::FUNDS_PRECISION.
-      funds.round(Market::FUNDS_PRECISION, BigDecimal::ROUND_UP)
-    end
-  end
-
 end
 
 # == Schema Information

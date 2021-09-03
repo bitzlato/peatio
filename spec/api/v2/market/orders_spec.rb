@@ -327,11 +327,9 @@ describe API::V2::Market::Orders, type: :request do
       Market.find_spot_by_symbol('btcusd').engine.update(driver: "finex-spot")
       AMQP::Queue.expects(:publish)
 
-      expect do
-        api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: '2014' }
-        expect(response).to be_successful
-        expect(response_body['market']).to eq 'btcusd'
-      end.not_to change(OrderAsk, :count)
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: '2014' }
+      expect(response).to be_successful
+      expect(response_body['market']).to eq 'btcusd'
     end
 
     it 'creates a buy order' do
@@ -423,11 +421,11 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'validates enough funds' do
-      old_count = OrderAsk.count
+      OrderAsk.expects(:create!).raises(::Account::AccountError)
+      member.get_account(:btc).update_attributes(balance: 1)
       api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: '2014' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.account.insufficient_balance')
-      expect(OrderAsk.count).to eq old_count
     end
 
     it 'validates price positiveness' do
@@ -479,9 +477,7 @@ describe API::V2::Market::Orders, type: :request do
 
           AMQP::Queue.expects(:publish)
 
-          expect do
-            api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '0.5', ord_type: 'market' }
-          end.not_to change(OrderAsk, :count)
+          api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '0.5', ord_type: 'market' }
 
           expect(response).to be_successful
         end
@@ -510,7 +506,6 @@ describe API::V2::Market::Orders, type: :request do
 
         it 'locks all balance' do
           api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '1', ord_type: 'market' }
-
           expect(Order.find(response_body['id']).locked).to eq member.get_account(:usd).balance
         end
 

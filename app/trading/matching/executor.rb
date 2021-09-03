@@ -172,7 +172,7 @@ module Matching
           else 'order_updated'
           end
 
-        order.trigger_event
+        order.trigger_private_event
         next unless order.ord_type == 'limit' # Skip market orders.
 
         EventAPI.notify ['market', order.market_id, event].join('.'), \

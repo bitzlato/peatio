@@ -167,57 +167,6 @@ describe Matching::Executor do
     end
   end
 
-  context 'maker/taker fee' do
-    # Create two limit orders:
-    # Ask: member_id: alice, market: btcusd, price: 10, volume: 5 - Maker;
-    # Bid: member_id: bob, market: btcusd, price: 10, volume: 5 - Taker;
-
-
-    context 'maker_fee: 1%, taker_fee: 2%' do
-      # Maker_fee: 1%;
-      # Taker_fee: 2%;
-      # Result after exeuction:
-      # Alice get 49.5 usd;
-      # Bob get 4.9 btc;
-      let(:ask) { create(:order_ask, :btcusd, price: price, volume: volume, member: alice) }
-      let(:bid) { create(:order_bid, :btcusd, price: price, volume: volume, member: bob) }
-
-      before do
-        TradingFee.last.update!(maker: 0.01, taker: 0.02)
-        subject.execute!
-      end
-
-      it do
-        expect(ask.member.balance_for(currency: bid.currency, kind: :main)).to eq(49.5)
-        expect(bid.member.balance_for(currency: ask.currency, kind: :main)).to eq(4.9)
-        expect(Operations::Revenue.find_by(currency: bid.currency, member: ask.member).credit).to eq(0.5)
-        expect(Operations::Revenue.find_by(currency: ask.currency, member: bid.member).credit).to eq(0.1)
-      end
-    end
-
-    context 'maker_fee: 0%, taker_fee: 2%' do
-      # Maker_fee: 0%;
-      # Taker_fee: 2%;
-      # Result after exeuction:
-      # Alice get 50.0 usd;
-      # Bob get 4.9 btc;
-      let(:ask) { create(:order_ask, :btcusd, price: price, volume: volume, member: alice) }
-      let(:bid) { create(:order_bid, :btcusd, price: price, volume: volume, member: bob) }
-
-      before do
-        TradingFee.last.update!(maker: 0.0, taker: 0.02)
-        subject.execute!
-      end
-
-      it do
-        expect(ask.member.balance_for(currency: bid.currency, kind: :main)).to eq(50)
-        expect(bid.member.balance_for(currency: ask.currency, kind: :main)).to eq(4.9)
-        expect(Operations::Revenue.find_by(currency: bid.currency, member: ask.member).blank?).to eq(true)
-        expect(Operations::Revenue.find_by(currency: ask.currency, member: bid.member).credit).to eq(0.1)
-      end
-    end
-  end
-
   context 'execution fail' do
     let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btcusd, price: price, volume: volume, member: alice).to_matching_attributes }
     let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btcusd, price: price, volume: volume, member: bob).to_matching_attributes }

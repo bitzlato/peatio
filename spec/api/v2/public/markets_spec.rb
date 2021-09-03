@@ -655,13 +655,7 @@ describe API::V2::Public::Markets, type: :request do
   end
 
   describe 'GET /api/v2/public/markets/#{market}/trades' do
-
-    let(:member) do
-      create(:member, :level_3).tap do |m|
-        m.get_account(:btc).update_attributes(balance: 12.13,   locked: 3.14)
-        m.get_account(:usd).update_attributes(balance: 2014.47, locked: 0)
-      end
-    end
+    let(:member) { create(:member, :level_3) }
 
     let(:ask) do
       create(
@@ -696,6 +690,8 @@ describe API::V2::Public::Markets, type: :request do
     before do
       ask_trade.write_to_influx
       bid_trade.write_to_influx
+      member.get_account(:btc).update_attributes(balance: 12.13,   locked: 3.14)
+      member.get_account(:usd).update_attributes(balance: 2014.47, locked: 0)
     end
 
     it 'returns all recent trades' do
