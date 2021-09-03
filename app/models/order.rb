@@ -85,6 +85,7 @@ class Order < ApplicationRecord
 
   before_destroy do
     raise 'Only rejected or canceled orders can be destroyed' unless %w[cancel reject].include? state
+    raise 'Destroyable order must not have trades' if trades_count.positive?
   end
 
   after_destroy do
