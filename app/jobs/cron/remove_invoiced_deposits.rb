@@ -8,8 +8,8 @@ module Jobs
             deposit.cancel!
             Rails.logger.info("Deposit with id: #{deposit.id} has been transfered to the canceled state")
         end
+        sleep(JOB_TIMEOUT)
       end
-      sleep(JOB_TIMEOUT)
     end
   end
 end
