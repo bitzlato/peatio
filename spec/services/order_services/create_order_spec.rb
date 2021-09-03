@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe OrderServices::CreateOrder do
-  let(:market) { Market.find_spot_by_symbol('btcusd') }
+  let(:market) { Market.find_spot_by_symbol('btc_usd') }
   let(:service) { described_class.new(member: account.member) }
   let(:account) { create(:account, :usd, balance: 10.to_d) }
   let(:default_params) {
@@ -14,16 +14,16 @@ describe OrderServices::CreateOrder do
   }
 
   let!(:ask_orders) do
-    create(:order_ask, :btcusd, price: '200', volume: '10.0', state: :wait)
-    create(:order_ask, :btcusd, price: '102', volume: '10.0', state: :wait)
-    create(:order_ask, :btcusd, price: '101', volume: '10.0', state: :wait)
-    create(:order_ask, :btcusd, price: '100', volume: '10.0', state: :wait)
+    create(:order_ask, :btc_usd, price: '200', volume: '10.0', state: :wait)
+    create(:order_ask, :btc_usd, price: '102', volume: '10.0', state: :wait)
+    create(:order_ask, :btc_usd, price: '101', volume: '10.0', state: :wait)
+    create(:order_ask, :btc_usd, price: '100', volume: '10.0', state: :wait)
   end
   let!(:bid_orders) do
-    create(:order_bid, :btcusd, price: '200', volume: '10.0', state: :wait)
-    create(:order_bid, :btcusd, price: '102', volume: '10.0', state: :wait)
-    create(:order_bid, :btcusd, price: '101', volume: '10.0', state: :wait)
-    create(:order_bid, :btcusd, price: '100', volume: '10.0', state: :wait)
+    create(:order_bid, :btc_usd, price: '200', volume: '10.0', state: :wait)
+    create(:order_bid, :btc_usd, price: '102', volume: '10.0', state: :wait)
+    create(:order_bid, :btc_usd, price: '101', volume: '10.0', state: :wait)
+    create(:order_bid, :btc_usd, price: '100', volume: '10.0', state: :wait)
   end
 
   shared_examples 'creates an order without exceptions' do

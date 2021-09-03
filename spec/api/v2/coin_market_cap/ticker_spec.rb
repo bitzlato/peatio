@@ -3,8 +3,8 @@
 describe API::V2::CoinMarketCap::Ticker, type: :request do
   describe 'GET /api/v2/coinmarketcap/ticker' do
     before do
-      create_list(:order_bid, 5, :btcusd)
-      create_list(:order_ask, 5, :btcusd)
+      create_list(:order_bid, 5, :btc_usd)
+      create_list(:order_ask, 5, :btc_usd)
     end
 
     before(:each) { clear_redis }
@@ -67,7 +67,7 @@ describe API::V2::CoinMarketCap::Ticker, type: :request do
       end
 
       context 'single trade was executed' do
-        let!(:trade) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+        let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
 
         let(:expected_btc_usd_ticker) do
           {
@@ -99,8 +99,8 @@ describe API::V2::CoinMarketCap::Ticker, type: :request do
       end
 
       context 'multiple trades were executed' do
-        let!(:trade1) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
-        let!(:trade2) { create(:trade, :btcusd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+        let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+        let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
 
         let(:expected_btc_usd_ticker) do
           { 'base_id' => 1, 'last_price' => '6.0',

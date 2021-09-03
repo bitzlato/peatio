@@ -10,9 +10,9 @@ describe API::V2::Admin::TradingFees, type: :request do
 
   describe 'GET /trading_fees' do
     before do
-      create(:trading_fee, maker: 0.0005, taker: 0.001, market_id: :btcusd, group: 'vip-0')
+      create(:trading_fee, maker: 0.0005, taker: 0.001, market_id: :btc_usd, group: 'vip-0')
       create(:trading_fee, maker: 0.0008, taker: 0.001, market_id: :any, group: 'vip-0')
-      create(:trading_fee, maker: 0.001, taker: 0.0012, market_id: :btceth, market_type: 'qe', group: :any)
+      create(:trading_fee, maker: 0.001, taker: 0.0012, market_id: :btc_eth, market_type: 'qe', group: :any)
     end
 
     it 'returns all trading fees' do
@@ -28,26 +28,26 @@ describe API::V2::Admin::TradingFees, type: :request do
     end
 
     it 'filters by market_id' do
-      api_get '/api/v2/admin/trading_fees', token: token, params: { market_id: 'btcusd' }
+      api_get '/api/v2/admin/trading_fees', token: token, params: { market_id: 'btc_usd' }
 
       result = JSON.parse(response.body)
-      expect(result.map { |r| r['market_id'] }).to all eq 'btcusd'
+      expect(result.map { |r| r['market_id'] }).to all eq 'btc_usd'
       expect(result.map { |r| r['market_type'] }).to all eq 'spot'
-      expect(result.length).to eq TradingFee.where(market_id: 'btcusd').count
+      expect(result.length).to eq TradingFee.where(market_id: 'btc_usd').count
     end
 
     it 'filters by market_id and market_type' do
-      api_get '/api/v2/admin/trading_fees', token: token, params: { market_id: 'btceth' }
+      api_get '/api/v2/admin/trading_fees', token: token, params: { market_id: 'btc_eth' }
 
       result = JSON.parse(response.body)
       expect(result).to eq []
 
-      api_get '/api/v2/admin/trading_fees', token: token, params: { market_id: 'btceth', market_type: 'qe' }
+      api_get '/api/v2/admin/trading_fees', token: token, params: { market_id: 'btc_eth', market_type: 'qe' }
 
       result = JSON.parse(response.body)
-      expect(result.map { |r| r['market_id'] }).to all eq 'btceth'
+      expect(result.map { |r| r['market_id'] }).to all eq 'btc_eth'
       expect(result.map { |r| r['market_type'] }).to all eq 'qe'
-      expect(result.length).to eq TradingFee.qe.where(market_id: 'btceth').count
+      expect(result.length).to eq TradingFee.qe.where(market_id: 'btc_eth').count
     end
 
     it 'filters by group' do
@@ -69,13 +69,13 @@ describe API::V2::Admin::TradingFees, type: :request do
 
   describe 'POST /trading_fees/new' do
     it 'creates a table with default group' do
-      api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.001, taker: 0.0015, market_id: 'btcusd' }
+      api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.001, taker: 0.0015, market_id: 'btc_usd' }
 
       expect(response).to be_successful
       expect(JSON.parse(response.body)['maker']).to eq('0.001')
       expect(JSON.parse(response.body)['taker']).to eq('0.0015')
       expect(JSON.parse(response.body)['group']).to eq('any')
-      expect(JSON.parse(response.body)['market_id']).to eq('btcusd')
+      expect(JSON.parse(response.body)['market_id']).to eq('btc_usd')
       expect(JSON.parse(response.body)['market_type']).to eq('spot')
     end
 
@@ -91,25 +91,25 @@ describe API::V2::Admin::TradingFees, type: :request do
     end
 
     it 'returns created trading fee table' do
-      api_post '/api/v2/admin/trading_fees/new', token: token, params: { group: 'vip-1', market_id: 'btcusd', maker: 0.001, taker: 0.0015 }
+      api_post '/api/v2/admin/trading_fees/new', token: token, params: { group: 'vip-1', market_id: 'btc_usd', maker: 0.001, taker: 0.0015 }
 
       expect(response).to have_http_status(201)
       expect(JSON.parse(response.body)['maker']).to eq('0.001')
       expect(JSON.parse(response.body)['taker']).to eq('0.0015')
       expect(JSON.parse(response.body)['group']).to eq('vip-1')
-      expect(JSON.parse(response.body)['market_id']).to eq('btcusd')
+      expect(JSON.parse(response.body)['market_id']).to eq('btc_usd')
       expect(JSON.parse(response.body)['market_type']).to eq('spot')
     end
 
     context 'returns created trading fee table without group' do
       it 'returns created trading fee table' do
-        api_post '/api/v2/admin/trading_fees/new', token: token, params: { market_id: 'btcusd', maker: 0.001, taker: 0.0015 }
+        api_post '/api/v2/admin/trading_fees/new', token: token, params: { market_id: 'btc_usd', maker: 0.001, taker: 0.0015 }
 
         expect(response).to have_http_status(201)
         expect(JSON.parse(response.body)['maker']).to eq('0.001')
         expect(JSON.parse(response.body)['taker']).to eq('0.0015')
         expect(JSON.parse(response.body)['group']).to eq('any')
-        expect(JSON.parse(response.body)['market_id']).to eq('btcusd')
+        expect(JSON.parse(response.body)['market_id']).to eq('btc_usd')
         expect(JSON.parse(response.body)['market_type']).to eq('spot')
       end
     end
@@ -138,7 +138,7 @@ describe API::V2::Admin::TradingFees, type: :request do
 
     context 'invalid market_type' do
       it 'returns status 422 and error' do
-        api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.001, taker: 0.0015, market_id: 'btcusd', market_type: 'invalid' }
+        api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.001, taker: 0.0015, market_id: 'btc_usd', market_type: 'invalid' }
 
         expect(response).to have_http_status(422)
         expect(response).to include_api_error('admin.trading_fee.invalid_market_type')
@@ -147,7 +147,7 @@ describe API::V2::Admin::TradingFees, type: :request do
 
     context 'empty maker field' do
       it 'returns status 422 and error' do
-        api_post '/api/v2/admin/trading_fees/new', token: token, params: { taker: 0.0015, group: 'vip-1', market_id: 'btcusd' }
+        api_post '/api/v2/admin/trading_fees/new', token: token, params: { taker: 0.0015, group: 'vip-1', market_id: 'btc_usd' }
 
         expect(response).to have_http_status(422)
         expect(response).to include_api_error('admin.trading_fee.invalid_maker')
@@ -156,7 +156,7 @@ describe API::V2::Admin::TradingFees, type: :request do
 
     context 'empty taker field' do
       it 'returns status 422 and error' do
-        api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.0015, group: 'vip-1', market_id: 'btcusd' }
+        api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.0015, group: 'vip-1', market_id: 'btc_usd' }
 
         expect(response).to have_http_status(422)
         expect(response).to include_api_error('admin.trading_fee.invalid_taker')
@@ -165,7 +165,7 @@ describe API::V2::Admin::TradingFees, type: :request do
 
     context 'invalid maker/taker type' do
       it 'returns status 422 and error' do
-        api_post '/api/v2/admin/trading_fees/new', token: token, params: { taker: -0.1, maker: -0.15, group: 'vip-1', market_id: 'btcusd' }
+        api_post '/api/v2/admin/trading_fees/new', token: token, params: { taker: -0.1, maker: -0.15, group: 'vip-1', market_id: 'btc_usd' }
 
         expect(response).to have_http_status(422)
         expect(response).to include_api_error('admin.trading_fee.invalid_maker')
@@ -175,7 +175,7 @@ describe API::V2::Admin::TradingFees, type: :request do
 
     context 'invalid maker/taker fee' do
       it 'returns status 422 and error' do
-        api_post '/api/v2/admin/trading_fees/new', token: token, params: { taker: 1, maker: 1, group: 'vip-1', market_id: 'btcusd' }
+        api_post '/api/v2/admin/trading_fees/new', token: token, params: { taker: 1, maker: 1, group: 'vip-1', market_id: 'btc_usd' }
 
         expect(response).to have_http_status(422)
         expect(response).to include_api_error('Maker must be less than or equal to 0.5')
@@ -216,13 +216,13 @@ describe API::V2::Admin::TradingFees, type: :request do
     end
 
     it 'returns updated trading fee table with new maker' do
-      api_post '/api/v2/admin/trading_fees/update', token: token, params: { market_id: 'btcusd', id: TradingFee.first.id }
+      api_post '/api/v2/admin/trading_fees/update', token: token, params: { market_id: 'btc_usd', id: TradingFee.first.id }
 
       expect(response).to have_http_status(201)
       expect(JSON.parse(response.body)['maker']).to eq('0.0015')
       expect(JSON.parse(response.body)['taker']).to eq('0.0015')
       expect(JSON.parse(response.body)['group']).to eq('any')
-      expect(JSON.parse(response.body)['market_id']).to eq('btcusd')
+      expect(JSON.parse(response.body)['market_id']).to eq('btc_usd')
     end
 
     it 'returns updated trading fee table with new maker, taker fields' do

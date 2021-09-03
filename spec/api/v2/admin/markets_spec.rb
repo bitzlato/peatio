@@ -7,9 +7,9 @@ describe API::V2::Admin::Markets, type: :request do
   let(:level_3_member_token) { jwt_for(level_3_member) }
 
   describe 'GET /api/v2/admin/markets/:id' do
-    let(:market) { Market.find_spot_by_symbol('btcusd') }
-    let(:spot_market) { Market.find_spot_by_symbol('btceth') }
-    let(:qe_market) { Market.find_qe_by_symbol('btceth') }
+    let(:market) { Market.find_spot_by_symbol('btc_usd') }
+    let(:spot_market) { Market.find_spot_by_symbol('btc_eth') }
+    let(:qe_market) { Market.find_qe_by_symbol('btc_eth') }
 
     it 'returns information about specified market' do
       api_get "/api/v2/admin/markets/#{market.symbol}", token: token
@@ -123,7 +123,7 @@ describe API::V2::Admin::Markets, type: :request do
       expect(response).to be_successful
       expect(response.headers.fetch('Total')).to eq '2'
       expect(result.size).to eq 1
-      expect(result.first['id']).to eq 'btcusd'
+      expect(result.first['id']).to eq 'btc_usd'
 
       api_get '/api/v2/admin/markets', params: { limit: 1, page: 2 }, token: token
       result = JSON.parse(response.body)
@@ -131,7 +131,7 @@ describe API::V2::Admin::Markets, type: :request do
       expect(response).to be_successful
       expect(response.headers.fetch('Total')).to eq '2'
       expect(result.size).to eq 1
-      expect(result.first['id']).to eq 'btceth'
+      expect(result.first['id']).to eq 'btc_eth'
     end
 
     it 'return error in case of not permitted ability' do
@@ -165,7 +165,7 @@ describe API::V2::Admin::Markets, type: :request do
       api_post '/api/v2/admin/markets/new', token: token, params: valid_params
       result = JSON.parse(response.body)
       expect(response).to be_successful
-      expect(result['id']).to eq 'trstbtc'
+      expect(result['id']).to eq 'trst_btc'
       expect(result['type']).to eq 'spot'
       expect(result['engine_id']).to eq Market.last.engine_id
       expect(result['data']).to eq({ 'upstream' => { 'driver' => 'opendax' } })
@@ -175,7 +175,7 @@ describe API::V2::Admin::Markets, type: :request do
       api_post '/api/v2/admin/markets/new', token: token, params: valid_params.merge(type: 'qe')
       result = JSON.parse(response.body)
       expect(response).to be_successful
-      expect(result['id']).to eq 'trstbtc'
+      expect(result['id']).to eq 'trst_btc'
       expect(result['type']).to eq 'qe'
       expect(result['engine_id']).to eq Market.last.engine_id
       expect(result['data']).to eq({ 'upstream' => { 'driver' => 'opendax' } })
@@ -185,7 +185,7 @@ describe API::V2::Admin::Markets, type: :request do
       api_post '/api/v2/admin/markets/new', token: token, params: valid_params.except(:engine_id).merge(engine_name: engine.name)
       result = JSON.parse(response.body)
       expect(response).to be_successful
-      expect(result['id']).to eq 'trstbtc'
+      expect(result['id']).to eq 'trst_btc'
       expect(result['engine_id']).to eq Market.last.engine_id
       expect(result['data']).to eq({ 'upstream' => { 'driver' => 'opendax' } })
     end

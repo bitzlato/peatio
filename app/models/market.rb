@@ -228,6 +228,6 @@ class Market < ApplicationRecord
   private
 
   def generate_symbol
-    "#{base_currency.remove('-')}_#{quote_currency.remove('-')}".downcase
+    "#{base_currency.to_s.remove('-')}_#{quote_currency.to_s.remove('-')}".downcase
   end
 end

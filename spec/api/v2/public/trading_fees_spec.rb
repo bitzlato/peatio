@@ -6,10 +6,10 @@ describe API::V2::Public::TradingFees, type: :request do
   before(:each) { clear_redis }
   describe 'GET /trading_fees' do
     before do
-      create(:trading_fee, maker: 0.0005, taker: 0.001, market_id: :btcusd, group: 'vip-0')
+      create(:trading_fee, maker: 0.0005, taker: 0.001, market_id: :btc_usd, group: 'vip-0')
       create(:trading_fee, maker: 0.0008, taker: 0.001, market_id: :any, group: 'vip-0')
-      create(:trading_fee, maker: 0.001, taker: 0.0012, market_id: :btcusd, group: :any)
-      create(:trading_fee, maker: 0.001, taker: 0.0012, market_id: :btceth, market_type: 'qe', group: :any)
+      create(:trading_fee, maker: 0.001, taker: 0.0012, market_id: :btc_usd, group: :any)
+      create(:trading_fee, maker: 0.001, taker: 0.0012, market_id: :btc_eth, market_type: 'qe', group: :any)
     end
 
     it 'returns all trading fees' do
@@ -25,11 +25,11 @@ describe API::V2::Public::TradingFees, type: :request do
     end
 
     it 'filters by market_id' do
-      api_get '/api/v2/public/trading_fees', params: { market_id: 'btcusd' }
+      api_get '/api/v2/public/trading_fees', params: { market_id: 'btc_usd' }
 
       result = JSON.parse(response.body)
-      expect(result.map { |r| r['market_id'] }).to all eq 'btcusd'
-      expect(result.length).to eq TradingFee.spot.where(market_id: 'btcusd').count
+      expect(result.map { |r| r['market_id'] }).to all eq 'btc_usd'
+      expect(result.length).to eq TradingFee.spot.where(market_id: 'btc_usd').count
     end
 
     it 'filters by group' do

@@ -9,7 +9,7 @@ module API
           requires :market_pair,
                    type: String,
                    desc: 'A pair such as "LTC_BTC"',
-                   coerce_with: ->(name) { name.strip.split('_').join.downcase }
+                   coerce_with: ->(name) { name.strip.downcase }
           optional :depth,
                    type: { value: Integer, message: 'coinmarketcap.market_depth.non_integer_depth' },
                    values: { value: 0..500, message: 'coinmarketcap.market_depth.invalid_depth' },

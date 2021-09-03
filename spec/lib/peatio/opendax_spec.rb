@@ -4,8 +4,8 @@ RSpec.describe Peatio::Upstream::Opendax do
   let(:upstream_opendax_config) do
     {
       "driver": 'opendax',
-      "source": 'btcusd',
-      "target": 'btcusd',
+      "source": 'btc_usd',
+      "target": 'btc_usd',
       "rest": 'http://localhost',
       "websocket": 'wss://localhost'
     }.stringify_keys
@@ -15,7 +15,7 @@ RSpec.describe Peatio::Upstream::Opendax do
 
   let(:msg) do
     {
-      'btcusd.trades' =>
+      'btc_usd.trades' =>
       { 'trades' =>
         [{ 'tid' => 247_646_537,
            'taker_type' => 'buy',
@@ -29,7 +29,7 @@ RSpec.describe Peatio::Upstream::Opendax do
     {
       'success' =>
       { 'message' => 'subscribed',
-        'streams' => ['btcusd.trades'] }
+        'streams' => ['btc_usd.trades'] }
     }
   end
 

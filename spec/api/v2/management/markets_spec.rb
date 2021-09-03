@@ -18,7 +18,7 @@ describe API::V2::Management::Markets, type: :request do
 
     let(:data) { {} }
     let(:signers) { %i[alex jeff] }
-    let(:market) { Market.find_spot_by_symbol(:btcusd) }
+    let(:market) { Market.find_spot_by_symbol(:btc_usd) }
     let!(:engine) { create(:engine) }
 
     it 'should validate min_price param' do
@@ -110,7 +110,7 @@ describe API::V2::Management::Markets, type: :request do
     end
 
     it 'should update engine_id' do
-      market = Market.find_qe_by_symbol('btceth')
+      market = Market.find_qe_by_symbol('btc_eth')
       prev_engine_id = market.engine_id
       data.merge!(id: market.symbol, type: 'qe', engine_id: engine.id)
       request
@@ -169,7 +169,7 @@ describe API::V2::Management::Markets, type: :request do
 
     let(:signers) { %i[alex jeff] }
 
-    let(:market) { Market.find_by(symbol: 'btcusd') }
+    let(:market) { Market.find_by(symbol: 'btc_usd') }
 
     it 'returns information about specified market' do
       request
@@ -226,7 +226,7 @@ describe API::V2::Management::Markets, type: :request do
         request
         result = JSON.parse(response.body)
         expect(response).to be_successful
-        expect(result['id']).to eq 'trstbtc'
+        expect(result['id']).to eq 'trst_btc'
         expect(result['engine_id']).to eq Market.last.engine_id
       end
     end
@@ -237,7 +237,7 @@ describe API::V2::Management::Markets, type: :request do
         request
         result = JSON.parse(response.body)
         expect(response).to be_successful
-        expect(result['id']).to eq 'trstbtc'
+        expect(result['id']).to eq 'trst_btc'
         expect(result['engine_id']).to eq Market.last.engine_id
       end
     end

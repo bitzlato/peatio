@@ -9,7 +9,7 @@ describe TradingFee, 'Relationships' do
     end
 
     context 'existing market_id' do
-      subject { build(:trading_fee, market_id: :btcusd) }
+      subject { build(:trading_fee, market_id: :btc_usd) }
       it { expect(subject.valid?).to be_truthy }
     end
 
@@ -25,67 +25,67 @@ describe TradingFee, 'Validations' do
 
   context 'market_type presence' do
     context 'nil market_type' do
-      subject { build(:trading_fee, market_id: :btceth, market_type: '') }
+      subject { build(:trading_fee, market_id: :btc_eth, market_type: '') }
       it { expect(subject.valid?).to be_falsey }
     end
   end
 
   context 'market_type inclusion' do
     context 'nil market_type' do
-      subject { build(:trading_fee, market_id: :btceth, market_type: 'invalid') }
+      subject { build(:trading_fee, market_id: :btc_eth, market_type: 'invalid') }
       it { expect(subject.valid?).to be_falsey }
     end
   end
 
   context 'group presence' do
     context 'nil group' do
-      subject { build(:trading_fee, market_id: :btceth, group: nil) }
+      subject { build(:trading_fee, market_id: :btc_eth, group: nil) }
       it { expect(subject.valid?).to be_falsey }
     end
 
     context 'empty string group' do
-      subject { build(:trading_fee, market_id: :btceth, group: '') }
+      subject { build(:trading_fee, market_id: :btc_eth, group: '') }
       it { expect(subject.valid?).to be_falsey }
     end
   end
 
   context 'group uniqueness' do
     context 'different markets' do
-      before { create(:trading_fee, market_id: :btcusd, group: 'vip-1') }
+      before { create(:trading_fee, market_id: :btc_usd, group: 'vip-1') }
 
       context 'same group' do
-        subject { build(:trading_fee, market_id: :btceth, group: 'vip-1') }
+        subject { build(:trading_fee, market_id: :btc_eth, group: 'vip-1') }
         it { expect(subject.valid?).to be_truthy }
       end
 
       context 'different group' do
-        subject { build(:trading_fee, market_id: :btceth, group: 'vip-2') }
+        subject { build(:trading_fee, market_id: :btc_eth, group: 'vip-2') }
         it { expect(subject.valid?).to be_truthy }
       end
 
       context ':any group' do
-        before { create(:trading_fee, market_id: :btcusd, group: :any) }
-        subject { build(:trading_fee, market_id: :btceth, group: :any) }
+        before { create(:trading_fee, market_id: :btc_usd, group: :any) }
+        subject { build(:trading_fee, market_id: :btc_eth, group: :any) }
         it { expect(subject.valid?).to be_truthy }
       end
     end
 
     context 'same market' do
-      before { create(:trading_fee, market_id: :btcusd, group: 'vip-1') }
+      before { create(:trading_fee, market_id: :btc_usd, group: 'vip-1') }
 
       context 'same group' do
-        subject { build(:trading_fee, market_id: :btcusd, group: 'vip-1') }
+        subject { build(:trading_fee, market_id: :btc_usd, group: 'vip-1') }
         it { expect(subject.valid?).to be_falsey }
       end
 
       context 'different group' do
-        subject { build(:trading_fee, market_id: :btcusd, group: 'vip-2') }
+        subject { build(:trading_fee, market_id: :btc_usd, group: 'vip-2') }
         it { expect(subject.valid?).to be_truthy }
       end
 
       context ':any group' do
-        before { create(:trading_fee, market_id: :btcusd, group: :any) }
-        subject { build(:trading_fee, market_id: :btcusd, group: :any) }
+        before { create(:trading_fee, market_id: :btc_usd, group: :any) }
+        subject { build(:trading_fee, market_id: :btc_usd, group: :any) }
         it { expect(subject.valid?).to be_falsey }
       end
     end
@@ -137,12 +137,12 @@ describe TradingFee, 'Validations' do
 
   context 'market_id inclusion in' do
     context 'invalid market_id' do
-      subject { build(:trading_fee, market_id: :ethusd) }
+      subject { build(:trading_fee, market_id: :eth_usd) }
       it { expect(subject.valid?).to be_falsey }
     end
 
     context 'valid trading_fee' do
-      subject { build(:trading_fee, market_id: :btcusd) }
+      subject { build(:trading_fee, market_id: :btc_usd) }
       it { expect(subject.valid?).to be_truthy }
     end
   end
@@ -156,18 +156,18 @@ describe TradingFee, 'Class Methods' do
 
     context 'get trading_fee with marker_id and group' do
       before do
-        create(:trading_fee, market_id: :btcusd, group: 'vip-0')
+        create(:trading_fee, market_id: :btc_usd, group: 'vip-0')
         create(:trading_fee, market_id: :any, group: 'vip-0')
-        create(:trading_fee, market_id: :btcusd, group: :any)
+        create(:trading_fee, market_id: :btc_usd, group: :any)
         create(:trading_fee, market_id: :any, group: :any)
       end
 
-      let(:order) { Order.new(member: member, market_id: :btcusd) }
+      let(:order) { Order.new(member: member, market_id: :btc_usd) }
       subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
 
       it do
         expect(subject).to be_truthy
-        expect(subject.market_id).to eq('btcusd')
+        expect(subject.market_id).to eq('btc_usd')
         expect(subject.group).to eq('vip-0')
       end
     end
@@ -175,16 +175,16 @@ describe TradingFee, 'Class Methods' do
     context 'get trading_fee with group' do
       before do
         create(:trading_fee, market_id: :any, group: 'vip-1')
-        create(:trading_fee, market_id: :btcusd, group: :any)
+        create(:trading_fee, market_id: :btc_usd, group: :any)
         create(:trading_fee, market_id: :any, group: :any)
       end
 
-      let(:order) { Order.new(member: member, market_id: :btcusd) }
+      let(:order) { Order.new(member: member, market_id: :btc_usd) }
       subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
 
       it do
         expect(subject).to be_truthy
-        expect(subject.market_id).to eq('btcusd')
+        expect(subject.market_id).to eq('btc_usd')
         expect(subject.group).to eq('any')
       end
     end
@@ -192,11 +192,11 @@ describe TradingFee, 'Class Methods' do
     context 'get trading_fee with market_id' do
       before do
         create(:trading_fee, market_id: :any, group: 'vip-0')
-        create(:trading_fee, market_id: :btcusd, group: :any)
+        create(:trading_fee, market_id: :btc_usd, group: :any)
         create(:trading_fee, market_id: :any, group: :any)
       end
 
-      let(:order) { Order.new(member: member, market_id: :btceth) }
+      let(:order) { Order.new(member: member, market_id: :btc_eth) }
       subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
 
       it do
@@ -209,11 +209,11 @@ describe TradingFee, 'Class Methods' do
     context 'get default trading_fee' do
       before do
         create(:trading_fee, market_id: :any, group: 'vip-1')
-        create(:trading_fee, market_id: :btcusd, group: :any)
+        create(:trading_fee, market_id: :btc_usd, group: :any)
         create(:trading_fee, market_id: :any, group: :any)
       end
 
-      let(:order) { Order.new(member: member, market_id: :btceth) }
+      let(:order) { Order.new(member: member, market_id: :btc_eth) }
       subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
 
       it do
@@ -224,7 +224,7 @@ describe TradingFee, 'Class Methods' do
     end
 
     context 'get default trading_fee (doesnt create it)' do
-      let(:order) { Order.new(member: member, market_id: :btceth) }
+      let(:order) { Order.new(member: member, market_id: :btc_eth) }
       subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
 
       it do

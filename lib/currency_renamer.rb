@@ -72,6 +72,7 @@ class CurrencyRenamer
         puts "Move #{model} from #{old_id} to #{new_id}"
         model.where(currency_id: old_id).update_all currency_id: new_id
       end
+      Transaction.where(fee_currency_id: old_id).update_all fee_currency_id: new_id
       puts '---'
     end
   end

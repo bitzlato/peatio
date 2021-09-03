@@ -4,7 +4,7 @@
 describe Matching::Executor do
   let(:alice)  { who_is_billionaire }
   let(:bob)    { who_is_billionaire }
-  let(:market) { Market.find_spot_by_symbol('btcusd') }
+  let(:market) { Market.find_spot_by_symbol('btc_usd') }
   let(:price)  { 10.to_d }
   let(:volume) { 5.to_d }
 
@@ -23,8 +23,8 @@ describe Matching::Executor do
   end
 
   context 'invalid volume' do
-    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btcusd, price: price, volume: volume, member: alice).to_matching_attributes }
-    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btcusd, price: price, volume: 3.to_d, member: bob).to_matching_attributes }
+    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btc_usd, price: price, volume: volume, member: alice).to_matching_attributes }
+    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btc_usd, price: price, volume: 3.to_d, member: bob).to_matching_attributes }
 
     it 'should raise error' do
       expect { subject.execute! }.to raise_error(Matching::TradeExecutionError)
@@ -32,8 +32,8 @@ describe Matching::Executor do
   end
 
   context 'invalid bid price' do
-    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btcusd, price: price, volume: volume, member: alice).to_matching_attributes }
-    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btcusd, price: price - 1, volume: volume, member: bob).to_matching_attributes }
+    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btc_usd, price: price, volume: volume, member: alice).to_matching_attributes }
+    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btc_usd, price: price - 1, volume: volume, member: bob).to_matching_attributes }
 
     it 'should raise error' do
       expect { subject.execute! }.to raise_error(Matching::TradeExecutionError)
@@ -42,8 +42,8 @@ describe Matching::Executor do
 
 
   context 'invalid ask price' do
-    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btcusd, price: price + 1, volume: volume, member: alice).to_matching_attributes }
-    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btcusd, price: price, volume: volume, member: bob).to_matching_attributes }
+    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btc_usd, price: price + 1, volume: volume, member: alice).to_matching_attributes }
+    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btc_usd, price: price, volume: volume, member: bob).to_matching_attributes }
 
     it 'should raise error' do
       expect { subject.execute! }.to raise_error(Matching::TradeExecutionError)
@@ -51,8 +51,8 @@ describe Matching::Executor do
   end
 
   context 'full execution' do
-    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btcusd, price: price, volume: volume, member: alice).to_matching_attributes }
-    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btcusd, price: price, volume: volume, member: bob).to_matching_attributes }
+    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btc_usd, price: price, volume: volume, member: alice).to_matching_attributes }
+    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btc_usd, price: price, volume: volume, member: bob).to_matching_attributes }
 
     it 'should create trade' do
       expect do
@@ -89,8 +89,8 @@ describe Matching::Executor do
   end
 
   context 'partial ask execution' do
-    let(:ask) { create(:order_ask, :btcusd, price: price, volume: 7.to_d, member: alice) }
-    let(:bid) { create(:order_bid, :btcusd, price: price, volume: 5.to_d, member: bob) }
+    let(:ask) { create(:order_ask, :btc_usd, price: price, volume: 7.to_d, member: alice) }
+    let(:bid) { create(:order_bid, :btc_usd, price: price, volume: 5.to_d, member: bob) }
 
     it 'should set bid to done only' do
       subject.execute!
@@ -101,8 +101,8 @@ describe Matching::Executor do
   end
 
   context 'partial bid execution' do
-    let(:ask) { create(:order_ask, :btcusd, price: price, volume: 5.to_d, member: alice) }
-    let(:bid) { create(:order_bid, :btcusd, price: price, volume: 7.to_d, member: bob) }
+    let(:ask) { create(:order_ask, :btc_usd, price: price, volume: 5.to_d, member: alice) }
+    let(:bid) { create(:order_bid, :btc_usd, price: price, volume: 7.to_d, member: bob) }
 
     it 'should set ask to done only' do
       subject.execute!
@@ -113,8 +113,8 @@ describe Matching::Executor do
   end
 
   context 'partially filled market order whose locked fund run out' do
-    let(:ask) { create(:order_ask, :btcusd, price: '2.0'.to_d, volume: '3.0'.to_d, member: alice) }
-    let(:bid) { create(:order_bid, :btcusd, price: nil, ord_type: 'market', volume: '2.0'.to_d, locked: '3.0'.to_d, member: bob) }
+    let(:ask) { create(:order_ask, :btc_usd, price: '2.0'.to_d, volume: '3.0'.to_d, member: alice) }
+    let(:bid) { create(:order_bid, :btc_usd, price: nil, ord_type: 'market', volume: '2.0'.to_d, locked: '3.0'.to_d, member: bob) }
 
     it 'should cancel the market order' do
       executor = Matching::Executor.new(
@@ -135,8 +135,8 @@ describe Matching::Executor do
   end
 
   context 'unlock not used funds' do
-    let(:ask) { create(:order_ask, :btcusd, price: price - 1, volume: 7.to_d, member: alice) }
-    let(:bid) { create(:order_bid, :btcusd, price: price, volume: volume, member: bob) }
+    let(:ask) { create(:order_ask, :btc_usd, price: price - 1, volume: 7.to_d, member: alice) }
+    let(:bid) { create(:order_bid, :btc_usd, price: price, volume: volume, member: bob) }
 
     subject do
       Matching::Executor.new(
@@ -168,8 +168,8 @@ describe Matching::Executor do
   end
 
   context 'execution fail' do
-    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btcusd, price: price, volume: volume, member: alice).to_matching_attributes }
-    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btcusd, price: price, volume: volume, member: bob).to_matching_attributes }
+    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btc_usd, price: price, volume: volume, member: alice).to_matching_attributes }
+    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btc_usd, price: price, volume: volume, member: bob).to_matching_attributes }
 
     it 'should not create trade' do
       # set locked funds to 0 so strike will fail

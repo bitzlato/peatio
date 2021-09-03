@@ -9,7 +9,7 @@ module API
           requires :market_pair,
                    type: String,
                    desc: 'A pair such as "LTC_BTC"',
-                   coerce_with: ->(name) { name.strip.split('_').join.downcase }
+                   coerce_with: ->(name) { name.strip.downcase }
         end
         get "/trades/:market_pair" do
           market = ::Market.find_spot_by_symbol(params[:market_pair])

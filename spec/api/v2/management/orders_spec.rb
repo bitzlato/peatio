@@ -14,19 +14,19 @@ describe API::V2::Management::Orders, type: :request do
         write_orders: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] }
       }
 
-    Market.find_spot_by_symbol('btceth').update!(engine: finex_engine)
+    Market.find_spot_by_symbol('btc_eth').update!(engine: finex_engine)
   end
 
   describe 'POST /api/v2/management/orders' do
     before do
-      create(:order_bid, :btcusd, member: member1, state: Order::CANCEL)
-      create(:order_ask, :btcusd, member: member1, state: Order::WAIT)
-      create(:order_ask, :btceth, member: member1, state: Order::DONE)
-      create(:order_ask, :btceth, member: member1, state: Order::WAIT)
-      create(:order_ask, :btceth_qe, member: member1, state: Order::DONE)
-      create(:order_bid, :btcusd, member: member2, state: Order::CANCEL)
-      create(:order_ask, :btcusd, member: member2, state: Order::WAIT)
-      create(:order_ask, :btceth, member: member2, state: Order::DONE)
+      create(:order_bid, :btc_usd, member: member1, state: Order::CANCEL)
+      create(:order_ask, :btc_usd, member: member1, state: Order::WAIT)
+      create(:order_ask, :btc_eth, member: member1, state: Order::DONE)
+      create(:order_ask, :btc_eth, member: member1, state: Order::WAIT)
+      create(:order_ask, :btc_eth_qe, member: member1, state: Order::DONE)
+      create(:order_bid, :btc_usd, member: member2, state: Order::CANCEL)
+      create(:order_ask, :btc_usd, member: member2, state: Order::WAIT)
+      create(:order_ask, :btc_eth, member: member2, state: Order::DONE)
     end
 
     def request
@@ -61,7 +61,7 @@ describe API::V2::Management::Orders, type: :request do
       let(:data) do
         {
           uid: member1.uid,
-          market: 'btceth',
+          market: 'btc_eth',
           state: 'wait',
           ord_type: 'limit'
         }
@@ -73,7 +73,7 @@ describe API::V2::Management::Orders, type: :request do
         expect(response).to have_http_status 200
         expect(response_body.pluck('member_id').uniq).to eq([member1.id])
         expect(response_body.pluck('state').uniq).to eq(['wait'])
-        expect(response_body.pluck('market').uniq).to eq(['btceth'])
+        expect(response_body.pluck('market').uniq).to eq(['btc_eth'])
         expect(response_body.pluck('market_type').uniq).to eq(['spot'])
         expect(response_body.pluck('ord_type').uniq).to eq(['limit'])
       end
@@ -86,7 +86,7 @@ describe API::V2::Management::Orders, type: :request do
         expect(response).to have_http_status 200
         expect(response_body.pluck('member_id').uniq).to eq([member1.id])
         expect(response_body.pluck('state').uniq).to eq(['done'])
-        expect(response_body.pluck('market').uniq).to eq(['btceth'])
+        expect(response_body.pluck('market').uniq).to eq(['btc_eth'])
         expect(response_body.pluck('market_type').uniq).to eq(['qe'])
         expect(response_body.pluck('ord_type').uniq).to eq(['limit'])
       end
@@ -132,8 +132,8 @@ describe API::V2::Management::Orders, type: :request do
   end
 
   describe 'POST /api/v2/management/orders/:id/cancel' do
-    let!(:peatio_order) { create(:order_ask, :btcusd, member: member1, state: Order::WAIT) }
-    let!(:third_party_order) { create(:order_ask, :btceth, member: member1, state: Order::WAIT) }
+    let!(:peatio_order) { create(:order_ask, :btc_usd, member: member1, state: Order::WAIT) }
+    let!(:third_party_order) { create(:order_ask, :btc_eth, member: member1, state: Order::WAIT) }
 
     def request(order_id)
       post_json "/api/v2/management/orders/#{order_id}/cancel", multisig_jwt_management_api_v1({ data: data }, *signers)
@@ -168,10 +168,10 @@ describe API::V2::Management::Orders, type: :request do
   end
 
   describe 'POST /api/v2/management/orders/cancel' do
-    let!(:member1_peatio_order) {  create(:order_ask, :btcusd, member: member1, state: Order::WAIT) }
-    let!(:member2_peatio_order) {  create(:order_ask, :btcusd, member: member2, state: Order::WAIT) }
-    let!(:member1_third_party_order) {  create(:order_ask, :btceth, member: member1, state: Order::WAIT) }
-    let!(:member2_third_party_order) {  create(:order_ask, :btceth, member: member2, state: Order::WAIT) }
+    let!(:member1_peatio_order) {  create(:order_ask, :btc_usd, member: member1, state: Order::WAIT) }
+    let!(:member2_peatio_order) {  create(:order_ask, :btc_usd, member: member2, state: Order::WAIT) }
+    let!(:member1_third_party_order) {  create(:order_ask, :btc_eth, member: member1, state: Order::WAIT) }
+    let!(:member2_third_party_order) {  create(:order_ask, :btc_eth, member: member2, state: Order::WAIT) }
 
     def request
       post_json '/api/v2/management/orders/cancel', multisig_jwt_management_api_v1({ data: data }, *signers)
@@ -182,22 +182,22 @@ describe API::V2::Management::Orders, type: :request do
     context 'peatio order cancel' do
 
       it 'cancels the orders on peatio spot market' do
-        data[:market] = 'btcusd'
+        data[:market] = 'btc_usd'
 
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: member1_peatio_order.to_matching_attributes)
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: member2_peatio_order.to_matching_attributes)
-        AMQP::Queue.expects(:publish).with(finex_engine.driver, data: { market_id: 'btcusd' }, type: 4).never
+        AMQP::Queue.expects(:publish).with(finex_engine.driver, data: { market_id: 'btc_usd' }, type: 4).never
 
         request
         expect(response).to have_http_status 204
       end
 
       it 'cancels the orders on peatio spot market' do
-        data[:market] = 'btcusd'
+        data[:market] = 'btc_usd'
         data[:uid] = member1.uid
 
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: member1_peatio_order.to_matching_attributes)
-        AMQP::Queue.expects(:publish).with(finex_engine.driver, data: { market_id: 'btcusd' }, type: 4).never
+        AMQP::Queue.expects(:publish).with(finex_engine.driver, data: { market_id: 'btc_usd' }, type: 4).never
 
         request
         expect(response).to have_http_status 204
@@ -207,22 +207,22 @@ describe API::V2::Management::Orders, type: :request do
 
     context 'third party orders cancel' do
       it 'cancels the orders on third party market' do
-        data[:market] = 'btceth'
+        data[:market] = 'btc_eth'
 
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: member1_peatio_order.to_matching_attributes).never
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: member2_peatio_order.to_matching_attributes).never
-        AMQP::Queue.expects(:publish).with(finex_engine.driver, data: { market_id: 'btceth', market_type: 'spot' }, type: 4)
+        AMQP::Queue.expects(:publish).with(finex_engine.driver, data: { market_id: 'btc_eth', market_type: 'spot' }, type: 4)
 
         request
         expect(response).to have_http_status 204
       end
 
       it 'cancels the orders on third party market' do
-        data[:market] = 'btceth'
+        data[:market] = 'btc_eth'
         data[:uid] = member1.uid
 
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: member1_peatio_order.to_matching_attributes).never
-        AMQP::Queue.expects(:publish).with(finex_engine.driver, data: { market_id: 'btceth', market_type: 'spot', member_uid: member1.uid }, type: 4)
+        AMQP::Queue.expects(:publish).with(finex_engine.driver, data: { market_id: 'btc_eth', market_type: 'spot', member_uid: member1.uid }, type: 4)
 
         request
         expect(response).to have_http_status 204
@@ -241,7 +241,7 @@ describe API::V2::Management::Orders, type: :request do
 
       context 'invalid uid' do
         it 'returns status 422 and error' do
-          data[:market] = 'btceth'
+          data[:market] = 'btc_eth'
           data[:uid] = 'invalid_uid'
           request
 

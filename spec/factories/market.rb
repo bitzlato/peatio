@@ -3,8 +3,8 @@
 FactoryBot.define do
   factory :market do
     engine { create(:engine) }
-    trait :btcusd do
-      symbol            { 'btcusd' }
+    trait :btc_usd do
+      symbol            { 'btc_usd' }
       type              { 'spot' }
       base_currency     { 'btc' }
       quote_currency    { 'usd' }
@@ -16,8 +16,8 @@ FactoryBot.define do
       state             { :enabled }
     end
 
-    trait :btceth do
-      symbol            { 'btceth' }
+    trait :btc_eth do
+      symbol            { 'btc_eth' }
       type              { 'spot' }
       base_currency     { 'btc' }
       quote_currency    { 'eth' }
@@ -29,8 +29,8 @@ FactoryBot.define do
       state             { :enabled }
     end
 
-    trait :btceur do
-      symbol            { 'btceur' }
+    trait :btc_eur do
+      symbol            { 'btc_eur' }
       type              { 'spot' }
       base_currency     { 'btc' }
       quote_currency    { 'eur' }
@@ -42,8 +42,8 @@ FactoryBot.define do
       state             { :enabled }
     end
 
-    trait :ethusd do
-      symbol            { 'ethusd' }
+    trait :eth_usd do
+      symbol            { 'eth_usd' }
       type              { 'spot' }
       base_currency     { 'eth' }
       quote_currency    { 'usd' }
@@ -55,8 +55,8 @@ FactoryBot.define do
       state             { :enabled }
     end
 
-    trait :btctrst do
-      symbol            { 'btctrst' }
+    trait :btc_trst do
+      symbol            { 'btc_trst' }
       type              { 'spot' }
       base_currency     { 'btc' }
       quote_currency    { 'trst' }
@@ -81,8 +81,8 @@ FactoryBot.define do
       state             { :enabled }
     end
 
-    trait :btceth_qe do
-      symbol            { 'btceth' }
+    trait :btc_eth_qe do
+      symbol            { 'btc_eth' }
       type              { 'qe' }
       base_currency     { 'btc' }
       quote_currency    { 'eth' }

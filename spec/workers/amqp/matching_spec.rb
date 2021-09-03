@@ -4,7 +4,7 @@
 describe Workers::AMQP::Matching do
   let(:alice)  { who_is_billionaire }
   let(:bob)    { who_is_billionaire }
-  let(:market) { Market.find_spot_by_symbol(:btcusd) }
+  let(:market) { Market.find_spot_by_symbol(:btc_usd) }
 
   subject { Workers::AMQP::Matching.new }
 
@@ -19,18 +19,18 @@ describe Workers::AMQP::Matching do
   end
 
   context 'partial match' do
-    let(:existing) { create(:order_ask, :btcusd, price: '4001', volume: '10.0', member: alice) }
+    let(:existing) { create(:order_ask, :btc_usd, price: '4001', volume: '10.0', member: alice) }
 
     before do
       subject.process({ action: 'submit', order: existing.to_matching_attributes }, {}, {})
     end
 
     it 'should started engine' do
-      expect(subject.engines['btcusd'].mode).to eq :run
+      expect(subject.engines['btc_usd'].mode).to eq :run
     end
 
     it 'should match part of existing order' do
-      order = create(:order_bid, :btcusd, price: '4001', volume: '8.0', member: bob)
+      order = create(:order_bid, :btc_usd, price: '4001', volume: '8.0', member: bob)
 
       AMQP::Queue.expects(:enqueue)
                .with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: existing.id, taker_order_id: order.id, strike_price: '4001'.to_d, amount: '8.0'.to_d, total: '32008'.to_d } }, anything)
@@ -38,7 +38,7 @@ describe Workers::AMQP::Matching do
     end
 
     it 'should match part of new order' do
-      order = create(:order_bid, :btcusd, price: '4001', volume: '12.0', member: bob)
+      order = create(:order_bid, :btc_usd, price: '4001', volume: '12.0', member: bob)
 
       AMQP::Queue.expects(:enqueue)
                .with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: existing.id, taker_order_id: order.id, strike_price: '4001'.to_d, amount: '10.0'.to_d, total: '40010'.to_d } }, anything)
@@ -61,14 +61,14 @@ describe Workers::AMQP::Matching do
     # -----------------------------------------------
     # bid6    |                  | 4001/5           |
     # -----------------------------------------------
-    let!(:ask1) { create(:order_ask, :btcusd, price: '4003', volume: '3.0', member: alice) }
-    let!(:ask2) { create(:order_ask, :btcusd, price: '4002', volume: '3.0', member: alice) }
-    let!(:bid3) { create(:order_bid, :btcusd, price: '4003', volume: '8.0', member: bob) }
-    let!(:ask4) { create(:order_ask, :btcusd, price: '4002', volume: '5.0', member: alice) }
-    let!(:bid5) { create(:order_bid, :btcusd, price: '4003', volume: '3.0', member: bob) }
-    let!(:bid6) { create(:order_bid, :btcusd, price: '4001', volume: '5.0', member: bob) }
+    let!(:ask1) { create(:order_ask, :btc_usd, price: '4003', volume: '3.0', member: alice) }
+    let!(:ask2) { create(:order_ask, :btc_usd, price: '4002', volume: '3.0', member: alice) }
+    let!(:bid3) { create(:order_bid, :btc_usd, price: '4003', volume: '8.0', member: bob) }
+    let!(:ask4) { create(:order_ask, :btc_usd, price: '4002', volume: '5.0', member: alice) }
+    let!(:bid5) { create(:order_bid, :btc_usd, price: '4003', volume: '3.0', member: bob) }
+    let!(:bid6) { create(:order_bid, :btc_usd, price: '4001', volume: '5.0', member: bob) }
 
-    let!(:orderbook) { Matching::OrderBookManager.new('btcusd', broadcast: false) }
+    let!(:orderbook) { Matching::OrderBookManager.new('btc_usd', broadcast: false) }
     let!(:engine)    { Matching::Engine.new(market, mode: :run) }
 
     before do
@@ -91,7 +91,7 @@ describe Workers::AMQP::Matching do
   end
 
   context 'cancel order' do
-    let(:existing) { create(:order_ask, :btcusd, price: '4001', volume: '10.0', member: alice) }
+    let(:existing) { create(:order_ask, :btc_usd, price: '4001', volume: '10.0', member: alice) }
 
     before do
       subject.process({ action: 'submit', order: existing.to_matching_attributes }, {}, {})
@@ -104,24 +104,24 @@ describe Workers::AMQP::Matching do
   end
 
   context 'dryrun' do
-    let!(:bid) { create(:order_bid, :btcusd, price: '4001', volume: '8.0', member: bob) }
+    let!(:bid) { create(:order_bid, :btc_usd, price: '4001', volume: '8.0', member: bob) }
 
     subject { Workers::AMQP::Matching.new(mode: :dryrun) }
 
     context 'very old orders matched' do
-      let!(:ask) { create(:order_ask, :btcusd, price: '4000', volume: '3.0', member: alice, created_at: 1.day.ago) }
+      let!(:ask) { create(:order_ask, :btc_usd, price: '4000', volume: '3.0', member: alice, created_at: 1.day.ago) }
 
       it 'should not start engine' do
-        expect(subject.engines['btcusd'].mode).to eq :dryrun
-        expect(subject.engines['btcusd'].queue.size).to eq 1
+        expect(subject.engines['btc_usd'].mode).to eq :dryrun
+        expect(subject.engines['btc_usd'].queue.size).to eq 1
       end
     end
 
     context 'buffered orders matched' do
-      let!(:ask) { create(:order_ask, :btcusd, price: '4000', volume: '3.0', member: alice) }
+      let!(:ask) { create(:order_ask, :btc_usd, price: '4000', volume: '3.0', member: alice) }
 
       it 'should start engine' do
-        expect(subject.engines['btcusd'].mode).to eq :run
+        expect(subject.engines['btc_usd'].mode).to eq :run
       end
     end
   end

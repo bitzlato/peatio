@@ -10,7 +10,7 @@ describe Matching::LimitOrder do
     end
 
     it 'should initialize market' do
-      expect(Matching.mock_limit_order(type: :bid).market).to eq 'btcusd'
+      expect(Matching.mock_limit_order(type: :bid).market).to eq 'btc_usd'
     end
   end
 

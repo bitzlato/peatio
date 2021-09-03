@@ -3,38 +3,38 @@
 
 FactoryBot.define do
   factory :trade do
-    trait :btcusd do
+    trait :btc_usd do
       price { '10.0'.to_d }
       amount { '1.0'.to_d }
       total { price.to_d * amount.to_d }
-      market { Market.find_spot_by_symbol(:btcusd) }
+      market { Market.find_spot_by_symbol(:btc_usd) }
       market_type { 'spot' }
-      maker_order { create(:order_ask, :btcusd) }
-      taker_order { create(:order_bid, :btcusd) }
+      maker_order { create(:order_ask, :btc_usd) }
+      taker_order { create(:order_bid, :btc_usd) }
       maker { maker_order.member }
       taker { taker_order.member }
     end
 
-    trait :btceth do
+    trait :btc_eth do
       price { '10.0'.to_d }
       amount { '1.0'.to_d }
       total { price.to_d * amount.to_d }
-      market { Market.find_spot_by_symbol(:btceth) }
+      market { Market.find_spot_by_symbol(:btc_eth) }
       market_type { 'spot' }
-      maker_order { create(:order_ask, :btceth) }
-      taker_order { create(:order_bid, :btceth) }
+      maker_order { create(:order_ask, :btc_eth) }
+      taker_order { create(:order_bid, :btc_eth) }
       maker { maker_order.member }
       taker { taker_order.member }
     end
 
-    trait :btceth_qe do
+    trait :btc_eth_qe do
       price { '10.0'.to_d }
       amount { '1.0'.to_d }
       total { price.to_d * amount.to_d }
-      market { Market.find_spot_by_symbol(:btceth) }
+      market { Market.find_spot_by_symbol(:btc_eth) }
       market_type { 'qe' }
-      maker_order { create(:order_ask, :btceth_qe) }
-      taker_order { create(:order_bid, :btceth_qe) }
+      maker_order { create(:order_ask, :btc_eth_qe) }
+      taker_order { create(:order_bid, :btc_eth_qe) }
       maker { maker_order.member }
       taker { taker_order.member }
     end

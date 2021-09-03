@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 describe Trade, '#for_notify' do
-  let(:order_ask) { create(:order_ask, :btcusd) }
-  let(:order_bid) { create(:order_bid, :btcusd) }
-  let(:trade) { create(:trade, :btcusd, maker_order: order_ask, taker_order: order_bid) }
+  let(:order_ask) { create(:order_ask, :btc_usd) }
+  let(:order_bid) { create(:order_bid, :btc_usd) }
+  let(:trade) { create(:trade, :btc_usd, maker_order: order_ask, taker_order: order_bid) }
 
   subject(:notify) { trade.for_notify(order_ask.member) }
 
@@ -40,12 +40,12 @@ describe Trade, '#trade_from_influx_after_date' do
 
   context 'no trades executed yet' do
     it 'returns trade' do
-      expect(Trade.trade_from_influx_after_date(:btcusd, Time.now)).to eq([])
+      expect(Trade.trade_from_influx_after_date(:btc_usd, Time.now)).to eq([])
     end
   end
 
   context 'single trade was executing' do
-    let(:trade) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+    let(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
     let(:expected_trade) do
       {
         :id=>trade.id,
@@ -53,7 +53,7 @@ describe Trade, '#trade_from_influx_after_date' do
         :amount=>1.1,
         :total=>5.5,
         :taker_type=>trade.taker_type,
-        :market=>'btcusd',
+        :market=>'btc_usd',
         :created_at=>trade.created_at.to_i
       }
     end
@@ -68,9 +68,9 @@ describe Trade, '#trade_from_influx_after_date' do
   end
 
   context 'multiple trades were executed' do
-    let!(:trade1) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d, created_at: Time.now)}
-    let!(:trade2) { create(:trade, :btcusd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d, created_at: Time.now + 3.minutes)}
-    let!(:trade3) { create(:trade, :btcusd, price: '7.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d, created_at: Time.now + 4.minutes)}
+    let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d, created_at: Time.now)}
+    let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d, created_at: Time.now + 3.minutes)}
+    let!(:trade3) { create(:trade, :btc_usd, price: '7.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d, created_at: Time.now + 4.minutes)}
 
     let(:expected_trade) do
       {
@@ -79,7 +79,7 @@ describe Trade, '#trade_from_influx_after_date' do
         :amount=>1.1,
         :total=>5.5,
         :taker_type=>trade1.taker_type,
-        :market=>'btcusd',
+        :market=>'btc_usd',
         :created_at=>trade1.created_at.to_i
       }
     end
@@ -101,12 +101,12 @@ describe Trade, '#trade_from_influx_before_date' do
 
   context 'no trades executed yet' do
     it 'returns trade' do
-      expect(Trade.trade_from_influx_before_date(:btcusd, Time.now)).to eq([])
+      expect(Trade.trade_from_influx_before_date(:btc_usd, Time.now)).to eq([])
     end
   end
 
   context 'single trade was executed' do
-    let(:trade) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+    let(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
     let(:expected_trade) do
       {
         :id=>trade.id,
@@ -114,7 +114,7 @@ describe Trade, '#trade_from_influx_before_date' do
         :amount=>1.1,
         :total=>5.5,
         :taker_type=>trade.taker_type,
-        :market=>'btcusd',
+        :market=>'btc_usd',
         :created_at=>trade.created_at.to_i
       }
     end
@@ -129,9 +129,9 @@ describe Trade, '#trade_from_influx_before_date' do
   end
 
   context 'multiple trades were executed' do
-    let!(:trade3) { create(:trade, :btcusd, price: '7.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d, created_at: Time.now)}
-    let!(:trade2) { create(:trade, :btcusd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d, created_at: 2.days.ago)}
-    let!(:trade1) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d, created_at: 3.days.ago)}
+    let!(:trade3) { create(:trade, :btc_usd, price: '7.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d, created_at: Time.now)}
+    let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d, created_at: 2.days.ago)}
+    let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d, created_at: 3.days.ago)}
     let(:expected_trade) do
       {
         :id=>trade3.id,
@@ -139,7 +139,7 @@ describe Trade, '#trade_from_influx_before_date' do
         :amount=>0.9,
         :total=>5.4,
         :taker_type=>trade3.taker_type,
-        :market=>'btcusd',
+        :market=>'btc_usd',
         :created_at=>trade3.created_at.to_i
       }
     end
@@ -161,12 +161,12 @@ describe Trade, '#nearest_trade_from_influx' do
 
   context 'no trades executed yet' do
     it 'returns trade' do
-      expect(Trade.nearest_trade_from_influx(:btcusd, Time.now)).to eq([])
+      expect(Trade.nearest_trade_from_influx(:btc_usd, Time.now)).to eq([])
     end
   end
 
   context 'trade executed before date' do
-    let(:trade) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+    let(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
     let(:expected_trade) do
       {
         :id=>trade.id,
@@ -174,7 +174,7 @@ describe Trade, '#nearest_trade_from_influx' do
         :amount=>1.1,
         :total=>5.5,
         :taker_type=>trade.taker_type,
-        :market=>'btcusd',
+        :market=>'btc_usd',
         :created_at=>trade.created_at.to_i
       }
     end
@@ -189,7 +189,7 @@ describe Trade, '#nearest_trade_from_influx' do
   end
 
   context 'trade executed after date' do
-    let(:trade) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+    let(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
     let(:expected_trade) do
       {
         :id=>trade.id,
@@ -197,7 +197,7 @@ describe Trade, '#nearest_trade_from_influx' do
         :amount=>1.1,
         :total=>5.5,
         :taker_type=>trade.taker_type,
-        :market=>'btcusd',
+        :market=>'btc_usd',
         :created_at=>trade.created_at.to_i
       }
     end
@@ -217,12 +217,12 @@ describe Trade, '#market_ticker_from_influx' do
 
   context 'no trades executed yet' do
     it 'returns ticker' do
-      expect(Trade.market_ticker_from_influx(:btcusd)).to eq([])
+      expect(Trade.market_ticker_from_influx(:btc_usd)).to eq([])
     end
   end
 
   context 'single trade was executed' do
-    let!(:trade) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+    let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
     let(:expected_ticker) do
       {
         :min=>5,
@@ -245,9 +245,9 @@ describe Trade, '#market_ticker_from_influx' do
   end
 
   context 'multiple trades were executed' do
-    let!(:trade1) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
-    let!(:trade2) { create(:trade, :btcusd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
-    let!(:trade3) { create(:trade, :btcusd, price: '7.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+    let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+    let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+    let!(:trade3) { create(:trade, :btc_usd, price: '7.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
     let(:expected_ticker) do
       {
         :amount => 2.9,
@@ -274,7 +274,7 @@ end
 
 describe Trade, '#record_complete_operations!' do
   # Persist orders and trades in database.
-  let!(:trade){ create(:trade, :btcusd, :with_deposit_liability) }
+  let!(:trade){ create(:trade, :btc_usd, :with_deposit_liability) }
 
   let(:ask){ trade.maker_order }
   let(:bid){ trade.taker_order }

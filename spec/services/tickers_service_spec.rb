@@ -18,13 +18,13 @@ describe TickersService, '#ticker' do
     end
 
     it 'returns zero tickers' do
-      expect(service[:btcusd].ticker.except(:at)).to eq default
+      expect(service[:btc_usd].ticker.except(:at)).to eq default
     end
   end
 
   context 'single trade executed during last 24 hours' do
     after { delete_measurments('trades') }
-    let!(:trade) { create(:trade, :btcusd, price: 5, amount: 2) }
+    let!(:trade) { create(:trade, :btc_usd, price: 5, amount: 2) }
 
     let(:ticker) do
       {
@@ -44,7 +44,7 @@ describe TickersService, '#ticker' do
     end
 
     it 'returns trade price' do
-      expect(service[:btcusd].ticker.except(:at)).to eq(ticker)
+      expect(service[:btc_usd].ticker.except(:at)).to eq(ticker)
     end
   end
 
@@ -53,11 +53,11 @@ describe TickersService, '#ticker' do
 
     let(:trades) do
       [
-        create(:trade, :btcusd, price: 12.to_d, amount: 10.to_d),
-        create(:trade, :btcusd, price: 11.to_d, amount: 17.to_d),
-        create(:trade, :btcusd, price: 10.to_d, amount: 25.to_d),
-        create(:trade, :btcusd, price:  9.to_d, amount: 18.to_d),
-        create(:trade, :btcusd, price:  8.to_d, amount: 10.to_d)
+        create(:trade, :btc_usd, price: 12.to_d, amount: 10.to_d),
+        create(:trade, :btc_usd, price: 11.to_d, amount: 17.to_d),
+        create(:trade, :btc_usd, price: 10.to_d, amount: 25.to_d),
+        create(:trade, :btc_usd, price:  9.to_d, amount: 18.to_d),
+        create(:trade, :btc_usd, price:  8.to_d, amount: 10.to_d)
       ]
     end
 
@@ -79,7 +79,7 @@ describe TickersService, '#ticker' do
     end
 
     it 'returns trade price' do
-      expect(service[:btcusd].ticker.except(:at)).to eq(ticker)
+      expect(service[:btc_usd].ticker.except(:at)).to eq(ticker)
     end
   end
 end

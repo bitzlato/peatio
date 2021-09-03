@@ -17,7 +17,7 @@ FactoryBot.define do
 
       bid { :usd }
       ask { :btc }
-      market { Market.find_spot_by_symbol(:btcusd) }
+      market { Market.find_spot_by_symbol(:btc_usd) }
       market_type { 'spot' }
       state { :wait }
       ord_type { 'limit' }
@@ -28,10 +28,10 @@ FactoryBot.define do
       origin_locked { locked.to_d }
     end
 
-    trait :btcusd do
+    trait :btc_usd do
       bid { :usd }
       ask { :btc }
-      market { Market.find_spot_by_symbol(:btcusd) }
+      market { Market.find_spot_by_symbol(:btc_usd) }
       market_type { 'spot' }
       state { :wait }
       ord_type { 'limit' }
@@ -42,10 +42,10 @@ FactoryBot.define do
       origin_locked { locked.to_d }
     end
 
-    trait :btceth do
+    trait :btc_eth do
       bid { :eth }
       ask { :btc }
-      market { Market.find_spot_by_symbol(:btceth) }
+      market { Market.find_spot_by_symbol(:btc_eth) }
       market_type { 'spot' }
       state { :wait }
       ord_type { 'limit' }
@@ -56,10 +56,10 @@ FactoryBot.define do
       origin_locked { locked.to_d }
     end
 
-    trait :btceth_qe do
+    trait :btc_eth_qe do
       bid { :eth }
       ask { :btc }
-      market { Market.find_qe_by_symbol(:btceth) }
+      market { Market.find_qe_by_symbol(:btc_eth) }
       market_type { 'qe' }
       state { :wait }
       ord_type { 'limit' }
@@ -86,7 +86,7 @@ FactoryBot.define do
 
       bid { :usd }
       ask { :btc }
-      market { Market.find_spot_by_symbol(:btcusd) }
+      market { Market.find_spot_by_symbol(:btc_usd) }
       market_type { 'spot' }
       state { :wait }
       ord_type { 'limit' }
@@ -97,10 +97,10 @@ FactoryBot.define do
       origin_locked { locked.to_d }
     end
 
-    trait :btcusd do
+    trait :btc_usd do
       bid { :usd }
       ask { :btc }
-      market { Market.find_spot_by_symbol(:btcusd) }
+      market { Market.find_spot_by_symbol(:btc_usd) }
       market_type { 'spot' }
       state { :wait }
       ord_type { 'limit' }
@@ -111,10 +111,10 @@ FactoryBot.define do
       origin_locked { locked.to_d }
     end
 
-    trait :btceth do
+    trait :btc_eth do
       bid { :eth }
       ask { :btc }
-      market { Market.find_spot_by_symbol(:btceth) }
+      market { Market.find_spot_by_symbol(:btc_eth) }
       market_type { 'spot' }
       state { :wait }
       ord_type { 'limit' }
@@ -125,10 +125,10 @@ FactoryBot.define do
       origin_locked { locked.to_d }
     end
 
-    trait :btceth_qe do
+    trait :btc_eth_qe do
       bid { :eth }
       ask { :btc }
-      market { Market.find_qe_by_symbol(:btceth) }
+      market { Market.find_qe_by_symbol(:btc_eth) }
       market_type { 'qe' }
       state { :wait }
       ord_type { 'limit' }

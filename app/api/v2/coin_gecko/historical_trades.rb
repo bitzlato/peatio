@@ -9,7 +9,7 @@ module API
           requires :ticker_id,
                    type: String,
                    desc: 'A pair such as "LTC_BTC"',
-                   coerce_with: ->(name) { name.strip.split('_').join.downcase }
+                   coerce_with: ->(name) { name.strip.downcase }
           optional :type,
                    type: String,
                    values: { value: %w(buy sell), message: 'coingecko.historical_trades.invalid_type' },

@@ -14,16 +14,16 @@ describe API::V2::Market::Orders, type: :request do
   describe 'GET /api/v2/market/orders' do
     before do
       # NOTE: We specify updated_at attribute for testing order of Order.
-      create(:order_bid, :btcusd, price: '11'.to_d, volume: '123.12345678', member: member, created_at: 1.day.ago, updated_at: Time.now + 5)
-      create(:order_bid, :btceth, price: '11'.to_d, volume: '123.1234', member: member)
-      create(:order_bid, :btceth_qe, price: '11'.to_d, volume: '123.1234', member: member)
-      create(:order_bid, :btcusd, price: '12'.to_d, volume: '123.12345678', created_at: 1.day.ago, member: member, state: Order::CANCEL)
-      create(:order_ask, :btcusd, price: '13'.to_d, volume: '123.12345678', created_at: 2.hours.ago, member: member, state: Order::WAIT, updated_at: Time.now + 10)
-      create(:order_ask, :btcusd, price: '14'.to_d, volume: '123.12345678', created_at: 6.hours.ago, member: member, state: Order::DONE)
+      create(:order_bid, :btc_usd, price: '11'.to_d, volume: '123.12345678', member: member, created_at: 1.day.ago, updated_at: Time.now + 5)
+      create(:order_bid, :btc_eth, price: '11'.to_d, volume: '123.1234', member: member)
+      create(:order_bid, :btc_eth_qe, price: '11'.to_d, volume: '123.1234', member: member)
+      create(:order_bid, :btc_usd, price: '12'.to_d, volume: '123.12345678', created_at: 1.day.ago, member: member, state: Order::CANCEL)
+      create(:order_ask, :btc_usd, price: '13'.to_d, volume: '123.12345678', created_at: 2.hours.ago, member: member, state: Order::WAIT, updated_at: Time.now + 10)
+      create(:order_ask, :btc_usd, price: '14'.to_d, volume: '123.12345678', created_at: 6.hours.ago, member: member, state: Order::DONE)
     end
 
     it 'requires authentication' do
-      get '/api/v2/market/orders', params: { market: 'btcusd' }
+      get '/api/v2/market/orders', params: { market: 'btc_usd' }
       expect(response.code).to eq '401'
     end
 
@@ -34,7 +34,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'validates market param based on type' do
-      api_get '/api/v2/market/orders', params: { market: 'btcusd' }, token: token
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd' }, token: token
       expect(response).to have_http_status 200
     end
 
@@ -45,13 +45,13 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'validates state param' do
-      api_get '/api/v2/market/orders', params: { market: 'btcusd', state: 'test' }, token: token
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd', state: 'test' }, token: token
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invalid_state')
     end
 
     it 'validates limit param' do
-      api_get '/api/v2/market/orders', params: { market: 'btcusd', limit: -1 }, token: token
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd', limit: -1 }, token: token
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invalid_limit')
     end
@@ -76,24 +76,24 @@ describe API::V2::Market::Orders, type: :request do
       expect(result.size).to eq 5
     end
 
-    it 'returns all my orders for btcusd market' do
-      api_get '/api/v2/market/orders', params: { market: 'btcusd' }, token: token
+    it 'returns all my orders for btc_usd market' do
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
       expect(result.size).to eq 4
     end
 
-    it 'returns all my orders for spot btceth market' do
-      api_get '/api/v2/market/orders', params: { market: 'btceth' }, token: token
+    it 'returns all my orders for spot btc_eth market' do
+      api_get '/api/v2/market/orders', params: { market: 'btc_eth' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
       expect(result.size).to eq 1
     end
 
-    it 'returns all my orders for qe btceth market' do
-      api_get '/api/v2/market/orders', params: { market: 'btceth', market_type: 'qe' }, token: token
+    it 'returns all my orders for qe btc_eth market' do
+      api_get '/api/v2/market/orders', params: { market: 'btc_eth', market_type: 'qe' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -101,7 +101,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'returns orders for several markets' do
-      api_get '/api/v2/market/orders', params: { market: ['btcusd', 'btceth'] }, token: token
+      api_get '/api/v2/market/orders', params: { market: ['btc_usd', 'btc_eth'] }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -109,7 +109,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'returns orders with state done' do
-      api_get '/api/v2/market/orders', params: { market: 'btcusd', state: Order::DONE }, token: token
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd', state: Order::DONE }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -118,22 +118,22 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'returns orders with state done and wait' do
-      api_get '/api/v2/market/orders', params: { market: 'btcusd', state: [Order::DONE, Order::WAIT] }, token: token
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd', state: [Order::DONE, Order::WAIT] }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      count = member.orders.where(state: [Order::DONE, Order::WAIT], market_id: 'btcusd').count
+      count = member.orders.where(state: [Order::DONE, Order::WAIT], market_id: 'btc_usd').count
       expect(result.size).to eq count
     end
 
     it 'returns paginated orders' do
-      api_get '/api/v2/market/orders', params: { market: 'btcusd', limit: 1, page: 1 }, token: token
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd', limit: 1, page: 1 }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
       expect(result.first['price']).to eq '13.0'
 
-      api_get '/api/v2/market/orders', params: { market: 'btcusd', limit: 1, page: 2 }, token: token
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd', limit: 1, page: 2 }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -141,7 +141,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'returns sorted orders' do
-      api_get '/api/v2/market/orders', params: { market: 'btcusd', order_by: 'asc' }, token: token
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd', order_by: 'asc' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -150,7 +150,7 @@ describe API::V2::Market::Orders, type: :request do
       second_order_updated_at = Time.iso8601(result.second['updated_at'])
       expect(first_order_updated_at).to be <= second_order_updated_at
 
-      api_get '/api/v2/market/orders', params: { market: 'btcusd', order_by: 'desc' }, token: token
+      api_get '/api/v2/market/orders', params: { market: 'btc_usd', order_by: 'desc' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -233,10 +233,10 @@ describe API::V2::Market::Orders, type: :request do
   end
 
   describe 'GET /api/v2/market/orders/:id' do
-    let(:order) { create(:order_bid, :btcusd, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', member: member, trades_count: 1) }
-    let(:qe_order) { create(:order_bid, :btceth_qe, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', member: member, trades_count: 1) }
-    let!(:trade) { create(:trade, :btcusd, taker_order: order) }
-    let!(:qe_trade) { create(:trade, :btceth_qe, taker_order: qe_order) }
+    let(:order) { create(:order_bid, :btc_usd, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', member: member, trades_count: 1) }
+    let(:qe_order) { create(:order_bid, :btc_eth_qe, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', member: member, trades_count: 1) }
+    let!(:trade) { create(:trade, :btc_usd, taker_order: order) }
+    let!(:qe_trade) { create(:trade, :btc_eth_qe, taker_order: qe_order) }
 
     it 'should get specified spot order by id' do
       api_get "/api/v2/market/orders/#{order.id}", token: token
@@ -315,7 +315,7 @@ describe API::V2::Market::Orders, type: :request do
       member.get_account(:btc).update_attributes(balance: 100)
 
       expect do
-        api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: '2014' }
+        api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: '2014' }
         expect(response).to be_successful
         expect(JSON.parse(response.body)['id']).to eq OrderAsk.last.id
         expect(JSON.parse(response.body)['market_type']).to eq 'spot'
@@ -324,12 +324,12 @@ describe API::V2::Market::Orders, type: :request do
 
     it 'submit a sell order on third party engine' do
       member.get_account(:btc).update_attributes(balance: 100)
-      Market.find_spot_by_symbol('btcusd').engine.update(driver: "finex-spot")
+      Market.find_spot_by_symbol('btc_usd').engine.update(driver: "finex-spot")
       AMQP::Queue.expects(:publish)
 
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: '2014' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: '2014' }
       expect(response).to be_successful
-      expect(response_body['market']).to eq 'btcusd'
+      expect(response_body['market']).to eq 'btc_usd'
     end
 
     it 'creates a buy order' do
@@ -337,7 +337,7 @@ describe API::V2::Market::Orders, type: :request do
       AMQP::Queue.expects(:enqueue).with(:order_processor, is_a(Hash), is_a(Hash))
 
       expect do
-        api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '12.13', price: '2014' }
+        api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '12.13', price: '2014' }
         expect(response).to be_successful
         expect(JSON.parse(response.body)['id']).to eq OrderBid.last.id
       end.to change(OrderBid, :count).by(1)
@@ -349,7 +349,7 @@ describe API::V2::Market::Orders, type: :request do
       end
 
       it 'renders unauthorized error' do
-        api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '12.13', price: '2014' }
+        api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '12.13', price: '2014' }
         expect(response).to have_http_status 403
         expect(response).to include_api_error('user.ability.not_permitted')
       end
@@ -367,55 +367,55 @@ describe API::V2::Market::Orders, type: :request do
 
     it 'validates volume positiveness' do
       old_count = OrderAsk.count
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '-1.1', price: '2014' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '-1.1', price: '2014' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.non_positive_volume')
       expect(OrderAsk.count).to eq old_count
     end
 
     it 'validates volume to be a number' do
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: 'test', price: '2014' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: 'test', price: '2014' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.non_decimal_volume')
     end
 
     it 'validates volume greater than min_amount' do
       member.get_account(:btc).update_attributes(balance: 1)
-      m = Market.find_spot_by_symbol(:btcusd)
+      m = Market.find_spot_by_symbol(:btc_usd)
       m.update(min_amount: 1.0)
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '0.1', price: '2014' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '0.1', price: '2014' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invalid_volume_or_price')
     end
 
     it 'validates price less than max_price' do
       member.get_account(:usd).update_attributes(balance: 1)
-      m = Market.find_spot_by_symbol(:btcusd)
+      m = Market.find_spot_by_symbol(:btc_usd)
       m.update(max_price: 1.0)
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '0.1', price: '2' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.1', price: '2' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invalid_volume_or_price')
     end
 
     it 'validates volume precision' do
       member.get_account(:usd).update_attributes(balance: 1)
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '0.123456789', price: '0.1' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.123456789', price: '0.1' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invalid_volume_or_price')
     end
 
     it 'validates price greater than min_price' do
       member.get_account(:usd).update_attributes(balance: 1)
-      m = Market.find_spot_by_symbol(:btcusd)
+      m = Market.find_spot_by_symbol(:btc_usd)
       m.update(min_price: 1.0)
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '0.1', price: '0.2' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.1', price: '0.2' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invalid_volume_or_price')
     end
 
     it 'validates price precision' do
       member.get_account(:usd).update_attributes(balance: 1)
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '0.12', price: '0.123' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.12', price: '0.123' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invalid_volume_or_price')
     end
@@ -423,19 +423,19 @@ describe API::V2::Market::Orders, type: :request do
     it 'validates enough funds' do
       OrderAsk.expects(:create!).raises(::Account::AccountError)
       member.get_account(:btc).update_attributes(balance: 1)
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: '2014' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: '2014' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.account.insufficient_balance')
     end
 
     it 'validates price positiveness' do
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: '-1.1' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: '-1.1' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.non_positive_price')
     end
 
     it 'validates price to be a number' do
-      api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: 'test' }
+      api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: 'test' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.non_decimal_price')
     end
@@ -443,24 +443,24 @@ describe API::V2::Market::Orders, type: :request do
     context 'market order' do
       it 'validates that market has sufficient volume' do
         member.get_account(:btc).update_attributes(balance: 20)
-        api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', ord_type: 'market' }
+        api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', ord_type: 'market' }
         expect(response.code).to eq '422'
         expect(response).to include_api_error('market.order.insufficient_market_liquidity')
       end
 
       it 'validates that order has no price param' do
-        api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '0.5', price: '0.5', ord_type: 'market' }
+        api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '0.5', price: '0.5', ord_type: 'market' }
         expect(response.code).to eq '422'
         expect(response).to include_api_error('market.order.market_order_price')
       end
 
       it 'creates sell order' do
-        create(:order_bid, :btcusd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
+        create(:order_bid, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
 
         member.get_account(:btc).update_attributes(balance: 1)
 
         expect do
-          api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '0.5', ord_type: 'market' }
+          api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '0.5', ord_type: 'market' }
         end.to change(OrderAsk, :count).by(1)
 
         expect(response).to be_successful
@@ -469,29 +469,29 @@ describe API::V2::Market::Orders, type: :request do
 
       context 'submit sell order on third party engine' do
         it do
-          create(:order_bid, :btcusd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
+          create(:order_bid, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
 
           member.get_account(:btc).update_attributes(balance: 1)
 
-          Market.find_spot_by_symbol('btcusd').engine.update(driver: "finex-spot")
+          Market.find_spot_by_symbol('btc_usd').engine.update(driver: "finex-spot")
 
           AMQP::Queue.expects(:publish)
 
-          api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '0.5', ord_type: 'market' }
+          api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '0.5', ord_type: 'market' }
 
           expect(response).to be_successful
         end
       end
 
       it 'creates buy order' do
-        create(:order_ask, :btcusd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
+        create(:order_ask, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
 
         member.get_account(:usd).update_attributes(balance: 10)
 
-        api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '0.5', ord_type: 'market' }
+        api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.5', ord_type: 'market' }
 
         expect do
-          api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '0.5', ord_type: 'market' }
+          api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.5', ord_type: 'market' }
         end.to change(OrderBid, :count).by(1)
 
         expect(response).to be_successful
@@ -500,17 +500,17 @@ describe API::V2::Market::Orders, type: :request do
 
       context '#compute_locked' do
         before do
-          create(:order_ask, :btcusd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
+          create(:order_ask, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
           member.get_account(:usd).update_attributes(balance: 10)
         end
 
         it 'locks all balance' do
-          api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '1', ord_type: 'market' }
+          api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '1', ord_type: 'market' }
           expect(Order.find(response_body['id']).locked).to eq member.get_account(:usd).balance
         end
 
         it 'locks with locking_buffer' do
-          api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '0.5', ord_type: 'market' }
+          api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.5', ord_type: 'market' }
 
           # Price: 10, volume: 0.5, locking_buffer: 1.1
           expect(Order.find(response_body['id']).locked).to eq 5.5
@@ -520,8 +520,8 @@ describe API::V2::Market::Orders, type: :request do
   end
 
   describe 'POST /api/v2/market/orders/:id/cancel' do
-    let!(:order) { create(:order_bid, :btcusd, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', locked: '20.1082', origin_locked: '38.0882', member: member) }
-    let!(:qe_order) { create(:order_bid, :btceth_qe, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', locked: '20.1082', origin_locked: '38.0882', member: member) }
+    let!(:order) { create(:order_bid, :btc_usd, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', locked: '20.1082', origin_locked: '38.0882', member: member) }
+    let!(:qe_order) { create(:order_bid, :btc_eth_qe, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', locked: '20.1082', origin_locked: '38.0882', member: member) }
 
     context 'succesful' do
       before do
@@ -596,9 +596,9 @@ describe API::V2::Market::Orders, type: :request do
 
   describe 'POST /api/v2/market/orders/cancel' do
     before do
-      create(:order_ask, :btcusd, price: '12.32', volume: '3.14', origin_volume: '12.13', member: member)
-      create(:order_bid, :btcusd, price: '12.32', volume: '3.14', origin_volume: '12.13', member: member)
-      create(:order_bid, :btceth, price: '12.32', volume: '3.14', origin_volume: '12.13', member: member)
+      create(:order_ask, :btc_usd, price: '12.32', volume: '3.14', origin_volume: '12.13', member: member)
+      create(:order_bid, :btc_usd, price: '12.32', volume: '3.14', origin_volume: '12.13', member: member)
+      create(:order_bid, :btc_eth, price: '12.32', volume: '3.14', origin_volume: '12.13', member: member)
 
       member.get_account(:btc).update_attributes(locked: '5')
       member.get_account(:usd).update_attributes(locked: '50')
@@ -622,8 +622,8 @@ describe API::V2::Market::Orders, type: :request do
     context 'third party order' do
 
       before do
-        Market.find_spot_by_symbol('btcusd').engine.update(driver: "finex-spot")
-        Market.find_spot_by_symbol('btceth').engine.update(driver: "finex-spot")
+        Market.find_spot_by_symbol('btc_usd').engine.update(driver: "finex-spot")
+        Market.find_spot_by_symbol('btc_eth').engine.update(driver: "finex-spot")
       end
 
       it 'should cancel all my orders on market with third party engine' do
@@ -644,12 +644,12 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'should cancel all my orders for specific market' do
-      member.orders.where(market: 'btceth').each do |o|
+      member.orders.where(market: 'btc_eth').each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
       end
 
       expect do
-        api_post '/api/v2/market/orders/cancel', token: token, params: { market: 'btceth' }
+        api_post '/api/v2/market/orders/cancel', token: token, params: { market: 'btc_eth' }
         expect(response).to be_successful
 
         result = JSON.parse(response.body)

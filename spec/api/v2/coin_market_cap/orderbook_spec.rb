@@ -3,10 +3,10 @@
 describe API::V2::CoinMarketCap::Orderbook, type: :request do
   describe 'GET /api/v2/coinmarketcap/orderbook/:market_pair' do
     before do
-      create_list(:order_bid, 5, :btcusd)
-      create_list(:order_bid, 5, :btcusd, price: 2)
-      create_list(:order_ask, 5, :btcusd)
-      create_list(:order_ask, 5, :btcusd, price: 3)
+      create_list(:order_bid, 5, :btc_usd)
+      create_list(:order_bid, 5, :btc_usd, price: 2)
+      create_list(:order_ask, 5, :btc_usd)
+      create_list(:order_ask, 5, :btc_usd, price: 3)
     end
 
     let(:asks) { [["1.0", "5.0"], ["3.0", "5.0"]] }
@@ -25,10 +25,10 @@ describe API::V2::CoinMarketCap::Orderbook, type: :request do
 
       context 'with depth param' do
         before do
-          create_list(:order_bid, 5, :btcusd)
-          create_list(:order_bid, 5, :btcusd, price: 4.1)
-          create_list(:order_ask, 5, :btcusd)
-          create_list(:order_ask, 5, :btcusd, price: 12.2)
+          create_list(:order_bid, 5, :btc_usd)
+          create_list(:order_bid, 5, :btc_usd, price: 4.1)
+          create_list(:order_ask, 5, :btc_usd)
+          create_list(:order_ask, 5, :btc_usd, price: 12.2)
         end
 
         it 'get asks and bids with depth param' do

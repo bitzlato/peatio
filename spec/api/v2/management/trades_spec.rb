@@ -14,51 +14,51 @@ describe API::V2::Management::Trades, type: :request do
   end
 
 
-  let(:btcusd_ask) do
+  let(:btc_usd_ask) do
     create(
       :order_ask,
-      :btcusd,
+      :btc_usd,
       price: '12.32'.to_d,
       volume: '123.12345678',
       member: member
     )
   end
 
-  let(:btceth_ask) do
+  let(:btc_eth_ask) do
     create(
       :order_ask,
-      :btceth,
+      :btc_eth,
       price: '12.326'.to_d,
       volume: '123.1234',
       member: second_member
     )
   end
 
-  let(:btcusd_bid) do
+  let(:btc_usd_bid) do
     create(
       :order_bid,
-      :btcusd,
+      :btc_usd,
       price: '12.32'.to_d,
       volume: '123.12345678',
       member: member
     )
   end
 
-  let(:btceth_bid) do
+  let(:btc_eth_bid) do
     create(
       :order_bid,
-      :btceth,
+      :btc_eth,
       price: '12.326'.to_d,
       volume: '123.1234',
       member: second_member
     )
   end
 
-  let!(:btcusd_ask_trade) { create(:trade, :btcusd, maker_order: btcusd_ask, created_at: 2.days.ago) }
-  let!(:btceth_ask_trade) { create(:trade, :btceth, maker_order: btceth_ask, created_at: 2.days.ago) }
-  let!(:btcusd_bid_trade) { create(:trade, :btcusd, taker_order: btcusd_bid, created_at: 23.hours.ago) }
-  let!(:btceth_bid_trade) { create(:trade, :btceth, taker_order: btceth_bid, created_at: 23.hours.ago) }
-  let!(:btceth_bid_qe_trade) { create(:trade, :btceth_qe, created_at: 23.hours.ago) }
+  let!(:btc_usd_ask_trade) { create(:trade, :btc_usd, maker_order: btc_usd_ask, created_at: 2.days.ago) }
+  let!(:btc_eth_ask_trade) { create(:trade, :btc_eth, maker_order: btc_eth_ask, created_at: 2.days.ago) }
+  let!(:btc_usd_bid_trade) { create(:trade, :btc_usd, taker_order: btc_usd_bid, created_at: 23.hours.ago) }
+  let!(:btc_eth_bid_trade) { create(:trade, :btc_eth, taker_order: btc_eth_bid, created_at: 23.hours.ago) }
+  let!(:btc_eth_bid_qe_trade) { create(:trade, :btc_eth_qe, created_at: 23.hours.ago) }
 
   before do
     defaults_for_management_api_v1_security_configuration!
@@ -102,7 +102,7 @@ describe API::V2::Management::Trades, type: :request do
   end
 
   it 'returns trades on spot market' do
-    data.merge!(market: 'btcusd')
+    data.merge!(market: 'btc_usd')
     request
     expect(response).to be_successful
 
@@ -111,7 +111,7 @@ describe API::V2::Management::Trades, type: :request do
   end
 
   it 'returns trades on qe market' do
-    data.merge!(market: 'btceth', market_type: 'qe')
+    data.merge!(market: 'btc_eth', market_type: 'qe')
     request
     expect(response).to be_successful
 

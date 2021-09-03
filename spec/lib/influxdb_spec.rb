@@ -12,8 +12,8 @@ describe Peatio::InfluxDB do
     end
 
     it do
-      expect(Peatio::InfluxDB.client(keyshard: 'btcusd').config.hosts).to eq(['inflxudb-1'])
-      expect(Peatio::InfluxDB.client(keyshard: 'ethusd').config.hosts).to eq(['inflxudb-0'])
+      expect(Peatio::InfluxDB.client(keyshard: 'btc_usd').config.hosts).to eq(['inflxudb-1'])
+      expect(Peatio::InfluxDB.client(keyshard: 'eth_usd').config.hosts).to eq(['inflxudb-0'])
     end
   end
 end

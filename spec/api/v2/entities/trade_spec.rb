@@ -3,7 +3,7 @@
 
 describe API::V2::Entities::Trade do
   let(:trade) do
-    create :trade, :btcusd, maker_order: create(:order_ask, :btcusd), taker_order: create(:order_bid, :btcusd)
+    create :trade, :btc_usd, maker_order: create(:order_ask, :btc_usd), taker_order: create(:order_bid, :btc_usd)
   end
 
   subject { OpenStruct.new API::V2::Entities::Trade.represent(trade, side: 'sell').serializable_hash }
@@ -25,7 +25,7 @@ describe API::V2::Entities::Trade do
 
   context 'buy order maker' do
     let(:trade) do
-      create :trade, :btcusd, maker_order: create(:order_bid, :btcusd), taker_order: create(:order_ask, :btcusd)
+      create :trade, :btc_usd, maker_order: create(:order_bid, :btc_usd), taker_order: create(:order_ask, :btc_usd)
     end
 
     it { expect(subject.taker_type).to eq 'sell' }

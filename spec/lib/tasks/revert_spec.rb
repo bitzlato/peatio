@@ -14,14 +14,14 @@ describe 'revert.rake' do
   context 'simple case' do
     let(:price)  { 10.to_d }
     let(:volume) { 5.to_d }
-    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btcusd, price: price, volume: volume, member: alice).to_matching_attributes }
-    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btcusd, price: price, volume: volume, member: bob).to_matching_attributes }
+    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btc_usd, price: price, volume: volume, member: alice).to_matching_attributes }
+    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btc_usd, price: price, volume: volume, member: bob).to_matching_attributes }
 
     let(:executor) do
       Matching::Executor.new(
         action: 'execute',
         trade: {
-          market_id: 'btcusd',
+          market_id: 'btc_usd',
           maker_order_id: ask.id,
           taker_order_id: bid.id,
           strike_price: price.to_s('F'),
@@ -62,15 +62,15 @@ describe 'revert.rake' do
     let(:volume) { 5.to_d }
     let(:volume1) { 3.to_d }
     let(:volume2) { 2.to_d }
-    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btcusd, price: price, volume: volume, member: alice).to_matching_attributes }
-    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btcusd, price: price, volume: volume1, member: bob).to_matching_attributes }
-    let(:bid1) { ::Matching::LimitOrder.new create(:order_bid, :btcusd, price: price, volume: volume2, member: bob).to_matching_attributes }
+    let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btc_usd, price: price, volume: volume, member: alice).to_matching_attributes }
+    let(:bid) { ::Matching::LimitOrder.new create(:order_bid, :btc_usd, price: price, volume: volume1, member: bob).to_matching_attributes }
+    let(:bid1) { ::Matching::LimitOrder.new create(:order_bid, :btc_usd, price: price, volume: volume2, member: bob).to_matching_attributes }
 
     let(:executor1) do
       Matching::Executor.new(
         action: 'execute',
         trade: {
-          market_id: 'btcusd',
+          market_id: 'btc_usd',
           maker_order_id: ask.id,
           taker_order_id: bid.id,
           strike_price: price.to_s('F'),
@@ -84,7 +84,7 @@ describe 'revert.rake' do
       Matching::Executor.new(
         action: 'execute',
         trade: {
-          market_id: 'btcusd',
+          market_id: 'btc_usd',
           maker_order_id: ask.id,
           taker_order_id: bid1.id,
           strike_price: price.to_s('F'),

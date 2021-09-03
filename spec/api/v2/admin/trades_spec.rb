@@ -12,13 +12,13 @@ describe API::V2::Admin::Trades, type: :request do
   describe 'GET /api/v2/admin/trades' do
     let!(:trades) do
       [
-        create(:trade, :btcusd, price: 12.0, amount: 2.0, created_at: 3.days.ago),
-        create(:trade, :btcusd, price: 3.0, amount: 13.0, created_at: 5.days.ago),
-        create(:trade, :btcusd, price: 25.0, amount: 5.0, created_at: 1.days.ago, maker: member),
-        create(:trade, :btcusd, price: 6.0, amount: 5.0, created_at: 5.days.ago, taker: member),
-        create(:trade, :btcusd, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
-        create(:trade, :btceth, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
-        create(:trade, :btceth_qe, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
+        create(:trade, :btc_usd, price: 12.0, amount: 2.0, created_at: 3.days.ago),
+        create(:trade, :btc_usd, price: 3.0, amount: 13.0, created_at: 5.days.ago),
+        create(:trade, :btc_usd, price: 25.0, amount: 5.0, created_at: 1.days.ago, maker: member),
+        create(:trade, :btc_usd, price: 6.0, amount: 5.0, created_at: 5.days.ago, taker: member),
+        create(:trade, :btc_usd, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
+        create(:trade, :btc_eth, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
+        create(:trade, :btc_eth_qe, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
       ]
     end
 
@@ -125,29 +125,29 @@ describe API::V2::Admin::Trades, type: :request do
         end
 
         it 'filters by spot market' do
-          api_get'/api/v2/admin/trades', token: token, params: { market: 'btcusd' }
+          api_get'/api/v2/admin/trades', token: token, params: { market: 'btc_usd' }
           result = JSON.parse(response.body)
 
-          expected = trades.select { |t| t.market_id == 'btcusd' }
+          expected = trades.select { |t| t.market_id == 'btc_usd' }
 
           expect(result.map { |t| t['id'] }).to match_array expected.map(&:id)
         end
 
         it 'filters by spot market' do
-          api_get'/api/v2/admin/trades', token: token, params: { market: 'btceth' }
+          api_get'/api/v2/admin/trades', token: token, params: { market: 'btc_eth' }
           result = JSON.parse(response.body)
 
-          expected = trades.select { |t| t.market_id == 'btceth' && t.market_type == 'spot' }
+          expected = trades.select { |t| t.market_id == 'btc_eth' && t.market_type == 'spot' }
 
           expect(result.map { |t| t['id'] }).to match_array expected.map(&:id)
           expect(result.map { |t| t['market_type'] }).to match_array expected.map(&:market_type)
         end
 
         it 'filters by qe market' do
-          api_get'/api/v2/admin/trades', token: token, params: { market: 'btceth', market_type: 'qe' }
+          api_get'/api/v2/admin/trades', token: token, params: { market: 'btc_eth', market_type: 'qe' }
           result = JSON.parse(response.body)
 
-          expected = trades.select { |t| t.market_id == 'btceth' && t.market_type == 'qe' }
+          expected = trades.select { |t| t.market_id == 'btc_eth' && t.market_type == 'qe' }
 
           expect(result.map { |t| t['id'] }).to match_array expected.map(&:id)
           expect(result.map { |t| t['market_type'] }).to match_array expected.map(&:market_type)
@@ -223,9 +223,9 @@ describe API::V2::Admin::Trades, type: :request do
   end
 
   describe 'GET /api/v2/admin/trades/:id' do
-    let(:maker) { create(:order_ask, :btcusd) }
-    let(:taker) { create(:order_bid, :btcusd) }
-    let(:trade) { create(:trade, :btcusd, price: 12.0, amount: 2.0, maker_order: maker, taker_order: taker) }
+    let(:maker) { create(:order_ask, :btc_usd) }
+    let(:taker) { create(:order_bid, :btc_usd) }
+    let(:trade) { create(:trade, :btc_usd, price: 12.0, amount: 2.0, maker_order: maker, taker_order: taker) }
 
     it 'entity provides correct fields' do
       api_get "/api/v2/admin/trades/#{trade.id}", token: token

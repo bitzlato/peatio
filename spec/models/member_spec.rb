@@ -40,10 +40,10 @@ describe Member do
     subject { create(:member, :level_3) }
 
     it 'should find all trades belong to user' do
-      ask = create(:order_ask, :btcusd, member: member)
-      bid = create(:order_bid, :btcusd, member: member)
-      t1 = create(:trade, :btcusd, maker_order: ask)
-      t2 = create(:trade, :btcusd, taker_order: bid)
+      ask = create(:order_ask, :btc_usd, member: member)
+      bid = create(:order_bid, :btc_usd, member: member)
+      t1 = create(:trade, :btc_usd, maker_order: ask)
+      t2 = create(:trade, :btc_usd, taker_order: bid)
       expect(member.trades.order('id')).to eq [t1, t2]
     end
   end

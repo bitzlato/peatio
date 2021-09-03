@@ -21,7 +21,7 @@ describe Order, 'validations', type: :model do
 
   context 'limit order' do
     it 'should make sure price is present' do
-      order = OrderAsk.new(market_id: 'btcusd', price: nil, ord_type: 'limit')
+      order = OrderAsk.new(market_id: 'btc_usd', price: nil, ord_type: 'limit')
       expect(order).not_to be_valid
       expect(order.errors[:price]).to include 'is not a number'
     end
@@ -29,14 +29,14 @@ describe Order, 'validations', type: :model do
 
   context 'market order' do
     it 'should make sure price is not present' do
-      order = OrderAsk.new(market_id: 'btcusd', price: '0.0'.to_d, ord_type: 'market')
+      order = OrderAsk.new(market_id: 'btc_usd', price: '0.0'.to_d, ord_type: 'market')
       expect(order).not_to be_valid
       expect(order.errors[:price]).to include 'must not be present'
     end
   end
 
   context 'attr_readonly' do
-    let!(:order) { create(:order_bid, :btcusd) }
+    let!(:order) { create(:order_bid, :btc_usd) }
 
     it "does not allow updating readonly attributes" do
       expect { order.update_attribute(:member_id, 1) }.to \
@@ -135,8 +135,8 @@ describe Order, '#cancel' do
 end
 
 describe Order, 'precision validations', type: :model do
-  let(:order_bid) { build(:order_bid, :btcusd, price: '12.32'.to_d, volume: '123.123456789') }
-  let(:order_ask) { build(:order_ask, :btcusd, price: '12.326'.to_d, volume: '123.12345678') }
+  let(:order_bid) { build(:order_bid, :btc_usd, price: '12.32'.to_d, volume: '123.123456789') }
+  let(:order_ask) { build(:order_ask, :btc_usd, price: '12.326'.to_d, volume: '123.12345678') }
 
   it 'validates origin_volume precision' do
     record = order_bid
@@ -152,8 +152,8 @@ describe Order, 'precision validations', type: :model do
 end
 
 describe Order, 'market_type validations', type: :model do
-  let(:order_bid) { build(:order_bid, :btcusd, price: '12.32'.to_d, volume: '123.123456789', market_type: '') }
-  let(:order_ask) { build(:order_ask, :btcusd, price: '12.326'.to_d, volume: '123.12345678', market_type: 'invalid') }
+  let(:order_bid) { build(:order_bid, :btc_usd, price: '12.32'.to_d, volume: '123.123456789', market_type: '') }
+  let(:order_ask) { build(:order_ask, :btc_usd, price: '12.326'.to_d, volume: '123.12345678', market_type: 'invalid') }
 
   it 'validates market_type precense' do
     record = order_bid
@@ -172,8 +172,8 @@ describe Order, '#done', type: :model do
   let(:ask_fee) { '0.003'.to_d }
   let(:bid_fee) { '0.001'.to_d }
   let(:order) { order_bid }
-  let(:order_bid) { create(:order_bid, :btcusd, price: '1.2'.to_d, volume: '10.0'.to_d) }
-  let(:order_ask) { create(:order_ask, :btcusd, price: '1.2'.to_d, volume: '10.0'.to_d) }
+  let(:order_bid) { create(:order_bid, :btc_usd, price: '1.2'.to_d, volume: '10.0'.to_d) }
+  let(:order_ask) { create(:order_ask, :btc_usd, price: '1.2'.to_d, volume: '10.0'.to_d) }
   let(:hold_account) { create(:account, :usd, locked: '100.0'.to_d) }
   let(:expect_account) { create(:account, :btc) }
 
@@ -214,7 +214,7 @@ describe Order, 'related accounts' do
 
   context OrderAsk do
     it 'should hold btc and expect usd' do
-      ask = create(:order_ask, :btcusd, member: alice)
+      ask = create(:order_ask, :btc_usd, member: alice)
       expect(ask.hold_account).to eq alice.get_account(:btc)
       expect(ask.expect_account).to eq alice.get_account(:usd)
     end
@@ -222,7 +222,7 @@ describe Order, 'related accounts' do
 
   context OrderBid do
     it 'should hold usd and expect btc' do
-      bid = create(:order_bid, :btcusd, member: bob)
+      bid = create(:order_bid, :btc_usd, member: bob)
       expect(bid.hold_account).to eq bob.get_account(:usd)
       expect(bid.expect_account).to eq bob.get_account(:btc)
     end
@@ -255,7 +255,7 @@ describe Order, '#avg_price' do
   it 'should calculate average price of bid order' do
     expect(
       OrderBid.new(
-        market_id: 'btcusd',
+        market_id: 'btc_usd',
         locked: '10.0',
         origin_locked: '20.0',
         volume: '1.0',
@@ -268,7 +268,7 @@ describe Order, '#avg_price' do
   it 'should calculate average price of ask order' do
     expect(
       OrderAsk.new(
-        market_id: 'btcusd',
+        market_id: 'btc_usd',
         locked: '1.0',
         origin_locked: '2.0',
         volume: '1.0',
@@ -281,7 +281,7 @@ end
 
 describe Order, '#record_submit_operations!' do
   # Persist Order in database.
-  let!(:order){ create(:order_ask, :btcusd, :with_deposit_liability) }
+  let!(:order){ create(:order_ask, :btc_usd, :with_deposit_liability) }
 
   subject { order }
 

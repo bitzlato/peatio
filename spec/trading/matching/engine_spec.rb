@@ -10,13 +10,13 @@ describe Matching::Engine do
     end
   end
 
-  let(:market) { Market.find_spot_by_symbol('btcusd') }
+  let(:market) { Market.find_spot_by_symbol('btc_usd') }
   let(:price)  { 10.to_d }
   let(:volume) { 5.to_d }
   let(:ask)    { Matching.mock_limit_order(type: :ask, price: price, volume: volume) }
   let(:bid)    { Matching.mock_limit_order(type: :bid, price: price, volume: volume) }
 
-  let(:orderbook) { Matching::OrderBookManager.new('btcusd', broadcast: false) }
+  let(:orderbook) { Matching::OrderBookManager.new('btc_usd', broadcast: false) }
   subject         { Matching::Engine.new(market, mode: :run) }
   before          { subject.stubs(:orderbook).returns(orderbook) }
 
@@ -32,7 +32,7 @@ describe Matching::Engine do
       # We expect order to be fully executed.
       let!(:bid1_in_db) do
         create(:order_bid,
-               :btcusd,
+               :btc_usd,
                ord_type: :limit,
                locked: 0.844262.to_d,
                price: 0.86.to_d,
@@ -41,7 +41,7 @@ describe Matching::Engine do
 
       let!(:ask1_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                ord_type: :market,
                locked: 0.918.to_d,
                price: nil,
@@ -55,7 +55,7 @@ describe Matching::Engine do
             {
               :action => "execute",
               :trade => {
-                :market_id=>"btcusd",
+                :market_id=>"btc_usd",
                 :maker_order_id=>bid1_in_db.id,
                 :taker_order_id=>ask1_in_db.id,
                 :strike_price=>0.86.to_d,
@@ -84,7 +84,7 @@ describe Matching::Engine do
       # We expect order to be fully executed.
       let!(:bid1_in_db) do
         create(:order_bid,
-               :btcusd,
+               :btc_usd,
                ord_type: :limit,
                locked: 8.44262.to_d,
                price: 8.6.to_d,
@@ -93,7 +93,7 @@ describe Matching::Engine do
 
       let!(:ask1_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                ord_type: :market,
                locked: 0.918.to_d,
                price: nil,
@@ -107,7 +107,7 @@ describe Matching::Engine do
             {
               :action => "execute",
               :trade => {
-                :market_id=>"btcusd",
+                :market_id=>"btc_usd",
                 :taker_order_id=>ask1_in_db.id,
                 :maker_order_id=>bid1_in_db.id,
                 :strike_price=>8.6.to_d,
@@ -138,14 +138,14 @@ describe Matching::Engine do
       # We expect order to be cancelled.
       let!(:ask1_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                price: 80.06.to_d,
                volume: 0.9817.to_d)
       end
 
       let!(:bid1_in_db) do
         create(:order_bid,
-               :btcusd,
+               :btc_usd,
                ord_type: :market,
                locked: 67.16.to_d,
                price: nil,
@@ -164,7 +164,7 @@ describe Matching::Engine do
                  :type=>:bid,
                  :locked=>67.16.to_d,
                  :volume=>0.8395.to_d,
-                 :market=>"btcusd",
+                 :market=>"btc_usd",
                  :ord_type=>"market"}
             },
             {:persistent=>false}
@@ -192,21 +192,21 @@ describe Matching::Engine do
       # (0.0111 * 0.8006 + 0.83061334 * 1.4117). Which is less then locked.
       let!(:ask1_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                price: 80.06.to_d,
                volume: 0.0111.to_d)
       end
 
       let!(:ask2_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                price: 141.17.to_d,
                volume: 0.9346.to_d)
       end
 
       let!(:bid1_in_db) do
         create(:order_bid,
-               :btcusd,
+               :btc_usd,
                ord_type: :market,
                locked: 47.237199.to_d,
                price: nil,
@@ -220,7 +220,7 @@ describe Matching::Engine do
             {
               :action => "execute",
               :trade => {
-                :market_id=>"btcusd",
+                :market_id=>"btc_usd",
                 :maker_order_id=>ask1_in_db.id,
                 :taker_order_id=>bid1_in_db.id,
                 :strike_price=>80.06.to_d,
@@ -240,7 +240,7 @@ describe Matching::Engine do
                  :type=>:bid,
                  :locked=>46.348533.to_d,
                  :volume=>0.8284.to_d,
-                 :market=>"btcusd",
+                 :market=>"btc_usd",
                  :ord_type=>"market"}
             },
            {:persistent=>false}
@@ -271,28 +271,28 @@ describe Matching::Engine do
       # Which is less then locked.
       let!(:ask1_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                price: 3000.to_d,
                volume: 0.0009.to_d)
       end
 
       let!(:ask2_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                price: 3001.to_d,
                volume: 0.0011.to_d)
       end
 
       let!(:ask3_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                price: 3010.to_d,
                volume: 0.1000.to_d)
       end
 
       let!(:bid1_in_db) do
         create(:order_bid,
-               :btcusd,
+               :btc_usd,
                ord_type: :market,
                locked: 30.03.to_d,
                price: nil,
@@ -305,7 +305,7 @@ describe Matching::Engine do
             :trade_executor,
             { :action => "execute",
               :trade => {
-                :market_id=>"btcusd",
+                :market_id=>"btc_usd",
                 :maker_order_id=>ask1_in_db.id,
                 :taker_order_id=>bid1_in_db.id,
                 :strike_price=>0.3e4,
@@ -318,7 +318,7 @@ describe Matching::Engine do
             :trade_executor,
             { :action => "execute",
               :trade => {
-                :market_id=>"btcusd",
+                :market_id=>"btc_usd",
                 :maker_order_id=>ask2_in_db.id,
                 :taker_order_id=>bid1_in_db.id,
                 :strike_price=>0.3001e4,
@@ -336,7 +336,7 @@ describe Matching::Engine do
                 :type=>:bid,
                 :locked=>0.240289e2,
                 :volume=>0.8e-2,
-                :market=>"btcusd",
+                :market=>"btc_usd",
                 :ord_type=>"market"
             }},
             { :persistent=>false }
@@ -363,14 +363,14 @@ describe Matching::Engine do
       # be cancelled.
       let!(:ask1_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                price: 3000.to_d,
                volume: 0.0009.to_d)
       end
 
       let!(:bid1_in_db) do
         create(:order_bid,
-               :btcusd,
+               :btc_usd,
                ord_type: :market,
                locked: 30.03.to_d,
                price: nil,
@@ -383,7 +383,7 @@ describe Matching::Engine do
             :trade_executor,
             { :action => "execute",
               :trade => {
-                :market_id=>"btcusd",
+                :market_id=>"btc_usd",
                 :maker_order_id=>ask1_in_db.id,
                 :taker_order_id=>bid1_in_db.id,
                 :strike_price=>0.3e4,
@@ -402,7 +402,7 @@ describe Matching::Engine do
                 :type=>:bid,
                 :locked=>0.2733e2,
                 :volume=>0.91e-2,
-                :market=>"btcusd",
+                :market=>"btc_usd",
                 :ord_type=>"market"
               }
             },
@@ -429,14 +429,14 @@ describe Matching::Engine do
       # Firs order match fully. Second order match partially and cancel.
       let!(:ask1_in_db) do
         create(:order_ask,
-               :btcusd,
+               :btc_usd,
                price: 3000.to_d,
                volume: 0.0009.to_d)
       end
 
       let!(:bid1_in_db) do
         create(:order_bid,
-               :btcusd,
+               :btc_usd,
                ord_type: :market,
                locked: 1.35.to_d,
                price: nil,
@@ -445,7 +445,7 @@ describe Matching::Engine do
 
       let!(:bid2_in_db) do
         create(:order_bid,
-               :btcusd,
+               :btc_usd,
                ord_type: :market,
                locked: 2.7.to_d,
                price: nil,
@@ -458,7 +458,7 @@ describe Matching::Engine do
             :trade_executor,
             { :action => "execute",
               :trade => {
-                :market_id => "btcusd",
+                :market_id => "btc_usd",
                 :maker_order_id => ask1_in_db.id,
                 :taker_order_id => bid1_in_db.id,
                 :strike_price => 0.3e4.to_d,
@@ -472,7 +472,7 @@ describe Matching::Engine do
             {
               :action => "execute",
               :trade => {
-                :market_id => "btcusd",
+                :market_id => "btc_usd",
                 :maker_order_id => ask1_in_db.id,
                 :taker_order_id => bid2_in_db.id,
                 :strike_price => 0.3e4.to_d,
@@ -492,7 +492,7 @@ describe Matching::Engine do
                 :type => :bid,
                 :locked => 0.135e1.to_d,
                 :volume => 0.45e-3.to_d,
-                :market => "btcusd",
+                :market => "btc_usd",
                 :ord_type => "market"
               }
             },

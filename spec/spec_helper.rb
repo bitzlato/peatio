@@ -118,7 +118,7 @@ RSpec.configure do |config|
       FactoryBot.create(:wallet, name)
     end
 
-    %i[btcusd btceth btceth_qe].each do |market|
+    %i[btc_usd btc_eth btc_eth_qe].each do |market|
       FactoryBot.find_or_create(:market, market, id: market)
     end
 
