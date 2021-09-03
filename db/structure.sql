@@ -385,6 +385,17 @@ CREATE TABLE public.currencies (
 
 
 --
+-- Name: currencies_wallets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.currencies_wallets (
+    currency_id character varying,
+    wallet_id bigint,
+    use_in_balance boolean DEFAULT true NOT NULL
+);
+
+
+--
 -- Name: deposit_spreads; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1988,6 +1999,27 @@ CREATE INDEX index_currencies_on_visible ON public.currencies USING btree (visib
 
 
 --
+-- Name: index_currencies_wallets_on_currency_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_currencies_wallets_on_currency_id ON public.currencies_wallets USING btree (currency_id);
+
+
+--
+-- Name: index_currencies_wallets_on_currency_id_and_wallet_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_currencies_wallets_on_currency_id_and_wallet_id ON public.currencies_wallets USING btree (currency_id, wallet_id);
+
+
+--
+-- Name: index_currencies_wallets_on_wallet_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_currencies_wallets_on_wallet_id ON public.currencies_wallets USING btree (wallet_id);
+
+
+--
 -- Name: index_currency_ids_and_last_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2882,7 +2914,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210829111838'),
 ('20210831043113'),
 ('20210831045259'),
-('20210831072354'),
-('20210903151042');
+('20210831072354');
 
 
