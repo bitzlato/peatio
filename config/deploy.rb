@@ -67,10 +67,11 @@ set :assets_roles, []
 set :init_system, :systemd
 
 set :systemd_daemon_role, :daemons
-set :systemd_daemon_instances, -> { %i[cron_job blockchain] }
+set :systemd_daemon_instances, -> { %i[cron_job] }
 
+# Restricted daemons list for stages
 set :systemd_amqp_daemon_role, :daemons
-set :systemd_amqp_daemon_instances, -> { %i[deposit_coin_address withdraw_coin deposit_intention matching order_processor trade_executor influx_writer] }
+set :systemd_amqp_daemon_instances, -> { %i[matching order_processor trade_executor influx_writer] }
 
 after 'deploy:publishing', 'systemd:puma:reload-or-restart'
 after 'deploy:publishing', 'systemd:daemon:reload-or-restart'
