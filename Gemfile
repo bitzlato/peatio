@@ -79,6 +79,7 @@ group :development, :test do
   gem 'faker',        '~> 1.8'
   gem 'bullet',       '~> 5.9'
   gem 'grape_on_rails_routes', '~> 0.3.2'
+  gem 'parallel_tests'
 end
 
 group :development do
