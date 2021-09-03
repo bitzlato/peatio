@@ -5,6 +5,7 @@ module Workers
   module AMQP
     class DepositCoinAddress < Base
       def process(payload)
+        return if Rails.env.staging?
         payload.symbolize_keys!
 
         member = Member.find payload[:member_id]
