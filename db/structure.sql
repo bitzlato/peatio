@@ -385,17 +385,6 @@ CREATE TABLE public.currencies (
 
 
 --
--- Name: currencies_wallets; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.currencies_wallets (
-    currency_id character varying,
-    wallet_id bigint,
-    use_in_balance boolean DEFAULT true NOT NULL
-);
-
-
---
 -- Name: deposit_spreads; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -887,9 +876,9 @@ CREATE TABLE public.payment_addresses (
     details_encrypted character varying(1024),
     member_id bigint,
     remote boolean DEFAULT false NOT NULL,
+    blockchain_id bigint NOT NULL,
     balances jsonb DEFAULT '{}'::jsonb,
-    balances_updated_at timestamp without time zone,
-    blockchain_id bigint NOT NULL
+    balances_updated_at timestamp without time zone
 );
 
 
@@ -1242,8 +1231,8 @@ CREATE TABLE public.wallets (
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
-    enable_invoice boolean DEFAULT false NOT NULL,
     plain_settings json,
+    enable_invoice boolean DEFAULT false NOT NULL,
     blockchain_id bigint NOT NULL,
     use_as_fee_source boolean DEFAULT false NOT NULL,
     balance_updated_at timestamp without time zone
@@ -1996,27 +1985,6 @@ CREATE INDEX index_currencies_on_position ON public.currencies USING btree ("pos
 --
 
 CREATE INDEX index_currencies_on_visible ON public.currencies USING btree (visible);
-
-
---
--- Name: index_currencies_wallets_on_currency_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_currencies_wallets_on_currency_id ON public.currencies_wallets USING btree (currency_id);
-
-
---
--- Name: index_currencies_wallets_on_currency_id_and_wallet_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_currencies_wallets_on_currency_id_and_wallet_id ON public.currencies_wallets USING btree (currency_id, wallet_id);
-
-
---
--- Name: index_currencies_wallets_on_wallet_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_currencies_wallets_on_wallet_id ON public.currencies_wallets USING btree (wallet_id);
 
 
 --
@@ -2868,7 +2836,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210722125206'),
 ('20210727101029'),
 ('20210803084921'),
-('20210803134756'),
 ('20210806112457'),
 ('20210806112458'),
 ('20210806131828'),
@@ -2915,6 +2882,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210829111838'),
 ('20210831043113'),
 ('20210831045259'),
-('20210831072354');
+('20210831072354'),
+('20210903151042');
 
 

@@ -140,7 +140,7 @@ class Market < ApplicationRecord
   # == Callbacks ============================================================
 
   after_initialize :initialize_defaults, if: :new_record?
-  before_validation(on: :create) { self.symbol = "#{base_currency}#{quote_currency}" }
+  before_validation(on: :create) { self.symbol = generate_symbol }
   before_validation(on: :create) { self.position = Market.count + 1 unless position.present? }
 
   after_commit { AMQP::Queue.enqueue(:matching, action: 'new', market: symbol) }
@@ -197,6 +197,10 @@ class Market < ApplicationRecord
     { name: name, base_unit: base_currency, quote_unit: quote_currency }
   end
 
+  def orders
+    Order.with_market self
+  end
+
   # min_amount_by_precision - is the smallest positive number which could be
   # rounded to value greater then 0 with precision defined by
   # Market #amount_precision. So min_amount_by_precision is the smallest amount
@@ -219,5 +223,11 @@ class Market < ApplicationRecord
 
   def engine_name=(engine_name)
     self.engine = Engine.find_by(name: engine_name)
+  end
+
+  private
+
+  def generate_symbol
+    "#{base_currency.remove('-')}_#{quote_currency.remove('-')}".downcase
   end
 end
