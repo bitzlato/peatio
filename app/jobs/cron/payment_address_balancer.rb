@@ -2,6 +2,7 @@ module Jobs
   module Cron
     class PaymentAddressBalancer
       def self.process
+        return unless Rails.env.production?
         PaymentAddress.where.not(address: nil).find_each(&method(:update_balances))
         sleep 10
       end
