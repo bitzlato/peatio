@@ -1,6 +1,7 @@
 class CurrencyRenamer
   # Example
   # CurrencyRenamer.new.call(:usdc, 'usdc-erc20')
+  # CurrencyRenamer.new.call(:bnb, 'bnb-bep20')
   def call(old_id, new_id)
     Currency.find(old_id)
     Currency.where(id: old_id).update_all id: new_id
@@ -25,7 +26,9 @@ class CurrencyRenamer
       DepositSpread,
       Deposit,
       Transaction,
-      Withdraw
+      CurrencyWallet,
+      Withdraw,
+      Account
     ].each do |model|
       puts "Move #{model} from #{old_id} to #{new_id}"
       model.where(currency_id: old_id).update_all currency_id: new_id
