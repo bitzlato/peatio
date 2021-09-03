@@ -177,6 +177,10 @@ class EthereumGateway < AbstractGateway
     )
   end
 
+  def current_syncing_block
+    client.json_rpc(:eth_syncing).fetch('currentBlock').to_i(16)
+  end
+
   private
 
   def build_client
