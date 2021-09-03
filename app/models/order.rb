@@ -83,6 +83,14 @@ class Order < ApplicationRecord
 
   after_commit :trigger_private_event
 
+  before_destroy do
+    raise 'Only rejected or canceled orders can be destroyed' unless %w[cancel reject].include? state
+  end
+
+  after_destroy do
+    Operations::Liability.where(reference: self).delete_all
+  end
+
   before_create unless: -> { Rails.env.test? } do
     raise(
       ::Account::AccountError,
