@@ -1,7 +1,7 @@
 class CurrencyRenamer
   def self.rename_legacy
-    # new.call(:bnb,  'bnb-bep20')
-    # new.call(:usdc, 'usdc-erc20')
+    new.call(:bnb,  'bnb-bep20')
+    new.call(:usdc, 'usdc-erc20')
     new.call(:usdt, 'usdt-erc20')
     new.call(:mcr,  'mcr-erc20')
     new.call(:dai,  'dai-erc20')
@@ -47,6 +47,14 @@ class CurrencyRenamer
         m.update_column :symbol, m.send(:generate_symbol)
       end
       puts "Update currency_id in models"
+
+      CurrencyWallet.where(currency_id: old_id).each do |cw|
+        CurrencyWallet.
+          create_with(use_in_balance: cw.use_in_balance).
+          find_or_create_by!(currency_id: new_id, wallet_id: cw.wallet_id)
+      end
+
+      CurrencyWallet.where(currency_id: old_id).delete_all
 
       [
         Adjustment,
