@@ -112,6 +112,16 @@ module API
             desc: 'The shared transaction ID'
           }
         )
+
+        expose(
+          :invoice_expires_at,
+          format_with: :iso8601,
+          documentation: {
+            type: String,
+            desc: 'The datetime when the deposit will expire. 24h by default.'
+          },
+          if: ->(deposit) { deposit.invoiced? }
+        )
       end
     end
   end

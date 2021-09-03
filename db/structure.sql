@@ -457,7 +457,8 @@ CREATE TABLE public.deposits (
     invoice_id character varying,
     error json,
     blockchain_id bigint NOT NULL,
-    collection_state character varying DEFAULT 'pending'::character varying NOT NULL
+    collection_state character varying DEFAULT 'pending'::character varying NOT NULL,
+    invoice_expires_at timestamp without time zone
 );
 
 
@@ -2685,7 +2686,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2912,6 +2913,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210829111838'),
 ('20210831043113'),
 ('20210831045259'),
-('20210831072354');
+('20210831072354'),
+('20210827090805');
 
 
