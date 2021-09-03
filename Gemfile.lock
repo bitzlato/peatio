@@ -397,6 +397,8 @@ GEM
       nenv (~> 0.1)
       shellany (~> 0.0)
     parallel (1.20.1)
+    parallel_tests (3.7.1)
+      parallel
     parser (3.0.0.0)
       ast (~> 2.4.1)
     pg (1.2.3)
@@ -631,6 +633,7 @@ DEPENDENCIES
   mocha (~> 1.8)
   money!
   net-http-persistent (~> 3.0.1)
+  parallel_tests
   peatio!
   pg (~> 1.2)
   pry-byebug (~> 3.7)
