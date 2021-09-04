@@ -7,6 +7,7 @@ class EthereumGateway
              from_address:,
              to_address:,
              secret:,
+             nonce: nil,
              contract_address: nil,
              subtract_fee: false,
              gas_limit: ,
@@ -23,6 +24,7 @@ class EthereumGateway
                                   to_address: to_address,
                                   contract_address: contract_address,
                                   secret: secret,
+                                  nonce: nonce,
                                   gas_limit: gas_limit,
                                   gas_price: gas_price)
       : create_eth_transaction!(amount: amount,
@@ -30,6 +32,7 @@ class EthereumGateway
                                 to_address: to_address,
                                 subtract_fee: subtract_fee,
                                 secret: secret,
+                                nonce: nonce,
                                 gas_limit: gas_limit,
                                 gas_price: gas_price)
       peatio_transaction.options.merge! gas_factor: gas_factor
@@ -40,9 +43,17 @@ class EthereumGateway
                                 to_address:,
                                 amount:,
                                 secret:,
+                                nonce:,
                                 gas_limit:,
                                 gas_price:,
                                 subtract_fee: false)
+
+      gas_limit ||= client.json_rpc(:eth_estimateGas, [
+        gasPrice: '0x' + gas_price.to_i.to_s(16),
+        from: normalize_address(from_address),
+        to: normalize_address(to_address),
+        value: '0x' + amount.to_i.to_s(16),
+      ]).to_i(16)
 
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= gas_limit.to_i * gas_price.to_i if subtract_fee
@@ -59,6 +70,7 @@ class EthereumGateway
                   [{
           from:     normalize_address(from_address),
           to:       normalize_address(to_address),
+          nonce:    nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
           value:    '0x' + amount.to_s(16),
           gas:      '0x' + gas_limit.to_i.to_s(16),
           gasPrice: '0x' + gas_price.to_i.to_s(16)
@@ -82,10 +94,17 @@ class EthereumGateway
                                   to_address:,
                                   amount:,
                                   contract_address:,
+                                  nonce:,
                                   secret:,
                                   gas_limit: nil,
                                   gas_price:)
-      gas_limit ||= token_gas_limit
+      gas_limit ||= client.json_rpc(:eth_estimateGas, [
+        gasPrice: '0x' + gas_price.to_i.to_s(16),
+        from: normalize_address(from_address),
+        to: contract_address,
+        data: data
+      ]).to_i(16)
+
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
       logger.info("Create erc20 transaction #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
@@ -93,6 +112,7 @@ class EthereumGateway
         client.json_rpc(:personal_sendTransaction,
                         [{
           from:     normalize_address(from_address),
+          nonce:    nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
           to:       contract_address,
           data:     data,
           gas:      '0x' + gas_limit.to_i.to_s(16),

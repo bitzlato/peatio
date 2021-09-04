@@ -132,9 +132,11 @@ class EthereumGateway < AbstractGateway
                           secret:,
                           contract_address: nil,
                           subtract_fee: false, # nil means auto
+                          nonce: nil,
                           meta: {})
 
     raise 'amount must be a Money' unless amount.is_a? Money
+    # If gas_limit is nil it will be estimated by eth_estimateGas
     gas_limit = amount.currency.token? ? blockchain.client_options[:token_gas_limit] : blockchain.client_options[:base_gas_limit]
     monefy_transaction(
       TransactionCreator
@@ -143,10 +145,11 @@ class EthereumGateway < AbstractGateway
             to_address: to_address,
             amount: amount.base_units,
             secret: secret,
-            gas_factor: blockchain.client_options[:gas_factor] || 1,
             gas_limit: gas_limit,
+            gas_factor: blockchain.client_options[:gas_factor] || 1,
             contract_address: contract_address,
-            subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee
+            subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee,
+            nonce: nonce
            )
     )
   end

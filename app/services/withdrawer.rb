@@ -80,6 +80,7 @@ class Withdrawer
         amount:           withdraw.money_amount,
         contract_address: withdraw.currency.contract_address,
         secret:           wallet.secret,
+        nonce:            withdraw.id,
         meta:             { withdraw_tid: withdraw.tid }
     ) || raise("No transaction returned for withdraw (#{withdraw.id})")
   end
