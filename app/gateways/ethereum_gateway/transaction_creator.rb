@@ -43,7 +43,7 @@ class EthereumGateway
                                 to_address:,
                                 amount:,
                                 secret:,
-                                nonce:,
+                                nonce: nil,
                                 gas_limit:,
                                 gas_price:,
                                 subtract_fee: false)
@@ -94,7 +94,7 @@ class EthereumGateway
                                   to_address:,
                                   amount:,
                                   contract_address:,
-                                  nonce:,
+                                  nonce: nil,
                                   secret:,
                                   gas_limit: nil,
                                   gas_price:)

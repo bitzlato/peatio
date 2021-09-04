@@ -44,6 +44,7 @@ describe ::EthereumGateway do
              to_address: hot_wallet.address,
              amount: 1000000,
              secret: nil,
+             nonce: nil,
              subtract_fee: false,
              gas_limit: token_gas_limit,
              gas_factor: gas_factor,
