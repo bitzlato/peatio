@@ -11,24 +11,24 @@ describe Workers::AMQP::CancelMemberOrders do
 
   let!(:ask_orders) do
     create(
-      :order_ask, :btcusd,
+      :order_ask, :btc_usd,
       price: '1', volume: '1.0', state: :wait,
       member: member
     )
     create(
-      :order_ask, :btcusd,
+      :order_ask, :btc_usd,
       price: '1', volume: '1.0', state: :wait,
       member: member
     )
   end
   let!(:bid_orders) do
     create(
-      :order_bid, :btcusd,
+      :order_bid, :btc_usd,
       price: '1', volume: '1.0', state: :wait,
       member: member
     )
     create(
-      :order_bid, :btcusd,
+      :order_bid, :btc_usd,
       price: '1', volume: '1.0', state: :wait,
       member: member
     )
