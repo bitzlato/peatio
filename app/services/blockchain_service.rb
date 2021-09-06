@@ -86,12 +86,15 @@ class BlockchainService
       bn.update!(
         transactions_processed_count: processed_count, error_message: nil, status: :success
       )
+
+      processed_count
     rescue StandardError => err
       bn.update!(
         transactions_processed_count: 0, error_message: err.message, status: :error
       )
       report_exception err, true, blockchain_id: blockchain.id, block_number: block_number
       raise err
+      0
     end
   end
 

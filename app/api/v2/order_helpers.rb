@@ -3,7 +3,7 @@
 module API
   module V2
     module OrderHelpers
-      DESCRIBED_ERRORS_MESSAGES = %i[
+      DESCRIBED_ERRORS_MESSAGES = %w[
         market.account.insufficient_balance
         market.order.insufficient_market_liquidity
         market.order.invalid_volume_or_price
@@ -21,7 +21,7 @@ module API
         else
           error_message = result.errors.first
 
-          if DESCRIBED_ERRORS_MESSAGES.include?(error_message)
+          if DESCRIBED_ERRORS_MESSAGES.include?(error_message.to_s)
             report_api_error(error_message, request)
           else
             report_exception(error_message)
