@@ -168,6 +168,10 @@ class Order < ApplicationRecord
     end
   end
 
+  def cancel!
+    Order.cancel(id)
+  end
+
   def trigger_third_party_creation
     self.uuid ||= UUID.generate
     self.created_at ||= Time.now
