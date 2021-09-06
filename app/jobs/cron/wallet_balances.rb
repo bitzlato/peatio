@@ -20,7 +20,6 @@ module Jobs
         wallet.update!(balance: balances, balance_updated_at: Time.zone.now)
       rescue StandardError => e
         report_exception(e, true, wallet_id: wallet.id)
-        next
       end
     end
   end
