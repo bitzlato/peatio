@@ -4,9 +4,9 @@ Management API is server-to-server API with high privileges.
 ## Version: 3.0.0
 
 **Contact information:**  
-openware.com  
-<https://www.openware.com>  
-hello@openware.com  
+Official website: 
+<https://bitzlato.com> 
+support@bitzlato.com   
 
 **License:** <https://github.com/openware/peatio/blob/master/LICENSE.md>
 

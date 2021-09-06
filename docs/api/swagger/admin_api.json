@@ -3,9 +3,9 @@
     "title": "Peatio Admin API v2",
     "description": "Admin API high privileged API with RBAC.",
     "contact": {
-      "name": "openware.com",
-      "email": "hello@openware.com",
-      "url": "https://www.openware.com"
+      "name": "bitzlato.com",
+      "email": "support@bitzlato.com",
+      "url": "https://bitzlato.com"
     },
     "license": {
       "url": "https://github.com/openware/peatio/blob/master/LICENSE.md"
