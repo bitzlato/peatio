@@ -34,6 +34,10 @@ class Withdraw < ApplicationRecord
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
 
+  before_create do
+    raise 'Закрыли вывод c бота (Ilia Gribovski)' if member.uid == 'IDEABB4E3F7F'
+  end
+
   # TODO validate rid by blockchain specs
   #
   validates :rid, :aasm_state, presence: true
