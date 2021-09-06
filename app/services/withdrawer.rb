@@ -50,7 +50,7 @@ class Withdrawer
       )
 
       logger.warn id: withdraw.id,
-        tid: transaction.hash,
+        txid: transaction.hash,
         message: 'The currency API accepted withdraw and assigned transaction ID.'
       withdraw.dispatch!
 
