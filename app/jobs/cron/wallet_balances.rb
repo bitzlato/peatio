@@ -2,6 +2,8 @@ module Jobs
   module Cron
     module WalletBalances
       def self.process
+        # Стейджи не имеют доступа в шлюзы
+        return if Rails.env.staging?
         Wallet.active.find_each do |w|
           # TODO Получать балансы со шлюза
           balances = w.current_balance.each_with_object({}) do |(k,v), a|
