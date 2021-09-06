@@ -62,9 +62,9 @@ module API
                                   info: {
                                     title:          "Peatio Management API #{API::V2::Mount::API_VERSION}",
                                     description:    'Management API is server-to-server API with high privileges.',
-                                    contact_name:   'openware.com',
-                                    contact_email:  'hello@openware.com',
-                                    contact_url:    'https://www.openware.com',
+                                    contact_name:   Peatio::App.config.official_name,
+                                    contact_email:  Peatio::App.config.official_email,
+                                    contact_url:    Peatio::App.config.official_website,
                                     licence:        'MIT',
                                     license_url:    'https://github.com/openware/peatio/blob/master/LICENSE.md'
                                   },

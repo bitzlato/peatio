@@ -41,9 +41,9 @@ module API
                                   info: {
                                     title:          "Peatio Admin API #{API::V2::Mount::API_VERSION}",
                                     description:    'Admin API high privileged API with RBAC.',
-                                    contact_name:   'openware.com',
-                                    contact_email:  'hello@openware.com',
-                                    contact_url:    'https://www.openware.com',
+                                    contact_name:   Peatio::App.config.official_name,
+                                    contact_email:  Peatio::App.config.official_email,
+                                    contact_url:    Peatio::App.config.official_website,
                                     licence:        'MIT',
                                     license_url:    'https://github.com/openware/peatio/blob/master/LICENSE.md'
                                   },
