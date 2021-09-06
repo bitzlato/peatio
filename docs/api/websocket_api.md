@@ -1,9 +1,8 @@
 # Peatio WebSocket API
 
-Peatio WebSocket API connections are handled by Ranger service provided by
-[peatio gem](https://github.com/rubykube/peatio-core).
+Peatio WebSocket API connections are handled by service [rango](https://github.com/bitzlato/rango).
 
-### API
+## API
 
 There are two types of channels:
 
@@ -30,69 +29,43 @@ List of supported private streams (requires authentication):
 
 You can find a format of these events below in the doc.
 
-### Authentication
+## Connection
 
-Authentication happens on websocket message with following JSON structure.
+Example of connection to public channel using the [wscat](https://github.com/websockets/wscat):
 
-```json
-{
-  "jwt": "Bearer <Token>"
-}
+```bash
+$ wscat -n -c 'wss://market.bitzlato.com/api/v2/ranger/public?stream=usdeth'
 ```
 
-If authentication was done, server will respond successfully
+Connection to the private channel requires creating the [API key](https://github.com/bitzlato/peatio/blob/master/docs/api/trading_api.md#how-to-create-api-key). Example of connection on nodejs:
 
-```json
-{
-  "success": {
-    "message": "Authenticated."
+```js
+const websocket = require("ws");
+const crypto = require("crypto");
+
+const nonce = Date.now();
+const apiKey = "changeme";
+const secretKey = "changeme";
+const signature = crypto
+  .createHmac("sha256", secretKey)
+  .update(nonce + apiKey)
+  .digest("hex");
+
+const client = new websocket(
+  "wss://market.bitzlato.com/api/v2/ranger/private?cancel_on_close=1",
+  {
+    headers: {
+      "X-Auth-Nonce": nonce,
+      "X-Auth-Apikey": apiKey,
+      "X-Auth-Signature": signature,
+    },
   }
-}
+);
 ```
 
-Otherwise server will return an error
+## Streams subscription
 
-```json
-{
-  "error": {
-    "message": "Authentication failed."
-  }
-}
-```
-
-If authentication JWT token has invalid type, server return an error
-
-```json
-{
-  "error": {
-    "message": "Token type is not provided or invalid."
-  }
-}
-```
-
-If other error occurred during the message handling server throws an error
-
-```json
-{
-  "error": {
-    "message": "Error while handling message."
-  }
-}
-```
-
-**Note:** Peatio websocket API supports authentication only Bearer type of JWT token.
-
-**Example** of authentication message:
-
-```json
-{
-  "jwt": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"
-}
-```
-
-### Streams subscription
-
-#### Using parameters
+### Using parameters
 
 You can specify streams to subscribe to by passing the `stream` GET parameter in the connection URL. The parameter can be specified multiple times for subscribing to multiple streams.
 
@@ -104,7 +77,7 @@ wss://demo.openware.com/api/v2/ranger/public/?stream=global.tickers&stream=ethus
 
 This will subscribe you to _tickers_ and _trades_ events from _ethusd_ market once the connection is established.
 
-#### Subscribe and unsubscribe events
+### Subscribe and unsubscribe events
 
 You can manage the connection subscriptions by send the following events after the connection is established:
 
@@ -142,9 +115,9 @@ The server confirms the unsubscription with the following message and provides t
 }
 ```
 
-### Public streams
+## Public streams
 
-#### Order-Book
+### Order-Book
 
 This stream sends a snapshot of the order-book at the subscription time, then it sends increments. Volumes information in increments replace the previous values. If the volume is zero the price point should be removed from the order-book.
 
@@ -181,7 +154,7 @@ Example of order-book increment message:
 }
 ```
 
-#### Trades
+### Trades
 
 Here is structure of `<market>.trades` event expose as array with trades:
 
@@ -193,7 +166,7 @@ Here is structure of `<market>.trades` event expose as array with trades:
 | `amount`     | The amount of trade.                         |
 | `created_at` | Trade create time.                           |
 
-#### Kline point
+### Kline point
 
 Kline point as array of numbers:
 
@@ -210,7 +183,7 @@ Example:
 [1537370580, 0.0839, 0.0921, 0.0781, 0.0845, 0.5895]
 ```
 
-#### Tickers
+### Tickers
 
 Here is structure of `global.tickers` event expose as array with all markets pairs:
 
@@ -231,9 +204,9 @@ Here is structure of `global.tickers` event expose as array with all markets pai
 | `avg_price`            | Average price for last 24 hours. |
 | `price_change_percent` | Average price change in percent. |
 
-### Private streams
+## Private streams
 
-#### Order
+### Order
 
 Here is structure of `Order` event:
 
@@ -254,7 +227,7 @@ Here is structure of `Order` event:
 | `kind`             | Type of order, either `bid` or `ask`. (Deprecated)               |
 | `at`               | Order create time. (Deprecated) (In peatio `created_at`)         |
 
-#### Trade
+### Trade
 
 Here is structure of `Trade` event:
 
@@ -270,7 +243,7 @@ Here is structure of `Trade` event:
 | `created_at` | Trade create time.                                                   |
 | `order_id`   | User order identifier in trade.                                      |
 
-### Working with orders
+## Working with orders
 
 While connecting to the private channel allowed to add GET request parameters:
 
@@ -281,7 +254,16 @@ While connecting to the private channel allowed to add GET request parameters:
 To create a Sell/Buy order need to send the following message:
 
 ```json
-{"event": "order","data": {"market": "btcusd","side": "sell","volume": "1","ord_type": "limit","price": "3000"}}
+{
+  "event": "order",
+  "data": {
+    "market": "btcusd",
+    "side": "sell",
+    "volume": "1",
+    "ord_type": "limit",
+    "price": "3000"
+  }
+}
 ```
 
 Structure of `Order`:
@@ -293,31 +275,3 @@ Structure of `Order`:
 | `volume`   | The amount user want to sell/buy.                                                          |
 | `ord_type` | Type of order, either 'limit' or 'market'.                                                 |
 | `price`    | Price for each unit. e.g. If you want to sell/buy 1 btc at 3000 usd, the price is '3000.0' |
-
-### Development
-
-Start ranger websocket server using following command in peatio-core gem:
-
-```bash
-$ ./bin/peatio service start ranger
-```
-
-Now we can test authentication with [wscat](https://github.com/websockets/wscat):
-
-#### Connect to public channel:
-
-```bash
-$ wscat -n -c 'ws://ws.app.local:8080/api/ranger/v2?stream=usdeth'
-```
-
-#### Connect to private channel:
-
-Authorization header will be injected automatically by ambassador so we could subscribe to private channels.
-
-```bash
-$ wscat -n -c 'ws://ws.app.local:8080/api/ranger/v2?stream=trade'
-```
-
-### Examples
-
-There is also [example of working with Ranger service using NodeJS.](https://github.com/rubykube/ranger-example-nodejs)
