@@ -8,7 +8,7 @@ describe Withdrawer do
   let(:gateway) { wallet.blockchain.gateway }
   let(:blockchain) { wallet.blockchain }
 
-  subject { described_class.new(wallet) }
+  subject { described_class.new }
 
   context do
     before do

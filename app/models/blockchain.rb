@@ -74,8 +74,12 @@ class Blockchain < ApplicationRecord
     super.with_indifferent_access
   end
 
-  def hot_wallet
-    wallets.active.hot.take
+  def withdraw_wallet_for_currency(currency)
+    wallets.
+      active.
+      hot.
+      with_withdraw_currency(currency).
+      take
   end
 
   def wallets_addresses

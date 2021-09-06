@@ -19,13 +19,7 @@ module Workers
           return
         end
 
-        wallet = withdraw.currency.blockchain.wallets.with_withdraw_currency(withdraw.currency).take
-        if wallet.blank?
-          @logger.warn id: payload[:id], message: 'No hot wallet for withdraw'
-          return
-        end
-
-        Withdrawer.new(wallet, @logger).call withdraw
+        Withdrawer.new(@logger).call withdraw
 
         # Пока не понимаю что проихсодит с исключениями не указанными тут, поэтому отключил
         # rescue AASM::InvalidTransition => err

@@ -14,11 +14,11 @@ class Withdrawer
 
   Fail = Class.new Error
   Busy = Class.new Error
+  NoHotWallet = Class.new Error
 
-  attr_reader :wallet, :logger
+  attr_reader :logger
 
-  def initialize(wallet, logger = nil)
-    @wallet = wallet || raise("No wallet")
+  def initialize(logger = nil)
     @logger = logger || TaggedLogger.new(Rails.logger, worker: __FILE__)
   end
 
@@ -73,13 +73,19 @@ class Withdrawer
   private
 
   def push_transaction_to_gateway!(withdraw)
+    withdraw_wallet =
+      withdraw.
+        blockchain.
+        withdraw_wallet_for_currency(withdraw.currency) ||
+        raise(NoHotWallet, "No hot withdraw wallet for withdraw", withdraw_id:  withdraw.id)
+
     withdraw.blockchain.gateway.
       create_transaction!(
-        from_address:     wallet.address,
+        from_address:     withdraw_wallet.address,
         to_address:       withdraw.to_address,
         amount:           withdraw.money_amount,
         contract_address: withdraw.currency.contract_address,
-        secret:           wallet.secret,
+        secret:           withdraw_wallet.secret,
         nonce:            withdraw.id,
         meta:             { withdraw_tid: withdraw.tid }
     ) || raise("No transaction returned for withdraw (#{withdraw.id})")
