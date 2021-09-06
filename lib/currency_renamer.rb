@@ -9,6 +9,7 @@ class CurrencyRenamer
   end
 
   def call(old_id, new_id)
+    raise 'add support renaming market_id in Trade, Order and TradingFee'
     Currency.transaction do
       puts "Rename #{old_id} to #{new_id}"
       old_currency = Currency.find(old_id)
