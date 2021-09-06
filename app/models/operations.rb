@@ -15,7 +15,7 @@ module Operations
     end
 
     def klass_for(code:)
-      account = Operations::Account.find_by(code: code)
+      account = Operations::Account.find_by!(code: code)
       { asset: Operations::Asset,
         liability: Operations::Liability,
         revenue: Operations::Revenue,
