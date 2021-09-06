@@ -47,12 +47,14 @@ class EthereumGateway
                                 gas_price:,
                                 subtract_fee: false)
 
-      gas_limit ||= client.json_rpc(:eth_estimateGas, [
-        gasPrice: '0x' + gas_price.to_i.to_s(16),
-        from: normalize_address(from_address),
-        to: normalize_address(to_address),
-        value: '0x' + amount.to_i.to_s(16),
-      ]).to_i(16)
+      raise 'amount must be an integer' unless amount.is_a? Integer
+
+      gas_limit ||= estimate_gas(
+        from: from_address,
+        to: to_address,
+        gas_price: gas_price,
+        value: amount.to_i
+      )
 
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= gas_limit.to_i * gas_price.to_i if subtract_fee
@@ -97,14 +99,14 @@ class EthereumGateway
                                   secret:,
                                   gas_limit: nil,
                                   gas_price:)
-      gas_limit ||= client.json_rpc(:eth_estimateGas, [
-        gasPrice: '0x' + gas_price.to_i.to_s(16),
-        from: normalize_address(from_address),
+      data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
+
+      gas_limit ||= estimate_gas(
+        gas_price: gas_price,
+        from: from_address,
         to: contract_address,
         data: data
-      ]).to_i(16)
-
-      data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
+      )
 
       logger.info("Create erc20 transaction #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       txid = validate_txid!(
@@ -129,6 +131,18 @@ class EthereumGateway
           gas_limit: gas_limit,
         }
       ).freeze
+    end
+
+    def estimate_gas(gas_price:, from: , to:, value: nil, data: nil)
+      estimage_gas = client.json_rpc(:eth_estimateGas, [{
+        gasPrice: '0x' + gas_price.to_i.to_s(16),
+        from:     normalize_address(from),
+        to:       normalize_address(to),
+        value:  value.nil? ? nil : '0x' + value.to_i.to_s(16),
+        data:   data
+      }].compact).to_i(16)
+      logger.info("Estimated gas #{from}->#{to} #{value} is #{estimage_gas}")
+      estimage_gas
     end
   end
 end
