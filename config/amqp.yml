@@ -58,6 +58,9 @@ queue:
   create_order:
     name: peatio.ranger.new_orders
     durable: true
+  cancel_orders:
+    name: peatio.ranger.cancel_orders
+    durable: true
   order_processor:
     name: peatio.order.processor
     durable: true
@@ -117,6 +120,10 @@ binding:
   events_processor:
     queue: events_processor
     exchange: events
+  cancel_member_orders:
+    queue: cancel_orders
+    exchange: ranger
+    topics: peatio.ranger.cancel_orders
 
 channel:
   trade_executor:
