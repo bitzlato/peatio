@@ -76,10 +76,10 @@ class BitzlatoGateway < AbstractGateway
     end
   end
 
-  def create_transaction!(from_address: nil, to_address:, amount: , contract_address: nil, secret: nil, meta: {})
+  def create_transaction!(from_address: nil, to_address:, amount: , contract_address: nil, nonce: nil, secret: nil, meta: {})
     raise 'amount must be a Money' unless amount.is_a? Money
     client.create_transaction!(
-        key: meta.fetch(:withdraw_tid),
+        key: meta.fetch(:withdraw_tid), # It is also posible to use nonce
         to_address: to_address,
         cryptocurrency: amount.currency.id.upcase,
         amount: amount.to_d,
