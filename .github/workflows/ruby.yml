@@ -31,8 +31,11 @@ jobs:
       MINIMUM_MEMBER_LEVEL_FOR_TRADING: 3
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         ruby-version: ['2.7.4']
+        ci_node_total: [2]
+        ci_node_index: [0, 1]
     services:
       # Label used to access the service container
       redis:
