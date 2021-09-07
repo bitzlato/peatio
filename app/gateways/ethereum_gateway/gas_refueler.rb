@@ -37,7 +37,6 @@ class EthereumGateway
           amount:       transaction_amount,
           from_address: gas_wallet_address,
           secret:       gas_wallet_secret,
-          nonce: nil,    # :  gas_refuel.id,
           to_address:   target_address,
           subtract_fee: false,
           gas_limit:    gas_limit,
