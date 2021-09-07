@@ -51,6 +51,10 @@ class PaymentAddress < ApplicationRecord
     blockchain.gateway.collect! self
   end
 
+  def refuel_gas!
+    blockchain.gateway.refuel_gas! self
+  end
+
   def format_address(format)
     blockchain.gateway_class.format_address(address, format)
   end
