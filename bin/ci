@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+# encoding: UTF-8
+# frozen_string_literal: true
+
+require "parallel_tests"
+APP_PATH = File.expand_path('../config/application', __dir__)
+require_relative '../config/boot'
+
+tests = Dir["spec/**/*_spec.rb"].
+  sort.
+  # Add randomization seed based on SHA of each commit
+  shuffle(random: Random.new(ENV['GITHUB_SHA'].to_i(16))).
+  select.
+  with_index do |el, i|
+    i % ENV["CI_NODE_TOTAL"].to_i == ENV["CI_NODE_INDEX"].to_i
+  end
+
+ParallelTests::CLI.new.run(["--type", "rspec"] + tests)
