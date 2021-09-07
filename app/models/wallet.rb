@@ -136,6 +136,12 @@ class Wallet < ApplicationRecord
     end
   end
 
+  def seed_currencies_from_blockchain!
+    blockchain.currencies.each do |currency|
+      currencies << currency unless currencies.include? currency
+    end
+  end
+
   def blockchain_key=(key)
     return self.blockchain = nil if key.nil?
     self.blockchain = Blockchain.find_by(key: key) || raise("No blockchain with key #{key}")
