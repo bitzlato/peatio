@@ -66,6 +66,7 @@ class Market < ApplicationRecord
   belongs_to :engine, required: true
 
   has_many :trading_fees, foreign_key: :market_id, primary_key: :symbol, dependent: :delete_all
+  has_many :trades, foreign_key: :market_id, primary_key: :symbol
 
   # == Validations ==========================================================
 
