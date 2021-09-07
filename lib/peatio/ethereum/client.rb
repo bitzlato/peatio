@@ -5,8 +5,10 @@ module Ethereum
     class ConnectionError < Error; end
 
     class ResponseError < Error
-      def initialize(code, msg)
-        super "#{msg} (#{code})"
+      attr_reader :request_data
+      def initialize(code, message, request_data = nil)
+        @request_data = request_data
+        super "#{message} (#{code})"
       end
     end
 
@@ -27,7 +29,7 @@ module Ethereum
            'Content-Type' => 'application/json'}
       response.assert_success!
       response = JSON.parse(response.body)
-      response['error'].tap { |error| raise ResponseError.new(error['code'], error['message']) if error }
+      response['error'].tap { |error| raise ResponseError.new(error['code'], error['message'], params) if error }
       response.fetch('result')
 
       # We don't want to masquerade errors any more
