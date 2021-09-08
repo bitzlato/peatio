@@ -20,38 +20,23 @@ describe ::EthereumGateway::TransactionCreator do
   subject { described_class.new(client) }
 
   before do
-    stub_gas_fetching fetched_gas_price
+    stub_gas_fetching gas_price: fetched_gas_price, id: 1
     stub_personal_sendTransaction
-  end
-
-  def stub_gas_fetching(gas_price)
-    id = 1
-    eth_GasPrice = {
-      "jsonrpc": '2.0',
-      "id": id,
-      "method": 'eth_gasPrice',
-      "params": []
-    }
-    stub_request(:post, uri)
-      .with(body: eth_GasPrice.to_json)
-      .to_return(body: { result: '0x' + gas_price.to_s(16),
-                         error: nil,
-                         id: id }.to_json)
-
   end
 
   let(:request_body) do
     { jsonrpc: '2.0',
-                   id: 2,
-                   method: :personal_sendTransaction,
-                   params: [{
-                     from: from_address,
-                     to: to_address,
-                     value: '0x' + (value.to_s 16),
-                     gas: '0x' + (gas_limit.to_s 16),
-                     gasPrice: '0x' + (transaction_gas_price.to_s 16)
-                   }, secret] }
+      id: 2,
+      method: :personal_sendTransaction,
+      params: [{
+        from: from_address,
+        to: to_address,
+        value: '0x' + (value.to_s 16),
+        gas: '0x' + (gas_limit.to_s 16),
+        gasPrice: '0x' + (transaction_gas_price.to_s 16)
+      }, secret] }
   end
+
   def stub_personal_sendTransaction
     stub_request(:post, uri)
       .with(body: request_body.to_json)
