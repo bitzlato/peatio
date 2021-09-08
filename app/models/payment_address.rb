@@ -5,6 +5,7 @@
 class PaymentAddress < ApplicationRecord
   extend PaymentAddressTotals
   include Vault::EncryptedModel
+  include AASM
 
   strip_attributes
 
@@ -19,10 +20,48 @@ class PaymentAddress < ApplicationRecord
 
   scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
   scope :with_balances, -> { where 'EXISTS ( SELECT * FROM jsonb_each_text(balances) AS each(KEY,val) WHERE "val"::decimal >= 0)' }
+  scope :collection_required, -> { with_balances.where(collection_state: %i[none pending], gas_refueling_state: %i[none]) }
 
   # TODO Migrate association from wallet to blockchain and remove Wallet.deposit*
   belongs_to :member
   belongs_to :blockchain
+
+  aasm :collection_state, namespace: :collection, whiny_transitions: true, requires_lock: true do
+    state :none, initial: true
+    state :pending
+    state :processing
+    state :done
+
+    event :collect do
+      transitions from: %i[pending none], to: :processing
+      after do
+        do_collect!
+      end
+    end
+
+    event :done do
+      transitions from: %i[processing], to: :done
+    end
+  end
+
+  aasm :gas_refueling_state, namespace: :gas_refueling, whiny_transcations: true, requires_lock: true do
+    state :none, initial: true
+    state :pending
+    state :processing
+    state :done
+
+    event :refuel_gas do
+      transitions from: %i[none pending], to: :processing
+      after do
+        do_refuel_gas!
+        done!
+      end
+    end
+
+    event :done do
+      transitions from: %i[processing], to: :done
+    end
+  end
 
   before_validation if: :address do
     self.address = blockchain.normalize_address address if blockchain.present?
@@ -48,14 +87,6 @@ class PaymentAddress < ApplicationRecord
     Jobs::Cron::PaymentAddressBalancer.update_balances self
   end
 
-  def collect!
-    blockchain.gateway.collect! self
-  end
-
-  def refuel_gas!
-    blockchain.gateway.refuel_gas! self
-  end
-
   def format_address(format)
     blockchain.gateway_class.format_address(address, format)
   end
@@ -66,6 +97,15 @@ class PaymentAddress < ApplicationRecord
     else
       'pending'
     end
+  end
+
+  def has_enough_gas?
+    blockchain.gateway.has_enough_gas? payment_address.address
+  end
+
+  # Balance reached amount limit to be collected
+  def collectable_balance?
+    blockchain.gateway.collectable_balance? payment_address.address
   end
 
   def transactions
@@ -88,5 +128,15 @@ class PaymentAddress < ApplicationRecord
 
   def currency
     wallet.native_currency
+  end
+
+  private
+
+  def do_collect!
+    blockchain.gateway.collect! self
+  end
+
+  def do_refuel_gas!
+    blockchain.gateway.refuel_gas! self
   end
 end

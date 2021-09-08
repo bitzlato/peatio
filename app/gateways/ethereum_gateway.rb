@@ -8,6 +8,9 @@ class EthereumGateway < AbstractGateway
   extend Concern
   IDLE_TIMEOUT = 1
 
+  Error = Class.new StandardError
+  NoHotWallet = Class.new Error
+
   def enable_block_fetching?
     true
   end
@@ -15,6 +18,23 @@ class EthereumGateway < AbstractGateway
   # Returns SemVer object of client's version
   def client_version
     AbstractCommand.new(client).client_version
+  end
+
+  def has_enough_gas?(address)
+    address = address.address if address.is_a? PaymentAddress
+    fetch_gas(address) >= fetch_native_balance(address)
+  end
+
+  def fetch_gas(address)
+    address = address.address if address.is_a? PaymentAddress
+    ac = AbstractCommand.new(client)
+    gas_price = ac.fetch_gas_price
+    ac.estimage_gas(gas_price: gas_price, from: address, to: hot_wallet.address) * gas_price
+  end
+
+  def fetch_native_balance(address)
+    address = address.address if address.is_a? PaymentAddress
+    load_balances(address).fetch(blockchain.native_currency.id, 0)
   end
 
   def refuel_and_collect!(payment_address)
@@ -25,15 +45,17 @@ class EthereumGateway < AbstractGateway
   end
 
   # Collect all tokens and coins from payment_address to hot wallet
-  def collect!(payment_address)
-    hot_wallet = blockchain.fee_wallet || raise("No hot wallet for blockchain #{blockchain.id}")
-
+  def collect!(payment_address, skip_gas_checking: false)
     raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
 
     balances = load_balances(payment_address.address).
       reject { |c, a| a.zero? }.
       transform_keys { |k| blockchain.currencies.find_by(id: k) || raise("Unknown currency in balance #{k} for #{blockchain.key}") }.
       compact
+
+    unless skip_gas_checking
+      raise 'has no enough gas' unless fetch_gas(payment_address.address) >= balances[blockchain.native_currency]
+    end
 
     # First collect tokens (save base currency to last step for gas)
     token_currencies = balances.filter { |c| c.token? }.keys
@@ -74,7 +96,6 @@ class EthereumGateway < AbstractGateway
 
   def refuel_gas!(target_address)
     target_address = target_address.address if target_address.is_a? PaymentAddress
-    gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
 
     tokens = load_balances(target_address)
       .select { |_currency, balance| balance.positive? }
@@ -89,8 +110,8 @@ class EthereumGateway < AbstractGateway
         gas_factor: blockchain.client_options[:gas_factor],
         base_gas_limit: blockchain.client_options[:base_gas_limit],
         token_gas_limit: blockchain.client_options[:token_gas_limit],
-        gas_wallet_address: gas_wallet.address,
-        gas_wallet_secret: gas_wallet.secret,
+        gas_wallet_address: fee_wallet.address,
+        gas_wallet_secret: fee_wallet.secret,
         target_address: target_address,
         contract_addresses: tokens.map(&:contract_address)
       )
@@ -104,6 +125,12 @@ class EthereumGateway < AbstractGateway
   rescue EthereumGateway::GasRefueler::Error => err
     report_exception err, true, target_address: target_address, blockchain_key: blockchain.key
     logger.info("Canceled refueling address #{target_address} with #{err}")
+  end
+
+  def has_enough_gas?(from_address, to_address)
+  end
+
+  def require_gas_refueling?(address)
   end
 
   def load_balances(address)
@@ -185,6 +212,18 @@ class EthereumGateway < AbstractGateway
   end
 
   private
+
+  def fee_wallet
+    blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
+  end
+
+  def hot_wallet
+    blockchain.
+      wallets.
+        active.
+        hot.
+        take|| raise(NoHotWallet)
+  end
 
   def build_client
     ::Ethereum::Client.new(blockchain.server, idle_timeout: IDLE_TIMEOUT)

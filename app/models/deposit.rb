@@ -43,11 +43,6 @@ class Deposit < ApplicationRecord
 
   delegate :key, to: :blockchain, prefix: true
 
-  aasm :collection_state, namespace: :collection, whiny_transitions: true, requires_lock: true do
-    state :pending, initial: true
-    state :processing
-    state :collected
-  end
   aasm whiny_transitions: true, requires_lock: true do
     state :submitted, initial: true
     state :invoiced
@@ -76,10 +71,10 @@ class Deposit < ApplicationRecord
     event :skip do
       transitions from: :submitted, to: :skipped
     end
-    
+
     event :invoice do
       transitions from: :submitted, to: :invoiced
-      after do 
+      after do
         update(invoice_expires_at: Time.now + ENV.fetch("INVOICE_EXPIRES_HOURS", 24))
       end
     end

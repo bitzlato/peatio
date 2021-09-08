@@ -25,7 +25,8 @@ class EthereumGateway
       client.json_rpc(:web3_clientVersion)
     end
 
-    def estimate_gas(gas_price:, from: , to:, value: nil, data: nil)
+    def estimate_gas(gas_price: nil, from:, to:, value: nil, data: nil)
+      gas_price ||= fetch_gas_price
       estimage_gas = client.json_rpc(:eth_estimateGas, [{
         gasPrice: '0x' + gas_price.to_i.to_s(16),
         from:     normalize_address(from),
@@ -34,7 +35,7 @@ class EthereumGateway
         # value:  value.nil? ? nil : '0x' + value.to_i.to_s(16),
         # data:   data
       }.compact]).to_i(16)
-      logger.info("Estimated gas #{from}->#{to} with #{value} is #{estimage_gas}")
+      logger.info("Estimated gas #{from}->#{to} with value=#{value || '?'} is #{estimage_gas}")
       estimage_gas
     end
 
@@ -166,4 +167,4 @@ class EthereumGateway
       Rails.logger
     end
   end
-end
+End

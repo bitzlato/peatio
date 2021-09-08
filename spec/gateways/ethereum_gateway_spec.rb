@@ -65,7 +65,7 @@ describe ::EthereumGateway do
              #once.
              #returns(peatio_transaction)
       EthereumGateway.any_instance.expects(:load_balances).returns(balances)
-      subject.send(:collect!, payment_address)
+      subject.send(:collect!, payment_address, skip_gas_checking: true)
     end
   end
 end
