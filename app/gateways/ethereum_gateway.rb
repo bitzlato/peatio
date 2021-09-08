@@ -76,12 +76,12 @@ class EthereumGateway < AbstractGateway
     target_address = target_address.address if target_address.is_a? PaymentAddress
     gas_wallet = blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")
 
-    tokens_count = load_balances(target_address)
+    tokens = load_balances(target_address)
       .select { |_currency, balance| balance.positive? }
       .transform_keys { |k| blockchain.currencies.find_by(id: k) || raise("Unknown currency in balance #{k} for #{blockchain.key}") }
       .select { |currency, _balance| currency.token? }
       .count
-    logger.info("Refuel #{target_address} for #{tokens_count} tokens")
+    logger.info("Refuel #{target_address} for #{tokens.join(',')} tokens")
     transaction = monefy_transaction(
       EthereumGateway::GasRefueler
       .new(client)
@@ -92,7 +92,7 @@ class EthereumGateway < AbstractGateway
         gas_wallet_address: gas_wallet.address,
         gas_wallet_secret: gas_wallet.secret,
         target_address: target_address,
-        tokens_count: tokens_count,
+        contract_addresses: tokens.map(&:contract_address)
       )
     )
 

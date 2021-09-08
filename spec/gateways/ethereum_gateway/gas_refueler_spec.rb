@@ -15,8 +15,6 @@ describe ::EthereumGateway::GasRefueler do
   let(:from_address) { Faker::Blockchain::Ethereum.address }
   let(:to_address) { Faker::Blockchain::Ethereum.address }
   let(:gas_limit) { 21000 }
-  let(:token_gas_limit) { 110_000 }
-  let(:gas_factor) { 1 }
 
   subject { described_class.new(client) }
 
@@ -81,16 +79,16 @@ describe ::EthereumGateway::GasRefueler do
     subject.call(
       base_gas_limit: gas_limit,
       token_gas_limit: token_gas_limit,
-      gas_factor: gas_factor,
+      gas_factor: refuel_gas_factor,
       gas_wallet_address: from_address,
       gas_wallet_secret: secret,
       target_address: to_address,
-      tokens_count: tokens_count
+      contract_addresses: contract_addresses
     )
   end
 
   context 'address has no tokens' do
-    let(:tokens_count) { 0 }
+    let(:contract_addresses) { [] }
     context 'it has zero ethereum balance' do
       let(:ethereum_balance) { 0 }
       it { expect{ result }.to raise_error described_class::NoTokens }
@@ -107,15 +105,16 @@ describe ::EthereumGateway::GasRefueler do
 
   context 'address has tokens' do
     let(:ethereum_balance) { 0 }
-    let(:tokens_count) { 2 }
+    let(:contract_addresses) { [Faker::Blockchain::Ethereum.address]  }
 
     context 'and it has no enough ethereum balance' do
       before do
         stub_personal_sendTransaction
       end
       let(:ethereum_balance) { 10000 }
-      let(:value) { (fetched_gas_price * tokens_count * token_gas_limit * gas_factor).to_i - ethereum_balance }
-      let(:transaction_gas_price) { (fetched_gas_price * gas_factor).to_i }
+      let(:refuel_gas_factor) { 1 }
+      let(:value) { (fetched_gas_price * tokens_count * token_gas_limit * refuel_gas_factor).to_i - ethereum_balance }
+      let(:transaction_gas_price) { (fetched_gas_price * refuel_gas_factor).to_i }
       let(:result_transaction_hash) do
         {
           amount: value,
@@ -124,7 +123,7 @@ describe ::EthereumGateway::GasRefueler do
           status: 'pending',
           from_addresses: [from_address],
           options: {
-            'gas_factor' => gas_factor,
+            'gas_factor' => refuel_gas_factor,
             'gas_limit' =>  gas_limit,
             'gas_price' =>  transaction_gas_price,
             'subtract_fee' => false
@@ -140,5 +139,6 @@ describe ::EthereumGateway::GasRefueler do
   end
 
   context 'address has no ethereum and has no tokens' do
+    pending
   end
 end

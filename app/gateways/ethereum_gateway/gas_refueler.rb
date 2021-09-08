@@ -6,36 +6,31 @@ class EthereumGateway
     NoTokens = Class.new Error
     Balanced = Class.new Error
 
-    def call(gas_wallet_address:, gas_wallet_secret:, base_gas_limit:, token_gas_limit:, gas_factor:, target_address: , tokens_count: )
-      ethereum_balance = load_basic_balance target_address
-      raise "ethereum_balance #{ethereum_balance} must be an Integer" unless ethereum_balance.is_a? Integer
+    def call(gas_wallet_address:, gas_wallet_secret:, base_gas_limit:, token_gas_limit:, gas_factor:, target_address: , contract_addresses: )
+      native_balance = load_basic_balance target_address
+      raise "native_balance #{native_balance} must be an Integer" unless native_balance.is_a? Integer
 
-      if tokens_count.zero?
+      if contract_addresses.empty?
         logger.info("No tokens on address #{target_address}")
         raise NoTokens
       end
 
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
-      gas_limit = base_gas_limit || estimate_gas(
-        from: gas_wallet_address,
-        to: target_address,
-        gas_price: gas_price,
-      )
+      estimated_gas = contract_addresses.map do |contract_address|
+        estimate_gas(from: gas_wallet_address, to: contract_address, gas_price: gas_price)
+      end.sum
 
-      # TODO Определять автоматически в зависимости от вида токена
-      token_gas_limit = 100_000
-
-      transaction_amount = tokens_count * token_gas_limit * gas_price - ethereum_balance
+      transaction_amount = estimated_gas * gas_price - native_balance
 
       if transaction_amount.positive?
         logger.info("Create gas refueling eth transaction #{gas_wallet_address} -> #{target_address}"\
-                    " ethereum_balance: #{ethereum_balance}, tokens_count: #{tokens_count},"\
-                    " gas_price:#{gas_price} gas_limit:#{gas_limit} token_gas_limit:#{token_gas_limit}"\
-                    " transaction amount: #{transaction_amount} = tokens_count * token_gas_limit * gas_price - ethereum_balance")
+                    " native_balance: #{native_balance}, contract_addresses: #{contract_addresses},"\
+                    " estimated_gas: #{estimated_gas}, gas_price:#{gas_price}, gas_limit:#{gas_limit} token_gas_limit:#{token_gas_limit}"\
+                    " transaction amount: #{transaction_amount} = estimated_gas * gas_price - - native_balance")
       else
         logger.info("No reason to create gas refueling eth transaction #{gas_wallet_address} -> #{target_address}"\
-                    " ethereum_balance: #{ethereum_balance}, tokens_count: #{tokens_count},"\
+                    " native_balance: #{native_balance}, contract_addresses: #{contract_addresses},"\
                     " gas_price:#{gas_price} gas_limit:#{gas_limit} token_gas_limit:#{token_gas_limit}"\
                     " transaction amount: #{transaction_amount}")
         raise Balanced
