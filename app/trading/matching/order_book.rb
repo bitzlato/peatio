@@ -8,7 +8,7 @@ module Matching
 
     attr :side
 
-    def initialize(market, side, options={})
+    def initialize(market, side, options = {})
       @market = market
       @side   = side.to_sym
       @limit_orders = RBTree.new
@@ -19,7 +19,7 @@ module Matching
       singleton.send :define_method, :limit_top, self.class.instance_method("#{@side}_limit_top")
     end
 
-    def notify_change(market, side, price, amount=nil)
+    def notify_change(market, side, price, amount = nil)
       return unless @on_change
 
       amount ||= yield
@@ -92,7 +92,7 @@ module Matching
 
     def limit_orders
       orders = {}
-      @limit_orders.keys.each {|k| orders[k] = @limit_orders[k].orders }
+      @limit_orders.keys.each { |k| orders[k] = @limit_orders[k].orders }
       orders
     end
 

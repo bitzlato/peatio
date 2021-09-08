@@ -109,7 +109,7 @@ module API
         params do
           requires :file,
                    type: File,
-                   desc: -> {'CSV file with whitelisted smart contracts data'}
+                   desc: -> { 'CSV file with whitelisted smart contracts data' }
         end
         post '/whitelisted_smart_contracts/csv' do
           admin_authorize! :create, ::WhitelistedSmartContract

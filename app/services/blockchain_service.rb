@@ -115,7 +115,7 @@ class BlockchainService
 
   attr_reader :withdrawal, :deposit, :fetched_transaction
 
-  def dispatch_deposits! block_number
+  def dispatch_deposits!(block_number)
     blockchain.
       deposits.
       accepted.

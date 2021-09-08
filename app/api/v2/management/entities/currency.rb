@@ -45,7 +45,7 @@ module API
               type: JSON,
               desc: 'Currency options.'
             },
-            if: -> (currency){ currency.coin? }
+            if: -> (currency) { currency.coin? }
           )
 
           expose(

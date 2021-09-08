@@ -35,7 +35,7 @@ module API
 
           search_params = params[:search]
                                 .slice(:code, :name)
-                                .transform_keys {|k| "#{k}_cont"}
+                                .transform_keys { |k| "#{k}_cont" }
                                 .merge(m: 'or')
 
           accounts = ::Currency.visible.ransack(search_params).result.each_with_object([]) do |c, result|

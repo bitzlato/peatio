@@ -22,7 +22,7 @@ module API
                 type: String,
                 desc: 'Associated blockchain key which will perform transactions synchronization for currency.'
             },
-            if: -> (currency){ currency.coin? }
+            if: -> (currency) { currency.coin? }
           )
 
           expose(
@@ -31,7 +31,7 @@ module API
               desc: 'Parent currency id.',
               type: String
             },
-            if: -> (currency){ currency.token? }
+            if: -> (currency) { currency.token? }
           )
 
           expose(
@@ -80,7 +80,7 @@ module API
               type: JSON,
               desc: 'Currency options.'
             },
-            if: -> (currency){ currency.coin? }
+            if: -> (currency) { currency.coin? }
           )
 
           expose(

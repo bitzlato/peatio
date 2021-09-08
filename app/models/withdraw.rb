@@ -45,7 +45,7 @@ class Withdraw < ApplicationRecord
   validates :block_number, allow_blank: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validates :sum,
             presence: true,
-            numericality: { greater_than_or_equal_to: ->(withdraw) { withdraw.currency.min_withdraw_amount }}
+            numericality: { greater_than_or_equal_to: ->(withdraw) { withdraw.currency.min_withdraw_amount } }
 
   validate do
     errors.add(:beneficiary, 'not active') if beneficiary.present? && !beneficiary.active? && !aasm_state.to_sym.in?(COMPLETED_STATES)

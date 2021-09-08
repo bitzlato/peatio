@@ -14,7 +14,7 @@ module API
         params do
           requires :id,
                    type: String,
-                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'public.currency.doesnt_exist'},
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'public.currency.doesnt_exist' },
                    desc: -> { API::V2::Entities::Currency.documentation[:id][:desc] }
         end
         get '/currencies/:id', requirements: { id: /[\w\.\-]+/ } do

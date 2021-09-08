@@ -3,7 +3,7 @@ module Jobs::Cron
     Error = Class.new(StandardError)
 
     class <<self
-      def process_currency(pnl_currency, currency, batch_size=1000)
+      def process_currency(pnl_currency, currency, batch_size = 1000)
         queries = []
         idx = last_idx(pnl_currency, currency)
 
@@ -92,7 +92,7 @@ module Jobs::Cron
       end
 
       def pnl_currencies
-        @pnl_currencies ||= ENV.fetch('PNL_CURRENCIES', '').split(',').map {|id| Currency.find(id) }
+        @pnl_currencies ||= ENV.fetch('PNL_CURRENCIES', '').split(',').map { |id| Currency.find(id) }
       end
 
       def conversion_paths

@@ -23,7 +23,7 @@ module API
                      desc: 'Beneficiary currency code.'
             optional :state,
                      type: String,
-                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'account.beneficiary.invalid_state'},
+                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'account.beneficiary.invalid_state' },
                      desc: 'Defines either beneficiary active - user can use it to withdraw money'\
                            'or pending - requires beneficiary activation with pin.'
 

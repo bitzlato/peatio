@@ -26,12 +26,12 @@ module API
                      desc: 'Name of the field, which result will be ordered by.'
             optional :base_unit,
                      type: String,
-                     values: { value: -> (v){ ::Currency.exists?(v) },
+                     values: { value: -> (v) { ::Currency.exists?(v) },
                                message: 'public.markets.base_unit_doesnt_exist' },
                      desc: 'Strict filter for base unit'
             optional :quote_unit,
                      type: String,
-                     values: { value: -> (v){ ::Currency.exists?(v) },
+                     values: { value: -> (v) { ::Currency.exists?(v) },
                                message: 'public.markets.quote_unit_doesnt_exist' },
                      desc: 'Strict filter for quote unit'
             optional :type,
@@ -57,7 +57,7 @@ module API
           get "/" do
             search_params = params[:search]
                               .slice(:base_code, :quote_code, :base_name, :quote_name)
-                              .transform_keys {|k| "#{k}_cont"}
+                              .transform_keys { |k| "#{k}_cont" }
                               .merge(m: 'or')
 
             search = ::Market.active

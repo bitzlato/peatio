@@ -30,7 +30,7 @@ module API
             .order(id: :desc)
             .includes(:maker, :taker)
             .tap { |q| q.where!(market_type: params[:market_type]) }
-            .tap { |q| q.where!(market: market) if market}
+            .tap { |q| q.where!(market: market) if market }
             .tap { |q| q.where!("maker_id = #{member.id} OR taker_id = #{member.id}") if member }
             .page(params[:page])
             .per(params[:limit])

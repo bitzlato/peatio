@@ -7,7 +7,7 @@ module Jobs
         sleep 10
       end
 
-      def self.update_balances payment_address
+      def self.update_balances(payment_address)
         if payment_address.blockchain.gateway_class.enable_personal_address_balance?
           return unless payment_address.blockchain.active?
           payment_address.update!(

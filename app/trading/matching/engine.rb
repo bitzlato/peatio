@@ -15,7 +15,7 @@ module Matching
     attr_accessor :initializing, :snapshot_time, :increment_count, :sequence_number
     delegate :ask_orders, :bid_orders, to: :orderbook
 
-    def initialize(market, options={})
+    def initialize(market, options = {})
       @market    = market
       @orderbook = OrderBookManager.new(market.symbol, on_change: method(:publish_increment))
       @initializing = true
@@ -131,8 +131,8 @@ module Matching
     def publish_snapshot
       @snapshot_time = Time.now
       ::AMQP::Queue.enqueue_event("public", @market.symbol, "ob-snap", {
-        "asks" => ask_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}[0..300],
-        "bids" => bid_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}.reverse[0..300],
+        "asks" => ask_orders.limit_orders.map { |k,v| [k.to_s, v.map(&:volume).sum.to_s] }[0..300],
+        "bids" => bid_orders.limit_orders.map { |k,v| [k.to_s, v.map(&:volume).sum.to_s] }.reverse[0..300],
         "sequence" => @sequence_number,
       })
     end

@@ -19,7 +19,7 @@ module Matching
       when 'cancel'
         publish_cancel
       else
-        raise ExecutorError.new("Unknown action: #{@payload[:action]}")
+        raise ExecutorError, "Unknown action: #{@payload[:action]}"
       end
     end
 

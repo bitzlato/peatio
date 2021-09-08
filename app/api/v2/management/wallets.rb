@@ -12,7 +12,7 @@ module API
           OPTIONAL_WALLET_PARAMS ||= {
             max_balance: {
               type: { value: BigDecimal, message: 'management.blockchain.non_decimal_max_balance' },
-              values: { value: -> (p){ p >= 0 }, message: 'management.wallet.invalid_max_balance' },
+              values: { value: -> (p) { p >= 0 }, message: 'management.wallet.invalid_max_balance' },
               default: 0.0,
               desc: -> { API::V2::Management::Entities::Wallet.documentation[:max_balance][:desc] }
             },

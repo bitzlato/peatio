@@ -22,7 +22,7 @@ module API
                       desc: 'Beneficiary currency code.'
             optional :state,
                       type: String,
-                      values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state'},
+                      values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state' },
                       desc: 'Defines either beneficiary active - user can use it to withdraw money'\
                             'or pending - requires beneficiary activation with pin.'
 
@@ -34,7 +34,7 @@ module API
               .beneficiaries
               .available_to_member
               .tap { |q| q.where!(currency_id: params[:currency_id]) if params[:currency_id].present? }
-              .tap {|q| q.where!(state: params[:state]) if params[:state].present? }
+              .tap { |q| q.where!(state: params[:state]) if params[:state].present? }
               .yield_self { |b| present paginate(b), with: API::V2::Management::Entities::Beneficiary }
 
             status 200
@@ -68,7 +68,7 @@ module API
                     desc: 'The shared user ID.'
             optional :state,
                     type: String,
-                    values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state'},
+                    values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state' },
                     desc: 'Defines either beneficiary active - user can use it to withdraw money'\
                           'or pending - requires beneficiary activation with pin.'
           end

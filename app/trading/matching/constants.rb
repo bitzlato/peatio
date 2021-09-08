@@ -15,7 +15,7 @@ module Matching
 
     attr_reader :order
 
-    def initialize(order, message=nil)
+    def initialize(order, message = nil)
       @order = order
       super "#{message} (#{order.attributes})"
     end
@@ -25,7 +25,7 @@ module Matching
 
     attr_reader :trade
 
-    def initialize(trade, message=nil)
+    def initialize(trade, message = nil)
       @trade = trade
       super "#{message} (#{trade})"
     end

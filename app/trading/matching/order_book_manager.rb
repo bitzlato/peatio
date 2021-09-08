@@ -15,7 +15,7 @@ module Matching
       klass.new attrs
     end
 
-    def initialize(market, options={})
+    def initialize(market, options = {})
       @market     = market
       @ask_orders = OrderBook.new(market, :ask, options)
       @bid_orders = OrderBook.new(market, :bid, options)

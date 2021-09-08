@@ -59,7 +59,7 @@ module API
 
           optional :page,
                    type: { value: Integer, message: 'account.transactions.non_integer_page' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'account.transactions.non_positive_page'},
+                   values: { value: -> (p) { p.try(:positive?) }, message: 'account.transactions.non_positive_page' },
                    allow_blank: false,
                    default: 1,
                    desc: 'Specify the page of paginated results.'

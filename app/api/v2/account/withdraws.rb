@@ -14,7 +14,7 @@ module API
         params do
           optional :currency,
                    type: String,
-                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                    desc: 'Currency code.'
           optional :limit,
                    type: { value: Integer, message: 'account.withdraw.non_integer_limit' },
@@ -38,7 +38,7 @@ module API
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'
           optional :page,
                    type: { value: Integer, message: 'account.withdraw.non_integer_page' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'account.withdraw.non_positive_page'},
+                   values: { value: -> (p) { p.try(:positive?) }, message: 'account.withdraw.non_positive_page' },
                    default: 1,
                    desc: 'Page number (defaults to 1).'
         end
@@ -77,7 +77,7 @@ module API
                    desc: 'ID of Active Beneficiary belonging to user.'
           requires :currency,
                    type: String,
-                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                    desc: 'The currency code.'
           requires :amount,
                    type: { value: BigDecimal, message: 'account.withdraw.non_decimal_amount' },

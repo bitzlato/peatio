@@ -63,7 +63,7 @@ class EthereumGateway
         logger.info("Create eth transaction #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       else
         logger.warn("Skip eth transaction (amount is not positive) #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
-        raise Error.new("Amount is not positive (#{amount}) for #{from_address} to #{to_address}")
+        raise Error, "Amount is not positive (#{amount}) for #{from_address} to #{to_address}"
       end
       txid = validate_txid!(
         client

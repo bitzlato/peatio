@@ -29,11 +29,11 @@ module API
                    desc: 'Filter order by ord_type.'
           optional :price,
                    type: { value: BigDecimal, message: 'admin.order.non_decimal_price' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'admin.order.non_positive_price' },
+                   values: { value: -> (p) { p.try(:positive?) }, message: 'admin.order.non_positive_price' },
                    desc: -> { API::V2::Admin::Entities::Order.documentation[:price][:desc] }
           optional :origin_volume,
                    type: { value: BigDecimal, message: 'admin.order.non_decimal_price' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'admin.order.non_positive_origin_volume' },
+                   values: { value: -> (p) { p.try(:positive?) }, message: 'admin.order.non_positive_origin_volume' },
                    desc: -> { API::V2::Admin::Entities::Order.documentation[:origin_volume][:desc] }
           optional :type,
                    values: { value: %w(sell buy), message: 'admin.order.invalid_type' },

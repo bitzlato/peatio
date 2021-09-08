@@ -84,13 +84,13 @@ class EthereumGateway < AbstractGateway
     logger.info("Canceled refueling address #{target_address} with #{err}")
   end
 
-  def has_enough_gas_to_collect? address
+  def has_enough_gas_to_collect?(address)
     fetch_balance >= GasEstimator
       .new(client)
       .call(from_address: address, to_addresses: [hot_wallet.address] + select_collectable_contract_addresses(address))
   end
 
-  def collectable_balance? address
+  def collectable_balance?(address)
     select_collectable_contract_addresses(address).any? ||
       fetch_balance > GasEstimatonew(client).call(from_address: address, to_addresses: [hot_wallet.address])
   end

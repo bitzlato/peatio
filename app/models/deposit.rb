@@ -128,7 +128,7 @@ class Deposit < ApplicationRecord
   end
 
   def add_error(e)
-    error_hash = e.is_a?(StandardError) ?  { class: e.class.to_s, message: e.message } : { message: e}
+    error_hash = e.is_a?(StandardError) ?  { class: e.class.to_s, message: e.message } : { message: e }
     update!(error: self.deposit_errors + [error_hash] )
   end
 

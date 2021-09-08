@@ -81,7 +81,7 @@ class Wallet < ApplicationRecord
       super + %w(blockchain_key_eq)
     end
 
-    def kinds(options={})
+    def kinds(options = {})
       ENUMERIZED_KINDS
         .yield_self do |kinds|
           case

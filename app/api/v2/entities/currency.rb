@@ -22,7 +22,7 @@ module API
               desc: 'Currency name',
               example: -> { ::Currency.visible.first.name }
           },
-          if: -> (currency){ currency.name.present? }
+          if: -> (currency) { currency.name.present? }
         )
 
         expose(
@@ -41,7 +41,7 @@ module API
               desc: 'Token name',
               example: -> { ::Currency.visible.tokens.first.try(:token_name) || 'USDT' }
           },
-          if: -> (currency){ currency.token? }
+          if: -> (currency) { currency.token? }
         )
 
         expose(
@@ -69,7 +69,7 @@ module API
             desc: 'Currency parent id',
             example: -> { ::Currency.visible.first.parent_id }
           },
-          if: -> (currency){ currency.parent_id.present? }
+          if: -> (currency) { currency.parent_id.present? }
         )
 
         expose(
@@ -85,7 +85,7 @@ module API
             desc: 'Currency transaction exprorer url template',
             example: 'https://testnet.blockchain.info/tx/'
           },
-          if: -> (currency){ currency.coin? }
+          if: -> (currency) { currency.coin? }
         )
 
         expose(
@@ -94,7 +94,7 @@ module API
             desc: 'Currency address exprorer url template',
             example: 'https://testnet.blockchain.info/address/'
           },
-          if: -> (currency){ currency.coin? }
+          if: -> (currency) { currency.coin? }
         )
 
         expose(
@@ -201,7 +201,7 @@ module API
             desc: 'Currency icon',
             example: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg'
           },
-          if: -> (currency){ currency.icon_url.present? }
+          if: -> (currency) { currency.icon_url.present? }
         )
 
         expose(

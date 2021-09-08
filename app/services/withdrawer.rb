@@ -1,6 +1,6 @@
 class Withdrawer
   class Error < StandardError
-    def initialize(message, options={})
+    def initialize(message, options = {})
       @options = options
       @message = message
     end
