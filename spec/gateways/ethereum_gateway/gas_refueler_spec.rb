@@ -100,8 +100,4 @@ describe ::EthereumGateway::GasRefueler do
       it { expect{ result }.to raise_error described_class::Balanced }
     end
   end
-
-  context 'address has no ethereum and has no tokens' do
-    pending
-  end
 end

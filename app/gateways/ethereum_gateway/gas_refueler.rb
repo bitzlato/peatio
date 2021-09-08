@@ -48,7 +48,6 @@ class EthereumGateway
       tx.options.merge! gas_factor: gas_factor, required_amount: required_amount, required_gas: required_gas
       tx
     end
-
   end
 end
 
