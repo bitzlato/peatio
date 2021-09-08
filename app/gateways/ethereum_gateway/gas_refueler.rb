@@ -15,8 +15,16 @@ class EthereumGateway
         raise NoTokens
       end
 
-      gas_limit = base_gas_limit
       gas_price ||= (fetch_gas_price * gas_factor).to_i
+
+      gas_limit = base_gas_limit || estimate_gas(
+        from: gas_wallet_address,
+        to: target_address,
+        gas_price: gas_price,
+      )
+
+      # TODO Определять автоматически в зависимости от вида токена
+      token_gas_limit = 100_000
 
       transaction_amount = tokens_count * token_gas_limit * gas_price - ethereum_balance
 
