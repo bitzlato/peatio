@@ -101,7 +101,7 @@ describe API::V2::Admin::Blockchains, type: :request do
 
     it 'returns blockchains by ascending order' do
       api_get '/api/v2/admin/blockchains',
-        params: { ordering: 'asc', order_by: 'client'},
+        params: { ordering: 'asc', order_by: 'client' },
         token: token
       result = JSON.parse(response.body)
 
@@ -168,7 +168,7 @@ describe API::V2::Admin::Blockchains, type: :request do
       expect(response).to be_successful
       expect(response.headers.fetch('Total')).to eq Blockchain.count.to_s
       expect(result.size).to eq Blockchain.count
-      expect(result.map { |r| r["status"]}).to all eq "active"
+      expect(result.map { |r| r["status"] }).to all eq "active"
     end
 
     it 'returns error in case invalid blockchain status' do

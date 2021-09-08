@@ -106,7 +106,7 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['ord_type']}).to all eq 'limit'
+      expect(result.map { |r| r['ord_type'] }).to all eq 'limit'
     end
 
     it 'returns orders with type sell' do
@@ -114,7 +114,7 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['side']}).to all eq 'sell'
+      expect(result.map { |r| r['side'] }).to all eq 'sell'
     end
 
     it 'returns orders for specific price' do
@@ -122,8 +122,8 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['price']}.size).to eq 2
-      expect(result.map{|r| r['price']}).to all eq '11.0'
+      expect(result.map { |r| r['price'] }.size).to eq 2
+      expect(result.map { |r| r['price'] }).to all eq '11.0'
     end
 
     it 'returns orders for specific origin_volume' do
@@ -131,8 +131,8 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['origin_volume']}.size).to eq 5
-      expect(result.map{|r| r['origin_volume']}).to all eq '123.12'
+      expect(result.map { |r| r['origin_volume'] }.size).to eq 5
+      expect(result.map { |r| r['origin_volume'] }).to all eq '123.12'
     end
 
     it 'returns orders for specific user by email' do
@@ -140,8 +140,8 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['email']}.size).to eq 5
-      expect(result.map{|r| r['email']}).to all eq 'example@gmail.com'
+      expect(result.map { |r| r['email'] }.size).to eq 5
+      expect(result.map { |r| r['email'] }).to all eq 'example@gmail.com'
     end
 
     it 'returns orders for specific user by uid' do
@@ -149,8 +149,8 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['uid']}.size).to eq 5
-      expect(result.map{|r| r['uid']}).to all eq 'ID73BF61C8H0'
+      expect(result.map { |r| r['uid'] }.size).to eq 5
+      expect(result.map { |r| r['uid'] }).to all eq 'ID73BF61C8H0'
     end
 
     it 'returns paginated orders' do
@@ -170,7 +170,7 @@ describe API::V2::Admin::Orders, type: :request do
     end
 
     it 'returns orders by ascending order' do
-      api_get '/api/v2/admin/orders', params: { market: 'btc_usd', ordering: 'asc', order_by: 'updated_at'}, token: token
+      api_get '/api/v2/admin/orders', params: { market: 'btc_usd', ordering: 'asc', order_by: 'updated_at' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful

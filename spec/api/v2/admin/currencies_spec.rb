@@ -193,7 +193,7 @@ describe API::V2::Admin::Currencies, type: :request do
     end
 
     it 'returns currencies by ascending order' do
-      api_get '/api/v2/admin/currencies', params: { ordering: 'asc', order_by: 'code'}, token: token
+      api_get '/api/v2/admin/currencies', params: { ordering: 'asc', order_by: 'code' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful

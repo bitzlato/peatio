@@ -62,7 +62,7 @@ describe API::V2::Management::Members, type: :request do
       post_json '/api/v2/management/members/group', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
-    let(:data) { {uid: member.uid, group: 'vip-1'} }
+    let(:data) { { uid: member.uid, group: 'vip-1' } }
     let(:signers) { %i[alex jeff] }
     let(:member) { create(:member, :barong) }
 

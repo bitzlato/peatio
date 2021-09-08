@@ -29,21 +29,21 @@ describe Withdraw do
 
       context :record_submit_operations! do
         it 'creates two liability operations' do
-          expect{ subject.accept! }.to change{ Operations::Liability.count }.by(2)
+          expect { subject.accept! }.to change { Operations::Liability.count }.by(2)
         end
 
         it 'doesn\'t create asset operations' do
-          expect{ subject.accept! }.to_not change{ Operations::Asset.count }
+          expect { subject.accept! }.to_not change { Operations::Asset.count }
         end
 
         it 'debits main liabilities for member' do
-          expect{ subject.accept! }.to change {
+          expect { subject.accept! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :main)
           }.by(-subject.sum)
         end
 
         it 'credits locked liabilities for member' do
-          expect{ subject.accept! }.to change {
+          expect { subject.accept! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :locked)
           }.by(subject.sum)
         end
@@ -133,21 +133,21 @@ describe Withdraw do
           subject.accept!
         end
         it 'creates two liability operations' do
-          expect{ subject.cancel! }.to change{ Operations::Liability.count }.by(2)
+          expect { subject.cancel! }.to change { Operations::Liability.count }.by(2)
         end
 
         it 'doesn\'t create asset operations' do
-          expect{ subject.cancel! }.to_not change{ Operations::Asset.count }
+          expect { subject.cancel! }.to_not change { Operations::Asset.count }
         end
 
         it 'credits main liabilities for member' do
-          expect{ subject.cancel! }.to change {
+          expect { subject.cancel! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :main)
           }.by(subject.sum)
         end
 
         it 'debits locked liabilities for member' do
-          expect{ subject.cancel! }.to change {
+          expect { subject.cancel! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :locked)
           }.by(-subject.sum)
         end
@@ -204,21 +204,21 @@ describe Withdraw do
       context :record_cancel_operations do
 
         it 'creates two liability operations' do
-          expect{ subject.reject! }.to change{ Operations::Liability.count }.by(2)
+          expect { subject.reject! }.to change { Operations::Liability.count }.by(2)
         end
 
         it 'doesn\'t create asset operations' do
-          expect{ subject.reject! }.to_not change{ Operations::Asset.count }
+          expect { subject.reject! }.to_not change { Operations::Asset.count }
         end
 
         it 'credits main liabilities for member' do
-          expect{ subject.reject! }.to change {
+          expect { subject.reject! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :main)
           }.by(subject.sum)
         end
 
         it 'debits locked liabilities for member' do
-          expect{ subject.reject! }.to change {
+          expect { subject.reject! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :locked)
           }.by(-subject.sum)
         end
@@ -255,21 +255,21 @@ describe Withdraw do
       context :record_complete_operations do
 
         it 'creates single liability operation' do
-          expect{ subject.success! }.to change{ Operations::Liability.count }.by(1)
+          expect { subject.success! }.to change { Operations::Liability.count }.by(1)
         end
 
         it 'creates asset operation' do
-          expect{ subject.success! }.to change{ Operations::Asset.count }.by(1)
+          expect { subject.success! }.to change { Operations::Asset.count }.by(1)
         end
 
         it 'doesn\'t change main liability balance for member' do
-          expect{ subject.success! }.to_not change {
+          expect { subject.success! }.to_not change {
             subject.member.balance_for(currency: subject.currency, kind: :main)
           }
         end
 
         it 'debits locked liabilities for member' do
-          expect{ subject.success! }.to change {
+          expect { subject.success! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :locked)
           }.by(-subject.sum)
         end
@@ -287,13 +287,13 @@ describe Withdraw do
         end
 
         it 'credits revenues' do
-          expect{ subject.success! }.to change {
+          expect { subject.success! }.to change {
             Operations::Revenue.balance(currency: subject.currency)
           }.by(subject.fee)
         end
 
         it 'creates revenue operation from member' do
-          expect{ subject.success! }.to change {
+          expect { subject.success! }.to change {
             Operations::Revenue.where(member: subject.member).count
           }.by(1)
         end

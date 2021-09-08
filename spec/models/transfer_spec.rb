@@ -241,7 +241,7 @@ describe Transfer do
           it 'does not create transfer' do
             expect {
               subject rescue Account::AccountError; nil
-            }.to_not change{ Transfer.count }
+            }.to_not change { Transfer.count }
           end
         end
       end

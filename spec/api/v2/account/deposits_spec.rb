@@ -11,7 +11,7 @@ describe API::V2::Account::Deposits, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Deposit', 'PaymentAddress']}})
+    Ability.stubs(:user_permissions).returns({ 'member'=>{ 'read'=>['Deposit', 'PaymentAddress'] } })
   end
 
   describe 'POST /api/v2/account/deposits/intention' do

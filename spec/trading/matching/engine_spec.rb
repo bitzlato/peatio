@@ -159,15 +159,15 @@ describe Matching::Engine do
             {
               :action=>"cancel",
               :order=>
-                {:id=>bid1_in_db.id,
+                { :id=>bid1_in_db.id,
                  :timestamp=>bid1_in_db.created_at.to_i,
                  :type=>:bid,
                  :locked=>67.16.to_d,
                  :volume=>0.8395.to_d,
                  :market=>"btc_usd",
-                 :ord_type=>"market"}
+                 :ord_type=>"market" }
             },
-            {:persistent=>false}
+            { :persistent=>false }
           ]
         ]
       end
@@ -235,15 +235,15 @@ describe Matching::Engine do
             {
               :action=>"cancel",
               :order=>
-                {:id=>bid1_in_db.id,
+                { :id=>bid1_in_db.id,
                  :timestamp=>bid1_in_db.created_at.to_i,
                  :type=>:bid,
                  :locked=>46.348533.to_d,
                  :volume=>0.8284.to_d,
                  :market=>"btc_usd",
-                 :ord_type=>"market"}
+                 :ord_type=>"market" }
             },
-           {:persistent=>false}
+           { :persistent=>false }
           ]
         ]
       end
@@ -311,7 +311,7 @@ describe Matching::Engine do
                 :strike_price=>0.3e4,
                 :amount=>0.9e-3,
                 :total=>0.27e1
-            }},
+            } },
             { :persistent=>false }
           ],
           [
@@ -324,7 +324,7 @@ describe Matching::Engine do
                 :strike_price=>0.3001e4,
                 :amount=>0.11e-2,
                 :total=>0.33011e1
-            }},
+            } },
             { :persistent=>false }
           ],
           [
@@ -338,7 +338,7 @@ describe Matching::Engine do
                 :volume=>0.8e-2,
                 :market=>"btc_usd",
                 :ord_type=>"market"
-            }},
+            } },
             { :persistent=>false }
           ]
         ]
@@ -389,7 +389,7 @@ describe Matching::Engine do
                 :strike_price=>0.3e4,
                 :amount=>0.9e-3,
                 :total=>0.27e1
-            }},
+            } },
             { :persistent=>false }
           ],
           [
@@ -464,7 +464,7 @@ describe Matching::Engine do
                 :strike_price => 0.3e4.to_d,
                 :amount => 0.45e-3.to_d,
                 :total => 0.135e1.to_d
-            }},
+            } },
             { :persistent => false }
           ],
           [

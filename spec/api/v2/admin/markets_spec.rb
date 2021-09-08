@@ -35,7 +35,7 @@ describe API::V2::Admin::Markets, type: :request do
     end
 
     it 'returns information about specified qe market' do
-      api_get "/api/v2/admin/markets/#{qe_market.symbol}", params: {type: 'qe'}, token: token
+      api_get "/api/v2/admin/markets/#{qe_market.symbol}", params: { type: 'qe' }, token: token
       expect(response).to be_successful
 
       result = JSON.parse(response.body)
@@ -317,7 +317,7 @@ describe API::V2::Admin::Markets, type: :request do
     end
 
     it 'checkes id or symbol presence' do
-      api_post '/api/v2/admin/markets/update', params: {id: Market.first.symbol, symbol: Market.first.symbol}, token: token
+      api_post '/api/v2/admin/markets/update', params: { id: Market.first.symbol, symbol: Market.first.symbol }, token: token
 
       expect(response).to have_http_status 422
       expect(response).to include_api_error('exclusive')

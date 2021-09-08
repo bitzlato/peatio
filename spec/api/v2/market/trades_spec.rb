@@ -10,7 +10,7 @@ describe API::V2::Market::Trades, type: :request do
   end
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Trade']}})
+    Ability.stubs(:user_permissions).returns({ 'member'=>{ 'read'=>['Trade'] } })
   end
 
   let(:token) { jwt_for(member) }

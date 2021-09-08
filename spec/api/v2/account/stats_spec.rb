@@ -5,7 +5,7 @@ describe API::V2::Account::Stats, type: :request do
   let(:token) { jwt_for(member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['StatsMemberPnl']}})
+    Ability.stubs(:user_permissions).returns({ 'member'=>{ 'read'=>['StatsMemberPnl'] } })
   end
 
   describe 'GET /api/v2/account/stats/pnl' do

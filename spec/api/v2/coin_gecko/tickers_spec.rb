@@ -40,15 +40,15 @@ describe API::V2::CoinGecko::Tickers, type: :request do
         get '/api/v2/coingecko/tickers'
         expect(response).to be_successful
 
-        btc_usd_ticker = response_body.find {|ticker| ticker['ticker_id'] == 'BTC_USD'}
-        btc_eth_ticker = response_body.find {|ticker| ticker['ticker_id'] == 'BTC_ETH'}
+        btc_usd_ticker = response_body.find { |ticker| ticker['ticker_id'] == 'BTC_USD' }
+        btc_eth_ticker = response_body.find { |ticker| ticker['ticker_id'] == 'BTC_ETH' }
         expect(btc_usd_ticker).to eq expected_btc_usd_ticker
         expect(btc_eth_ticker).to eq expected_btc_eth_ticker
       end
     end
 
     context 'single trade was executed' do
-      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
 
       let(:expected_ticker) do
         {
@@ -70,14 +70,14 @@ describe API::V2::CoinGecko::Tickers, type: :request do
         get '/api/v2/coingecko/tickers'
         expect(response).to be_successful
 
-        btc_usd_ticker = response_body.find {|ticker| ticker['ticker_id'] == 'BTC_USD'}
+        btc_usd_ticker = response_body.find { |ticker| ticker['ticker_id'] == 'BTC_USD' }
         expect(btc_usd_ticker).to eq expected_ticker
       end
     end
 
     context 'multiple trades were executed' do
-      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
-      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
+      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d) }
 
       let(:expected_ticker) do
         {
@@ -99,7 +99,7 @@ describe API::V2::CoinGecko::Tickers, type: :request do
         get '/api/v2/coingecko/tickers'
         expect(response).to be_successful
 
-        btc_usd_ticker = response_body.find {|ticker| ticker['ticker_id'] == 'BTC_USD'}
+        btc_usd_ticker = response_body.find { |ticker| ticker['ticker_id'] == 'BTC_USD' }
         expect(btc_usd_ticker).to eq expected_ticker
       end
     end

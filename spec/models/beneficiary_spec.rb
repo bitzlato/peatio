@@ -64,7 +64,7 @@ describe Beneficiary, 'Validations' do
   context 'data address presence' do
     context 'fiat' do
       context 'blank address' do
-        let(:fiat) { Currency.find(:usd)}
+        let(:fiat) { Currency.find(:usd) }
         subject { build(:beneficiary, currency: fiat).tap { |b| b.data.delete('address') } }
         it { expect(subject.valid?).to be_truthy }
       end
@@ -72,7 +72,7 @@ describe Beneficiary, 'Validations' do
 
     context 'coin' do
       context 'blank address' do
-        let(:coin) { Currency.find(:btc)}
+        let(:coin) { Currency.find(:btc) }
         subject { build(:beneficiary, currency_id: coin).tap { |b| b.data.delete('address') } }
         it { expect(subject.valid?).to be_falsey }
       end
@@ -114,7 +114,7 @@ describe Beneficiary, 'Instance Methods' do
   context 'rid' do
     context 'fiat' do
       let(:full_name) { Faker::Name.name_with_middle }
-      let(:fiat) { Currency.find(:usd)}
+      let(:fiat) { Currency.find(:usd) }
 
       subject do
         create(:beneficiary,
@@ -155,11 +155,11 @@ describe Beneficiary, 'Instance Methods' do
                                       account_number: '0399261557'
                                     })}
 
-          it { expect(fiat_beneficiary.masked_account_number).to eq '03****1557'}
+          it { expect(fiat_beneficiary.masked_account_number).to eq '03****1557' }
         end
 
         context 'coin beneficiary' do
-          let!(:coin_beneficiary) { create(:beneficiary, currency: Currency.find('btc'))}
+          let!(:coin_beneficiary) { create(:beneficiary, currency: Currency.find('btc')) }
           it { expect(coin_beneficiary.masked_account_number).to eq nil }
         end
       end
@@ -185,7 +185,7 @@ describe Beneficiary, 'Instance Methods' do
         end
 
         context 'coin beneficiary' do
-          let!(:coin_beneficiary) { create(:beneficiary, currency: Currency.find('btc'))}
+          let!(:coin_beneficiary) { create(:beneficiary, currency: Currency.find('btc')) }
 
           it 'data shouldnt change' do
             expect(coin_beneficiary.masked_data).to match (coin_beneficiary.data)

@@ -36,7 +36,7 @@ describe Bitcoin::Blockchain do
     let(:server) { 'http://user:password@127.0.0.1:18332' }
     let(:endpoint) { '127.0.0.1:18332' }
     let(:blockchain) do
-      Bitcoin::Blockchain.new.tap {|b| b.configure(server: server)}
+      Bitcoin::Blockchain.new.tap { |b| b.configure(server: server) }
     end
 
     def request_raw_transaction(transaction)
@@ -138,7 +138,7 @@ describe Bitcoin::Blockchain do
     let(:server) { 'http://user:password@127.0.0.1:18332' }
     let(:endpoint) { '127.0.0.1:18332' }
     let(:blockchain) do
-      Bitcoin::Blockchain.new.tap {|b| b.configure(server: server)}
+      Bitcoin::Blockchain.new.tap { |b| b.configure(server: server) }
     end
 
     it 'returns latest block number' do
@@ -164,7 +164,7 @@ describe Bitcoin::Blockchain do
                            error:  { code: -32601, message: 'Method not found' },
                            id:     nil }.to_json)
 
-      expect{ blockchain.latest_block_number }.to raise_error(Peatio::Blockchain::ClientError)
+      expect { blockchain.latest_block_number }.to raise_error(Peatio::Blockchain::ClientError)
     end
       
     it 'keeps alive' do
@@ -215,7 +215,7 @@ describe Bitcoin::Blockchain do
         # stub get_block_hash
         stub_request(:post, endpoint)
           .with(body: request_block_hash_body(blk['result']['height']))
-          .to_return(body: {result: blk['result']['hash']}.to_json)
+          .to_return(body: { result: blk['result']['hash'] }.to_json)
 
         # stub get_block
         stub_request(:post, endpoint)
@@ -269,18 +269,18 @@ describe Bitcoin::Blockchain do
         .yield_self { |file| JSON.load(file) }
     end
     let(:expected_transactions) do
-      [{:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+      [{ :hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
         :txout=>0,
         :to_address=>"mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL",
         :amount=>0.325e0,
         :status=>"success",
-        :currency_id=>currency.id},
-       {:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+        :currency_id=>currency.id },
+       { :hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
         :txout=>1,
         :to_address=>"mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA",
         :amount=>0.1964466932e2,
         :status=>"success",
-        :currency_id=>currency.id}]
+        :currency_id=>currency.id }]
     end
 
     let(:currency) do
@@ -297,30 +297,30 @@ describe Bitcoin::Blockchain do
 
     context 'multiple currencies' do
       let(:expected_transactions) do
-        [{:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+        [{ :hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
           :txout=>0,
           :to_address=>"mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL",
           :amount=>0.325e0,
           :status=>"success",
-          :currency_id=>currency1.id},
-         {:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+          :currency_id=>currency1.id },
+         { :hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
           :txout=>1,
           :to_address=>"mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA",
           :amount=>0.1964466932e2,
           :status=>"success",
-          :currency_id=>currency1.id},
-         {:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+          :currency_id=>currency1.id },
+         { :hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
           :txout=>0,
           :to_address=>"mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL",
           :amount=>0.325e0,
           :status=>"success",
-          :currency_id=>currency2.id},
-         {:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+          :currency_id=>currency2.id },
+         { :hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
           :txout=>1,
           :to_address=>"mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA",
           :amount=>0.1964466932e2,
           :status=>"success",
-          :currency_id=>currency2.id}]
+          :currency_id=>currency2.id }]
       end
 
       let(:currency1) do
@@ -346,24 +346,24 @@ describe Bitcoin::Blockchain do
       let(:tx_file_name) { '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0.json' }
 
       let(:expected_transactions) do
-        [{:hash=>"1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0",
+        [{ :hash=>"1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0",
           :txout=>0,
           :to_address=>"2N5WyM3QT1Kb6fvkSZj3Xvcx2at7Ydm5VmL",
           :amount=>0.1e0,
           :status=>"success",
-          :currency_id=>"btc"},
-         {:hash=>"1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0",
+          :currency_id=>"btc" },
+         { :hash=>"1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0",
           :txout=>1,
           :to_address=>"2MzDFuDK9ZEEiRsuCDFkPdeHQLGvwbC9ufG",
           :amount=>0.2e0,
           :status=>"success",
-          :currency_id=>"btc"},
-         {:hash=>"1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0",
+          :currency_id=>"btc" },
+         { :hash=>"1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0",
           :txout=>2,
           :to_address=>"2MuvCKKi1MzGtvZqvcbqn5twjA2v5XLaTWe",
           :amount=>0.11749604e0,
           :status=>"success",
-          :currency_id=>"btc"}]
+          :currency_id=>"btc" }]
       end
 
       it 'builds formatted transactions for each vout' do
@@ -381,7 +381,7 @@ describe Bitcoin::Blockchain do
 
     let(:server) { 'http://user:password@127.0.0.1:18332' }
     let(:blockchain) do
-      Bitcoin::Blockchain.new.tap {|b| b.configure(server: server)}
+      Bitcoin::Blockchain.new.tap { |b| b.configure(server: server) }
     end
 
 
@@ -440,7 +440,7 @@ describe Bitcoin::Blockchain do
     context 'address is not defined' do
       it 'requests rpc listaddressgroupings and do not find address' do
         address = '1PoxQx6Pk5NwWN1yyBx2jifFvS9eJAksdf'
-        expect{ blockchain.load_balance_of_address!(address, :btc)}.to raise_error(Peatio::Blockchain::UnavailableAddressBalanceError)
+        expect { blockchain.load_balance_of_address!(address, :btc) }.to raise_error(Peatio::Blockchain::UnavailableAddressBalanceError)
       end
     end
 
@@ -456,7 +456,7 @@ describe Bitcoin::Blockchain do
       end
 
       it 'raise wrapped client error' do
-        expect{ blockchain.load_balance_of_address!('anything', :btc)}.to raise_error(Peatio::Blockchain::ClientError)
+        expect { blockchain.load_balance_of_address!('anything', :btc) }.to raise_error(Peatio::Blockchain::ClientError)
       end
     end
   end

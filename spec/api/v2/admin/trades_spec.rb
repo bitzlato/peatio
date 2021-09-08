@@ -85,7 +85,7 @@ describe API::V2::Admin::Trades, type: :request do
         api_get'/api/v2/admin/trades', token: token, params: { limit: 5, page: 2 }
         result = JSON.parse(response.body)
         expected = trades[0...1]
-        expected.select! {|trade| trade.market_type == 'spot'}
+        expected.select! { |trade| trade.market_type == 'spot' }
 
         expect(result.map { |t| t['id'] }).to match_array expected.map(&:id)
       end
@@ -102,7 +102,7 @@ describe API::V2::Admin::Trades, type: :request do
         api_get'/api/v2/admin/trades', token: token, params: { order_by: 'price', ordering: 'asc' }
         result = JSON.parse(response.body)
         expected = trades.sort { |a, b| a.price <=> b.price }
-        expected.select! {|trade| trade.market_type == 'spot'}
+        expected.select! { |trade| trade.market_type == 'spot' }
 
         expect(result.map { |t| t['id'] }).to match_array expected.map(&:id)
       end
@@ -111,7 +111,7 @@ describe API::V2::Admin::Trades, type: :request do
         api_get'/api/v2/admin/trades', token: token, params: { order_by: 'amount', ordering: 'asc' }
         result = JSON.parse(response.body)
         expected = trades.sort { |a, b| b.amount <=> a.amount }
-        expected.select! {|trade| trade.market_type == 'spot'}
+        expected.select! { |trade| trade.market_type == 'spot' }
 
         expect(result.map { |t| t['id'] }).to match_array expected.map(&:id)
       end

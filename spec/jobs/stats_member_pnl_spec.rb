@@ -501,7 +501,7 @@ describe Jobs::Cron::StatsMemberPnl do
 
   context 'process' do
     before do
-      Jobs::Cron::StatsMemberPnl.stubs(:pnl_currencies).returns([Market.first.quote_unit, Market.second.quote_unit].map{|id| Currency.find(id)})
+      Jobs::Cron::StatsMemberPnl.stubs(:pnl_currencies).returns([Market.first.quote_unit, Market.second.quote_unit].map { |id| Currency.find(id) })
     end
 
     context 'no liabilities' do

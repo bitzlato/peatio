@@ -254,7 +254,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
               create(:beneficiary,
                      member: member,
                      currency_id: beneficiary_data[:currency],
-                     data: {address: beneficiary_data.dig(:data, :address)})
+                     data: { address: beneficiary_data.dig(:data, :address) })
             end
 
             it do
@@ -269,7 +269,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
               create(:beneficiary,
                      member: member,
                      currency_id: :eth,
-                     data: {address: beneficiary_data.dig(:data, :address)})
+                     data: { address: beneficiary_data.dig(:data, :address) })
             end
 
             it do
@@ -359,7 +359,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
       it 'creates beneficiary for member' do
         expect do
           request
-        end.to change{ member.beneficiaries.count }.by(1)
+        end.to change { member.beneficiaries.count }.by(1)
       end
 
       it 'creates beneficiary with active state' do

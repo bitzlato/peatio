@@ -8,10 +8,10 @@ describe API::V2::Account::Balances, type: :request do
   let(:withdraw) { create(:btc_withdraw, member: member, sum: 5) }
   let(:token) { jwt_for(member) }
 
-  let(:response_body) { { 'currency' => 'eth', 'balance' => '30.5', 'locked' => '0.0'} }
+  let(:response_body) { { 'currency' => 'eth', 'balance' => '30.5', 'locked' => '0.0' } }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Operations::Account']}})
+    Ability.stubs(:user_permissions).returns({ 'member'=>{ 'read'=>['Operations::Account'] } })
   end
 
   before do
@@ -42,12 +42,12 @@ describe API::V2::Account::Balances, type: :request do
         expect(response).to have_http_status 200
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
-          {"currency"=>"usd", "balance"=>"0.0", "locked"=>"0.0"},
-          {"currency"=>"btc", "balance"=>"5.0", "locked"=>"5.0"},
-          {"currency"=>"eth", "balance"=>"30.5", "locked"=>"0.0"},
-          {"currency"=>"trst", "balance"=>"0.0", "locked"=>"0.0"},
-          {"currency"=>"ring", "balance"=>"0.0", "locked"=>"0.0"},
-          {"currency"=>"eur", "balance"=>"0.0", "locked"=>"0.0"}
+          { "currency"=>"usd", "balance"=>"0.0", "locked"=>"0.0" },
+          { "currency"=>"btc", "balance"=>"5.0", "locked"=>"5.0" },
+          { "currency"=>"eth", "balance"=>"30.5", "locked"=>"0.0" },
+          { "currency"=>"trst", "balance"=>"0.0", "locked"=>"0.0" },
+          { "currency"=>"ring", "balance"=>"0.0", "locked"=>"0.0" },
+          { "currency"=>"eur", "balance"=>"0.0", "locked"=>"0.0" }
         )
       end
 
@@ -63,48 +63,48 @@ describe API::V2::Account::Balances, type: :request do
          expect(response).to have_http_status 200
          result = JSON.parse(response.body)
          expect(result).to contain_exactly(
-                        { 'currency' => 'btc', 'balance' => '5.0', 'locked' => '5.0'},
-                        { 'currency' => 'eth', 'balance' => '30.5', 'locked' => '0.0'},
+                        { 'currency' => 'btc', 'balance' => '5.0', 'locked' => '5.0' },
+                        { 'currency' => 'eth', 'balance' => '30.5', 'locked' => '0.0' },
                         { 'currency' => 'usd', 'balance' => '0.0', 'locked' => '0.0' },
-                        { 'currency' => 'trst', 'balance' => '0.0', 'locked' => '0.0'},
-                        { 'currency' => 'ring', 'balance' => '0.0', 'locked' => '0.0'},
+                        { 'currency' => 'trst', 'balance' => '0.0', 'locked' => '0.0' },
+                        { 'currency' => 'ring', 'balance' => '0.0', 'locked' => '0.0' },
                         { 'currency' => 'eur', 'balance' => '0.0', 'locked' => '0.0' })
         end
       end
     end
 
     context 'use nonzero parameter == true' do
-      before { api_get '/api/v2/account/balances', token: token, params: {nonzero: true} }
+      before { api_get '/api/v2/account/balances', token: token, params: { nonzero: true } }
 
       it 'returns nonzero balances' do
         expect(response).to have_http_status 200
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
-                            { 'currency' => 'btc',  'balance' => '5.0',  'locked'  => '5.0'},
-                            { 'currency' => 'eth',  'balance' => '30.5', 'locked'  => '0.0'},
+                            { 'currency' => 'btc',  'balance' => '5.0',  'locked'  => '5.0' },
+                            { 'currency' => 'eth',  'balance' => '30.5', 'locked'  => '0.0' },
                             )
       end
     end
 
     context 'use nonzero parameter == false' do
-      before { api_get '/api/v2/account/balances', token: token, params: {nonzero: false} }
+      before { api_get '/api/v2/account/balances', token: token, params: { nonzero: false } }
 
       it 'returns all balances' do
         expect(response).to have_http_status 200
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
-                              { 'currency' => 'btc',  'balance' => '5.0',  'locked'  => '5.0'},
-                              { 'currency' => 'eth',  'balance' => '30.5', 'locked'  => '0.0'},
+                              { 'currency' => 'btc',  'balance' => '5.0',  'locked'  => '5.0' },
+                              { 'currency' => 'eth',  'balance' => '30.5', 'locked'  => '0.0' },
                               { 'currency' => 'usd',  'balance' => '0.0',  'locked'  => '0.0' },
-                              { 'currency' => 'trst',  'balance' => '0.0',  'locked'  => '0.0'},
-                              { 'currency' => 'ring',  'balance' => '0.0',  'locked'  => '0.0'},
+                              { 'currency' => 'trst',  'balance' => '0.0',  'locked'  => '0.0' },
+                              { 'currency' => 'ring',  'balance' => '0.0',  'locked'  => '0.0' },
                               { 'currency' => 'eur',  'balance' => '0.0',  'locked'  => '0.0' },
                               )
       end
     end
 
     context 'use nonzero parameter == string' do
-      before { api_get '/api/v2/account/balances', token: token, params: {nonzero: "token"} }
+      before { api_get '/api/v2/account/balances', token: token, params: { nonzero: "token" } }
 
 
       it 'returns all balances' do
@@ -115,7 +115,7 @@ describe API::V2::Account::Balances, type: :request do
     end
 
     context 'pagination' do
-      before { api_get '/api/v2/account/balances', {token: token, params: {limit: 2} } }
+      before { api_get '/api/v2/account/balances', { token: token, params: { limit: 2 } } }
 
       it 'limited user balances' do
         result = JSON.parse(response.body)
@@ -144,21 +144,21 @@ describe API::V2::Account::Balances, type: :request do
     context 'filters' do
       context 'currency_code' do
         it 'filters by currency_code 1' do
-          api_get '/api/v2/account/balances', token: token, params: { search: {currency_code: 't'}}
+          api_get '/api/v2/account/balances', token: token, params: { search: { currency_code: 't' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
           expect(result.pluck('currency')).to contain_exactly('btc', 'eth', 'trst')
         end
 
         it 'filters by currency_code 2' do
-          api_get '/api/v2/account/balances', token: token, params: { search: {currency_code: 'TrSt'}}
+          api_get '/api/v2/account/balances', token: token, params: { search: { currency_code: 'TrSt' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
           expect(result.pluck('currency')).to contain_exactly('trst')
         end
 
         it 'filters by currency_code 3' do
-          api_get '/api/v2/account/balances', token: token, params: { search: {currency_code: 'abc'}}
+          api_get '/api/v2/account/balances', token: token, params: { search: { currency_code: 'abc' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
           expect(result.blank?).to be_truthy
@@ -167,21 +167,21 @@ describe API::V2::Account::Balances, type: :request do
 
       context 'currency_name' do
         it 'filters by currency_name 1' do
-          api_get '/api/v2/account/balances', token: token, params: { search: {currency_name: 'Et'}}
+          api_get '/api/v2/account/balances', token: token, params: { search: { currency_name: 'Et' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
           expect(result.pluck('currency')).to contain_exactly('eth', 'trst')
         end
 
         it 'filters by currency_name 2' do
-          api_get '/api/v2/account/balances', token: token, params: { search: {currency_name: 'dollar'}}
+          api_get '/api/v2/account/balances', token: token, params: { search: { currency_name: 'dollar' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
           expect(result.pluck('currency')).to contain_exactly('usd')
         end
 
         it 'filters by currency_name 3' do
-          api_get '/api/v2/account/balances', token: token, params: { search: {currency_name: 'abc'}}
+          api_get '/api/v2/account/balances', token: token, params: { search: { currency_name: 'abc' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
           expect(result.blank?).to be_truthy
@@ -190,21 +190,21 @@ describe API::V2::Account::Balances, type: :request do
 
       context 'currency_code & currency_name' do
         it 'filters by code or name 1' do
-          api_get '/api/v2/account/balances', token: token, params: { search: {currency_name: 'abc', currency_code: 'TrSt'}}
+          api_get '/api/v2/account/balances', token: token, params: { search: { currency_name: 'abc', currency_code: 'TrSt' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
           expect(result.pluck('currency')).to contain_exactly('trst')
         end
 
         it 'filters by code or name 2' do
-          api_get '/api/v2/account/balances', token: token, params: { search: {currency_name: 'Trust', currency_code: 'abc'}}
+          api_get '/api/v2/account/balances', token: token, params: { search: { currency_name: 'Trust', currency_code: 'abc' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
           expect(result.pluck('currency')).to contain_exactly('trst')
         end
 
         it 'filters by code or name 3' do
-          api_get '/api/v2/account/balances', token: token, params: { search: {currency_name: 'Eu', currency_code: 'ri'}}
+          api_get '/api/v2/account/balances', token: token, params: { search: { currency_name: 'Eu', currency_code: 'ri' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
           expect(result.pluck('currency')).to contain_exactly('ring', 'eur', 'eth')
@@ -217,7 +217,7 @@ describe API::V2::Account::Balances, type: :request do
         Ability.stubs(:user_permissions).returns([])
       end
 
-      before { api_get '/api/v2/account/balances', {token: token, params: {limit: 2} } }
+      before { api_get '/api/v2/account/balances', { token: token, params: { limit: 2 } } }
 
       it 'renders unauthorized error' do
         expect(response).to have_http_status 403
@@ -231,7 +231,7 @@ describe API::V2::Account::Balances, type: :request do
       it do
         old_member_email = member.email
         member.email = new_member_email
-        api_get '/api/v2/account/balances', {token: jwt_for(member), params: {limit: 2} }
+        api_get '/api/v2/account/balances', { token: jwt_for(member), params: { limit: 2 } }
         expect(response).to be_successful
 
         member.reload
@@ -254,7 +254,7 @@ describe API::V2::Account::Balances, type: :request do
 
     context 'currency code with dot' do
       let!(:currency) { create(:currency, :xagm_cx) }
-      let!(:account) { ::Account.create(currency_id: 'xagm.cx', member_id: member.id)}
+      let!(:account) { ::Account.create(currency_id: 'xagm.cx', member_id: member.id) }
 
       it 'returns current user balance by currency' do
         api_get "/api/v2/account/balances/#{currency.code}", token: token

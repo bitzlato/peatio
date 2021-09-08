@@ -16,7 +16,7 @@ describe Withdrawer do
     end
 
     context 'errored' do
-      let(:transaction) { nil}
+      let(:transaction) { nil }
       it do
         subject.call(withdraw)
         expect(withdraw.aasm_state).to eq 'errored'

@@ -281,26 +281,26 @@ end
 
 describe Order, '#record_submit_operations!' do
   # Persist Order in database.
-  let!(:order){ create(:order_ask, :btc_usd, :with_deposit_liability) }
+  let!(:order) { create(:order_ask, :btc_usd, :with_deposit_liability) }
 
   subject { order }
 
   it 'creates two liability operations' do
-    expect{ subject.record_submit_operations! }.to change{ Operations::Liability.count }.by(2)
+    expect { subject.record_submit_operations! }.to change { Operations::Liability.count }.by(2)
   end
 
   it 'doesn\'t create asset operations' do
-    expect{ subject.record_submit_operations! }.to_not change{ Operations::Asset.count }
+    expect { subject.record_submit_operations! }.to_not change { Operations::Asset.count }
   end
 
   it 'debits main liabilities for member' do
-    expect{ subject.record_submit_operations! }.to change {
+    expect { subject.record_submit_operations! }.to change {
       subject.member.balance_for(currency: subject.currency, kind: :main)
     }.by(-subject.locked)
   end
 
   it 'credits locked liabilities for member' do
-    expect{ subject.record_submit_operations! }.to change {
+    expect { subject.record_submit_operations! }.to change {
       subject.member.balance_for(currency: subject.currency, kind: :locked)
     }.by(subject.locked)
   end
@@ -308,27 +308,27 @@ end
 
 describe Order, '#record_cancel_operations!' do
   # Persist Order in database.
-  let!(:order){ create(:order_ask, :with_deposit_liability) }
+  let!(:order) { create(:order_ask, :with_deposit_liability) }
 
   subject { order }
   before { subject.record_submit_operations! }
 
   it 'creates two liability operations' do
-    expect{ subject.record_cancel_operations! }.to change{ Operations::Liability.count }.by(2)
+    expect { subject.record_cancel_operations! }.to change { Operations::Liability.count }.by(2)
   end
 
   it 'doesn\'t create asset operations' do
-    expect{ subject.record_cancel_operations! }.to_not change{ Operations::Asset.count }
+    expect { subject.record_cancel_operations! }.to_not change { Operations::Asset.count }
   end
 
   it 'credits main liabilities for member' do
-    expect{ subject.record_cancel_operations! }.to change {
+    expect { subject.record_cancel_operations! }.to change {
       subject.member.balance_for(currency: subject.currency, kind: :main)
     }.by(subject.locked)
   end
 
   it 'debits locked liabilities for member' do
-    expect{ subject.record_cancel_operations! }.to change {
+    expect { subject.record_cancel_operations! }.to change {
       subject.member.balance_for(currency: subject.currency, kind: :locked)
     }.by(-subject.locked)
   end
@@ -337,7 +337,7 @@ end
 describe Order, '#trigger_private_event' do
 
   context 'trigger pusher event for limit order' do
-    let!(:order){ create(:order_ask, :with_deposit_liability) }
+    let!(:order) { create(:order_ask, :with_deposit_liability) }
 
     subject { order }
 

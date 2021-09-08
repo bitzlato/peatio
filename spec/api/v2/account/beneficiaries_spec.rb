@@ -28,8 +28,8 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
   end
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Beneficiary'],'update'=>['Beneficiary'],
-                                                         'create'=> ['Beneficiary'],'destroy'=> ['Beneficiary']}})
+    Ability.stubs(:user_permissions).returns({ 'member'=>{ 'read'=>['Beneficiary'],'update'=>['Beneficiary'],
+                                                         'create'=> ['Beneficiary'],'destroy'=> ['Beneficiary'] } })
   end
 
   context 'without JWT' do
@@ -355,7 +355,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
             create(:beneficiary,
                    member: member,
                    currency_id: beneficiary_data[:currency],
-                   data: {address: beneficiary_data.dig(:data, :address)})
+                   data: { address: beneficiary_data.dig(:data, :address) })
           end
 
           it do
@@ -370,7 +370,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
             create(:beneficiary,
                    member: member,
                    currency_id: :eth,
-                   data: {address: beneficiary_data.dig(:data, :address)})
+                   data: { address: beneficiary_data.dig(:data, :address) })
           end
 
           it do
@@ -461,7 +461,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
     it 'creates beneficiary for member' do
       expect do
         api_post endpoint, params: beneficiary_data, token: token
-      end.to change{ member.beneficiaries.count }.by(1)
+      end.to change { member.beneficiaries.count }.by(1)
     end
 
     it 'creates beneficiary with pending state' do

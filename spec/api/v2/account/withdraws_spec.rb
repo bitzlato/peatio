@@ -8,7 +8,7 @@ describe API::V2::Account::Withdraws, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Withdraw'],'create'=>['Withdraw']}})
+    Ability.stubs(:user_permissions).returns({ 'member'=>{ 'read'=>['Withdraw'],'create'=>['Withdraw'] } })
   end
 
   describe 'GET /api/v2/account/withdraws' do

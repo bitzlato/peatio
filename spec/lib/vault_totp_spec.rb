@@ -31,8 +31,8 @@ describe Vault::TOTP do
 
   describe '.validate?' do
     before do
-      described_class.stubs(:write_data).returns( OpenStruct.new({data: data}) )
-      described_class.stubs(:read_data).returns( OpenStruct.new({data: data}) )
+      described_class.stubs(:write_data).returns( OpenStruct.new({ data: data }) )
+      described_class.stubs(:read_data).returns( OpenStruct.new({ data: data }) )
     end
     let(:data) { { valid: true } }
 

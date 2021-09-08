@@ -8,7 +8,7 @@ describe API::V2::Market::Orders, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Order'],'create'=>['Order'],'update'=>['Order']}})
+    Ability.stubs(:user_permissions).returns({ 'member'=>{ 'read'=>['Order'],'create'=>['Order'],'update'=>['Order'] } })
   end
 
   describe 'GET /api/v2/market/orders' do
@@ -165,8 +165,8 @@ describe API::V2::Market::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['ord_type']}.uniq.size).to eq 1
-      expect(result.map{|r| r['ord_type']}.uniq.first).to eq 'limit'
+      expect(result.map { |r| r['ord_type'] }.uniq.size).to eq 1
+      expect(result.map { |r| r['ord_type'] }.uniq.first).to eq 'limit'
     end
 
     it 'returns orders with type sell' do
@@ -174,8 +174,8 @@ describe API::V2::Market::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['side']}.uniq.size).to eq 1
-      expect(result.map{|r| r['side']}.uniq.first).to eq 'sell'
+      expect(result.map { |r| r['side'] }.uniq.size).to eq 1
+      expect(result.map { |r| r['side'] }.uniq.first).to eq 'sell'
     end
 
     it 'returns orders with base unit btc' do

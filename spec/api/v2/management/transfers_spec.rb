@@ -88,7 +88,7 @@ describe API::V2::Management::Transfers, type: :request do
     end
 
     context 'empty category' do
-      let(:operations) {[valid_operation]}
+      let(:operations) { [valid_operation] }
 
       before do
         data.delete(:category)
@@ -102,7 +102,7 @@ describe API::V2::Management::Transfers, type: :request do
     end
 
     context 'empty description' do
-      let(:operations) {[valid_operation]}
+      let(:operations) { [valid_operation] }
 
       before do
         data.delete(:description)
@@ -113,7 +113,7 @@ describe API::V2::Management::Transfers, type: :request do
     end
 
     context 'empty operations' do
-      let(:operations) {[]}
+      let(:operations) { [] }
 
       before { request }
 
@@ -163,7 +163,7 @@ describe API::V2::Management::Transfers, type: :request do
     end
 
     context 'existing transfer key' do
-      let(:operations) {[valid_operation]}
+      let(:operations) { [valid_operation] }
       before do
         t = create(:transfer)
         data[:key] = t.key
@@ -195,7 +195,7 @@ describe API::V2::Management::Transfers, type: :request do
           }
         }
       end
-      let(:operations) {[operation]}
+      let(:operations) { [operation] }
 
       before { request }
 
@@ -330,10 +330,10 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it 'updates legacy balances' do
-        expect { request }.to change{ referrer1.get_account(base_unit).balance }.by(0.0001 + 0.0003).and \
-                              change{ referrer2.get_account(base_unit).balance }.by(0.00015).and \
-                              change{ referrer2.get_account(quote_unit).balance }.by(0.05).and \
-                              change{ referrer3.get_account(quote_unit).balance }.by(0.075)
+        expect { request }.to change { referrer1.get_account(base_unit).balance }.by(0.0001 + 0.0003).and \
+                              change { referrer2.get_account(base_unit).balance }.by(0.00015).and \
+                              change { referrer2.get_account(quote_unit).balance }.by(0.05).and \
+                              change { referrer3.get_account(quote_unit).balance }.by(0.075)
       end
 
       context 'wrong account code' do
@@ -477,8 +477,8 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it 'updates legacy balance' do
-        expect { request }.to change{ member1.get_account(coin).balance }.by(10).and \
-                              change{ member2.get_account(coin).balance }.by(5)
+        expect { request }.to change { member1.get_account(coin).balance }.by(10).and \
+                              change { member2.get_account(coin).balance }.by(5)
       end
     end
   end

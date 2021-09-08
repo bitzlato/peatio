@@ -3,7 +3,7 @@
 
 class FakeBlockchain < Peatio::Blockchain::Abstract
   def initialize
-    @features = {cash_addr_format: false, case_sensitive: true}
+    @features = { cash_addr_format: false, case_sensitive: true }
   end
 
   def configure(settings = {}); end

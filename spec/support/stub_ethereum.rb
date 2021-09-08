@@ -36,14 +36,14 @@ module EthereumHelpers
       "jsonrpc": '2.0',
       "id": id,
       "method": 'eth_estimateGas',
-      "params": [{gasPrice: '0x'+ gas_price.to_s(16), from: from, to: to}]
+      "params": [{ gasPrice: '0x'+ gas_price.to_s(16), from: from, to: to }]
     }
     stub_request(:post, node_uri)
       .with(body: body.to_json)
       .to_return(body: { result: '0x' + estimated_gas.to_s(16), error: nil, id: id }.to_json)
   end
 
-  def stub_personal_sendTransaction(from_address:, to_address:, value:, gas_price:, gas:, id:)
+  def stub_personal_send_transaction(from_address:, to_address:, value:, gas_price:, gas:, id:)
     request_body = { jsonrpc: '2.0',
                      id: id,
                      method: :personal_sendTransaction,

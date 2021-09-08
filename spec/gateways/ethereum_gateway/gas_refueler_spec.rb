@@ -42,15 +42,15 @@ describe ::EthereumGateway::GasRefueler do
     let(:contract_addresses) { [] }
     context 'it has zero ethereum balance' do
       let(:balance_on_target_address) { 0 }
-      it { expect{ result }.to raise_error described_class::NoTokens }
+      it { expect { result }.to raise_error described_class::NoTokens }
     end
     context 'it has small ethereum balance' do
       let(:balance_on_target_address) { 10000 }
-      it { expect{ result }.to raise_error described_class::NoTokens }
+      it { expect { result }.to raise_error described_class::NoTokens }
     end
     context 'it has big ethereum balance' do
       let(:balance_on_target_address) { 10**18 }
-      it { expect{ result }.to raise_error described_class::NoTokens }
+      it { expect { result }.to raise_error described_class::NoTokens }
     end
   end
 
@@ -64,7 +64,7 @@ describe ::EthereumGateway::GasRefueler do
 
     context 'and it has no enough ethereum balance' do
       before do
-        stub_personal_sendTransaction(
+        stub_personal_send_transaction(
           value:        value,
           from_address: from_address,
           to_address:   to_address,
@@ -97,7 +97,7 @@ describe ::EthereumGateway::GasRefueler do
     end
     context 'and it has enough ethereum balance' do
       let(:balance_on_target_address) { 10**18 }
-      it { expect{ result }.to raise_error described_class::Balanced }
+      it { expect { result }.to raise_error described_class::Balanced }
     end
   end
 end

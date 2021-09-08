@@ -20,7 +20,7 @@ describe ::EthereumGateway::TransactionCreator do
 
   before do
     stub_gas_fetching gas_price: fetched_gas_price, id: 1
-    stub_personal_sendTransaction
+    stub_personal_send_transaction
   end
 
   let(:request_body) do
@@ -36,7 +36,7 @@ describe ::EthereumGateway::TransactionCreator do
       }, secret] }
   end
 
-  def stub_personal_sendTransaction
+  def stub_personal_send_transaction
     stub_request(:post, uri)
       .with(body: request_body.to_json)
       .to_return(body: { result: txid, error: nil, id: 1 }.to_json)

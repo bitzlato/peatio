@@ -178,7 +178,7 @@ describe API::V2::Management::Operations, type: :request do
                         .pluck(:credit)
 
             # Consider that credit sequence is unique.
-            expect(JSON.parse(response.body).map{ |h| h['credit'].to_d }).to eq credits[8..15]
+            expect(JSON.parse(response.body).map { |h| h['credit'].to_d }).to eq credits[8..15]
           end
         end
       end
@@ -196,7 +196,7 @@ describe API::V2::Management::Operations, type: :request do
         let(:signers) { %i[alex jeff] }
         let(:data) do
           { currency: currency.code,
-            code:     Operations::Account.find_by(type: op_type, currency_type: currency.type).code}
+            code:     Operations::Account.find_by(type: op_type, currency_type: currency.type).code }
         end
 
         context 'credit' do
