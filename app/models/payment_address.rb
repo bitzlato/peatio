@@ -18,6 +18,7 @@ class PaymentAddress < ApplicationRecord
   vault_attribute :secret
 
   scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
+  scope :with_balances, -> { where 'EXISTS ( SELECT * FROM jsonb_each_text(balances) AS each(KEY,val) WHERE "val"::decimal >= 0)' }
 
   # TODO Migrate association from wallet to blockchain and remove Wallet.deposit*
   belongs_to :member
