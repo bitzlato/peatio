@@ -167,4 +167,4 @@ class EthereumGateway
       Rails.logger
     end
   end
-End
+end
