@@ -143,3 +143,5 @@ gem "active_record_upsert"
 gem "after_commit_everywhere", "~> 1.1"
 
 gem "request_store", "~> 1.5"
+
+gem "faraday_curl", "~> 0.0.2"
