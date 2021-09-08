@@ -2,7 +2,7 @@
 # rubocop:disable Style/ClassAndModuleChildren
 class Money
   def base_units
-    currency.convert_to_base_unit to_d
+    fractional
   end
 
   # We often use in on loggin this way

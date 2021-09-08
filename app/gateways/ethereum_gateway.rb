@@ -39,7 +39,7 @@ class EthereumGateway < AbstractGateway
     amounts = load_balances(payment_address.address)
       .select { |currency, amount| is_balance_collectable?(amount, currency, payment_address.address) }
       .transform_values { |v| v.base_units }
-      .transform_keys { |v| c.contract_address }
+      .transform_keys { |c| c.contract_address }
 
     # Remove native currency if there are tokens to transfer
     amounts.delete nil if amounts.many?
@@ -47,7 +47,7 @@ class EthereumGateway < AbstractGateway
     logger.info("Collect from payment_address #{payment_address} amounts: #{amounts}")
     EthereumGateway::Collector
       .new(client)
-      .call(from_address: address,
+      .call(from_address: payment_address.address,
             to_address: hot_wallet.address,
             amounts: amounts,
             gas_factor: blockchain.client_options[:gas_factor],
@@ -199,11 +199,7 @@ class EthereumGateway < AbstractGateway
   end
 
   def hot_wallet
-    blockchain.
-      wallets.
-        active.
-        hot.
-        take|| raise(NoHotWallet)
+    blockchain.hot_wallet || raise(NoHotWallet)
   end
 
   def build_client
