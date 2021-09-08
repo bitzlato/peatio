@@ -20,11 +20,6 @@ class EthereumGateway < AbstractGateway
     AbstractCommand.new(client).client_version
   end
 
-  def has_enough_gas?(address)
-    address = address.address if address.is_a? PaymentAddress
-    fetch_gas(address) >= fetch_native_balance(address)
-  end
-
   def fetch_gas(address)
     address = address.address if address.is_a? PaymentAddress
     ac = AbstractCommand.new(client)
@@ -32,77 +27,39 @@ class EthereumGateway < AbstractGateway
     ac.estimage_gas(gas_price: gas_price, from: address, to: hot_wallet.address) * gas_price
   end
 
-  def fetch_native_balance(address)
+  def fetch_balance
     address = address.address if address.is_a? PaymentAddress
-    load_balances(address).fetch(blockchain.native_currency.id, 0)
+    blockchain.native_currency.to_money_from_units(
+      AbstractCommand.new(client).load_basic_balance
+    )
   end
 
-  def refuel_and_collect!(payment_address)
-    refuel_gas!(payment_address)
-    # TODO подождать пока транзакция придет
-    sleep 60
-    collect!(payment_address)
-  end
-
-  # Collect all tokens and coins from payment_address to hot wallet
-  def collect!(payment_address, skip_gas_checking: false)
+  def collect!(payment_address)
     raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
+    amounts = load_balances(payment_address.address)
+      .select { |currency, amount| is_balance_collectable?(amount, currency, payment_address.address) }
+      .transform_values { |v| v.base_units }
+      .transform_keys { |v| c.contract_address }
 
-    balances = load_balances(payment_address.address).
-      reject { |c, a| a.zero? }.
-      transform_keys { |k| blockchain.currencies.find_by(id: k) || raise("Unknown currency in balance #{k} for #{blockchain.key}") }.
-      compact
+    # Remove native currency if there are tokens to transfer
+    amounts.delete nil if amounts.many?
 
-    unless skip_gas_checking
-      raise 'has no enough gas' unless fetch_gas(payment_address.address) >= balances[blockchain.native_currency]
-    end
-
-    # First collect tokens (save base currency to last step for gas)
-    token_currencies = balances.filter { |c| c.token? }.keys
-    base_currencies = balances.reject { |c| c.token? }.keys
-
-    # TODO Сообщать о том что не хватает газа ДО выполнения, так как он потратися
-    # Не выводить базовую валюту пока не счету есть токены
-    # Базовую валюту откидывать за вычетом необходимой суммы газа для токенов
-    (token_currencies + base_currencies).map do |currency|
-      amount = balances.fetch(currency)
-      next if amount.zero?
-
-      # Skip base currency collection until we have tokens on balance. To have enough gase
-      next if base_currencies.include?(currency) && token_currencies.any?
-
-      # TODO Пропускать если стоимость монет меньше чем стоимость газа X2
-      logger.info("Collect #{currency.id} #{amount} from #{payment_address.address} to #{hot_wallet.address}")
-      transaction = create_transaction!(
-        from_address: payment_address.address,
-        to_address: hot_wallet.address,
-        amount: amount,
-        secret: payment_address.secret,
-        contract_address: currency.contract_address,
-        subtract_fee: currency.contract_address.nil?
-      )
-      logger.info("Collect transaction created #{transaction.as_json}")
-      transaction.txid
-      # TODO Save CollectRecord with transaction dump
-    rescue EthereumGateway::TransactionCreator::Error => err
-      report_exception err, true, payment_address_id: payment_address.id, currency: currency
-      logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
-      nil
-    end.compact
-
-    # 1. Check transaction status in blockchain or transactions network.
-    # 2. Create transactions from from_address to to_address for all existen coins
+    logger.info("Collect from payment_address #{payment_address} amounts: #{amounts}")
+    EthereumGateway::Collector
+      .new(client)
+      .call(from_address: address,
+            to_address: hot_wallet.address,
+            amounts: amounts,
+            gas_factor: blockchain.client_options[:gas_factor],
+            secret: payment_address.secret) if amounts.any?
   end
 
   def refuel_gas!(target_address)
     target_address = target_address.address if target_address.is_a? PaymentAddress
 
-    tokens = load_balances(target_address)
-      .select { |_currency, balance| balance.positive? }
-      .transform_keys { |k| blockchain.currencies.find_by(id: k) || raise("Unknown currency in balance #{k} for #{blockchain.key}") }
-      .select { |currency, _balance| currency.token? }
-      .count
-    logger.info("Refuel #{target_address} for #{tokens.join(',')} tokens")
+    contract_addresses = select_collectable_contract_addresses traget_address
+
+    logger.info("Refuel #{target_address} for #{contract_addresses.join(',')} contract_addresses")
     transaction = monefy_transaction(
       EthereumGateway::GasRefueler
       .new(client)
@@ -113,7 +70,7 @@ class EthereumGateway < AbstractGateway
         gas_wallet_address: fee_wallet.address,
         gas_wallet_secret: fee_wallet.secret,
         target_address: target_address,
-        contract_addresses: tokens.map(&:contract_address)
+        contract_addresses: contract_addresses
       )
     )
 
@@ -127,10 +84,34 @@ class EthereumGateway < AbstractGateway
     logger.info("Canceled refueling address #{target_address} with #{err}")
   end
 
-  def has_enough_gas?(from_address, to_address)
+  def has_enough_gas_to_collect? address
+    fetch_balance >= GasEstimator
+      .new(client)
+      .call(from_address: address, to_addresses: [hot_wallet.address] + select_collectable_contract_addresses(address))
   end
 
-  def require_gas_refueling?(address)
+  def collectable_balance? address
+    select_collectable_contract_addresses(address).any? ||
+      fetch_balance > GasEstimatonew(client).call(from_address: address, to_addresses: [hot_wallet.address])
+  end
+
+  def select_collectable_contract_addresses(address)
+     blockchain
+      .currencies
+      .select(&:token?)
+      .select { |currency| is_balance_collectable?(load_balance(address, currency), currency, address) }
+      .map(&:contract_address)
+  end
+
+  def is_balance_collectable?(amount, currency, address)
+    if currency == blockchain.native_currency
+      amount >= GasEstimator
+        .new(client)
+        .call(from_address: address, to_addresses: [hot_wallet.address])
+    else
+      # TODO Учитывать цену токена для сбора, она должна быть выше затрачиваемого газа
+      amount.positive?
+    end
   end
 
   def load_balances(address)

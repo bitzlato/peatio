@@ -38,7 +38,7 @@ class Money
     end
 
     attr_reader :currency_record
-    delegate :priority, :subunit_to_unit, :contract_address, :precision, :name, :subunit, :base_factor,
+    delegate :priority, :subunit_to_unit, :contract_address, :precision, :name, :subunits, :base_factor,
       :crypto?, :token?, :blockchain, to: :currency_record
 
     def initialize_data!

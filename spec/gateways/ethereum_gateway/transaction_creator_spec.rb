@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 describe ::EthereumGateway::TransactionCreator do
-  let(:address) { 'address' }
   let(:uri) { 'http://127.0.0.1:8545' }
   let(:client) { ::Ethereum::Client.new(uri) }
   let(:eth) { Currency.find_by(id: :eth) }
