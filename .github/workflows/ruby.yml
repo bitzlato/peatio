@@ -112,4 +112,4 @@ jobs:
     - name: Setup database for parallel_tests
       run: bundle exec rake parallel:create parallel:prepare parallel:migrate
     - name: Run tests
-      run: ./bin/ci
+      run: bundle exec ./bin/ci
