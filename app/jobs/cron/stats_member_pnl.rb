@@ -123,7 +123,7 @@ module Jobs::Cron
             reverse = false
             if a.start_with?('_')
               reverse = true
-              a = a[1..-1]
+              a = a[1..]
             end
             [a, b, reverse]
           end

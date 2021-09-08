@@ -66,7 +66,7 @@ describe Market do
     it 'validates type precision' do
       record = Market.new(valid_attributes.merge(type: ''))
       record.save
-      expect(record.errors.full_messages).to include(/can\'t be blank/i)
+      expect(record.errors.full_messages).to include(/can't be blank/i)
     end
 
     it 'validates type value' do

@@ -1,5 +1,5 @@
 class AbstractGateway
-  attr_reader :blockchain
+  attr_reader :blockchain, :client
 
   def self.supports_cash_addr_format?
     false
@@ -41,8 +41,6 @@ class AbstractGateway
   def self.enable_personal_address_balance?
     true
   end
-
-  attr_reader :client
 
   def latest_block_number
     nil

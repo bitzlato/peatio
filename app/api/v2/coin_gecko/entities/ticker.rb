@@ -7,10 +7,10 @@ module API
         class Ticker < API::V2::Entities::Base
           expose(
             :ticker_id,
-              documentation: {
-               type: String,
-               desc: 'Identifier of a ticker with delimiter to separate base/target, eg. BTC_ETH.'
-              }
+            documentation: {
+             type: String,
+             desc: 'Identifier of a ticker with delimiter to separate base/target, eg. BTC_ETH.'
+            }
           ) do |ticker|
             ticker[:market].underscore_name
           end

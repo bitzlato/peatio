@@ -158,7 +158,7 @@ describe Order, 'market_type validations', type: :model do
   it 'validates market_type precense' do
     record = order_bid
     expect(record.save).to eq false
-    expect(record.errors[:market_type]).to include(/can\'t be blank/i)
+    expect(record.errors[:market_type]).to include(/can't be blank/i)
   end
 
   it 'validates market_type value' do

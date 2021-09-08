@@ -8,8 +8,8 @@ module API
         helpers ::API::V2::Admin::Helpers
 
         desc 'Get all members, result is paginated.',
-          is_array: true,
-          success: API::V2::Admin::Entities::Member
+             is_array: true,
+             success: API::V2::Admin::Entities::Member
         params do
           optional :state,
                    desc: 'Filter order by state.'
@@ -38,7 +38,7 @@ module API
         end
 
         desc 'Get available members groups.',
-          is_array: true
+             is_array: true
         get '/members/groups' do
           admin_authorize! :read, ::Member
 

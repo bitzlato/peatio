@@ -30,9 +30,9 @@ describe ::EthereumGateway::TransactionCreator do
       params: [{
         from: from_address,
         to: to_address,
-        value: '0x' + (value.to_s 16),
-        gas: '0x' + (gas_limit.to_s 16),
-        gasPrice: '0x' + (transaction_gas_price.to_s 16)
+        value: "0x#{(value.to_s 16)}",
+        gas: "0x#{(gas_limit.to_s 16)}",
+        gasPrice: "0x#{(transaction_gas_price.to_s 16)}"
       }, secret] }
   end
 
@@ -116,8 +116,8 @@ describe ::EthereumGateway::TransactionCreator do
           from: from_address,
           to: contract_address,
           data: '0xa9059cbb0000000000000000000000006d6cabaa7232d7f45b143b445114f7e92350a2aa000000000000000000000000000000000000000000000000000000000010c8e0',
-          gas: '0x' + (gas_limit.to_s 16),
-          gasPrice: '0x' + transaction_gas_price.to_s(16),
+          gas: "0x#{(gas_limit.to_s 16)}",
+          gasPrice: "0x#{transaction_gas_price.to_s(16)}",
         }, secret] }
     end
     let(:result_transaction_hash) do

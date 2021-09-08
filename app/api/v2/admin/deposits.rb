@@ -8,8 +8,8 @@ module API
         helpers ::API::V2::Admin::Helpers
 
         desc 'Get all deposits, result is paginated.',
-          is_array: true,
-          success: API::V2::Admin::Entities::Deposit
+             is_array: true,
+             success: API::V2::Admin::Entities::Deposit
         params do
           optional :state,
                    values: { value: -> { ::Deposit.aasm.states.map(&:name).map(&:to_s) }, message: 'admin.deposit.invalid_state' },
@@ -24,7 +24,7 @@ module API
           optional :tid,
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:tid][:desc] }
           optional :email,
-                  desc: -> { API::V2::Admin::Entities::Deposit.documentation[:email][:desc] }
+                   desc: -> { API::V2::Admin::Entities::Deposit.documentation[:email][:desc] }
           use :uid
           use :currency
           use :currency_type
@@ -49,7 +49,7 @@ module API
         end
 
         desc 'Take an action on the deposit.',
-          success: API::V2::Admin::Entities::Deposit
+             success: API::V2::Admin::Entities::Deposit
         params do
           requires :id,
                    type: Integer,
@@ -80,7 +80,7 @@ module API
         end
 
         desc 'Creates new fiat deposit .',
-          success: API::V2::Admin::Entities::Deposit
+             success: API::V2::Admin::Entities::Deposit
         params do
           requires :uid,
                    values: { value: -> (v) { Member.exists?(uid: v) }, message: 'admin.deposit.user_doesnt_exist' },
@@ -113,7 +113,7 @@ module API
         end
 
         desc 'Creates new crypto refund',
-          success: API::V2::Admin::Entities::Refund
+             success: API::V2::Admin::Entities::Refund
         params do
           requires :id,
                    type: { value: Integer, message: 'admin.deposit.non_integer_type' },
@@ -137,7 +137,7 @@ module API
         end
 
         desc 'Returns deposit address for account you want to deposit to by currency and uid.',
-          success: API::V2::Admin::Entities::Deposit
+             success: API::V2::Admin::Entities::Deposit
         params do
           requires :uid,
                    values: { value: -> (v) { Member.exists?(uid: v) }, message: 'admin.deposit.user_doesnt_exist' },
@@ -148,17 +148,17 @@ module API
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:currency][:desc] }
           given :currency_id do
             optional :address_format,
-                    type: String,
-                    values: { value: -> { %w[legacy cash] }, message: 'admin.deposit.invalid_address_format' },
-                    validate_currency_address_format: { value: true, prefix: 'admin.deposit' },
-                    desc: 'Address format legacy/cash'
+                     type: String,
+                     values: { value: -> { %w[legacy cash] }, message: 'admin.deposit.invalid_address_format' },
+                     validate_currency_address_format: { value: true, prefix: 'admin.deposit' },
+                     desc: 'Address format legacy/cash'
           end
         end
         post '/deposit_address' do
           admin_authorize! :create, ::PaymentAddress
 
           member   = Member.find_by!(uid: params[:uid])
-          currency = Currency.find_by!(id: params[:currency_id])
+          currency = Currency.find(params[:currency_id])
           wallet   = Wallet.active_deposit_wallet(currency.id)
 
           unless wallet.present?

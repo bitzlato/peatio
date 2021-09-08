@@ -497,10 +497,10 @@ describe Withdraw do
 
       let(:withdraw) do
         build(:usd_withdraw,
-               :with_deposit_liability,
-               beneficiary: beneficiary,
-               sum: 10,
-               member: beneficiary.member)
+              :with_deposit_liability,
+              beneficiary: beneficiary,
+              sum: 10,
+              member: beneficiary.member)
       end
 
       it 'automatically sets rid from beneficiary' do

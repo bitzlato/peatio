@@ -25,8 +25,8 @@ module Matching
 
     def publish_cancel
       AMQP::Queue.enqueue(:order_processor,
-                        { action: 'cancel', order: @payload[:order] },
-                        { persistent: false })
+                          { action: 'cancel', order: @payload[:order] },
+                          { persistent: false })
     end
 
     def execute
@@ -88,7 +88,7 @@ module Matching
         accounts_table = Account
           .lock
           .select(:member_id, :currency_id, :balance, :locked)
-          .where(member_id: [@maker_order.member_id, @taker_order .member_id].uniq, currency_id: [@market.base_unit, @market.quote_unit])
+          .where(member_id: [@maker_order.member_id, @taker_order.member_id].uniq, currency_id: [@market.base_unit, @market.quote_unit])
           .each_with_object({}) { |record, memo| memo["#{record.currency_id}:#{record.member_id}"] = record }
 
         @trade = Trade.new \
@@ -176,7 +176,7 @@ module Matching
         next unless order.ord_type == 'limit' # Skip market orders.
 
         EventAPI.notify ['market', order.market_id, event].join('.'), \
-          Serializers::EventAPI.const_get(event.camelize).call(order)
+                        Serializers::EventAPI.const_get(event.camelize).call(order)
       end
     end
 

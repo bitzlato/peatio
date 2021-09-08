@@ -59,7 +59,7 @@ describe ::EthereumGateway::BalanceLoader do
                       [
                         {
                           to: contract_address,
-                          data: '0x70a08231000000000000000000000000' + address.remove('0x')
+                          data: "0x70a08231000000000000000000000000#{address.remove('0x')}"
                         },
                         'latest'
                       ] }.to_json)

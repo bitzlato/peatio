@@ -69,7 +69,7 @@ module API
         get '/withdraws/:id' do
           admin_authorize! :read, ::Withdraw
 
-          withdraw = Withdraw.find_by!(id: params[:id])
+          withdraw = Withdraw.find(params[:id])
           present withdraw,
                   with: API::V2::Admin::Entities::Withdraw,
                   with_beneficiary: true

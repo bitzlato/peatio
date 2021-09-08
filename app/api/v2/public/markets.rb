@@ -12,8 +12,8 @@ module API
 
         resource :markets do
           desc 'Get all available markets.',
-            is_array: true,
-            success: API::V2::Entities::Market
+               is_array: true,
+               success: API::V2::Entities::Market
           params do
             use :pagination
             optional :ordering,
@@ -74,8 +74,8 @@ module API
           end
 
           desc 'Get the order book of specified market.',
-            is_array: true,
-            success: API::V2::Entities::OrderBook
+               is_array: true,
+               success: API::V2::Entities::OrderBook
           params do
             requires :market,
                      type: String,
@@ -93,7 +93,7 @@ module API
                      desc: 'Limit the number of returned buy orders. Default to 20.'
           end
 
-          get ":market/order-book", requirements: { market: /[\w\.\-]+/ } do
+          get ":market/order-book", requirements: { market: /[\w.\-]+/ } do
             asks = OrderAsk.active.with_market(params[:market]).matching_rule.limit(params[:asks_limit])
             bids = OrderBid.active.with_market(params[:market]).matching_rule.limit(params[:bids_limit])
             book = OrderBook.new asks, bids
@@ -101,8 +101,8 @@ module API
           end
 
           desc 'Get recent trades on market, each trade is included only once. Trades are sorted in reverse creation order.',
-            is_array: true,
-            success: API::V2::Entities::Trade
+               is_array: true,
+               success: API::V2::Entities::Trade
           params do
             requires :market,
                      type: String,
@@ -123,7 +123,7 @@ module API
                      default: 'desc',
                      desc: "If set, returned trades will be sorted in specific order, default to 'desc'."
           end
-          get ":market/trades", requirements: { market: /[\w\.\-]+/ } do
+          get ":market/trades", requirements: { market: /[\w.\-]+/ } do
             present Trade.public_from_influx(params[:market], params[:limit]), with: API::V2::Entities::PublicTrade
           end
 
@@ -139,7 +139,7 @@ module API
                      default: 300,
                      desc: 'Limit the number of returned price levels. Default to 300.'
           end
-          get ":market/depth", requirements: { market: /[\w\.\-]+/ } do
+          get ":market/depth", requirements: { market: /[\w.\-]+/ } do
             asks = OrderAsk.get_depth(params[:market])[0, params[:limit]]
             bids = OrderBid.get_depth(params[:market])[0, params[:limit]]
             { timestamp: Time.now.to_i, asks: asks, bids: bids }
@@ -170,7 +170,7 @@ module API
                      default: 30,
                      desc: "Limit the number of returned data points default to 30. Ignored if time_from and time_to are given."
           end
-          get ":market/k-line", requirements: { market: /[\w\.\-]+/ } do
+          get ":market/k-line", requirements: { market: /[\w.\-]+/ } do
             KLineService[params[:market], params[:period]]
               .get_ohlc(params.slice(:limit, :time_from, :time_to).merge(offset: true))
           end
@@ -193,7 +193,7 @@ module API
                      values: { value: -> { ::Market.spot.active.pluck(:symbol) }, message: 'public.market.doesnt_exist' },
                      desc: -> { V2::Entities::Market.documentation[:symbol] }
           end
-          get "/:market/tickers/", requirements: { market: /[\w\.\-]+/ } do
+          get "/:market/tickers/", requirements: { market: /[\w.\-]+/ } do
             present format_ticker(TickersService[params[:market]].ticker),
                     with: API::V2::Entities::Ticker
           end

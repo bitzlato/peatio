@@ -13,6 +13,7 @@ module Matching
 
     attr :orderbook, :mode, :queue
     attr_accessor :initializing, :snapshot_time, :increment_count, :sequence_number
+
     delegate :ask_orders, :bid_orders, to: :orderbook
 
     def initialize(market, options = {})

@@ -4,13 +4,14 @@ module API
   module V2
     module WebhooksHelpers
       def process_webhook_event(request)
-        if request.params[:event] == 'deposit'
+        case request.params[:event]
+        when 'deposit'
           process_deposit_event(request)
-        elsif request.params[:event] == 'withdraw'
+        when 'withdraw'
           process_withdraw_event(request)
-        elsif request.params[:event] == 'deposit_address'
+        when 'deposit_address'
           process_deposit_address_event(request)
-        elsif request.params[:event] == 'generic'
+        when 'generic'
           process_generic_event(request)
         end
       end

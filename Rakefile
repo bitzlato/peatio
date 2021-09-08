@@ -12,3 +12,7 @@ Peatio::Application.load_tasks
 
 # Load additional tasks from "support/tasks".
 Dir.glob('lib/peatio/tasks/**/*') { |f| load(f) }
+
+RuboCop::RakeTask.new do |task|
+  task.requires << 'rubocop-rails'
+end if defined? RuboCop

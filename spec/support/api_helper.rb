@@ -19,7 +19,7 @@ module APITestHelpers
   def api_request(method, url, options = {})
     headers = options.fetch(:headers, {})
     params  = options.fetch(:params, {})
-    options[:token].tap { |t| headers['Authorization'] = 'Bearer ' + t if t }
+    options[:token].tap { |t| headers['Authorization'] = "Bearer #{t}" if t }
     send(method, url, params: params, headers: headers)
   end
 
@@ -104,7 +104,7 @@ module APITestHelpers
   memoize :management_api_v1_keychain
 
   def management_api_v1_algorithms
-    management_api_v1_keychain.each_with_object({}) { |(k, v), memo| memo[k] = 'RS256' }
+    management_api_v1_keychain.transform_values { |v| 'RS256' }
   end
   memoize :management_api_v1_algorithms
 

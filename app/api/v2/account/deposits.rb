@@ -10,7 +10,7 @@ module API
         before { deposits_must_be_permitted! }
 
         desc 'Create deposit intention',
-          success: API::V2::Entities::Deposit
+             success: API::V2::Entities::Deposit
         params do
           requires :currency,
                    type: String,
@@ -40,8 +40,8 @@ module API
         end
 
         desc 'Get your deposits history.',
-          is_array: true,
-          success: API::V2::Entities::Deposit
+             is_array: true,
+             success: API::V2::Entities::Deposit
 
         params do
           optional :currency,
@@ -107,7 +107,7 @@ module API
         desc 'Returns deposit address for account you want to deposit to by currency. ' \
           'The address may be blank because address generation process is still in progress. ' \
           'If this case you should try again later.',
-          success: API::V2::Entities::Deposit
+             success: API::V2::Entities::Deposit
         params do
           requires :currency,
                    type: String,
@@ -121,7 +121,7 @@ module API
                      desc: 'Address format legacy/cash'
           end
         end
-        get '/deposit_address/:currency', requirements: { currency: /[\w\.\-]+/ } do
+        get '/deposit_address/:currency', requirements: { currency: /[\w.\-]+/ } do
           user_authorize! :read, ::PaymentAddress
 
           currency = Currency.find(params[:currency])

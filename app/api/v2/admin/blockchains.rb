@@ -9,21 +9,21 @@ module API
 
         namespace :blockchains do
           desc 'Get all blockchains, result is paginated.',
-            is_array: true,
-            success: API::V2::Admin::Entities::Blockchain
+               is_array: true,
+               success: API::V2::Admin::Entities::Blockchain
           params do
             optional :key,
-              values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.blockchain.blockchain_key_doesnt_exist' },
-              desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:key][:desc] }
+                     values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.blockchain.blockchain_key_doesnt_exist' },
+                     desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:key][:desc] }
             optional :client,
-              values: { value: -> { ::Blockchain.clients.map(&:to_s)  }, message: 'admin.blockchain.blockchain_client_doesnt_exist' },
-              desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:client][:desc] }
+                     values: { value: -> { ::Blockchain.clients.map(&:to_s)  }, message: 'admin.blockchain.blockchain_client_doesnt_exist' },
+                     desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:client][:desc] }
             optional :status,
-              values: { value: -> { %w[active disabled] }, message: 'admin.blockchain.blockchain_status_doesnt_exist' },
-              desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:status][:desc] }
+                     values: { value: -> { %w[active disabled] }, message: 'admin.blockchain.blockchain_status_doesnt_exist' },
+                     desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:status][:desc] }
             optional :name,
-              values: { value: -> { ::Blockchain.pluck(:name) }, message: 'admin.blockchain.blockchain_name_doesnt_exist' },
-              desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:name][:desc] }
+                     values: { value: -> { ::Blockchain.pluck(:name) }, message: 'admin.blockchain.blockchain_name_doesnt_exist' },
+                     desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:name][:desc] }
             use :pagination
             use :ordering
           end
@@ -40,7 +40,7 @@ module API
           end
 
           desc 'Get available blockchain clients.',
-            is_array: true
+               is_array: true
           get '/clients' do
             Blockchain.clients
           end
@@ -50,8 +50,8 @@ module API
           end
           params do
             requires :id,
-              type: { value: Integer, message: 'admin.blockchain.non_integer_id' },
-              desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:id][:desc] }
+                     type: { value: Integer, message: 'admin.blockchain.non_integer_id' },
+                     desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:id][:desc] }
           end
           get '/:id' do
             admin_authorize! :read, ::Blockchain
@@ -62,8 +62,8 @@ module API
           desc 'Get a latest blockchain block.'
           params do
             requires :id,
-              type: { value: Integer, message: 'admin.blockchain.non_integer_id' },
-              desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:id][:desc] }
+                     type: { value: Integer, message: 'admin.blockchain.non_integer_id' },
+                     desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:id][:desc] }
           end
           get '/:id/latest_block' do
             admin_authorize! :read, ::Blockchain

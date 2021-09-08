@@ -37,8 +37,8 @@ module API
         end
 
         desc 'Get all wallets, result is paginated.',
-          is_array: true,
-          success: API::V2::Admin::Entities::Wallet
+             is_array: true,
+             success: API::V2::Admin::Entities::Wallet
         params do
           optional :blockchain_key,
                    values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.currency.blockchain_key_doesnt_exist' },
@@ -97,9 +97,9 @@ module API
         params do
           use :create_wallet_params
           requires :blockchain_id,
-            type: Integer,
-            values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.wallet.blockchain_id_doesnt_exist' },
-            desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_id][:desc] }
+                   type: Integer,
+                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.wallet.blockchain_id_doesnt_exist' },
+                   desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_id][:desc] }
           requires :name,
                    desc: -> { API::V2::Admin::Entities::Wallet.documentation[:name][:desc] }
           optional :address,

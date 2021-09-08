@@ -17,13 +17,13 @@ module API
                    values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'public.currency.doesnt_exist' },
                    desc: -> { API::V2::Entities::Currency.documentation[:id][:desc] }
         end
-        get '/currencies/:id', requirements: { id: /[\w\.\-]+/ } do
+        get '/currencies/:id', requirements: { id: /[\w.\-]+/ } do
           present Currency.find(params[:id]), with: API::V2::Entities::Currency
         end
 
         desc 'Get list of currencies',
-          is_array: true,
-          success: Entities::Currency
+             is_array: true,
+             success: Entities::Currency
         params do
           use :pagination
           optional :type,

@@ -239,7 +239,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
         context 'invalid character in address' do
           before do
-            beneficiary_data[:data][:address] = "'" + Faker::Blockchain::Bitcoin.address
+            beneficiary_data[:data][:address] = "'#{Faker::Blockchain::Bitcoin.address}"
           end
           it do
             request
@@ -282,7 +282,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
             let(:address) { Faker::Blockchain::Bitcoin.address }
 
             before do
-              beneficiary_data[:data][:address] = " " + address + " "
+              beneficiary_data[:data][:address] = " #{address} "
             end
             it do
               request
@@ -296,7 +296,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
         context 'destination tag in address' do
           before do
-            beneficiary_data[:data][:address] = Faker::Blockchain::Bitcoin.address + "?dt=4"
+            beneficiary_data[:data][:address] = "#{Faker::Blockchain::Bitcoin.address}?dt=4"
           end
           it do
             request
@@ -366,8 +366,8 @@ describe API::V2::Management::Beneficiaries, type: :request do
         request
         expect(response.status).to eq 201
         id = response_body['id']
-        expect(Beneficiary.find_by!(id: id).state).to eq 'active'
-        expect(Beneficiary.find_by!(id: id).data).to eq response_body['data']
+        expect(Beneficiary.find(id).state).to eq 'active'
+        expect(Beneficiary.find(id).data).to eq response_body['data']
       end
     end
   end

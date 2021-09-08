@@ -116,7 +116,7 @@ class Order < ApplicationRecord
   class << self
     def submit(id)
       ActiveRecord::Base.transaction do
-        order = lock.find_by_id!(id)
+        order = lock.find(id)
         return unless order.state == ::Order::PENDING
 
         order.hold_account!.lock_funds!(order.locked)
@@ -126,14 +126,14 @@ class Order < ApplicationRecord
         AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
       end
     rescue => e
-      order = find_by_id!(id)
+      order = find(id)
       order.update!(state: ::Order::REJECT) if order
 
       raise e
     end
 
     def cancel(id)
-      order = lock.find_by_id!(id)
+      order = lock.find(id)
       market_engine = order.market.engine
       return unless order.state == ::Order::WAIT
 
@@ -161,7 +161,7 @@ class Order < ApplicationRecord
 
         all.each do |order|
           data = attributes[0...-2].map { |attr| order.send(attr) }
-          data += attributes[-2..-1].map { |attr| order.send(attr).iso8601 }
+          data += attributes[-2..].map { |attr| order.send(attr).iso8601 }
           csv << data
         end
       end

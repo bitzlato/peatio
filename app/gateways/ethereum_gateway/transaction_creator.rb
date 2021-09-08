@@ -7,10 +7,9 @@ class EthereumGateway
              from_address:,
              to_address:,
              secret:,
-             nonce: nil,
+             gas_limit:, nonce: nil,
              contract_address: nil,
              subtract_fee: false,
-             gas_limit: ,
              gas_factor: 1)
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
@@ -42,9 +41,7 @@ class EthereumGateway
                                 to_address:,
                                 amount:,
                                 secret:,
-                                nonce: nil,
-                                gas_limit:,
-                                gas_price:,
+                                gas_limit:, gas_price:, nonce: nil,
                                 subtract_fee: false)
 
       raise 'amount must be an integer' unless amount.is_a? Integer
@@ -71,10 +68,10 @@ class EthereumGateway
                   [{
           from:     normalize_address(from_address),
           to:       normalize_address(to_address),
-          nonce:    nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
-          value:    '0x' + amount.to_s(16),
-          gas:      '0x' + gas_limit.to_i.to_s(16),
-          gasPrice: '0x' + gas_price.to_i.to_s(16)
+          nonce:    nonce.nil? ? nil : "0x#{nonce.to_i.to_s(16)}",
+          value:    "0x#{amount.to_s(16)}",
+          gas:      "0x#{gas_limit.to_i.to_s(16)}",
+          gasPrice: "0x#{gas_price.to_i.to_s(16)}"
         }.compact, secret])
       )
 
@@ -95,11 +92,9 @@ class EthereumGateway
                                   to_address:,
                                   amount:,
                                   contract_address:,
-                                  nonce: nil,
-                                  secret:,
-                                  gas_limit: nil,
-                                  gas_price:)
-      data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
+                                  secret:, gas_price:, nonce: nil,
+                                  gas_limit: nil)
+      data = abi_encode('transfer(address,uint256)', normalize_address(to_address), "0x#{amount.to_s(16)}")
 
       gas_limit ||= estimate_gas(
         gas_price: gas_price,
@@ -113,11 +108,11 @@ class EthereumGateway
         client.json_rpc(:personal_sendTransaction,
                         [{
           from:     normalize_address(from_address),
-          nonce:    nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
+          nonce:    nonce.nil? ? nil : "0x#{nonce.to_i.to_s(16)}",
           to:       contract_address,
           data:     data,
-          gas:      '0x' + gas_limit.to_i.to_s(16),
-          gasPrice: '0x' + gas_price.to_i.to_s(16)
+          gas:      "0x#{gas_limit.to_i.to_s(16)}",
+          gasPrice: "0x#{gas_price.to_i.to_s(16)}"
         }.compact, secret])
       )
       Peatio::Transaction.new(

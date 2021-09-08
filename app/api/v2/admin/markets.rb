@@ -54,8 +54,8 @@ module API
         end
 
         desc 'Get all markets, result is paginated.',
-          is_array: true,
-          success: API::V2::Admin::Entities::Market
+             is_array: true,
+             success: API::V2::Admin::Entities::Market
         params do
           use :pagination
           optional :type,
@@ -91,7 +91,7 @@ module API
                    values: { value: -> { ::Market::TYPES }, message: 'admin.market.invalid_market_type' },
                    default: -> { ::Market::DEFAULT_TYPE }
         end
-        get '/markets/:symbol', requirements: { symbol: /[\w\.\-]+/ } do
+        get '/markets/:symbol', requirements: { symbol: /[\w.\-]+/ } do
           admin_authorize! :read, ::Market
 
           present ::Market.find_by_symbol_and_type(params[:symbol], params[:type]), with: API::V2::Admin::Entities::Market

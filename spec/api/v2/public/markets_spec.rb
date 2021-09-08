@@ -349,7 +349,7 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     def load_k_line(query = {})
-      api_get '/api/v2/public/markets/btc_usd/k-line?' + query.to_query
+      api_get "/api/v2/public/markets/btc_usd/k-line?#{query.to_query}"
       expect(response).to have_http_status 200
     end
 
@@ -360,7 +360,7 @@ describe API::V2::Public::Markets, type: :request do
     context 'data exists' do
       it 'without time limits' do
         load_k_line
-        expect(JSON.parse(response.body)).to eq points[-points_default_limit..-1]
+        expect(JSON.parse(response.body)).to eq points[-points_default_limit..]
       end
 
       context 'with time_from' do
@@ -377,13 +377,13 @@ describe API::V2::Public::Markets, type: :request do
         it 'in range of first and last timestamp' do
           time_from = first_point.first + 10 * point_period
           load_k_line(time_from: time_from)
-          expect(response_body).to eq points[10..-1]
+          expect(response_body).to eq points[10..]
           # First point timestamp should be eq to time_from.
           expect(response_body.first.first).to eq time_from
 
           time_from = first_point.first + 22 * point_period
           load_k_line(time_from: time_from)
-          expect(response_body).to eq points[22..-1]
+          expect(response_body).to eq points[22..]
           # First point timestamp should be eq to time_from.
           expect(response_body.first.first).to eq time_from
         end
@@ -453,11 +453,11 @@ describe API::V2::Public::Markets, type: :request do
         it 'returns n last points' do
           limit = 5
           load_k_line(limit: limit)
-          expect(response_body).to eq points[-limit..-1]
+          expect(response_body).to eq points[-limit..]
 
           limit = 10
           load_k_line(limit: limit)
-          expect(response_body).to eq points[-limit..-1]
+          expect(response_body).to eq points[-limit..]
         end
 
         it 'returns all points if limit greater than points number' do

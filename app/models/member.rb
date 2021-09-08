@@ -43,16 +43,18 @@ class Member < ApplicationRecord
   end
 
   def get_account(model_or_id_or_code)
-    if model_or_id_or_code.is_a?(String) || model_or_id_or_code.is_a?(Symbol)
+    case model_or_id_or_code
+    when String, Symbol
       accounts.find_or_create_by(currency_id: model_or_id_or_code)
-    elsif model_or_id_or_code.is_a?(Currency)
+    when Currency
       accounts.find_or_create_by(currency: model_or_id_or_code)
     end
   # Thread Safe Account creation
   rescue ActiveRecord::RecordNotUnique
-    if model_or_id_or_code.is_a?(String) || model_or_id_or_code.is_a?(Symbol)
+    case model_or_id_or_code
+    when String, Symbol
       accounts.find_by(currency_id: model_or_id_or_code)
-    elsif model_or_id_or_code.is_a?(Currency)
+    when Currency
       accounts.find_by(currency: model_or_id_or_code)
     end
   end
@@ -60,7 +62,7 @@ class Member < ApplicationRecord
   # @deprecated
   def touch_accounts
     Currency.find_each do |currency|
-      next if accounts.where(currency: currency).exists?
+      next if accounts.exists?(currency: currency)
       accounts.create!(currency: currency)
     end
   end
@@ -76,9 +78,10 @@ class Member < ApplicationRecord
   end
 
   def legacy_balance_for(currency:, kind:)
-    if kind.to_sym == :main
+    case kind.to_sym
+    when :main
       get_account(currency).balance
-    elsif kind.to_sym == :locked
+    when :locked
       get_account(currency).locked
     else
       raise Operations::Exception, "Account for #{options} doesn't exists."

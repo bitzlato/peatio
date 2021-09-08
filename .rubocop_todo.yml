@@ -6,13 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 39
-# Cop supports --auto-correct.
-# Configuration parameters: TreatCommentsAsGroupSeparators, ConsiderPunctuation, Include.
-# Include: **/*.gemfile, **/Gemfile, **/gems.rb
-Bundler/OrderedGems:
-  Exclude:
-    - 'Gemfile'
 
 # Offense count: 5
 # Cop supports --auto-correct.
@@ -25,13 +18,6 @@ Layout/AccessModifierIndentation:
     - 'app/trading/matching/executor.rb'
     - 'db/migrate/20180305111648_create_withdraw_destinations_drop_fund_source.rb'
     - 'lib/peatio/amqp/event_api.rb'
-
-# Offense count: 101
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: with_first_argument, with_fixed_indentation
-Layout/ArgumentAlignment:
-  Enabled: false
 
 # Offense count: 5
 # Cop supports --auto-correct.

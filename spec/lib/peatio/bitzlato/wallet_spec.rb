@@ -156,7 +156,7 @@ describe Bitzlato::Wallet do
       context :create_payment! do
         let(:response) { { paymentId: 12 } }
         it 'show create withdrawal transaction' do
-          stub_request(:post, uri + '/api/gate/v1/payments/create')
+          stub_request(:post, "#{uri}/api/gate/v1/payments/create")
             .with( body: "{\"clientProvidedId\":12,\"client\":1,\"cryptocurrency\":\"BTC\",\"amount\":123,\"payedBefore\":true}" )
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
@@ -185,7 +185,7 @@ describe Bitzlato::Wallet do
         end
 
         it 'create voucher' do
-          stub_request(:post, uri + '/api/p2p/vouchers/')
+          stub_request(:post, "#{uri}/api/p2p/vouchers/")
             .with(body: { "cryptocurrency":"BTC","amount":123,"method":"crypto", 'currency': 'USD' }.to_json)
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
@@ -218,7 +218,7 @@ describe Bitzlato::Wallet do
       end
 
       it 'should create an invoice' do
-        stub_request(:post, uri + '/api/gate/v1/invoices/')
+        stub_request(:post, "#{uri}/api/gate/v1/invoices/")
           .with(body: { "cryptocurrency":"BTC","amount":123,"comment":"Exchange service deposit for account uid12312" }.to_json)
           .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 

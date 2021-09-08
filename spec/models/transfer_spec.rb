@@ -174,10 +174,10 @@ describe Transfer do
   context 'do_transfer!' do
     subject do
       Transfer.create!(attributes_for(:transfer,
-                                           liabilities: liabilities,
-                                           assets: assets,
-                                           revenues: revenues,
-                                           expenses: expenses))
+                                      liabilities: liabilities,
+                                      assets: assets,
+                                      revenues: revenues,
+                                      expenses: expenses))
     end
     let(:asset1) { build(:asset, credit: 9, currency: currency_btc) }
     let(:asset2) { build(:asset, :debit, debit: 6, currency: currency_btc) }

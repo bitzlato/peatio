@@ -18,7 +18,7 @@ module API
             '«rejected» – deposit has been rejected by outer service..',
             '«accepted» – deposit has been accepted by outer service, money are loaded.'
           ]
-          expose :aasm_state, as: :state, documentation: { type: String, desc: 'The deposit state. ' + states.join(' ') }
+          expose :aasm_state, as: :state, documentation: { type: String, desc: "The deposit state. #{states.join(' ')}" }
           expose :created_at, format_with: :iso8601, documentation: { type: String, desc: 'The datetime when deposit was created.' }
           expose :completed_at, format_with: :iso8601, documentation: { type: String, desc: 'The datetime when deposit was completed.' }
           expose :txid, as: :blockchain_txid, if: -> (d, _) { d.currency.coin? }, documentation: { type: String, desc: 'The transaction ID on the Blockchain (coin only).' }

@@ -25,10 +25,10 @@ class EthereumGateway
       client.json_rpc(:web3_clientVersion)
     end
 
-    def estimate_gas(gas_price: nil, from:, to:, value: nil, data: nil)
+    def estimate_gas(from:, to:, gas_price: nil, value: nil, data: nil)
       gas_price ||= fetch_gas_price
       estimage_gas = client.json_rpc(:eth_estimateGas, [{
-        gasPrice: '0x' + gas_price.to_i.to_s(16),
+        gasPrice: "0x#{gas_price.to_i.to_s(16)}",
         from:     normalize_address(from),
         to:       normalize_address(to),
         # No reasone to send it because of possible exception 'insufficient funds for transfer'
@@ -59,7 +59,7 @@ class EthereumGateway
         contract_address = log.fetch('address')
         next unless contract_addresses.nil? || contract_addresses.include?(contract_address)
 
-        to_address = normalize_address('0x' + log.fetch('topics').last[-40..-1])
+        to_address = normalize_address("0x#{log.fetch('topics').last[-40..]}")
 
         next unless follow_addresses.nil? || follow_addresses.include?(to_address) || follow_addresses.include?(from_address) ||
           (follow_txids.present? && follow_txids.include?(txid))
@@ -154,9 +154,10 @@ class EthereumGateway
     end
 
     def transaction_status(block_txn)
-      if block_txn.dig('status') == STATUS_SUCCESS
+      case block_txn['status']
+      when STATUS_SUCCESS
         Transaction::SUCCESS_STATUS
-      elsif block_txn.dig('status') == STATUS_FAILED
+      when STATUS_FAILED
         Transaction::FAIL_STATUS
       else
         Transaction::PENDING_STATUS

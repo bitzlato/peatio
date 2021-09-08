@@ -8,8 +8,8 @@ module API
         helpers ::API::V2::Admin::Helpers
 
         desc 'Returns trading_fees table as paginated collection',
-          is_array: true,
-          success: API::V2::Entities::TradingFee
+             is_array: true,
+             success: API::V2::Entities::TradingFee
         params do
           optional :group,
                    type: String,
@@ -41,7 +41,7 @@ module API
         end
 
         desc 'It creates trading fees record',
-          success: API::V2::Entities::TradingFee
+             success: API::V2::Entities::TradingFee
         params do
           requires :maker,
                    type: { value: BigDecimal, message: 'admin.trading_fee.non_decimal_maker' },
@@ -80,7 +80,7 @@ module API
         end
 
         desc 'It updates trading fees record',
-          success: API::V2::Entities::TradingFee
+             success: API::V2::Entities::TradingFee
         params do
           requires :id,
                    type: { value: Integer, message: 'admin.trading_fee.non_integer_id' },
@@ -120,7 +120,7 @@ module API
         end
 
         desc 'It deletes trading fees record',
-          success: API::V2::Entities::TradingFee
+             success: API::V2::Entities::TradingFee
         params do
           requires :id,
                    type: { value: Integer, message: 'admin.trading_fee.non_integer_id' },

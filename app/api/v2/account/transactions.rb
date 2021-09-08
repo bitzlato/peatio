@@ -12,7 +12,7 @@ module API
         before { withdraws_must_be_permitted! }
 
         desc 'Get your transactions history.',
-        is_array: true
+             is_array: true
 
         params do
           optional :currency,

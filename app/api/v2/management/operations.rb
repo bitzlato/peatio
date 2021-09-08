@@ -35,16 +35,16 @@ module API
                      range: 1..1000,
                      desc: 'The number of objects per page (defaults to 100, maximum is 1000).'
             optional :time_from,
-                    type: Integer,
-                    desc: "An integer represents the seconds elapsed since Unix epoch."\
-                        "If set, only operations after the time will be returned."
+                     type: Integer,
+                     desc: "An integer represents the seconds elapsed since Unix epoch."\
+                         "If set, only operations after the time will be returned."
             optional :time_to,
-                    type: Integer,
-                    desc: "An integer represents the seconds elapsed since Unix epoch."\
-                       "If set, only operations before the time will be returned."
+                     type: Integer,
+                     desc: "An integer represents the seconds elapsed since Unix epoch."\
+                        "If set, only operations before the time will be returned."
             optional :reference_type,
-                    type: String,
-                    desc: "The reference type for operations filtering"
+                     type: String,
+                     desc: "The reference type for operations filtering"
           end
           post op_type_plural do
             currency_id = params.fetch(:currency, nil)
