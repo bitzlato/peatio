@@ -25,6 +25,19 @@ class EthereumGateway
       client.json_rpc(:web3_clientVersion)
     end
 
+    def estimate_gas(gas_price:, from: , to:, value: nil, data: nil)
+      estimage_gas = client.json_rpc(:eth_estimateGas, [{
+        gasPrice: '0x' + gas_price.to_i.to_s(16),
+        from:     normalize_address(from),
+        to:       normalize_address(to),
+        # No reasone to send it because of possible exception 'insufficient funds for transfer'
+        # value:  value.nil? ? nil : '0x' + value.to_i.to_s(16),
+        # data:   data
+      }.compact]).to_i(16)
+      logger.info("Estimated gas #{from}->#{to} with #{value} is #{estimage_gas}")
+      estimage_gas
+    end
+
     private
 
     def build_erc20_transactions(txn_receipt, block_txn, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txouts: nil)
