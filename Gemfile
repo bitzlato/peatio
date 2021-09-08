@@ -80,6 +80,10 @@ group :development, :test do
   gem 'bullet',       '~> 5.9'
   gem 'grape_on_rails_routes', '~> 0.3.2'
   gem 'parallel_tests'
+  gem "rubocop", "~> 0.93.1"
+  gem "rubocop-rails", "~> 2.9"
+  gem "bundler-audit", "~> 0.7.0"
+  gem "brakeman", "~> 5.1"
 end
 
 group :development do
@@ -145,3 +149,4 @@ gem "after_commit_everywhere", "~> 1.1"
 gem "request_store", "~> 1.5"
 
 gem "faraday_curl", "~> 0.0.2"
+
