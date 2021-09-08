@@ -29,10 +29,15 @@ jobs:
       MINIMUM_MEMBER_LEVEL_FOR_DEPOSIT: 3
       MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW: 3
       MINIMUM_MEMBER_LEVEL_FOR_TRADING: 3
+      CI_NODE_TOTAL: ${{ matrix.ci_node_total }}
+      CI_NODE_INDEX: ${{ matrix.ci_node_index }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         ruby-version: ['2.7.4']
+        ci_node_total: [2]
+        ci_node_index: [0, 1]
     services:
       # Label used to access the service container
       redis:
@@ -104,5 +109,7 @@ jobs:
       run: bundle exec rake db:create db:migrate
     - name: Seed database
       run: bundle exec rake db:seed
+    - name: Setup database for parallel_tests
+      run: bundle exec rake parallel:create parallel:prepare parallel:migrate
     - name: Run tests
-      run: bundle exec rake
+      run: bundle exec ./bin/ci
