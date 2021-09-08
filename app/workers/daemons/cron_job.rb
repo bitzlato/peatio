@@ -15,9 +15,8 @@ module Workers
         Jobs::Cron::WalletBalances,
         Jobs::Cron::TransfersPolling,
         Jobs::Cron::PaymentAddressBalancer,
-        Jobs::Cron::RemoveInvoicedDeposits
-        # Подтверждение транзакций перенести Переходит в BlockchainService
-        # Jobs::Cron::WithdrawWatcher
+        Jobs::Cron::RemoveInvoicedDeposits,
+        Jobs::Cron::Collector
       ].freeze
 
       def run

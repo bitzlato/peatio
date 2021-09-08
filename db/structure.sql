@@ -457,7 +457,6 @@ CREATE TABLE public.deposits (
     invoice_id character varying,
     error json,
     blockchain_id bigint NOT NULL,
-    collection_state character varying DEFAULT 'pending'::character varying NOT NULL,
     invoice_expires_at timestamp without time zone
 );
 
@@ -889,7 +888,9 @@ CREATE TABLE public.payment_addresses (
     remote boolean DEFAULT false NOT NULL,
     blockchain_id bigint NOT NULL,
     balances jsonb DEFAULT '{}'::jsonb,
-    balances_updated_at timestamp without time zone
+    balances_updated_at timestamp without time zone,
+    collection_state character varying DEFAULT 'none'::character varying NOT NULL,
+    gas_refueling_state character varying DEFAULT 'none'::character varying NOT NULL
 );
 
 
@@ -2686,7 +2687,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2914,6 +2915,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210829111838'),
 ('20210831043113'),
 ('20210831045259'),
-('20210831072354');
+('20210831072354'),
+('20210908142557'),
+('20210908143407');
 
 
