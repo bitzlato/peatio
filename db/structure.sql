@@ -106,6 +106,39 @@ CREATE TABLE public.accounts (
 
 
 --
+-- Name: addresses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.addresses (
+    id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    network_key character varying NOT NULL,
+    address public.citext NOT NULL,
+    key_encrypted character varying NOT NULL,
+    owner_kind character varying DEFAULT 'user'::character varying NOT NULL
+);
+
+
+--
+-- Name: addresses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.addresses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: addresses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
+
+
+--
 -- Name: adjustments; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -786,6 +819,39 @@ ALTER SEQUENCE public.members_id_seq OWNED BY public.members.id;
 
 
 --
+-- Name: nodes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nodes (
+    id bigint NOT NULL,
+    description character varying NOT NULL,
+    network_key character varying NOT NULL,
+    url character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: nodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.nodes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: nodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.nodes_id_seq OWNED BY public.nodes.id;
+
+
+--
 -- Name: operations_accounts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -887,9 +953,9 @@ CREATE TABLE public.payment_addresses (
     details_encrypted character varying(1024),
     member_id bigint,
     remote boolean DEFAULT false NOT NULL,
-    blockchain_id bigint NOT NULL,
     balances jsonb DEFAULT '{}'::jsonb,
-    balances_updated_at timestamp without time zone
+    balances_updated_at timestamp without time zone,
+    blockchain_id bigint NOT NULL
 );
 
 
@@ -1242,8 +1308,8 @@ CREATE TABLE public.wallets (
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
-    plain_settings json,
     enable_invoice boolean DEFAULT false NOT NULL,
+    plain_settings json,
     blockchain_id bigint NOT NULL,
     use_as_fee_source boolean DEFAULT false NOT NULL,
     balance_updated_at timestamp without time zone
@@ -1390,6 +1456,13 @@ ALTER SEQUENCE public.withdraws_id_seq OWNED BY public.withdraws.id;
 
 
 --
+-- Name: addresses id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.addresses ALTER COLUMN id SET DEFAULT nextval('public.addresses_id_seq'::regclass);
+
+
+--
 -- Name: adjustments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1499,6 +1572,13 @@ ALTER TABLE ONLY public.markets ALTER COLUMN id SET DEFAULT nextval('public.mark
 --
 
 ALTER TABLE ONLY public.members ALTER COLUMN id SET DEFAULT nextval('public.members_id_seq'::regclass);
+
+
+--
+-- Name: nodes id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nodes ALTER COLUMN id SET DEFAULT nextval('public.nodes_id_seq'::regclass);
 
 
 --
@@ -1612,6 +1692,14 @@ ALTER TABLE ONLY public.withdraws ALTER COLUMN id SET DEFAULT nextval('public.wi
 
 ALTER TABLE ONLY public.accounts
     ADD CONSTRAINT accounts_pkey PRIMARY KEY (currency_id, member_id);
+
+
+--
+-- Name: addresses addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.addresses
+    ADD CONSTRAINT addresses_pkey PRIMARY KEY (id);
 
 
 --
@@ -1759,6 +1847,14 @@ ALTER TABLE ONLY public.members
 
 
 --
+-- Name: nodes nodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nodes
+    ADD CONSTRAINT nodes_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: operations_accounts operations_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1898,6 +1994,13 @@ CREATE UNIQUE INDEX index_accounts_on_currency_id_and_member_id ON public.accoun
 --
 
 CREATE INDEX index_accounts_on_member_id ON public.accounts USING btree (member_id);
+
+
+--
+-- Name: index_addresses_on_address_and_network_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_addresses_on_address_and_network_key ON public.addresses USING btree (address, network_key);
 
 
 --
@@ -2241,6 +2344,13 @@ CREATE UNIQUE INDEX index_members_on_uid ON public.members USING btree (uid);
 --
 
 CREATE UNIQUE INDEX index_members_on_username ON public.members USING btree (username) WHERE (username IS NOT NULL);
+
+
+--
+-- Name: index_nodes_on_url; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_nodes_on_url ON public.nodes USING btree (url);
 
 
 --
@@ -2686,7 +2796,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2868,6 +2978,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210722125206'),
 ('20210727101029'),
 ('20210803084921'),
+('20210803134756'),
 ('20210806112457'),
 ('20210806112458'),
 ('20210806131828'),
@@ -2914,6 +3025,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210829111838'),
 ('20210831043113'),
 ('20210831045259'),
-('20210831072354');
+('20210831072354'),
+('20210908062903');
 
 
