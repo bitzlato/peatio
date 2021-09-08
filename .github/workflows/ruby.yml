@@ -105,10 +105,6 @@ jobs:
       run: ./bin/init_vault
     - name: Initialize influx db
       run: bundle exec rake influxdb:create
-    - name: Setup database
-      run: bundle exec rake db:create db:migrate
-    - name: Seed database
-      run: bundle exec rake db:seed
     - name: Setup database for parallel_tests
       run: bundle exec rake parallel:create parallel:prepare parallel:migrate
     - name: Run tests
