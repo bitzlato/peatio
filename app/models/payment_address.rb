@@ -100,12 +100,12 @@ class PaymentAddress < ApplicationRecord
   end
 
   def has_enough_gas_to_collect?
-    blockchain.gateway.has_enough_gas_to_collect? payment_address.address
+    blockchain.gateway.has_enough_gas_to_collect? address
   end
 
   # Balance reached amount limit to be collected
   def collectable_balance?
-    blockchain.gateway.collectable_balance? payment_address.address
+    blockchain.gateway.collectable_balance? address
   end
 
   def transactions
