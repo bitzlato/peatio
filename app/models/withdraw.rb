@@ -47,8 +47,17 @@ class Withdraw < ApplicationRecord
             presence: true,
             numericality: { greater_than_or_equal_to: ->(withdraw) { withdraw.currency.min_withdraw_amount }}
 
-  validate do
-    errors.add(:beneficiary, 'not active') if beneficiary.present? && !beneficiary.active? && !aasm_state.to_sym.in?(COMPLETED_STATES)
+  validate on: :create do
+    if beneficiary.present? && !beneficiary.active? && !aasm_state.to_sym.in?(COMPLETED_STATES)
+      errors.add(:beneficiary, 'not active')
+    end
+    
+  end
+
+  validate on: :create, if: ->(w) { w.currency.present? && w.currency.coin? } do
+    unless blockchain.valid_address?(rid)
+      errors.add(:rid, 'invlalid address')
+    end
   end
 
   scope :completed, -> { where(aasm_state: COMPLETED_STATES) }

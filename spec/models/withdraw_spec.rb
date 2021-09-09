@@ -485,7 +485,7 @@ describe Withdraw do
     end
 
     context 'non-active beneficiary' do
-      let(:currency) { Currency.all.sample }
+      let(:currency) { Currency.find(:eth) }
       let(:beneficiary) { create(:beneficiary, state: :pending, currency: currency) }
 
       # Create deposit before withdraw for valid accounting cause withdraw

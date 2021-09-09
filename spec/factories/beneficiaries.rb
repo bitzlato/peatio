@@ -27,7 +27,7 @@ FactoryBot.define do
 
   factory :beneficiary do
     member { create(:member) }
-    currency { Currency.all.sample }
+    currency { Currency.find(:eth) }
     name { Faker::Company.name }
     description { Faker::Company.catch_phrase }
     state { 'pending' }
@@ -35,7 +35,7 @@ FactoryBot.define do
     data do
       # Use save navigation operator for cases when currency is nil.
       if currency&.coin?
-        generate(:eth_beneficiary_data)
+        generate("#{currency.id}_beneficiary_data")
       elsif currency&.fiat?
         generate(:fiat_beneficiary_data).merge(currency: currency.id)
       end
