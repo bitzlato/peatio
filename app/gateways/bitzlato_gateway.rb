@@ -36,11 +36,19 @@ class BitzlatoGateway < AbstractGateway
       deposit.with_lock do
         next if deposit.dispatched?
         unless deposit.amount==intention[:amount]
-          Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} in blockchain #{blockchain.name}")
+          report_exception(
+            "Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} in blockchain #{blockchain.name}",
+            true,
+            deposit_id: deposit.id, deposit_amount: deposit.amount, intention_amount: intention[:amount]
+          )
           next
         end
         unless deposit.invoiced? || deposit.submitted?
-          Rails.logger.debug("Deposit #{deposit.id} has skippable status (#{deposit.aasm_state})")
+          report_exception(
+            "Deposit #{deposit.id} has skippable status (#{deposit.aasm_state})",
+            true,
+            deposit_id: deposit.id, deposit_state: deposit.aasm_state
+          )
           next
         end
         deposit.accept!
