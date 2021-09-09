@@ -20,17 +20,10 @@ class EthereumGateway < AbstractGateway
     AbstractCommand.new(client).client_version
   end
 
-  def fetch_gas(address)
-    address = address.address if address.is_a? PaymentAddress
-    ac = AbstractCommand.new(client)
-    gas_price = ac.fetch_gas_price
-    ac.estimage_gas(gas_price: gas_price, from: address, to: hot_wallet.address) * gas_price
-  end
-
-  def fetch_balance
+  def fetch_balance(address)
     address = address.address if address.is_a? PaymentAddress
     blockchain.native_currency.to_money_from_units(
-      AbstractCommand.new(client).load_basic_balance
+      AbstractCommand.new(client).load_basic_balance address
     )
   end
 
@@ -85,14 +78,22 @@ class EthereumGateway < AbstractGateway
   end
 
   def has_enough_gas_to_collect? address
-    fetch_balance >= GasEstimator
-      .new(client)
-      .call(from_address: address, to_addresses: [hot_wallet.address] + select_collectable_contract_addresses(address))
+    fetch_balance(address) >= required_gas_to_collect(address)
+  end
+
+  def required_gas_to_collect(address)
+    estimate_gas(from_address: address, to_addresses: [hot_wallet.address] + select_collectable_contract_addresses(address))
   end
 
   def collectable_balance? address
     select_collectable_contract_addresses(address).any? ||
-      fetch_balance > GasEstimatonew(client).call(from_address: address, to_addresses: [hot_wallet.address])
+      fetch_balance(address) > estimate_gas(from_address: address, to_addresses: [hot_wallet.address])
+  end
+
+  def estimate_gas(from_address: , to_addresses: )
+    blockchain.native_currency.to_money_from_units(
+      GasEstimator.new(client).call(from_address: from_address, to_addresses: to_addresses)
+    )
   end
 
   def select_collectable_contract_addresses(address)

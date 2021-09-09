@@ -21,6 +21,13 @@ class EthereumGateway
       end
     end
 
+    def fetch_receipt(tx_id)
+      # logger.debug "Fetching tx receipt #{tx_id}"
+      tx = client.json_rpc(:eth_getTransactionReceipt, [tx_id])
+      return if tx.nil? || tx.fetch('to').blank?
+      tx
+    end
+
     def client_version
       client.json_rpc(:web3_clientVersion)
     end
@@ -37,6 +44,12 @@ class EthereumGateway
       }.compact]).to_i(16)
       logger.info("Estimated gas #{from}->#{to} with value=#{value || '?'} is #{estimage_gas}")
       estimage_gas
+    end
+
+    def load_basic_balance(address)
+      client.json_rpc(:eth_getBalance, [normalize_address(address), 'latest'])
+        .hex
+        .to_i
     end
 
     private
@@ -83,13 +96,6 @@ class EthereumGateway
           fee:  gas_price * gas_used
         }
       end
-    end
-
-    def fetch_receipt(tx_id)
-      # logger.debug "Fetching tx receipt #{tx_id}"
-      tx = client.json_rpc(:eth_getTransactionReceipt, [tx_id])
-      return if tx.nil? || tx.fetch('to').blank?
-      tx
     end
 
     def invalid_eth_transaction?(block_txn)
@@ -145,12 +151,6 @@ class EthereumGateway
         fee:            gas_price * gas_used,
         contract_address: nil
       }
-    end
-
-    def load_basic_balance(address)
-      client.json_rpc(:eth_getBalance, [normalize_address(address), 'latest'])
-        .hex
-        .to_i
     end
 
     def transaction_status(block_txn)
