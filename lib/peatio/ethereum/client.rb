@@ -58,7 +58,7 @@ module Ethereum
     def connection
       @connection ||= Faraday.new(@json_rpc_endpoint) do |f|
         f.request :curl, curl_logger, :info if ENV.true?('ETHEREUM_CURL_LOGGER')
-        f.request :detailed_logger, detailed_logger if ENV.true?('ETHEREUM_DETAILED_LOGGER')
+        f.response :detailed_logger, detailed_logger if ENV.true?('ETHEREUM_DETAILED_LOGGER')
         f.adapter :net_http_persistent, pool_size: 5, idle_timeout: @idle_timeout
       end.tap do |connection|
         unless @json_rpc_endpoint.user.blank?

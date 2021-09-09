@@ -8,6 +8,8 @@ class EthereumGateway < AbstractGateway
   extend Concern
   IDLE_TIMEOUT = 1
 
+  COLLECT_FACTOR=2 # Collect money only if there are balance more than this number to payed gas
+
   Error = Class.new StandardError
   NoHotWallet = Class.new Error
 
@@ -78,40 +80,47 @@ class EthereumGateway < AbstractGateway
   end
 
   def has_enough_gas_to_collect? address
-    fetch_balance(address) >= required_gas_to_collect(address)
+    fetch_balance(address) >= required_gas_balance_to_collect(address)
   end
 
-  def required_gas_to_collect(address)
-    estimate_gas(from_address: address, to_addresses: [hot_wallet.address] + select_collectable_contract_addresses(address))
+  def required_gas_balance_to_collect(address)
+    contract_addresses = select_collectable_contract_addresses(address)
+    estimate_gas(from_address: address,
+                 to_addresses: hot_wallet.address,
+                 contract_addresses: contract_addresses)
   end
 
+  # На адресе есть монеты, которые можно собрать (их ценность выше газа)
+  #
   def collectable_balance? address
-    select_collectable_contract_addresses(address).any? ||
-      fetch_balance(address) > estimate_gas(from_address: address, to_addresses: [hot_wallet.address])
+    select_collectable_contract_addresses(address).any?
   end
 
-  def estimate_gas(from_address: , to_addresses: )
+  def estimate_gas(from_address: , to_address:, contract_addresses: [])
     blockchain.native_currency.to_money_from_units(
-      GasEstimator.new(client).call(from_address: from_address, to_addresses: to_addresses)
+      GasEstimator
+      .new(client)
+      .call(from_address: from_address,
+            to_address: to_address,
+            contract_addresses: contract_addresses.compact,
+            account_native: contract_addresses.include?(nil))
     )
   end
 
+  #
   def select_collectable_contract_addresses(address)
      blockchain
       .currencies
-      .select(&:token?)
       .select { |currency| is_balance_collectable?(load_balance(address, currency), currency, address) }
       .map(&:contract_address)
   end
 
   def is_balance_collectable?(amount, currency, address)
-    if currency == blockchain.native_currency
-      amount >= GasEstimator
-        .new(client)
-        .call(from_address: address, to_addresses: [hot_wallet.address])
+    if currency.token?
+      # TODO Учитывать цену токены относительно газа
+      amount.positive? # >= estimate_gas(from_address: hot_wallet.address, to_address: address, contract_addresses: [currency.contract_address])
     else
-      # TODO Учитывать цену токена для сбора, она должна быть выше затрачиваемого газа
-      amount.positive?
+      amount >= estimate_gas(from_address: hot_wallet.address, to_address: address) * COLLECT_FACTOR
     end
   end
 

@@ -2,7 +2,7 @@ module Jobs
   module Cron
     class Collector
       def self.process
-        return unless Rails.env.production?
+        return # TODO
         new.process
         sleep 60
       end

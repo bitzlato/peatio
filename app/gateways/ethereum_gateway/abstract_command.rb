@@ -34,13 +34,14 @@ class EthereumGateway
 
     def estimate_gas(gas_price: nil, from:, to:, value: nil, data: nil)
       gas_price ||= fetch_gas_price
+      raise 'dont send value and data in same time' if value.present? && data.present?
       estimage_gas = client.json_rpc(:eth_estimateGas, [{
         gasPrice: '0x' + gas_price.to_i.to_s(16),
         from:     normalize_address(from),
         to:       normalize_address(to),
         # No reasone to send it because of possible exception 'insufficient funds for transfer'
-        # value:  value.nil? ? nil : '0x' + value.to_i.to_s(16),
-        # data:   data
+        value:  value.nil? ? nil : '0x' + value.to_i.to_s(16),
+        data:   data
       }.compact]).to_i(16)
       logger.info("Estimated gas #{from}->#{to} with value=#{value || '?'} is #{estimage_gas}")
       estimage_gas

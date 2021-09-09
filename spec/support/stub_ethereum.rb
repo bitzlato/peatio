@@ -31,12 +31,12 @@ module EthereumHelpers
       .to_return(body: { result: '0x' + gas_price.to_s(16), error: nil, id: id }.to_json)
   end
 
-  def stub_estimate_gas(from:, to:, gas_price:, estimated_gas:, id:)
+  def stub_estimate_gas(from:, to:, gas_price:, estimated_gas:, id:, data: nil, value: nil)
     body = {
       "jsonrpc": '2.0',
       "id": id,
       "method": 'eth_estimateGas',
-      "params": [{gasPrice: '0x'+ gas_price.to_s(16), from: from, to: to}]
+      "params": [{gasPrice: '0x'+ gas_price.to_s(16), from: from, to: to, data: data, value: value}.compact]
     }
     stub_request(:post, node_uri)
       .with(body: body.to_json)
