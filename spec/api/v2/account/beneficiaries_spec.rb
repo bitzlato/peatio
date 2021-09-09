@@ -366,11 +366,16 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         end
 
         context 'different currencies' do
+          let(:eth_beneficiary_data) {
+            beneficiary_data.merge({
+              data: { address: Faker::Blockchain::Ethereum.address }
+            })
+          }
           before do
             create(:beneficiary,
                    member: member,
                    currency_id: :eth,
-                   data: {address: beneficiary_data.dig(:data, :address)})
+                   data: { address: eth_beneficiary_data.dig(:data, :address) })
           end
 
           it do
@@ -395,18 +400,20 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         end
       end
 
-      context 'destination tag in address' do
-        before do
-          beneficiary_data[:data][:address] = Faker::Blockchain::Bitcoin.address + "?dt=4"
-        end
-        it do
-          api_post endpoint, params: beneficiary_data, token: token
-          expect(response.status).to eq 201
+      # TODO: this spec is about destination tag in address, but Bitcoin does not support it
+      #
+      # context 'destination tag in address' do
+      #   before do
+      #     beneficiary_data[:data][:address] = Faker::Blockchain::Bitcoin.address + "?dt=4"
+      #   end
+      #   it do
+      #     api_post endpoint, params: beneficiary_data, token: token
+      #     expect(response.status).to eq 201
 
-          result = JSON.parse(response.body)
-          expect(Beneficiary.find(result['id']).data['address']).to eq(beneficiary_data[:data][:address])
-        end
-      end
+      #     result = JSON.parse(response.body)
+      #     expect(Beneficiary.find(result['id']).data['address']).to eq(beneficiary_data[:data][:address])
+      #   end
+      # end
 
       # TODO: Test nil full_name in data for both fiat and crypto.
     end

@@ -6,7 +6,9 @@ class BitzlatoGateway < AbstractGateway
   end
 
   def self.valid_address?(address)
-    address=~/^[a-z0-9_]+$/i
+    is_bitcoin_address = BitcoinGateway.valid_address?(address)
+    is_bitzlato_address = address=~/^[a-z0-9_]+$/i
+    !is_bitcoin_address && is_bitzlato_address
   end
 
   def load_balance(_address, currency)

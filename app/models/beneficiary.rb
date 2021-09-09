@@ -21,8 +21,6 @@ class Beneficiary < ApplicationRecord
   PIN_LENGTH  = 6
   PIN_RANGE   = 10**5..10**Beneficiary::PIN_LENGTH
 
-  INVALID_ADDRESS_SYMBOLS = /[\<\>\'\,\[\]\}\{\"\)\(\*\&\^\%\$\#\`\~\{\}\@]/.freeze
-
   # == Attributes ===========================================================
 
   vault_attribute :data, serialize: :json, default: {}
@@ -82,7 +80,9 @@ class Beneficiary < ApplicationRecord
 
   # Validates address field which is required for coin.
   validate if: ->(b) { b.currency.present? && b.currency.coin? } do
-    errors.add(:data, 'invlalid address') if data.present? && data.symbolize_keys[:address].present? && data.symbolize_keys[:address].match?(INVALID_ADDRESS_SYMBOLS)
+    if data.blank? || !currency.blockchain.valid_address?(data.symbolize_keys[:address])
+      errors.add(:data, 'invlalid address')
+    end
   end
 
   # Validates that data contains full_name field which is required for fiat.
