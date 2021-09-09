@@ -264,6 +264,8 @@ GEM
       faraday-patron (~> 1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords (>= 0.0.4)
+    faraday-detailed_logger (2.3.0)
+      faraday (>= 0.8, < 2)
     faraday-em_http (1.0.0)
     faraday-em_synchrony (1.0.0)
     faraday-excon (1.1.0)
@@ -606,6 +608,7 @@ DEPENDENCIES
   factory_bot_rails (~> 5.0, >= 5.0.2)
   faker (~> 1.8)
   faraday
+  faraday-detailed_logger (~> 2.3)
   faraday_curl (~> 0.0.2)
   faraday_middleware
   faye (~> 1.4)

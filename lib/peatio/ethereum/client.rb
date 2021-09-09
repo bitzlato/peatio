@@ -47,9 +47,18 @@ module Ethereum
       @json_rpc_call_id += 1
     end
 
+    def detailed_logger
+      @detailed_logger ||= ActiveSupport::Logger.new Rails.root.join('log', 'ethereum_client_detailed.log')
+    end
+
+    def curl_logger
+      @curl_logger ||= ActiveSupport::Logger.new Rails.root.join('log', 'ethereum_client_curl.log')
+    end
+
     def connection
       @connection ||= Faraday.new(@json_rpc_endpoint) do |f|
-        f.request :curl, Rails.logger, :info if ENV.true?('ETHEREUM_FARADAY_CURL_LOGGER')
+        f.request :curl, curl_logger, :info if ENV.true?('ETHEREUM_CURL_LOGGER')
+        f.request :detailed_logger, detailed_logger if ENV.true?('ETHEREUM_DETAILED_LOGGER')
         f.adapter :net_http_persistent, pool_size: 5, idle_timeout: @idle_timeout
       end.tap do |connection|
         unless @json_rpc_endpoint.user.blank?

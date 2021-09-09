@@ -144,4 +144,5 @@ gem "after_commit_everywhere", "~> 1.1"
 
 gem "request_store", "~> 1.5"
 
+gem "faraday-detailed_logger", "~> 2.3"
 gem "faraday_curl", "~> 0.0.2"
