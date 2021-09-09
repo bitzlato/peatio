@@ -18,27 +18,7 @@ describe ::EthereumGateway do
     WebMock.allow_net_connect!
   end
 
-  context '#collect!' do
-    let(:eth_money_amount) { 2.to_money('eth') }
-    let(:balances) { { Money::Currency.find('eth') => eth_money_amount} }
-    let(:payment_address) { create :payment_address, blockchain: blockchain }
-
-    it 'collects tokens first' do
-      Blockchain.any_instance.expects(:hot_wallet).returns hot_wallet
-      EthereumGateway::Collector
-        .any_instance
-        .stubs(:call)
-        .with(from_address:  payment_address.address,
-              to_address: hot_wallet.address,
-              amounts: {nil => eth_money_amount.base_units },
-              gas_factor: 1,
-              secret: payment_address.secret)
-        .once
-      EthereumGateway
-        .any_instance
-        .expects(:load_balances)
-        .returns(balances)
-      subject.send(:collect!, payment_address)
-    end
+  context '#refuel_gas!' do
+    pending
   end
 end

@@ -29,11 +29,12 @@ class PaymentAddress < ApplicationRecord
   aasm :collection_state, namespace: :collection, whiny_transitions: true, requires_lock: true do
     state :none, initial: true
     state :pending
-    state :processing
+    state :collecting
+    state :gas_refueling
     state :done
 
     event :collect do
-      transitions from: %i[pending none], to: :collecting
+      transitions from: %i[pending none done], to: :collecting
       after do
         blockchain.gateway.collect! self
         done!
@@ -41,7 +42,7 @@ class PaymentAddress < ApplicationRecord
     end
 
     event :refuel_gas do
-      transitions from: %i[none pending], to: :gas_refueling
+      transitions from: %i[pending none done], to: :gas_refueling
       after do
         blockchain.gateway.refuel_gas! self
         done!

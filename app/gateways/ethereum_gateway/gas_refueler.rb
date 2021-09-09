@@ -6,7 +6,17 @@ class EthereumGateway
     NoTokens = Class.new Error
     Balanced = Class.new Error
 
-    def call(gas_wallet_address:, gas_wallet_secret:, gas_limit: nil, gas_price: nil, gas_factor:, target_address: , contract_addresses: )
+    # Пополняет с горячего кошелька газа чтобы вывевести указанные монеты
+    # Если на балансе средст достаточно,то пополнять отказывается
+    # Если Не достаточно, то пополняет ровно столько, сколько нужно
+    def call(gas_wallet_address:,
+             gas_wallet_secret:,
+             transaction_gas_limit: nil,
+             gas_price: nil,
+             gas_factor:,
+             target_address:,
+             contract_addresses:,
+             gas_limits: {})
       balance_on_target_address = load_basic_balance target_address
       raise "balance_on_target_address #{balance_on_target_address} must be an Integer" unless balance_on_target_address.is_a? Integer
 
@@ -17,9 +27,14 @@ class EthereumGateway
 
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
-      required_gas = contract_addresses.map do |contract_address|
-        estimate_gas(from: gas_wallet_address, to: contract_address, gas_price: gas_price)
-      end.sum
+      required_gas = GasEstimator
+        .new(client)
+        .call(from_address: gas_wallet_address,
+              contract_addresses: contract_addresses.compact,
+              to_address: target_address,
+              account_native: false,
+              gas_limits: gas_limits,
+              gas_price: gas_price)
 
       transcation_gas_limit ||= estimate_gas from: gas_wallet_address, to: target_address, gas_price: gas_price
 

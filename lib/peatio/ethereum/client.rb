@@ -5,12 +5,14 @@ module Ethereum
     class ConnectionError < Error; end
 
     class ResponseError < Error
-      attr_reader :request_data
-      def initialize(code, message, request_data = nil)
-        @request_data = request_data
+      attr_reader :data
+      def initialize(code, message, data)
+        @data = data
         super "#{message} (#{code})"
       end
     end
+
+    NoEnoughtAmount = Class.new ResponseError
 
     extend Memoist
 
@@ -21,6 +23,16 @@ module Ethereum
       @idle_timeout = idle_timeout
     end
 
+    def raise_error(error)
+      # "Accept: application/json\nContent-Type: application/json\nUser-Agent: Faraday v1.5.1\n\n{\"jsonrpc\":\"2.0\",\"id\":11,\"method\":\"eth_estimateGas\",\"params\":[{\"gasPrice\":\"0x1b6f2970f1\",\"from\":\"0x97d92440fce7096eb7d3859d790ccaae6adb6bee\",\"to\":\"0xdac17f958d2ee523a2206206994597c13d831ec7\",\"data\":\"0xa9059cbb0000000000000000000000008a988dc81b42be7a3ad343c4d4fa3eac3ead3dc40000000000000000000000000000000000000000000000000000000000000001\"}]}"
+      # rcontent-length: 160\ncontent-type: application/json; charset=utf-8\ndate: Fri, 10 Sep 2021 17:42:21 GMT\n\n{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-32015,\"message\":\"Transaction execution error.\",\"data\":\"Internal(\\\"Requires higher than upper limit of 300292660\\\")\"},\"id\":11}\n"
+      if error['message'].include?('Transaction execution error') && error['data'].include?('Requires higher than upper limit')
+        raise NoEnoughtAmount.new(error['code'], error['message'], error['data'])
+      else
+        raise ResponseError.new(error['code'], error['message'], error['data'])
+      end
+    end
+
     def json_rpc(method, params = [])
       response = connection.post \
           @path,
@@ -29,7 +41,7 @@ module Ethereum
            'Content-Type' => 'application/json'}
       response.assert_success!
       response = JSON.parse(response.body)
-      response['error'].tap { |error| raise ResponseError.new(error['code'], error['message'], params) if error }
+      response['error'].tap { |error| raise_error error if error }
       response.fetch('result')
 
       # We don't want to masquerade errors any more

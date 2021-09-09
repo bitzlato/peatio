@@ -15,6 +15,7 @@ class EthereumGateway
       #
       amounts.map do |contract_address, amount|
         raise unless amount.is_a? Integer # not money
+        next unless amount.positive?
         logger.info("Collect #{amount} of #{contract_address || :native} from #{from_address} to #{to_address}")
         transaction  = TransactionCreator
           .new(client)
@@ -22,6 +23,7 @@ class EthereumGateway
                 to_address: to_address,
                 amount: amount,
                 secret: secret,
+                gas_limit: nil,
                 gas_factor: gas_factor,
                 contract_address: contract_address,
                 subtract_fee: contract_address.nil?

@@ -43,7 +43,7 @@ class EthereumGateway
         value:  value.nil? ? nil : '0x' + value.to_i.to_s(16),
         data:   data
       }.compact]).to_i(16)
-      logger.info("Estimated gas #{from}->#{to} with value=#{value || '?'} is #{estimage_gas}")
+      logger.info("Estimated gas #{from}->#{to} with value=#{value || :nil} and data=#{data || :nil} is #{estimage_gas}")
       estimage_gas
     end
 

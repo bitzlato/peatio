@@ -4,7 +4,7 @@ module Jobs
       def self.process
         return # TODO
         new.process
-        sleep 60
+        sleep 300
       end
 
       def process

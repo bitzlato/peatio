@@ -6,12 +6,14 @@
 class EthereumGateway < AbstractGateway
   include NumericHelpers
   extend Concern
-  IDLE_TIMEOUT = 1
+  include CollectionConcern
+  include BalancesConcern
 
-  COLLECT_FACTOR=2 # Collect money only if there are balance more than this number to payed gas
+  IDLE_TIMEOUT = 1
 
   Error = Class.new StandardError
   NoHotWallet = Class.new Error
+  NoAddressesToEstimate = Class.new Error
 
   def enable_block_fetching?
     true
@@ -22,50 +24,24 @@ class EthereumGateway < AbstractGateway
     AbstractCommand.new(client).client_version
   end
 
-  def fetch_balance(address)
-    address = address.address if address.is_a? PaymentAddress
-    blockchain.native_currency.to_money_from_units(
-      AbstractCommand.new(client).load_basic_balance address
-    )
-  end
-
-  def collect!(payment_address)
-    raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
-    amounts = load_balances(payment_address.address)
-      .select { |currency, amount| is_balance_collectable?(amount, currency, payment_address.address) }
-      .transform_values { |v| v.base_units }
-      .transform_keys { |c| c.contract_address }
-
-    # Remove native currency if there are tokens to transfer
-    amounts.delete nil if amounts.many?
-
-    logger.info("Collect from payment_address #{payment_address} amounts: #{amounts}")
-    EthereumGateway::Collector
-      .new(client)
-      .call(from_address: payment_address.address,
-            to_address: hot_wallet.address,
-            amounts: amounts,
-            gas_factor: blockchain.client_options[:gas_factor],
-            secret: payment_address.secret) if amounts.any?
-  end
-
+  # Выбирает на адресе монеты которые можно вывести (их баланс больше суммы газа который потребуется для вывода)
+  # Вычисляет сколько нужно газа чтобы их вывести и закидывает его на баланс ардеса с горячего кошелька
   def refuel_gas!(target_address)
     target_address = target_address.address if target_address.is_a? PaymentAddress
 
-    contract_addresses = select_collectable_contract_addresses traget_address
+    coins = collectable_coins target_address
 
-    logger.info("Refuel #{target_address} for #{contract_addresses.join(',')} contract_addresses")
+    logger.info("Refuel #{target_address} for coins #{coins.map { |c| c || :native }.join(',')}")
     transaction = monefy_transaction(
       EthereumGateway::GasRefueler
       .new(client)
       .call(
         gas_factor: blockchain.client_options[:gas_factor],
-        base_gas_limit: blockchain.client_options[:base_gas_limit],
-        token_gas_limit: blockchain.client_options[:token_gas_limit],
         gas_wallet_address: fee_wallet.address,
         gas_wallet_secret: fee_wallet.secret,
         target_address: target_address,
-        contract_addresses: contract_addresses
+        contract_addresses: coins,
+        gas_limits: gas_limits
       )
     )
 
@@ -77,65 +53,6 @@ class EthereumGateway < AbstractGateway
   rescue EthereumGateway::GasRefueler::Error => err
     report_exception err, true, target_address: target_address, blockchain_key: blockchain.key
     logger.info("Canceled refueling address #{target_address} with #{err}")
-  end
-
-  def has_enough_gas_to_collect? address
-    fetch_balance(address) >= required_gas_balance_to_collect(address)
-  end
-
-  def required_gas_balance_to_collect(address)
-    contract_addresses = select_collectable_contract_addresses(address)
-    estimate_gas(from_address: address,
-                 to_addresses: hot_wallet.address,
-                 contract_addresses: contract_addresses)
-  end
-
-  # На адресе есть монеты, которые можно собрать (их ценность выше газа)
-  #
-  def collectable_balance? address
-    select_collectable_contract_addresses(address).any?
-  end
-
-  def estimate_gas(from_address: , to_address:, contract_addresses: [])
-    blockchain.native_currency.to_money_from_units(
-      GasEstimator
-      .new(client)
-      .call(from_address: from_address,
-            to_address: to_address,
-            contract_addresses: contract_addresses.compact,
-            account_native: contract_addresses.include?(nil))
-    )
-  end
-
-  def select_collectable_contract_addresses(address)
-     blockchain
-      .currencies
-      .select { |currency| is_balance_collectable?(load_balance(address, currency), currency, address) }
-      .map(&:contract_address)
-  end
-
-  # На адресе есть монеты, которые можно собрать, их ценность выше газа?
-  def is_balance_collectable?(amount, currency, address)
-    if currency.token?
-      # TODO Учитывать цену токены относительно газа
-      amount.positive? # >= estimate_gas(from_address: hot_wallet.address, to_address: address, contract_addresses: [currency.contract_address])
-    else
-      amount >= estimate_gas(from_address: hot_wallet.address, to_address: address) * COLLECT_FACTOR
-    end
-  end
-
-  def load_balances(address)
-    blockchain.currencies.each_with_object({}) do |currency, a|
-      a[currency.id] = load_balance(address, currency)
-    end
-  end
-
-  # @return balance of addrese in Money
-  def load_balance(address, currency)
-    BalanceLoader
-      .new(client)
-      .call(address, currency.contract_address)
-      .yield_self { |amount| currency.to_money_from_units(amount) }
   end
 
   def create_address!(secret = nil)
@@ -172,12 +89,6 @@ class EthereumGateway < AbstractGateway
     )
   end
 
-  def fetch_gas_price
-    blockchain.fee_currency.to_money_from_units(
-      AbstractCommand.new(client).fetch_gas_price
-    )
-  end
-
   def fetch_block_transactions(block_number)
     BlockFetcher
       .new(client)
@@ -203,6 +114,10 @@ class EthereumGateway < AbstractGateway
   end
 
   private
+
+  def gas_limits
+    blockchain.currencies.each_with_object({}) { |c, agg| agg[c.contract_address] = c.gas_limit }
+  end
 
   def fee_wallet
     blockchain.fee_wallet || raise("No fee wallet for blockchain #{blockchain.id}")

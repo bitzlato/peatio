@@ -10,11 +10,13 @@ class EthereumGateway
              nonce: nil,
              contract_address: nil,
              subtract_fee: false,
-             gas_limit: ,
+             gas_price: nil,
+             gas_limit: nil,
              gas_factor: 1)
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
 
+      raise Error, 'zero amount transction' if amount.zero?
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
       peatio_transaction = contract_address.present? ?
@@ -49,6 +51,8 @@ class EthereumGateway
 
       raise 'amount must be an integer' unless amount.is_a? Integer
 
+      # Можно было бы не считать если без substract_fee
+      #
       gas_limit ||= estimate_gas(
         from: from_address,
         to: to_address,
