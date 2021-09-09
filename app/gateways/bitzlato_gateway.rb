@@ -28,7 +28,7 @@ class BitzlatoGateway < AbstractGateway
 
   def poll_deposits!
     client.poll_deposits.each do |intention|
-      deposit = Deposit.find_by(currency_id: intention[:currency], invoice_id: intention[:id])
+      deposit = Deposit.find_by(currency_id: intention[:currency], invoice_id: intention[:invoice_id])
       if deposit.nil?
         Rails.logger.warn("No such deposit intention ##{intention[:id]} in blockchain #{blockchain.name}")
         next

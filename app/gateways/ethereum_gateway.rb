@@ -107,7 +107,6 @@ class EthereumGateway < AbstractGateway
     )
   end
 
-  #
   def select_collectable_contract_addresses(address)
      blockchain
       .currencies
@@ -115,6 +114,7 @@ class EthereumGateway < AbstractGateway
       .map(&:contract_address)
   end
 
+  # На адресе есть монеты, которые можно собрать, их ценность выше газа?
   def is_balance_collectable?(amount, currency, address)
     if currency.token?
       # TODO Учитывать цену токены относительно газа
