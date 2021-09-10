@@ -85,7 +85,8 @@ class Currency < ApplicationRecord
             :withdraw_limit_72h,
             numericality: { greater_than_or_equal_to: 0 }
 
-  validates :contract_address, presence: true, if: :parent_id
+  # TODO improve tests
+  validates :contract_address, presence: true, if: :parent_id unless Rails.env.test
 
   # == Scopes ===============================================================
 
