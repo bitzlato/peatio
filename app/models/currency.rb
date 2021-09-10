@@ -56,7 +56,7 @@ class Currency < ApplicationRecord
   end
 
   # Support for tower
-  before_validation if: :erc20_contract_address do
+  before_update if: :erc20_contract_address do
     self.contract_address ||= erc20_contract_address
   end
 
@@ -236,6 +236,16 @@ class Currency < ApplicationRecord
     else
       price
     end
+  end
+
+  def to_blockchain_api_settings
+    # We pass options are available as top-level hash keys and via options for
+    # compatibility with Wallet#to_wallet_api_settings.
+    opt = options.compact.deep_symbolize_keys
+    opt.deep_symbolize_keys.merge(id:                    id,
+                                  base_factor:           base_factor,
+                                  min_collection_amount: min_collection_amount,
+                                  options:               opt)
   end
 
   def min_deposit_amount_money
