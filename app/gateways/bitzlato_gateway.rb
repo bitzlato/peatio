@@ -7,7 +7,7 @@ class BitzlatoGateway < AbstractGateway
 
   def self.valid_address?(address)
     is_bitcoin_address = BitcoinGateway.valid_address?(address)
-    is_bitzlato_address = address=~/^[a-z0-9_]+$/i
+    is_bitzlato_address = address=~/^[a-zA-Z0-9_]{2,15}$/i
     !is_bitcoin_address && is_bitzlato_address
   end
 
