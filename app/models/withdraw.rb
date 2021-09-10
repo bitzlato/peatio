@@ -51,7 +51,6 @@ class Withdraw < ApplicationRecord
     if beneficiary.present? && !beneficiary.active? && !aasm_state.to_sym.in?(COMPLETED_STATES)
       errors.add(:beneficiary, 'not active')
     end
-    
   end
 
   validate on: :create, if: ->(w) { w.currency.present? && w.currency.coin? } do
@@ -83,7 +82,8 @@ class Withdraw < ApplicationRecord
     event :accept do
       transitions from: :prepared, to: :accepted
       after do
-        lock_funds
+        account.lock_funds(sum)
+        update!(is_locked: true)
         record_submit_operations!
       end
       after_commit do
@@ -103,7 +103,8 @@ class Withdraw < ApplicationRecord
       transitions from: %i[prepared accepted], to: :canceled
       after do
         unless aasm.from_state == :prepared
-          unlock_funds
+          account.unlock_funds(sum)
+          update!(is_locked: false)
           record_cancel_operations!
         end
       end
@@ -112,7 +113,8 @@ class Withdraw < ApplicationRecord
     event :reject do
       transitions from: %i[to_reject accepted confirming under_review], to: :rejected
       after do
-        unlock_funds
+        account.unlock_funds(sum)
+        update!(is_locked: false)
         record_cancel_operations!
       end
     end
@@ -155,7 +157,8 @@ class Withdraw < ApplicationRecord
           currency.fiat? || txid?
         end
         after do
-          unlock_and_sub_funds
+          account.unlock_and_sub_funds(sum)
+          update!(is_locked: false)
           record_complete_operations!
         end
       end
@@ -167,7 +170,8 @@ class Withdraw < ApplicationRecord
           currency.fiat? || txid?
         end
         after do
-          unlock_and_sub_funds
+          account.unlock_and_sub_funds(sum)
+          update!(is_locked: false)
           record_complete_operations!
         end
       end
@@ -180,7 +184,8 @@ class Withdraw < ApplicationRecord
     event :fail do
       transitions from: %i[transfering processing confirming skipped errored under_review], to: :failed
       after do
-        unlock_funds
+        account.unlock_funds(sum)
+        update!(is_locked: false)
         record_cancel_operations!
       end
     end
@@ -274,21 +279,6 @@ class Withdraw < ApplicationRecord
   end
 
   private
-
-  # @deprecated
-  def lock_funds
-    account.lock_funds(sum)
-  end
-
-  # @deprecated
-  def unlock_funds
-    account.unlock_funds(sum)
-  end
-
-  # @deprecated
-  def unlock_and_sub_funds
-    account.unlock_and_sub_funds(sum)
-  end
 
   def record_submit_operations!
     transaction do

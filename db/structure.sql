@@ -457,7 +457,8 @@ CREATE TABLE public.deposits (
     invoice_id character varying,
     error json,
     blockchain_id bigint NOT NULL,
-    invoice_expires_at timestamp without time zone
+    invoice_expires_at timestamp without time zone,
+    is_locked boolean DEFAULT false NOT NULL
 );
 
 
@@ -1366,7 +1367,8 @@ CREATE TABLE public.withdraws (
     metadata json,
     remote_id character varying,
     blockchain_id bigint NOT NULL,
-    tx_dump jsonb
+    tx_dump jsonb,
+    is_locked boolean DEFAULT false NOT NULL
 );
 
 
@@ -2687,7 +2689,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2917,6 +2919,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210831045259'),
 ('20210831072354'),
 ('20210908142557'),
-('20210908143407');
+('20210908143407'),
+('20210910085149'),
+('20210910085819');
 
 
