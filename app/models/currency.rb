@@ -86,7 +86,7 @@ class Currency < ApplicationRecord
             numericality: { greater_than_or_equal_to: 0 }
 
   # TODO improve tests
-  validates :contract_address, presence: true, if: :parent_id unless Rails.env.test
+  validates :contract_address, presence: true, if: :parent_id unless Rails.env.test?
 
   # == Scopes ===============================================================
 
