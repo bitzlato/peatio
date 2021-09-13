@@ -13,7 +13,7 @@ class EthereumGateway
     def collect!(payment_address)
       raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
       amounts = load_balances(payment_address.address)
-        .select { |currency, amount| is_amount_collectable?(currency, amount) }
+        .select { |currency, amount| is_amount_collectable?(amount) }
         .transform_values { |v| v.base_units }
         .transform_keys { |currency| currency.contract_address }
 
@@ -68,10 +68,10 @@ class EthereumGateway
     end
 
     # На адресе есть монеты, которые можно собрать, их ценность выше газа?
-    def is_amount_collectable?(currency, amount)
+    def is_amount_collectable?(amount)
       raise 'amount must be a Money' unless amount.is_a? Money
-      if currency.token?
-        amount.to_d >= [currency.min_collection_amount, currency.min_deposit_amount].max
+      if amount.currency.token?
+        amount.to_d >= [amount.currency.min_collection_amount, amount.currency.min_deposit_amount].max
       else
         amount >= gas_for_collection_in_money(nil) * COLLECT_FACTOR
       end
