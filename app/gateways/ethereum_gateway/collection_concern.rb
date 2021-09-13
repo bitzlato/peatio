@@ -45,7 +45,7 @@ class EthereumGateway
     # На адресе есть монеты, которые можно собрать (их ценность выше газа)
     #
     def has_collectable_balances? address
-      collectable_coins(address).any?
+      collectable_coins(address).present?
     end
 
     private
