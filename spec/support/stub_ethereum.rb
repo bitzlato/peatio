@@ -36,7 +36,9 @@ module EthereumHelpers
       "jsonrpc": '2.0',
       "id": id,
       "method": 'eth_estimateGas',
-      "params": [{gasPrice: '0x'+ gas_price.to_s(16), from: from, to: to, data: data, value: value}.compact]
+      "params": [
+        {gasPrice: '0x'+ gas_price.to_s(16), from: from, to: to, data: data, value: value.nil? ? nil : '0x' + value.to_s(16)}.compact
+      ]
     }
     stub_request(:post, node_uri)
       .with(body: body.to_json)
