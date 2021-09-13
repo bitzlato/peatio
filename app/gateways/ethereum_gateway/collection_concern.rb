@@ -14,8 +14,7 @@ class EthereumGateway
       raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
       amounts = load_balances(payment_address.address)
         .select { |currency, amount| is_amount_collectable?(amount) }
-        .transform_values { |v| v.base_units }
-        .transform_keys { |currency| amount.currency.contract_address }
+        .each_with_object({}) { |(key, value), hash| hash[value.currency.contract_address] = v.base_units }
 
       # Remove native currency if there are tokens to transfer
       # We want to collect native currency when there are no collectable tokens in address
