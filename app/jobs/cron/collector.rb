@@ -10,7 +10,7 @@ module Jobs
       def process
         # TODO select only payment addresses with enough balance
         PaymentAddress.collection_required.lock.each do |pa|
-          next unless pa.collectable_balance?
+          next unless pa.has_collectable_balances?
           if pa.has_enough_gas_to_collect?
             pa.collect!
           else

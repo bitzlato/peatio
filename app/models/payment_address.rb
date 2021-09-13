@@ -95,8 +95,8 @@ class PaymentAddress < ApplicationRecord
   end
 
   # Balance reached amount limit to be collected
-  def collectable_balance?
-    blockchain.gateway.collectable_balance? address
+  def has_collectable_balances?
+    blockchain.gateway.has_collectable_balances? address
   end
 
   def transactions

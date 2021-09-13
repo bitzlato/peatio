@@ -1,18 +1,21 @@
 class EthereumGateway
   module CollectionConcern
-    # Collect money only if there are balance more than this number to payed gas
+    # Collect money only if there are balance more than the amount to payed gas
     #
     COLLECT_FACTOR = 2
     GAS_PRICE_EXPIRES = 60
 
     # Collects tokens and native currency to hot wallet address
     #
+    # It runs when we know that we have enough money to pay gase
+    # and have tokens or money to collect
+    #
     def collect!(payment_address)
       raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
       amounts = load_balances(payment_address.address)
-        .select { |currency, amount| collectable_balance?(payment_address.address) }
+        .select { |currency, amount| is_amount_collectable?(currency, amount) }
         .transform_values { |v| v.base_units }
-        .transform_keys { |currency_id| Currency.find(currency_id).contract_address }
+        .transform_keys { |currency| currency.contract_address }
 
       # Remove native currency if there are tokens to transfer
       # We want to collect native currency when there are no collectable tokens in address
@@ -41,7 +44,7 @@ class EthereumGateway
 
     # На адресе есть монеты, которые можно собрать (их ценность выше газа)
     #
-    def collectable_balance? address
+    def has_collectable_balances? address
       collectable_coins(address).any?
     end
 
@@ -57,7 +60,7 @@ class EthereumGateway
     def collectable_coins(address)
       coins = blockchain
         .currencies
-        .select { |currency| is_amount_collectable?(address, currency) }
+        .select { |currency| is_amount_collectable?(currency, load_balance(address, currency)) }
         .map(&:contract_address)
 
       # Don't return native currency if where are collectable tokens
@@ -65,8 +68,7 @@ class EthereumGateway
     end
 
     # На адресе есть монеты, которые можно собрать, их ценность выше газа?
-    def is_amount_collectable?(address, currency)
-      amount = load_balance address, currency
+    def is_amount_collectable?(currency, amount)
       raise 'amount must be a Money' unless amount.is_a? Money
       if currency.token?
         amount.to_d >= [currency.min_collection_amount, currency.min_deposit_amount].max

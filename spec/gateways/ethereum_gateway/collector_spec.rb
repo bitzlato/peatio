@@ -25,6 +25,7 @@ describe ::EthereumGateway::Collector do
            amount: contract_amount,
            secret: nil,
            subtract_fee: false,
+          gas_limit: nil,
            gas_factor: gas_factor,
            contract_address: contract_address).
            once.
@@ -38,6 +39,7 @@ describe ::EthereumGateway::Collector do
            secret: nil,
            gas_factor: 1,
            subtract_fee: true,
+           gas_limit: nil,
            contract_address: nil).
            once.
            returns(peatio_transaction)
