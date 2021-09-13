@@ -15,11 +15,11 @@ class EthereumGateway
       amounts = load_balances(payment_address.address)
         .select { |currency, amount| is_amount_collectable?(amount) }
         .each_with_object({}) { |(key, amount), hash| hash[amount.currency.contract_address] = amount.base_units }
-        .freeze
 
       # Remove native currency if there are tokens to transfer
       # We want to collect native currency when there are no collectable tokens in address
       amounts.delete nil if amounts.many?
+      amounts = amounts.freeze
 
       if amounts.any?
         logger.info("Collect from payment_address #{payment_address.address} amounts: #{amounts}")
