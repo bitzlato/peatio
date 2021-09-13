@@ -6,7 +6,7 @@ class EthereumGateway
     NoAmounts = Class.new StandardError
 
     # Collect all tokens and coins from payment_address to hot wallet
-    def call(from_address:, to_address: , amounts:, secret:, gas_factor: 1 )
+    def call(from_address:, to_address: , amounts:, secret:, gas_limits:, gas_factor: 1 )
       raise NoAmounts if amounts.empty?
 
       # TODO Сообщать о том что не хватает газа ДО выполнения, так как он потратися
@@ -23,7 +23,7 @@ class EthereumGateway
                 to_address: to_address,
                 amount: amount,
                 secret: secret,
-                gas_limit: nil,
+                gas_limit: gas_limits[contract_address] || raise("No gas limit for #{contract_address}"),
                 gas_factor: gas_factor,
                 contract_address: contract_address,
                 subtract_fee: contract_address.nil?

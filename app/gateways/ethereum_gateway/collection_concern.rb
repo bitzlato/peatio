@@ -28,6 +28,7 @@ class EthereumGateway
           .call(from_address: payment_address.address,
                 to_address: hot_wallet.address,
                 amounts: amounts,
+                gas_limits: gas_limits,
                 gas_factor: blockchain.client_options[:gas_factor],
                 secret: payment_address.secret)
       else

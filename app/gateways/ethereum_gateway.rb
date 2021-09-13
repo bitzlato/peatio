@@ -71,7 +71,7 @@ class EthereumGateway < AbstractGateway
                           meta: {})
 
     raise 'amount must be a Money' unless amount.is_a? Money
-    # If gas_limit is nil it will be estimated by eth_estimateGas
+    # TODO estimate by GasEstimator
     gas_limit = amount.currency.token? ? blockchain.client_options[:token_gas_limit] : blockchain.client_options[:base_gas_limit]
     monefy_transaction(
       TransactionCreator
