@@ -60,7 +60,7 @@ class EthereumGateway
     def collectable_coins(address)
       coins = blockchain
         .currencies
-        .select { |currency| is_amount_collectable?(currency, load_balance(address, currency)) }
+        .select { |currency| is_amount_collectable?(load_balance(address, currency)) }
         .map(&:contract_address)
 
       # Don't return native currency if where are collectable tokens
