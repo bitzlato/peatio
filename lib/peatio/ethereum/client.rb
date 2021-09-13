@@ -8,7 +8,7 @@ module Ethereum
       attr_reader :data
       def initialize(code, message, data = '')
         @data = data
-        super "#{message} (#{code})"
+        super "#{message} (#{code}) #{data}"
       end
     end
 

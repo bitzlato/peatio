@@ -22,6 +22,9 @@ class EthereumGateway
         estimate_gas(from: from_address, to: address, gas_price: gas_price, data: data)
       rescue Ethereum::Client::NoEnoughtAmount
         gas_limits[address] || raise("Unknown gas limit for #{address}")
+      rescue Ethereum::Client::ResponseError => err
+        report_exception err
+        gas_limits[address] || raise("Unknown gas limit for #{address}")
       end.sum
 
       estimated_gas += begin
