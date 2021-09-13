@@ -36,7 +36,7 @@ class EthereumGateway
               gas_limits: gas_limits,
               gas_price: gas_price)
 
-      transcation_gas_limit ||= estimate_gas from: gas_wallet_address, to: target_address, gas_price: gas_price
+      transcation_gas_limit ||= estimate_gas from: gas_wallet_address, to: target_address, gas_price: gas_price, value: 1
 
       required_amount = required_gas * gas_price + transcation_gas_limit * gas_price
       if balance_on_target_address >= required_amount
