@@ -62,6 +62,7 @@ class Deposit < ApplicationRecord
         if currency.coin? && (Peatio::App.config.deposit_funds_locked ||
                               Peatio::App.config.manual_deposit_approval)
           account.plus_locked_funds(amount)
+          update!(is_locked: true)
         else
           account.plus_funds(amount)
         end
@@ -84,6 +85,7 @@ class Deposit < ApplicationRecord
       after do
         if Peatio::App.config.deposit_funds_locked
           account.unlock_funds(amount)
+          update!(is_locked: false)
           record_complete_operations!
         end
       end
@@ -100,6 +102,7 @@ class Deposit < ApplicationRecord
       after do
         account.unlock_funds(account.locked)
         account.sub_funds! amount
+        update!(:is_locked, false)
         # TODO rollback operations
       end
     end
