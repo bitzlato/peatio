@@ -15,7 +15,7 @@ class EthereumGateway
       amounts = load_balances(payment_address.address)
         .select { |currency, amount| is_amount_collectable?(amount) }
         .transform_values { |v| v.base_units }
-        .transform_keys { |currency| currency.contract_address }
+        .transform_keys { |currency| amount.currency.contract_address }
 
       # Remove native currency if there are tokens to transfer
       # We want to collect native currency when there are no collectable tokens in address
