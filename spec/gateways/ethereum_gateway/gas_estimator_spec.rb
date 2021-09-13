@@ -41,7 +41,8 @@ describe ::EthereumGateway::GasEstimator do
         id: 4,
         estimated_gas: estimated_gas3,
         from: from_address,
-        to: to_address
+        to: to_address,
+        value: 1
       )
     end
 
