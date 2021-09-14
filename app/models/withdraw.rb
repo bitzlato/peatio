@@ -198,8 +198,8 @@ class Withdraw < ApplicationRecord
   class << self
     def sum_query
       'SELECT sum(w.sum * c.price) as sum FROM withdraws as w ' \
-      'INNER JOIN currencies as c ON c.id=w.currency_id ' \
-      'where w.member_id = ? AND w.aasm_state IN (?) AND w.created_at > ?;'
+        'INNER JOIN currencies as c ON c.id=w.currency_id ' \
+        'where w.member_id = ? AND w.aasm_state IN (?) AND w.created_at > ?;'
     end
 
     def sanitize_execute_sum_queries(member_id)
@@ -238,8 +238,8 @@ class Withdraw < ApplicationRecord
     # Convert withdraw sums with price from the currency model.
     sum_24_hours, sum_1_month = Withdraw.sanitize_execute_sum_queries(member_id)
 
-    sum_24_hours + sum * currency.get_price <= limits.limit_24_hour &&
-      sum_1_month + sum * currency.get_price <= limits.limit_1_month
+    sum_24_hours + (sum * currency.get_price) <= limits.limit_24_hour &&
+      sum_1_month + (sum * currency.get_price) <= limits.limit_1_month
   end
 
   def confirmations

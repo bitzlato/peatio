@@ -45,7 +45,7 @@ class EthereumGateway
               gas_limits: gas_limits,
               gas_price: gas_price)
 
-      required_amount = required_gas * gas_price + transcation_gas_limit * gas_price
+      required_amount = (required_gas * gas_price) + (transcation_gas_limit * gas_price)
       if balance_on_target_address >= required_amount
         logger.info("No reason to create gas refueling eth transaction #{gas_wallet_address} -> #{target_address}"\
                     " balance_on_target_address: #{balance_on_target_address}, contract_addresses: #{contract_addresses},"\

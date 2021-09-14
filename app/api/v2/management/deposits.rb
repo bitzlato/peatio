@@ -46,8 +46,8 @@ module API
         end
 
         desc 'Creates new fiat deposit with state set to «submitted». ' \
-            'Optionally pass field «state» set to «accepted» if want to load money instantly. ' \
-            'You can also use PUT /fiat_deposits/:id later to load money or cancel deposit.' do
+             'Optionally pass field «state» set to «accepted» if want to load money instantly. ' \
+             'You can also use PUT /fiat_deposits/:id later to load money or cancel deposit.' do
           @settings[:scope] = :write_deposits
           success API::V2::Management::Entities::Deposit
         end

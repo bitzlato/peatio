@@ -103,11 +103,11 @@ module API
           optional :from,
                    type: { value: Time, message: 'admin.filter.range_from_invalid' },
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'\
-                     'If set, only entities FROM the time will be retrieved.'
+                         'If set, only entities FROM the time will be retrieved.'
           optional :to,
                    type: { value: Time, message: 'admin.filter.range_to_invalid' },
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'\
-                     'If set, only entities BEFORE the time will be retrieved.'
+                         'If set, only entities BEFORE the time will be retrieved.'
         end
       end
     end

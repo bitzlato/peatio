@@ -97,7 +97,7 @@ class Transaction < ApplicationRecord
     else
       t.update! attrs
     end
-    Rails.logger.debug("Transaction #{tx.txid}/#{tx.txout} is saved to database with id=#{t.id}")
+    Rails.logger.debug { "Transaction #{tx.txid}/#{tx.txout} is saved to database with id=#{t.id}" }
     t
   rescue ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid => err
     report_exception err, true, tx: tx, record: err.record.as_json

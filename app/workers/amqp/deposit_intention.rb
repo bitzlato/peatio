@@ -12,7 +12,7 @@ module Workers
         unless deposit
           Rails.logger.warn do
             'Unable to make deposit.'\
-            "Deposit with id: #{payload[:deposit_id]} doesn't exist"
+              "Deposit with id: #{payload[:deposit_id]} doesn't exist"
           end
           return
         end

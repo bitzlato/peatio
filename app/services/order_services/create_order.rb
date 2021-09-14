@@ -96,7 +96,7 @@ module OrderServices
       maker_fee = trading_fee.maker
       taker_fee = trading_fee.taker
       locked_value, order_subclass = nil
-      price = ord_type == 'market' ? nil : price
+      price = nil if ord_type == 'market'
 
       member_account.with_lock do
         if symbolized_side == :sell

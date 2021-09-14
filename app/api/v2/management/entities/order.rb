@@ -51,7 +51,7 @@ module API
               documentation: {
                   type: BigDecimal,
                   desc: "Price for each unit. e.g."\
-                  "If you want to sell/buy 1 btc at 3000 usd, the price is '3000.0'"
+                        "If you want to sell/buy 1 btc at 3000 usd, the price is '3000.0'"
               }
           )
 
@@ -68,9 +68,9 @@ module API
               documentation: {
                   type: String,
                   desc: "One of 'wait', 'done', or 'cancel'."\
-                  "An order in 'wait' is an active order, waiting fulfillment;"\
-                  "a 'done' order is an order fulfilled;"\
-                  "'cancel' means the order has been canceled."
+                        "An order in 'wait' is an active order, waiting fulfillment;"\
+                        "a 'done' order is an order fulfilled;"\
+                        "'cancel' means the order has been canceled."
               }
           )
 
@@ -80,7 +80,7 @@ module API
               documentation: {
                   type: String,
                   desc: "The market in which the order is placed, e.g. 'btcusd'."\
-                  "All available markets can be found at /api/v2/markets."
+                        "All available markets can be found at /api/v2/markets."
               }
           )
 
@@ -115,10 +115,10 @@ module API
               documentation: {
                   type: BigDecimal,
                   desc: "The amount user want to sell/buy."\
-                  "An order could be partially executed,"\
-                  "e.g. an order sell 5 btc can be matched with a buy 3 btc order,"\
-                  "left 2 btc to be sold; in this case the order's volume would be '5.0',"\
-                  "its remaining_volume would be '2.0', its executed volume is '3.0'."
+                        "An order could be partially executed,"\
+                        "e.g. an order sell 5 btc can be matched with a buy 3 btc order,"\
+                        "left 2 btc to be sold; in this case the order's volume would be '5.0',"\
+                        "its remaining_volume would be '2.0', its executed volume is '3.0'."
               }
           )
 

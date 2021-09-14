@@ -252,8 +252,8 @@ module Jobs::Cron
         queries = []
 
         q = "SELECT currency_id, member_id, reference_type, reference_id, SUM(credit-debit) as total FROM liabilities " \
-        "WHERE reference_type = 'Transfer' AND reference_id = #{reference_id} " \
-        "GROUP BY currency_id, member_id, reference_type, reference_id"
+            "WHERE reference_type = 'Transfer' AND reference_id = #{reference_id} " \
+            "GROUP BY currency_id, member_id, reference_type, reference_id"
         liabilities = ActiveRecord::Base.connection.select_all(q)
         liabilities.each do |l|
           next if (l['total'] = l['total'].to_d).zero?
@@ -369,12 +369,12 @@ module Jobs::Cron
       def build_query_idx(pnl_currency, currency_id, reference_type, idx)
         if Rails.configuration.database_adapter.downcase == 'PostgreSQL'.downcase
           'INSERT INTO stats_member_pnl_idx (pnl_currency_id, currency_id, reference_type, last_id) ' \
-          "VALUES ('#{pnl_currency.id}','#{currency_id}','#{reference_type}',#{idx}) " \
-          'ON CONFLICT (pnl_currency_id, currency_id, reference_type) DO UPDATE SET ' \
-          "last_id='#{idx}'"
+            "VALUES ('#{pnl_currency.id}','#{currency_id}','#{reference_type}',#{idx}) " \
+            'ON CONFLICT (pnl_currency_id, currency_id, reference_type) DO UPDATE SET ' \
+            "last_id='#{idx}'"
         else
           'REPLACE INTO stats_member_pnl_idx (pnl_currency_id, currency_id, reference_type, last_id) ' \
-          "VALUES ('#{pnl_currency.id}','#{currency_id}','#{reference_type}',#{idx})"
+            "VALUES ('#{pnl_currency.id}','#{currency_id}','#{reference_type}',#{idx})"
         end
       end
 
@@ -396,30 +396,30 @@ module Jobs::Cron
 
         if Rails.configuration.database_adapter.downcase == 'PostgreSQL'.downcase
           'INSERT INTO stats_member_pnl (member_id, pnl_currency_id, currency_id, total_credit, total_credit_fees, total_credit_value, total_debit, total_debit_value, total_debit_fees, total_balance_value, average_balance_price) ' \
-          "VALUES ('#{member_id}','#{pnl_currency.id}','#{currency_id}',#{total_credit},#{total_credit_fees},#{total_credit_value},#{total_debit},#{total_debit_value},#{total_debit_fees},#{total_credit_value},#{average_balance_price}) " \
-          'ON CONFLICT (pnl_currency_id, currency_id, member_id) DO UPDATE SET ' \
-          "total_balance_value = #{total_balance_formula}, " \
-          "average_balance_price = #{avg_balance_formula}, " \
-          'total_credit = stats_member_pnl.total_credit + EXCLUDED.total_credit, ' \
-          'total_credit_fees = stats_member_pnl.total_credit_fees + EXCLUDED.total_credit_fees, ' \
-          'total_debit_fees = stats_member_pnl.total_debit_fees + EXCLUDED.total_debit_fees, ' \
-          'total_credit_value = stats_member_pnl.total_credit_value + EXCLUDED.total_credit_value, ' \
-          'total_debit_value = stats_member_pnl.total_debit_value + EXCLUDED.total_debit_value, ' \
-          'total_debit = stats_member_pnl.total_debit + EXCLUDED.total_debit, ' \
-          'updated_at = NOW()'
+            "VALUES ('#{member_id}','#{pnl_currency.id}','#{currency_id}',#{total_credit},#{total_credit_fees},#{total_credit_value},#{total_debit},#{total_debit_value},#{total_debit_fees},#{total_credit_value},#{average_balance_price}) " \
+            'ON CONFLICT (pnl_currency_id, currency_id, member_id) DO UPDATE SET ' \
+            "total_balance_value = #{total_balance_formula}, " \
+            "average_balance_price = #{avg_balance_formula}, " \
+            'total_credit = stats_member_pnl.total_credit + EXCLUDED.total_credit, ' \
+            'total_credit_fees = stats_member_pnl.total_credit_fees + EXCLUDED.total_credit_fees, ' \
+            'total_debit_fees = stats_member_pnl.total_debit_fees + EXCLUDED.total_debit_fees, ' \
+            'total_credit_value = stats_member_pnl.total_credit_value + EXCLUDED.total_credit_value, ' \
+            'total_debit_value = stats_member_pnl.total_debit_value + EXCLUDED.total_debit_value, ' \
+            'total_debit = stats_member_pnl.total_debit + EXCLUDED.total_debit, ' \
+            'updated_at = NOW()'
         else
           'INSERT INTO stats_member_pnl (member_id, pnl_currency_id, currency_id, total_credit, total_credit_fees, total_credit_value, total_debit, total_debit_value, total_debit_fees, total_balance_value, average_balance_price) ' \
-          "VALUES (#{member_id},'#{pnl_currency.id}','#{currency_id}',#{total_credit},#{total_credit_fees},#{total_credit_value},#{total_debit},#{total_debit_value},#{total_debit_fees},#{total_credit_value},#{average_balance_price}) " \
-          'ON DUPLICATE KEY UPDATE ' \
-          'total_balance_value = GREATEST(0, total_balance_value + VALUES(total_balance_value) - IF(VALUES(total_debit) = 0, 0, (VALUES(total_debit) + VALUES(total_debit_fees)) * average_balance_price)), ' \
-          "average_balance_price = #{avg_balance_formula}, " \
-          'total_credit = total_credit + VALUES(total_credit), ' \
-          'total_credit_fees = total_credit_fees + VALUES(total_credit_fees), ' \
-          'total_debit_fees = total_debit_fees + VALUES(total_debit_fees), ' \
-          'total_credit_value = total_credit_value + VALUES(total_credit_value), ' \
-          'total_debit_value = total_debit_value + VALUES(total_debit_value), ' \
-          'total_debit = total_debit + VALUES(total_debit), ' \
-          'updated_at = NOW()'
+            "VALUES (#{member_id},'#{pnl_currency.id}','#{currency_id}',#{total_credit},#{total_credit_fees},#{total_credit_value},#{total_debit},#{total_debit_value},#{total_debit_fees},#{total_credit_value},#{average_balance_price}) " \
+            'ON DUPLICATE KEY UPDATE ' \
+            'total_balance_value = GREATEST(0, total_balance_value + VALUES(total_balance_value) - IF(VALUES(total_debit) = 0, 0, (VALUES(total_debit) + VALUES(total_debit_fees)) * average_balance_price)), ' \
+            "average_balance_price = #{avg_balance_formula}, " \
+            'total_credit = total_credit + VALUES(total_credit), ' \
+            'total_credit_fees = total_credit_fees + VALUES(total_credit_fees), ' \
+            'total_debit_fees = total_debit_fees + VALUES(total_debit_fees), ' \
+            'total_credit_value = total_credit_value + VALUES(total_credit_value), ' \
+            'total_debit_value = total_debit_value + VALUES(total_debit_value), ' \
+            'total_debit = total_debit + VALUES(total_debit), ' \
+            'updated_at = NOW()'
         end
       end
 

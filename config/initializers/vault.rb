@@ -13,7 +13,9 @@ Vault::Rails.configure do |config|
   config.application = ENV.fetch('VAULT_APP_NAME', 'peatio')
 end
 
-if ENV['VAULT_TOKEN'].to_s != ''
+if ENV['VAULT_TOKEN'].to_s == ''
+  Rails.logger.warn 'Environment variable VAULT_TOKEN is missing'
+else
   def renew_process
     token = Vault.auth_token.lookup(Vault.token)
     time = token.data[:ttl] * (1 + rand) * 0.1
@@ -38,6 +40,4 @@ if ENV['VAULT_TOKEN'].to_s != ''
   else
     Rails.logger.info '[VAULT] Token is not renewable'
   end
-else
-  Rails.logger.warn 'Environment variable VAULT_TOKEN is missing'
 end

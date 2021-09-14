@@ -102,7 +102,7 @@ class EthereumGateway
 
     def invalid_eth_transaction?(block_txn)
       block_txn.fetch('to').blank? \
-        || block_txn.fetch('value').hex.to_d <= 0 && block_txn.fetch('input').hex <= 0
+        || (block_txn.fetch('value').hex.to_d <= 0 && block_txn.fetch('input').hex <= 0)
     end
 
     # The usual case is a function call transfer(address,uint256) with footprint 'a9059cbb'

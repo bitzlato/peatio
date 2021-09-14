@@ -475,7 +475,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
       api_post endpoint, params: beneficiary_data, token: token
       expect(response.status).to eq 201
       id = response_body['id']
-      expect(Beneficiary.find_by!(id: id).state).to eq 'pending'
+      expect(Beneficiary.find(id).state).to eq 'pending'
     end
   end
 end

@@ -85,6 +85,7 @@ end
 
 group :development do
   gem 'rubocop'
+  gem "rubocop-rspec", "~> 2.4"
   gem 'rubocop-rails'
   gem 'foreman'
   gem 'annotate'
@@ -150,4 +151,3 @@ gem "request_store", "~> 1.5"
 
 gem "faraday-detailed_logger", "~> 2.3"
 gem "faraday_curl", "~> 0.0.2"
-

@@ -54,11 +54,8 @@ class Withdrawer
         message: 'The currency API accepted withdraw and assigned transaction ID.'
       withdraw.dispatch!
 
-    rescue Busy => e
-      # TODO repeat withdraw
-      withdraw.fail!
-      logger.warn e.as_json.merge( id: withdraw.id )
-    rescue Fail => e
+    rescue Busy, Fail => e
+      # TODO repeat withdraw for Busy
       withdraw.fail!
       logger.warn e.as_json.merge( id: withdraw.id )
     rescue StandardError => e

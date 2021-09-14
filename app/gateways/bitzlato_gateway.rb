@@ -77,7 +77,7 @@ class BitzlatoGateway < AbstractGateway
         next
       end
       unless withdraw.confirming?
-        Rails.logger.debug("Withdraw #{withdraw.id} has skippable status (#{withdraw.aasm_state})")
+        Rails.logger.debug { "Withdraw #{withdraw.id} has skippable status (#{withdraw.aasm_state})" }
         next
       end
 

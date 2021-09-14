@@ -75,7 +75,7 @@ module API
           post do
             declared_params = declared(params)
             member   = Member.find_by!(uid: params[:uid])
-            currency = Currency.find_by!(id: params[:currency_id])
+            currency = Currency.find(params[:currency_id])
 
             if !currency.withdrawal_enabled?
               error!({ errors: ['management.currency.withdrawal_disabled'] }, 422)

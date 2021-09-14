@@ -16,8 +16,8 @@ describe API::V2::CoinMarketCap::Ticker, type: :request do
       before do
         Currency.ordered.coins.each.with_index(1) do |currency, index|
           stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                                                                                    "listing_status=active&"\
-                                                                                    "symbol=#{currency.id}")
+                             "listing_status=active&"\
+                             "symbol=#{currency.id}")
             .to_return(body:
               {
                 'status'=>

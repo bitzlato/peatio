@@ -158,7 +158,7 @@ module API
           admin_authorize! :create, ::PaymentAddress
 
           member   = Member.find_by!(uid: params[:uid])
-          currency = Currency.find_by!(id: params[:currency_id])
+          currency = Currency.find(params[:currency_id])
           wallet   = Wallet.active_deposit_wallet(currency.id)
 
           unless wallet.present?

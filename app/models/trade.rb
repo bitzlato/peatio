@@ -220,8 +220,8 @@ class Trade < ApplicationRecord
   end
 
   def record_liability_credit!
-    seller_income = total - total * order_fee(sell_order)
-    buyer_income = amount - amount * order_fee(buy_order)
+    seller_income = total - (total * order_fee(sell_order))
+    buyer_income = amount - (amount * order_fee(buy_order))
 
     # Credit main fiat/crypto Liability account for member who created ask.
     Operations::Liability.credit!(
@@ -281,7 +281,7 @@ class Trade < ApplicationRecord
 
   def revert_sell_side!
     seller_outcome = amount
-    seller_income = total - total * order_fee(sell_order)
+    seller_income = total - (total * order_fee(sell_order))
 
     # Revert Trade for Sell side
     # Debit main fiat/crypto Liability account for member who created bid.
@@ -307,7 +307,7 @@ class Trade < ApplicationRecord
 
   def revert_buy_side!
     buyer_outcome = total
-    buyer_income = amount - amount * order_fee(buy_order)
+    buyer_income = amount - (amount * order_fee(buy_order))
 
     # Revert Trade for Buy side
     # Debit main fiat/crypto Liability account for member who created ask

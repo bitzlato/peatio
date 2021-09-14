@@ -172,7 +172,7 @@ describe Bitcoin::Blockchain do
           .to_return(body: { result: 1489174,
                              error:  nil,
                              id:     nil }.to_json)
-          .with(headers: { 'Connection': 'keep-alive',
+          .with(headers: { Connection: 'keep-alive',
                            'Keep-Alive': '30' })
 
       blockchain.latest_block_number

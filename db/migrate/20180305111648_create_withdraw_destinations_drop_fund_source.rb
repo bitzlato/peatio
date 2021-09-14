@@ -11,7 +11,8 @@ class CreateWithdrawDestinationsDropFundSource < ActiveRecord::Migration[4.2]
       t.timestamps            null: false
     end
 
-    add_column :withdraws, :destination_id, :integer, after: :id, null: true, index: true
+    add_column :withdraws, :destination_id, :integer, after: :id, null: true
+    add_index :withdraws, :destination_id
 
     migrate_existing_data
 

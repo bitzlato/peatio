@@ -59,7 +59,7 @@ module API
             current_user
               .beneficiaries
               .available_to_member
-              .find_by!(id: params[:id])
+              .find(params[:id])
               .yield_self { |b| present b, with: API::V2::Entities::Beneficiary }
           end
 
@@ -91,7 +91,7 @@ module API
 
             declared_params = declared(params)
 
-            currency = Currency.find_by!(id: params[:currency_id])
+            currency = Currency.find(params[:currency_id])
 
             if !currency.withdrawal_enabled?
               error!({ errors: ['account.currency.withdrawal_disabled'] }, 422)
@@ -133,7 +133,7 @@ module API
             beneficiary = current_user
                               .beneficiaries
                               .available_to_member
-                              .find_by!(id: params[:id])
+                              .find(params[:id])
 
             unless beneficiary.pending?
               error!({ errors: ['account.beneficiary.cant_resend'] }, 422)
@@ -166,7 +166,7 @@ module API
             beneficiary = current_user
                             .beneficiaries
                             .available_to_member
-                            .find_by!(id: params[:id])
+                            .find(params[:id])
 
             unless beneficiary.pending?
               error!({ errors: ['account.beneficiary.cant_activate'] }, 422)
@@ -192,7 +192,7 @@ module API
             beneficiary = current_user
                             .beneficiaries
                             .available_to_member
-                            .find_by!(id: params[:id])
+                            .find(params[:id])
 
             if beneficiary.archive!
               body false

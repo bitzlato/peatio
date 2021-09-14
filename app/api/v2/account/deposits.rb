@@ -105,8 +105,8 @@ module API
         end
 
         desc 'Returns deposit address for account you want to deposit to by currency. ' \
-          'The address may be blank because address generation process is still in progress. ' \
-          'If this case you should try again later.',
+             'The address may be blank because address generation process is still in progress. ' \
+             'If this case you should try again later.',
           success: API::V2::Entities::Deposit
         params do
           requires :currency,

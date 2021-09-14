@@ -373,8 +373,8 @@ describe API::V2::Management::Beneficiaries, type: :request do
         request
         expect(response.status).to eq 201
         id = response_body['id']
-        expect(Beneficiary.find_by!(id: id).state).to eq 'active'
-        expect(Beneficiary.find_by!(id: id).data).to eq response_body['data']
+        expect(Beneficiary.find(id).state).to eq 'active'
+        expect(Beneficiary.find(id).data).to eq response_body['data']
       end
     end
   end

@@ -37,11 +37,11 @@ module API
             optional :time_from,
                     type: Integer,
                     desc: "An integer represents the seconds elapsed since Unix epoch."\
-                        "If set, only operations after the time will be returned."
+                          "If set, only operations after the time will be returned."
             optional :time_to,
                     type: Integer,
                     desc: "An integer represents the seconds elapsed since Unix epoch."\
-                       "If set, only operations before the time will be returned."
+                          "If set, only operations before the time will be returned."
             optional :reference_type,
                     type: String,
                     desc: "The reference type for operations filtering"
@@ -123,11 +123,11 @@ module API
             optional :time_from,
                      type: Integer,
                      desc: "An integer represents the seconds elapsed since Unix epoch."\
-                         "If set, only operations after the time will be returned."
+                           "If set, only operations after the time will be returned."
             optional :time_to,
                      type: Integer,
                      desc: "An integer represents the seconds elapsed since Unix epoch."\
-                        "If set, only operations before the time will be returned."
+                           "If set, only operations before the time will be returned."
             optional :page,
                      type: Integer,
                      default: 1,

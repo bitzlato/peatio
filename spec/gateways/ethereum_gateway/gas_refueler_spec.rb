@@ -78,7 +78,7 @@ describe ::EthereumGateway::GasRefueler do
 
     context 'and it has no enough ethereum balance' do
       before do
-        stub_personal_sendTransaction(
+        stub_personal_send_transaction(
           value:        value,
           from_address: from_address,
           to_address:   to_address,

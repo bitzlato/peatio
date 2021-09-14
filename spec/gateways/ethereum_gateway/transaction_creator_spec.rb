@@ -20,7 +20,7 @@ describe ::EthereumGateway::TransactionCreator do
 
   before do
     stub_gas_fetching gas_price: fetched_gas_price, id: 1
-    stub_personal_sendTransaction
+    stub_personal_send_transaction
   end
 
   let(:request_body) do
@@ -36,7 +36,7 @@ describe ::EthereumGateway::TransactionCreator do
       }, secret] }
   end
 
-  def stub_personal_sendTransaction
+  def stub_personal_send_transaction
     stub_request(:post, uri)
       .with(body: request_body.to_json)
       .to_return(body: { result: txid, error: nil, id: 1 }.to_json)
@@ -82,7 +82,7 @@ describe ::EthereumGateway::TransactionCreator do
     end
     context 'transaction with subtract fees' do
       let(:transaction_gas_price) { fetched_gas_price }
-      let(:value) { amount - gas_limit * transaction_gas_price }
+      let(:value) { amount - (gas_limit * transaction_gas_price) }
       let(:subtract_fee) { true }
       it { expect(result.as_json.symbolize_keys).to eq(result_transaction_hash) }
     end
@@ -96,7 +96,7 @@ describe ::EthereumGateway::TransactionCreator do
     context 'custom gas_price and subcstract fees' do
       let(:gas_factor) { 1.1 }
       let(:transaction_gas_price) { (fetched_gas_price * gas_factor).to_i }
-      let(:value) { amount - gas_limit * transaction_gas_price }
+      let(:value) { amount - (gas_limit * transaction_gas_price) }
       let(:subtract_fee) { true }
       it { expect(result.as_json.symbolize_keys).to eq(result_transaction_hash) }
     end

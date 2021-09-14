@@ -163,7 +163,7 @@ describe Matching::Executor do
 
     it 'should save unused amount in order locked attribute' do
       subject.execute!
-      expect(bid.reload.locked).to eq price * volume - (price - 1) * volume
+      expect(bid.reload.locked).to eq (price * volume) - ((price - 1) * volume)
     end
   end
 

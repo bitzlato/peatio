@@ -13,31 +13,31 @@ describe Bitzlato::Wallet do
       let(:response) do
           [
             {
-              "publicName": "dapi",
-              "links": nil,
-              "amount": 0.21,
-              "cryptocurrency": "BTC",
-              "type": "auto",
-              "status": "done",
-              "date": 1616396531426
+              publicName: "dapi",
+              links: nil,
+              amount: 0.21,
+              cryptocurrency: "BTC",
+              type: "auto",
+              status: "done",
+              date: 1616396531426
             },
             {
-              "publicName": "dapi",
-              "links": nil,
-              "amount": 0.2,
-              "cryptocurrency": "BTC",
-              "type": "auto",
-              "status": "done",
-              "date": 1616396505639
+              publicName: "dapi",
+              links: nil,
+              amount: 0.2,
+              cryptocurrency: "BTC",
+              type: "auto",
+              status: "done",
+              date: 1616396505639
             },
             {
-              "publicName": "dapi",
-              "links": nil,
-              "amount": 0.19,
-              "cryptocurrency": "BTC",
-              "type": "auto",
-              "status": "done",
-              "date": 1616396365270
+              publicName: "dapi",
+              links: nil,
+              amount: 0.19,
+              cryptocurrency: "BTC",
+              type: "auto",
+              status: "done",
+              date: 1616396365270
             }
           ]
       end
@@ -54,55 +54,55 @@ describe Bitzlato::Wallet do
     context :poll_vouchers do
       let(:response) do
         {
-          "total": 2,
-          "data": [
+          total: 2,
+          data: [
             {
-              "deepLinkCode": "c_c8e8f34d2fff9f5dbc222939feeefbe5",
-              "currency": {
-                "code": "USD",
-                "amount": "5385"
+              deepLinkCode: "c_c8e8f34d2fff9f5dbc222939feeefbe5",
+              currency: {
+                code: "USD",
+                amount: "5385"
               },
-              "cryptocurrency": {
-                "code": "BTC",
-                "amount": "1"
+              cryptocurrency: {
+                code: "BTC",
+                amount: "1"
               },
-              "createdAt": 1616127762606,
-              "links": [
+              createdAt: 1616127762606,
+              links: [
                 {
-                  "type": "telegram bot @BTC_STAGE_BOT",
-                  "url": "https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                  type: "telegram bot @BTC_STAGE_BOT",
+                  url: "https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
                 },
                 {
-                  "type": "web exchange",
-                  "url": "https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                  type: "web exchange",
+                  url: "https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
                 }
               ],
-              "status": "none",
-              "cashedBy": "EasySammieFrey"
+              status: "none",
+              cashedBy: "EasySammieFrey"
             },
             {
-              "deepLinkCode": "c_c8e8f34d2fff9f5dbc222939feeefbe5",
-              "currency": {
-                "code": "USD",
-                "amount": "5385"
+              deepLinkCode: "c_c8e8f34d2fff9f5dbc222939feeefbe5",
+              currency: {
+                code: "USD",
+                amount: "5385"
               },
-              "cryptocurrency": {
-                "code": "BTC",
-                "amount": "0.0931216"
+              cryptocurrency: {
+                code: "BTC",
+                amount: "0.0931216"
               },
-              "createdAt": 1616127762606,
-              "links": [
+              createdAt: 1616127762606,
+              links: [
                 {
-                  "type": "telegram bot @BTC_STAGE_BOT",
-                  "url": "https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                  type: "telegram bot @BTC_STAGE_BOT",
+                  url: "https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
                 },
                 {
-                  "type": "web exchange",
-                  "url": "https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                  type: "web exchange",
+                  url: "https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
                 }
               ],
-              "status": "cashed",
-              "cashedBy": "EasySammieFrey"
+              status: "cashed",
+              cashedBy: "EasySammieFrey"
             },
           ] }
       end
@@ -186,7 +186,7 @@ describe Bitzlato::Wallet do
 
         it 'create voucher' do
           stub_request(:post, uri + '/api/p2p/vouchers/')
-            .with(body: {"cryptocurrency":"BTC","amount":123,"method":"crypto", 'currency': 'USD'}.to_json)
+            .with(body: {cryptocurrency:"BTC",amount:123,method:"crypto", currency: 'USD'}.to_json)
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
 
@@ -219,7 +219,7 @@ describe Bitzlato::Wallet do
 
       it 'should create an invoice' do
         stub_request(:post, uri + '/api/gate/v1/invoices/')
-          .with(body: {"cryptocurrency":"BTC","amount":123,"comment":"Exchange service deposit for account uid12312"}.to_json)
+          .with(body: {cryptocurrency:"BTC",amount:123,comment:"Exchange service deposit for account uid12312"}.to_json)
           .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
         result = wallet.create_invoice!(comment: 'Exchange service deposit for account uid12312', amount: 123, currency_id: 'BTC')

@@ -365,23 +365,23 @@ describe API::V2::Public::Markets, type: :request do
 
       context 'with time_from' do
         it 'smaller than first point timestamp' do
-          load_k_line(time_from: first_point.first - 2 * point_period)
+          load_k_line(time_from: first_point.first - (2 * point_period))
           expect(response_body).to eq points[0...points_default_limit]
         end
 
         it 'bigger than last point timestamp' do
-          load_k_line(time_from: last_point.first + 2 * point_period)
+          load_k_line(time_from: last_point.first + (2 * point_period))
           expect(response_body).to eq []
         end
 
         it 'in range of first and last timestamp' do
-          time_from = first_point.first + 10 * point_period
+          time_from = first_point.first + (10 * point_period)
           load_k_line(time_from: time_from)
           expect(response_body).to eq points[10..-1]
           # First point timestamp should be eq to time_from.
           expect(response_body.first.first).to eq time_from
 
-          time_from = first_point.first + 22 * point_period
+          time_from = first_point.first + (22 * point_period)
           load_k_line(time_from: time_from)
           expect(response_body).to eq points[22..-1]
           # First point timestamp should be eq to time_from.
@@ -391,21 +391,21 @@ describe API::V2::Public::Markets, type: :request do
 
       context 'with time_to' do
         it 'smaller than first point timestamp' do
-          load_k_line(time_to: first_point.first - 2 * point_period)
+          load_k_line(time_to: first_point.first - (2 * point_period))
           expect(response_body).to eq []
         end
 
         it 'bigger than last point timestamp' do
-          load_k_line(time_to: last_point.first + 2 * point_period)
+          load_k_line(time_to: last_point.first + (2 * point_period))
           # Returns (limit - 2) left points.
           expect(response_body).to eq points[-points_default_limit..]
         end
 
         it 'in range of first and last timestamp' do
-          load_k_line(time_to: first_point.first + 1 * point_period)
+          load_k_line(time_to: first_point.first + (1 * point_period))
           expect(response_body).to eq points[0..1]
 
-          load_k_line(time_to: first_point.first + 20 * point_period)
+          load_k_line(time_to: first_point.first + (20 * point_period))
           expect(response_body).to eq points[0..20]
         end
       end
@@ -413,32 +413,32 @@ describe API::V2::Public::Markets, type: :request do
       context 'with time_from and time_to' do
 
         it 'time_to less than time_from' do
-          time_from = first_point.first + 2 * point_period
-          time_to = first_point.first - 2 * point_period
+          time_from = first_point.first + (2 * point_period)
+          time_to = first_point.first - (2 * point_period)
 
           load_k_line(time_from: time_from, time_to: time_to)
           expect(response_body).to eq []
         end
 
         it 'both less than first point timestamp' do
-          time_from = first_point.first - 10 * point_period
-          time_to = first_point.first - 4 * point_period
+          time_from = first_point.first - (10 * point_period)
+          time_to = first_point.first - (4 * point_period)
 
           load_k_line(time_from: time_from, time_to: time_to)
           expect(response_body).to eq []
         end
 
         it 'both bigger than last point timestamp' do
-          time_from = last_point.first + 2 * point_period
-          time_to = last_point.first + 12 * point_period
+          time_from = last_point.first + (2 * point_period)
+          time_to = last_point.first + (12 * point_period)
 
           load_k_line(time_from: time_from, time_to: time_to)
           expect(response_body).to eq []
         end
 
         it 'both in range of first and last timestamp' do
-          time_from = first_point.first + 10 * point_period
-          time_to = last_point.first - 10 * point_period
+          time_from = first_point.first + (10 * point_period)
+          time_to = last_point.first - (10 * point_period)
 
           load_k_line(time_from: time_from, time_to: time_to)
           # Points timestamps should be in range time_from..time_to (limit is bigger).
@@ -469,13 +469,13 @@ describe API::V2::Public::Markets, type: :request do
 
       context 'with limits, time_from and time_to' do
         it 'ignores limit' do
-          time_from = first_point.first + 1 * point_period
-          time_to   = last_point.first - 1 * point_period
+          time_from = first_point.first + (1 * point_period)
+          time_to   = last_point.first - (1 * point_period)
           limit     = 5
           load_k_line(time_from: time_from, time_to: time_to, limit: limit)
 
           # All point in time_from..time_to including time_to (time_to - time_from) / 60 + 1.
-          expect(response_body.count).to eq (time_to - time_from) / 60 + 1
+          expect(response_body.count).to eq ((time_to - time_from) / 60) + 1
           # Points timestamps should be in range time_from..time_to.
           expect(response_body).to eq\
             points.select { |p| p.first >= time_from && p.first <= time_to }
@@ -486,7 +486,7 @@ describe API::V2::Public::Markets, type: :request do
 
       context 'with limits and time_from' do
         it 'returns n right points from time_from (adds limit to time_from)' do
-          time_from = first_point.first + 5 * point_period
+          time_from = first_point.first + (5 * point_period)
           limit     = 10
           load_k_line(time_from: time_from, limit: limit)
 

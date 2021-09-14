@@ -9,8 +9,8 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
         before do
           Currency.coins.each do |currency|
             stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                                                                                      "listing_status=active&"\
-                                                                                      "symbol=#{currency.id}")
+                               "listing_status=active&"\
+                               "symbol=#{currency.id}")
               .to_return(body:
                 {
                   'status'=>
@@ -47,8 +47,8 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
         before do
           Currency.coins.each do |currency|
             stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                                                                                      "listing_status=active&"\
-                                                                                      "symbol=#{currency.id}")
+                               "listing_status=active&"\
+                               "symbol=#{currency.id}")
               .to_return(status: 400, body:
                 {
                   'status'=>
@@ -79,8 +79,8 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
           before do
             Currency.coins.each do |currency|
               stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                                                                                        "listing_status=active&"\
-                                                                                        "symbol=#{currency.id}")
+                                 "listing_status=active&"\
+                                 "symbol=#{currency.id}")
                   .to_raise(Faraday::Error)
             end
           end

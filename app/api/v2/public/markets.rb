@@ -116,7 +116,7 @@ module API
             optional :timestamp,
                      type: { value: Integer, message: 'public.trade.non_integer_timestamp' },
                      desc: "An integer represents the seconds elapsed since Unix epoch."\
-                       "If set, only trades executed before the time will be returned."
+                           "If set, only trades executed before the time will be returned."
             optional :order_by,
                      type: String,
                      values: { value: %w(asc desc), message: 'public.trade.invalid_order_by' },

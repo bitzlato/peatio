@@ -89,7 +89,7 @@ module API
           user_authorize! :read, ::Order
 
           if params[:id].match?(/\A[0-9]+\z/)
-            order = current_user.orders.find_by!(id: params[:id])
+            order = current_user.orders.find(params[:id])
           elsif UUID.validate(params[:id])
             order = current_user.orders.find_by!(uuid: params[:id])
           else
@@ -122,7 +122,7 @@ module API
 
           begin
             if params[:id].match?(/\A[0-9]+\z/)
-              order = current_user.orders.spot.find_by!(id: params[:id])
+              order = current_user.orders.spot.find(params[:id])
             elsif UUID.validate(params[:id])
               order = current_user.orders.spot.find_by!(uuid: params[:id])
             else

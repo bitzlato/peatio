@@ -63,10 +63,10 @@ describe ::EthereumGateway::GasEstimator do
     before do
       stub_gas_fetching gas_price: gas_price, id: 1
       body = {
-        "jsonrpc": '2.0',
-        "id": 2,
-        "method": 'eth_estimateGas',
-        "params": [
+        jsonrpc: '2.0',
+        id: 2,
+        method: 'eth_estimateGas',
+        params: [
           {
             gasPrice: '0x'+ gas_price.to_s(16),
             from: from_address,
