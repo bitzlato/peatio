@@ -160,7 +160,7 @@ module API
           currency = Currency.find(params[:currency_id])
           wallet   = Wallet.active_deposit_wallet(currency.id)
 
-          error!({ errors: ['admin.deposit.wallet_not_found'] }, 422) unless wallet.present?
+          error!({ errors: ['admin.deposit.wallet_not_found'] }, 422) if wallet.blank?
 
           if currency.deposit_enabled
             payment_address = member.payment_address(wallet.blockchain)

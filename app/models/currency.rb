@@ -107,7 +107,7 @@ class Currency < ApplicationRecord
   before_validation { self.code = code.downcase }
   before_validation { self.deposit_fee = 0 unless fiat? }
   before_validation(if: :token?) { self.blockchain ||= parent.blockchain }
-  before_validation(on: :create) { self.position = Currency.count + 1 unless position.present? }
+  before_validation(on: :create) { self.position = Currency.count + 1 if position.blank? }
 
   before_validation do
     self.erc20_contract_address = erc20_contract_address.try(:downcase) if erc20_contract_address.present?

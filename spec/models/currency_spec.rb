@@ -20,7 +20,7 @@ describe Currency do
 
     it 'validates position' do
       currency.position = 0
-      expect(currency.valid?).to be_falsey
+      expect(currency).not_to be_valid
       expect(currency.errors[:position].size).to eq(1)
     end
 
@@ -49,11 +49,11 @@ describe Currency do
     # token configuration
     it 'validate parent_id value' do
       currency.parent_id = fiat_currency.id
-      expect(currency.valid?).to be_falsey
+      expect(currency).not_to be_valid
       expect(currency.errors[:parent_id]).to eq ['wrong fiat/crypto nesting']
 
       currency.parent_id = trst_currency.id
-      expect(currency.valid?).to be_falsey
+      expect(currency).not_to be_valid
       expect(currency.errors[:parent_id]).to eq ['wrong parent currency']
     end
   end
@@ -90,7 +90,7 @@ describe Currency do
     let!(:fake_currency) { create(:currency, :btc, id: 'fake') }
 
     it 'does not update the type' do
-      fake_currency.update_attributes type: 'fiat'
+      fake_currency.update type: 'fiat'
       expect(fake_currency.reload.type).to eq(fake_currency.type)
     end
   end

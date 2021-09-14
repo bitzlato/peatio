@@ -694,8 +694,8 @@ describe API::V2::Public::Markets, type: :request do
     before do
       ask_trade.write_to_influx
       bid_trade.write_to_influx
-      member.get_account(:btc).update_attributes(balance: 12.13,   locked: 3.14)
-      member.get_account(:usd).update_attributes(balance: 2014.47, locked: 0)
+      member.get_account(:btc).update(balance: 12.13,   locked: 3.14)
+      member.get_account(:usd).update(balance: 2014.47, locked: 0)
     end
 
     it 'returns all recent trades' do

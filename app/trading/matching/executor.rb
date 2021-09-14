@@ -117,7 +117,7 @@ module Matching
           end
 
           updates = record.changed_attributes.map do |(attribute, _)|
-            if Order === record
+            if record.is_a?(Order)
               value = record.public_send(attribute)
               [table[attribute], ::Order::STATES.with_indifferent_access.fetch(value, value)]
             else
@@ -191,7 +191,7 @@ module Matching
     end
 
     def strike(trade, order, outcome_account, income_account)
-      outcome_value, income_value = OrderAsk === order ? [trade.amount, trade.total] : [trade.total, trade.amount]
+      outcome_value, income_value = order.is_a?(OrderAsk) ? [trade.amount, trade.total] : [trade.total, trade.amount]
       fee = income_value * trade.order_fee(order)
       real_income_value = income_value - fee
 

@@ -7,13 +7,13 @@ describe WithdrawLimit, 'Validations' do
     context 'nil group' do
       subject { build(:withdraw_limit, group: nil) }
 
-      it { expect(subject.valid?).to be_falsey }
+      it { expect(subject).not_to be_valid }
     end
 
     context 'empty string group' do
       subject { build(:withdraw_limit, group: '') }
 
-      it { expect(subject.valid?).to be_falsey }
+      it { expect(subject).not_to be_valid }
     end
   end
 
@@ -24,13 +24,13 @@ describe WithdrawLimit, 'Validations' do
       context 'same group' do
         subject { build(:withdraw_limit, kyc_level: 1, group: 'vip-1') }
 
-        it { expect(subject.valid?).to be_falsey }
+        it { expect(subject).not_to be_valid }
       end
 
       context 'different group' do
         subject { build(:withdraw_limit, kyc_level: 1, group: 'vip-2') }
 
-        it { expect(subject.valid?).to be_truthy }
+        it { expect(subject).to be_valid }
       end
 
       context ':any group' do
@@ -38,7 +38,7 @@ describe WithdrawLimit, 'Validations' do
 
         before { create(:withdraw_limit, kyc_level: 1, group: :any) }
 
-        it { expect(subject.valid?).to be_falsey }
+        it { expect(subject).not_to be_valid }
       end
     end
   end
@@ -48,14 +48,14 @@ describe WithdrawLimit, 'Validations' do
       subject { build(:withdraw_limit, limit_24_hour: '1', limit_1_month: '1') }
 
       it do
-        expect(subject.valid?).to be_truthy
+        expect(subject).to be_valid
       end
     end
 
     context 'valid withdraw_limit' do
       subject { build(:withdraw_limit, limit_24_hour: 0.1, limit_1_month: 0.2) }
 
-      it { expect(subject.valid?).to be_truthy }
+      it { expect(subject).to be_valid }
     end
   end
 end

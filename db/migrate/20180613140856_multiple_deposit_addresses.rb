@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MultipleDepositAddresses < ActiveRecord::Migration[4.2]
-  class Currency < ActiveRecord::Base
+  class Currency < ApplicationRecord
     serialize :options, JSON
     self.inheritance_column = nil
   end

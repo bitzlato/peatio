@@ -17,7 +17,7 @@ describe API::V2::Management::Entities::Withdraw do
       expect(subject.amount).to eq record.amount.to_s
       expect(subject.note).to eq record.note
       expect(subject.fee).to eq record.fee.to_s
-      expect(subject.respond_to?(:txid)).to be_falsey
+      expect(subject).not_to respond_to(:txid)
       expect(subject.state).to eq record.aasm_state
       expect(subject.created_at).to eq record.created_at.iso8601
     end

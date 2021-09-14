@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ReplaceDepositConfirmationsWithMinConfirmations < ActiveRecord::Migration[4.2]
-  class Currency < ActiveRecord::Base
+  class Currency < ApplicationRecord
     serialize :options, JSON
     self.table_name = 'currencies'
     self.inheritance_column = :disabled

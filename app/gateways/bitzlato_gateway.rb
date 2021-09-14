@@ -132,7 +132,7 @@ class BitzlatoGateway < AbstractGateway
 
   # Save beneficiary for future withdraws
   def save_beneficiary(deposit, address)
-    unless address.present?
+    if address.blank?
       Rails.logger.warn("Deposit #{deposit.id} has no address to save beneficiaries")
       return
     end

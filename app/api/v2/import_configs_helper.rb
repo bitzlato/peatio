@@ -4,7 +4,7 @@ module API
   module V2
     class ImportConfigsHelper
       def process(params)
-        YAML.load(params[:tempfile]).sort.each do |row|
+        YAML.safe_load(params[:tempfile]).sort.each do |row|
           type = row[0]
           data = row[1]
           next unless type

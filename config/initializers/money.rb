@@ -30,7 +30,7 @@ class Money
       end
 
       def all
-        ::Currency.ordered.map &:money_currency
+        ::Currency.ordered.map(&:money_currency)
       end
 
       def new(id)

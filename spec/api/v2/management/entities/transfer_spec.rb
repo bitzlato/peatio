@@ -16,7 +16,7 @@ describe API::V2::Management::Entities::Transfer do
 
     it do
       ::Operations::Account::TYPES.map(&:pluralize).each do |op_t|
-        expect(subject.respond_to?(op_t)).to be_truthy
+        expect(subject).to respond_to(op_t)
       end
     end
 
@@ -49,13 +49,13 @@ describe API::V2::Management::Entities::Transfer do
     let(:record) { create(:transfer, :with_liabilities) }
 
     it do
-      expect(subject.respond_to?(:liabilities)).to be_truthy
+      expect(subject).to respond_to(:liabilities)
     end
 
     it do
       # TYPES - 'liabilities' = PLATFORM_TYPES
       ::Operations::Account::PLATFORM_TYPES.map(&:pluralize).each do |op_t|
-        expect(subject.respond_to?(op_t.to_sym)).to be_falsey
+        expect(subject).not_to respond_to(op_t.to_sym)
       end
     end
   end
@@ -63,7 +63,7 @@ describe API::V2::Management::Entities::Transfer do
   context 'without operations' do
     it do
       ::Operations::Account::TYPES.map(&:pluralize).each do |op_t|
-        expect(subject.respond_to?(op_t)).to be_falsey
+        expect(subject).not_to respond_to(op_t)
       end
     end
   end

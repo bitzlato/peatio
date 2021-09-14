@@ -5,13 +5,13 @@ module APITestHelpers
 
   def post_json(destination, body, headers = {})
     post destination,
-         params: String === body ? body : body.to_json,
+         params: body.is_a?(String) ? body : body.to_json,
          headers: headers.reverse_merge('Content-Type' => 'application/json')
   end
 
   def put_json(destination, body, headers = {})
     put destination,
-        params: String === body ? body : body.to_json,
+        params: body.is_a?(String) ? body : body.to_json,
         headers: headers.reverse_merge('Content-Type' => 'application/json')
   end
 

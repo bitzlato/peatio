@@ -22,7 +22,7 @@ module API
           next unless service.adapter.respond_to?(:trigger_webhook_event)
 
           transactions = service.trigger_webhook_event(request)
-          next unless transactions.present?
+          next if transactions.blank?
 
           # Process all deposit transactions
           accepted_deposits = []
@@ -47,7 +47,7 @@ module API
 
           event = service.trigger_webhook_event(request)
 
-          next unless event.present?
+          next if event.blank?
 
           create_address(event[:address_id], event[:address], event[:currency_id])
         end
@@ -62,7 +62,7 @@ module API
 
           transactions = service.trigger_webhook_event(request)
 
-          next unless transactions.present?
+          next if transactions.blank?
 
           accepted_deposits = []
           ActiveRecord::Base.transaction do
@@ -81,7 +81,7 @@ module API
 
           transactions = service.trigger_webhook_event(request)
 
-          next unless transactions.present?
+          next if transactions.blank?
 
           ActiveRecord::Base.transaction do
             update_withdrawal(transactions)

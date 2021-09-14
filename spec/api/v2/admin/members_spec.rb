@@ -166,7 +166,7 @@ describe API::V2::Admin::Members, type: :request do
   describe 'GET /api/v2/admin/members/groups' do
     it 'get list of all existing groups' do
       api_get '/api/v2/admin/members/groups', token: token
-      expect(JSON.parse(response.body)).to match_array Member.groups.map &:to_s
+      expect(JSON.parse(response.body)).to match_array Member.groups.map(&:to_s)
     end
   end
 

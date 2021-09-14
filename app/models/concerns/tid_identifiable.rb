@@ -7,7 +7,7 @@ module TIDIdentifiable
     validates :tid, presence: true, uniqueness: { case_sensitive: false }
 
     before_validation do
-      next unless tid.blank?
+      next if tid.present?
 
       begin
         self.tid = "TID#{SecureRandom.hex(5).upcase}"

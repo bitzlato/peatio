@@ -15,8 +15,8 @@ describe API::V2::Management::Entities::Deposit do
       expect(subject.state).to eq record.aasm_state
       expect(subject.created_at).to eq record.created_at.iso8601
       expect(subject.completed_at).to eq record.completed_at&.iso8601
-      expect(subject.respond_to?(:blockchain_txid)).to be_falsey
-      expect(subject.respond_to?(:confirmations)).to be_falsey
+      expect(subject).not_to respond_to(:blockchain_txid)
+      expect(subject).not_to respond_to(:confirmations)
     end
   end
 

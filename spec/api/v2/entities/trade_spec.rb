@@ -33,6 +33,6 @@ describe API::V2::Entities::Trade do
   context 'empty side' do
     subject { OpenStruct.new API::V2::Entities::Trade.represent(trade).serializable_hash }
 
-    it { expect(subject.respond_to?(:side)).to be_falsey }
+    it { expect(subject).not_to respond_to(:side) }
   end
 end

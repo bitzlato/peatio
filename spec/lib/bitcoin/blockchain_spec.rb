@@ -240,7 +240,7 @@ describe Bitcoin::Blockchain do
       end
 
       it 'all transactions are valid' do
-        expect(subject.all?(&:valid?)).to be_truthy
+        expect(subject).to be_all(&:valid?)
       end
     end
 
@@ -252,7 +252,7 @@ describe Bitcoin::Blockchain do
       end
 
       it 'all transactions are valid' do
-        expect(subject.all?(&:valid?)).to be_truthy
+        expect(subject).to be_all(&:valid?)
       end
     end
   end

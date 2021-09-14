@@ -45,7 +45,7 @@ module Serializers
       end
 
       def type(order)
-        OrderBid === order ? 'buy' : 'sell'
+        order.is_a?(OrderBid) ? 'buy' : 'sell'
       end
 
       def buy?(order)

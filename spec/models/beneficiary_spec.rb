@@ -7,14 +7,14 @@ describe Beneficiary, 'Relationships' do
   context 'beneficiary build by factory' do
     subject { build(:beneficiary) }
 
-    it { expect(subject.valid?).to be_truthy }
+    it { expect(subject).to be_valid }
   end
 
   context 'belongs to member' do
     context 'null member_id' do
       subject { build(:beneficiary, member: nil) }
 
-      it { expect(subject.valid?).to be_falsey }
+      it { expect(subject).not_to be_valid }
     end
   end
 
@@ -22,7 +22,7 @@ describe Beneficiary, 'Relationships' do
     context 'null currency_id' do
       subject { build(:beneficiary, currency: nil) }
 
-      it { expect(subject.valid?).to be_falsey }
+      it { expect(subject).not_to be_valid }
     end
   end
 end
@@ -34,7 +34,7 @@ describe Beneficiary, 'Validations' do
 
       before { Beneficiary.expects(:generate_pin).returns(nil) }
 
-      it { expect(subject.valid?).to be_falsey }
+      it { expect(subject).not_to be_valid }
     end
   end
 
@@ -44,7 +44,7 @@ describe Beneficiary, 'Validations' do
 
       before { Beneficiary.expects(:generate_pin).returns(3.14) }
 
-      it { expect(subject.valid?).to be_falsey }
+      it { expect(subject).not_to be_valid }
     end
   end
 
@@ -52,7 +52,7 @@ describe Beneficiary, 'Validations' do
     context 'wrong state' do
       subject { build(:beneficiary, state: :wrong) }
 
-      it { expect(subject.valid?).to be_falsey }
+      it { expect(subject).not_to be_valid }
     end
   end
 
@@ -60,13 +60,13 @@ describe Beneficiary, 'Validations' do
     context 'nil data' do
       subject { build(:beneficiary, data: nil) }
 
-      it { expect(subject.valid?).to be_falsey }
+      it { expect(subject).not_to be_valid }
     end
 
     context 'empty hash data' do
       subject { build(:beneficiary, data: {}) }
 
-      it { expect(subject.valid?).to be_falsey }
+      it { expect(subject).not_to be_valid }
     end
   end
 
@@ -77,7 +77,7 @@ describe Beneficiary, 'Validations' do
 
         let(:fiat) { Currency.find(:usd) }
 
-        it { expect(subject.valid?).to be_truthy }
+        it { expect(subject).to be_valid }
       end
     end
 
@@ -87,7 +87,7 @@ describe Beneficiary, 'Validations' do
 
         let(:coin) { Currency.find(:btc) }
 
-        it { expect(subject.valid?).to be_falsey }
+        it { expect(subject).not_to be_valid }
       end
     end
   end

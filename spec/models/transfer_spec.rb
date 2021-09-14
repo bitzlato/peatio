@@ -12,13 +12,13 @@ describe Transfer do
       it 'uniqueness' do
         existing_transfer = create(:transfer)
         subject.key = existing_transfer.key
-        expect(subject.valid?).to be_falsey
+        expect(subject).not_to be_valid
         expect(subject).to include_ar_error(:key, /has already been taken/)
       end
 
       it 'presence' do
         subject.key = nil
-        expect(subject.valid?).to be_falsey
+        expect(subject).not_to be_valid
         expect(subject).to include_ar_error(:key, /can't be blank/)
       end
     end
@@ -26,7 +26,7 @@ describe Transfer do
     describe 'category' do
       it 'presence' do
         subject.category = nil
-        expect(subject.valid?).to be_falsey
+        expect(subject).not_to be_valid
         expect(subject).to include_ar_error(:category, /can't be blank/)
       end
     end
@@ -36,7 +36,7 @@ describe Transfer do
         subject { build(:transfer, assets: build_list(:asset, 5)) }
 
         it 'invalidates transfer' do
-          expect(subject.valid?).to be_falsey
+          expect(subject).not_to be_valid
           expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
         end
       end
@@ -57,7 +57,7 @@ describe Transfer do
           let(:expenses) { [build(:expense, credit: 1, currency: currency_btc)] }
 
           it 'invalidates transfer' do
-            expect(subject.valid?).to be_falsey
+            expect(subject).not_to be_valid
             expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
           end
         end
@@ -69,7 +69,7 @@ describe Transfer do
           let(:expenses) { [build(:expense, credit: 1, currency: currency_btc)] }
 
           it 'invalidates transfer' do
-            expect(subject.valid?).to be_falsey
+            expect(subject).not_to be_valid
             expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
           end
         end
@@ -117,7 +117,7 @@ describe Transfer do
           let(:expenses) { [expense1, expense2, expense3, expense4] }
 
           it 'invalidates transfer' do
-            expect(subject.valid?).to be_falsey
+            expect(subject).not_to be_valid
             expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
           end
         end

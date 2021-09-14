@@ -506,7 +506,7 @@ describe Withdraw do
       end
 
       it 'automatically sets rid from beneficiary' do
-        expect(withdraw.valid?).to be_falsey
+        expect(withdraw).not_to be_valid
         expect(withdraw.errors[:beneficiary]).to include('not active')
       end
     end
@@ -579,7 +579,7 @@ describe Withdraw do
     end
 
     it do
-      expect(record.valid?).to be_falsey
+      expect(record).not_to be_valid
       expect(record.errors[:amount]).to include("precision must be less than or equal to #{currency.precision}")
       expect(record.errors[:sum]).to include("precision must be less than or equal to #{currency.precision}")
     end
@@ -626,13 +626,13 @@ describe Withdraw do
     context 'zero limits' do
       before { WithdrawLimit.last.update!(limit_24_hour: 0, limit_1_month: 0) }
 
-      it { expect(withdraw.valid?).to be_truthy }
+      it { expect(withdraw).to be_valid }
     end
 
     context 'there are no WLs in DB' do
       before { WithdrawLimit.delete_all }
 
-      it { expect(withdraw.valid?).to be_truthy }
+      it { expect(withdraw).to be_valid }
     end
   end
 end

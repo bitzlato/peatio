@@ -36,7 +36,7 @@ describe Adjustment do
         end
 
         it 'invalidates transfer' do
-          expect(subject.valid?).to be_falsey
+          expect(subject).not_to be_valid
           expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
         end
       end
@@ -56,7 +56,7 @@ describe Adjustment do
         end
 
         it 'invalidates transfer' do
-          expect(subject.valid?).to be_falsey
+          expect(subject).not_to be_valid
           expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
         end
       end
@@ -72,7 +72,7 @@ describe Adjustment do
         let(:liability) { build(:liability, :with_member, credit: 1, currency_id: :btc) }
 
         it 'invalidates transfer' do
-          expect(subject.valid?).to be_truthy
+          expect(subject).to be_valid
         end
       end
     end
@@ -85,8 +85,8 @@ describe Adjustment do
       let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-202-#{member.uid}", amount: 1) }
 
       it do
-        expect(subject.first.is_a?(Operations::Asset)).to be_truthy
-        expect(subject.second.is_a?(Operations::Liability)).to be_truthy
+        expect(subject.first).to be_a(Operations::Asset)
+        expect(subject.second).to be_a(Operations::Liability)
         expect(subject.first.credit).to eq(1)
         expect(subject.second.credit).to eq(1)
       end
@@ -105,8 +105,8 @@ describe Adjustment do
       let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-302', amount: 1) }
 
       it do
-        expect(subject.first.is_a?(Operations::Asset)).to be_truthy
-        expect(subject.second.is_a?(Operations::Revenue)).to be_truthy
+        expect(subject.first).to be_a(Operations::Asset)
+        expect(subject.second).to be_a(Operations::Revenue)
         expect(subject.first.credit).to eq(1)
         expect(subject.second.credit).to eq(1)
       end
@@ -125,8 +125,8 @@ describe Adjustment do
       let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-402', amount: 1) }
 
       it do
-        expect(subject.first.is_a?(Operations::Asset)).to be_truthy
-        expect(subject.second.is_a?(Operations::Expense)).to be_truthy
+        expect(subject.first).to be_a(Operations::Asset)
+        expect(subject.second).to be_a(Operations::Expense)
         expect(subject.first.credit).to eq(1)
         expect(subject.second.debit).to eq(1)
       end
@@ -227,7 +227,7 @@ describe Adjustment do
       end
 
       it do
-        expect(member.accounts.find_by(currency_id: 'btc').present?).to be_truthy
+        expect(member.accounts.find_by(currency_id: 'btc')).to be_present
       end
     end
   end

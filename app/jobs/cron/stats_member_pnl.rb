@@ -136,7 +136,7 @@ module Jobs::Cron
 
       def conversion_market(currency_id, pnl_currency_id)
         market = Market.spot.find_by(base_unit: currency_id, quote_unit: pnl_currency_id)
-        raise Error, "There is no market #{currency_id}/#{pnl_currency_id}" unless market.present?
+        raise Error, "There is no market #{currency_id}/#{pnl_currency_id}" if market.blank?
 
         market.symbol
       end
@@ -157,7 +157,7 @@ module Jobs::Cron
         market = conversion_market(currency_id, pnl_currency_id)
         nearest_trade = Trade.nearest_trade_from_influx(market, at)
         Rails.logger.debug { "Nearest trade on #{market} trade: #{nearest_trade}" }
-        raise Error, "There is no trades on market #{market}" unless nearest_trade.present?
+        raise Error, "There is no trades on market #{market}" if nearest_trade.blank?
 
         nearest_trade[:price]
       end

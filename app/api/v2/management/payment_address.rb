@@ -30,7 +30,7 @@ module API
           error!({ errors: ['account.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
 
           wallet = Wallet.active_deposit_wallet(currency.id)
-          error!({ errors: ['account.wallet.not_found'] }, 422) unless wallet.present?
+          error!({ errors: ['account.wallet.not_found'] }, 422) if wallet.blank?
 
           pa = if params[:remote].nil?
                  member.payment_address!(wallet.id)

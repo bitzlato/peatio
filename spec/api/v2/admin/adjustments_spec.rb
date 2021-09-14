@@ -30,14 +30,14 @@ describe API::V2::Admin::Adjustments, type: :request do
 
         expect(response).to be_successful
         expect(result.length).to eq 5
-        expect(result[0].key?('asset')).to be_truthy
-        expect(result[0].key?('liability')).to be_truthy
+        expect(result[0]).to be_key('asset')
+        expect(result[0]).to be_key('liability')
         expect(result[0]['state']).to eq('rejected')
         # We don't create operations for rejected adj.
-        expect(result[0]['liability']['id'].nil?).to be_truthy
-        expect(result[0]['asset']['id'].nil?).to be_truthy
-        expect(result[1].key?('asset')).to be_truthy
-        expect(result[1].key?('liability')).to be_truthy
+        expect(result[0]['liability']['id']).to be_nil
+        expect(result[0]['asset']['id']).to be_nil
+        expect(result[1]).to be_key('asset')
+        expect(result[1]).to be_key('liability')
         expect(result[1]['liability']['id']).to eq accepted.liability.id
         expect(result[1]['asset']['id']).to eq accepted.asset.id
         expect(result[1]['state']).to eq('accepted')
@@ -134,7 +134,7 @@ describe API::V2::Admin::Adjustments, type: :request do
       expect(result['id']).to eq adjustment3.id
       expect(result['currency']).to eq adjustment3.currency_id
       expect(result['receiving_account_code']).to eq '302'
-      expect(result['receiving_member_uid'].blank?).to be_truthy
+      expect(result['receiving_member_uid']).to be_blank
     end
   end
 
@@ -169,8 +169,8 @@ describe API::V2::Admin::Adjustments, type: :request do
       expect(result['category']).to eq('asset_registration')
       expect(result['amount']).to eq('100.0')
       expect(result['currency']).to eq('btc')
-      expect(result.key?('asset')).to be_truthy
-      expect(result.key?('liability')).to be_truthy
+      expect(result).to be_key('asset')
+      expect(result).to be_key('liability')
     end
 
     it 'checks account decimal amount' do
@@ -259,10 +259,10 @@ describe API::V2::Admin::Adjustments, type: :request do
         expect(response).to be_successful
         result = JSON.parse(response.body)
         expect(result['reason']).to eq('Adjustment')
-        expect(result['receiving_member_uid'].blank?).to be_truthy
+        expect(result['receiving_member_uid']).to be_blank
         adjustment_db = Adjustment.find(result['id'])
         account_number_hash = Operations.split_account_number(account_number: adjustment_db.receiving_account_number)
-        expect(account_number_hash[:member_uid].present?).to be_truthy
+        expect(account_number_hash[:member_uid]).to be_present
       end
     end
   end

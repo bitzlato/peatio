@@ -63,8 +63,8 @@ class Market < ApplicationRecord
   has_one :quote, class_name: 'Currency', foreign_key: :id, primary_key: :quote_unit
   belongs_to :engine, optional: false
 
-  has_many :trading_fees, foreign_key: :market_id, primary_key: :symbol, dependent: :delete_all
-  has_many :trades, foreign_key: :market_id, primary_key: :symbol
+  has_many :trading_fees, primary_key: :symbol, dependent: :delete_all
+  has_many :trades, primary_key: :symbol
 
   # == Validations ==========================================================
 
@@ -136,7 +136,7 @@ class Market < ApplicationRecord
 
   after_initialize :initialize_defaults, if: :new_record?
   before_validation(on: :create) { self.symbol = generate_symbol }
-  before_validation(on: :create) { self.position = Market.count + 1 unless position.present? }
+  before_validation(on: :create) { self.position = Market.count + 1 if position.blank? }
 
   after_commit { AMQP::Queue.enqueue(:matching, action: 'new', market: symbol) }
   after_commit :wipe_cache

@@ -195,7 +195,7 @@ describe API::V2::Admin::Orders, type: :request do
     let!(:order) { create(:order_bid, :btc_usd, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', locked: '20.1082', origin_locked: '38.0882', member: level_3_member) }
 
     before do
-      level_3_member.get_account(:usd).update_attributes(locked: order.price * order.volume)
+      level_3_member.get_account(:usd).update(locked: order.price * order.volume)
     end
 
     it 'cancels specified order' do
@@ -228,8 +228,8 @@ describe API::V2::Admin::Orders, type: :request do
       create(:order_bid, :btc_usd, price: '12.32', volume: '3.14', origin_volume: '12.13', member: level_3_member)
       create(:order_bid, :btc_eth, price: '12.32', volume: '3.14', origin_volume: '12.13', member: level_3_member)
 
-      level_3_member.get_account(:btc).update_attributes(locked: '5')
-      level_3_member.get_account(:usd).update_attributes(locked: '50')
+      level_3_member.get_account(:btc).update(locked: '5')
+      level_3_member.get_account(:usd).update(locked: '50')
     end
 
     it 'cancels all my orders for specific market' do

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddMarketType < ActiveRecord::Migration[5.2]
-  class LegacyMarket < ActiveRecord::Base
+  class LegacyMarket < ApplicationRecord
   end
 
   def up

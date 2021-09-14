@@ -33,3 +33,240 @@ Style/ClassAndModuleChildren:
 
 Style/FormatString:
   Enabled: false
+
+Security/JSONLoad:
+  Exclude:
+    - 'spec/**/*'
+
+# Offense count: 52
+# Configuration parameters: IgnoredMethods.
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - 'spec/api/v2/account/beneficiaries_spec.rb'
+    - 'spec/api/v2/account/withdraws_spec.rb'
+    - 'spec/api/v2/account/deposits_spec.rb'
+    - 'spec/api/v2/account/transactions_spec.rb'
+    - 'spec/api/v2/management/beneficiaries_spec.rb'
+    - 'spec/api/v2/admin/adjustments_spec.rb'
+    - 'spec/api/v2/admin/operations_spec.rb'
+    - 'spec/api/v2/admin/trading_fees_spec.rb'
+    - 'spec/api/v2/admin/withdraw_limts_spec.rb'
+    - 'spec/api/v2/public/markets_spec.rb'
+    - 'spec/models/adjustment_spec.rb'
+    - 'spec/models/blockchain_spec.rb'
+    - 'spec/models/deposit_spec.rb'
+    - 'spec/models/order_spec.rb'
+    - 'spec/models/trade_spec.rb'
+    - 'spec/models/transfer_spec.rb'
+    - 'spec/models/wallet_spec.rb'
+    - 'spec/models/withdraw_spec.rb'
+
+# Offense count: 7
+# Configuration parameters: NamePrefix, ForbiddenPrefixes, AllowedMethods, MethodDefinitionMacros.
+# NamePrefix: is_, has_, have_
+# ForbiddenPrefixes: is_, has_, have_
+# AllowedMethods: is_a?
+# MethodDefinitionMacros: define_method, define_singleton_method
+Naming/PredicateName:
+  Exclude:
+    - 'app/gateways/ethereum_gateway/collection_concern.rb'
+    - 'app/models/order.rb'
+    - 'app/models/payment_address.rb'
+    - 'config/initializers/is_db_connection_error.rb'
+
+# Offense count: 121
+# Configuration parameters: EnforcedStyle, CheckMethodNames, CheckSymbols, AllowedIdentifiers.
+# SupportedStyles: snake_case, normalcase, non_integer
+# AllowedIdentifiers: capture3, iso8601, rfc1123_date, rfc822, rfc2822, rfc3339
+Naming/VariableNumber:
+  Enabled: false
+
+# Offense count: 28
+RSpec/AnyInstance:
+  Exclude:
+    - 'spec/api/v2/account/deposits_spec.rb'
+    - 'spec/api/v2/account/withdraws_spec.rb'
+    - 'spec/gateways/abstract_gateway_spec.rb'
+    - 'spec/gateways/ethereum_gateway/collection_concern_spec.rb'
+    - 'spec/gateways/ethereum_gateway/collector_spec.rb'
+    - 'spec/gateways/ethereum_gateway_spec.rb'
+    - 'spec/models/deposit_spec.rb'
+    - 'spec/models/order_spec.rb'
+    - 'spec/models/transfer_spec.rb'
+    - 'spec/models/wallet_spec.rb'
+    - 'spec/models/withdraw_spec.rb'
+    - 'spec/services/order_services/create_order_spec.rb'
+    - 'spec/services/withdrawer_spec.rb'
+    - 'spec/spec_helper.rb'
+    - 'spec/workers/amqp/deposit_coin_address_spec.rb'
+
+# Offense count: 697
+# Configuration parameters: Prefixes.
+# Prefixes: when, with, without
+RSpec/ContextWording:
+  Enabled: false
+
+# Offense count: 2
+# Configuration parameters: IgnoredMetadata.
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/lib/tasks/job_spec.rb'
+    - 'spec/lib/tasks/revert_spec.rb'
+
+# Offense count: 20
+RSpec/DescribeMethod:
+  Exclude:
+    - 'spec/api/v2/account/beneficiaries_spec.rb'
+    - 'spec/models/beneficiary_spec.rb'
+    - 'spec/models/order_spec.rb'
+    - 'spec/models/tradinng_fee_spec.rb'
+    - 'spec/models/whitelisted_smart_contract_spec.rb'
+    - 'spec/models/withdraw_limit_spec.rb'
+
+# Offense count: 1
+RSpec/DescribeSymbol:
+  Exclude:
+    - 'spec/lib/peatio/bitzlato/wallet_spec.rb'
+
+# Offense count: 3
+RSpec/EmptyExampleGroup:
+  Exclude:
+    - 'spec/gateways/ethereum_gateway/address_creator_spec.rb'
+    - 'spec/models/beneficiary_spec.rb'
+    - 'spec/models/order_spec.rb'
+
+RSpec/ExampleLength:
+  Max: 47
+
+# Offense count: 15
+# Configuration parameters: Include, CustomTransform, IgnoreMethods, SpecSuffixOnly.
+# Include: **/*_spec*rb*, **/spec/**/*
+RSpec/FilePath:
+  Exclude:
+    - 'spec/api/v2/account/internal_transfer_spec.rb'
+    - 'spec/api/v2/admin/internal_transfer_spec.rb'
+    - 'spec/api/v2/admin/withdraw_limts_spec.rb'
+    - 'spec/api/v2/coin_gecko/historical_trades.rb'
+    - 'spec/api/v2/cors/cors_spec.rb'
+    - 'spec/api/v2/management/error_spec.rb'
+    - 'spec/jobs/stats_member_pnl_spec.rb'
+    - 'spec/lib/decimal_spec.rb'
+    - 'spec/lib/influxdb_spec.rb'
+    - 'spec/lib/peatio/opendax_spec.rb'
+    - 'spec/lib/vault_totp_spec.rb'
+    - 'spec/models/amqp_config_spec.rb'
+    - 'spec/models/amqp_queue_spec.rb'
+    - 'spec/models/whitelisted_smart_contract_spec.rb'
+    - 'spec/services/tickers_service_spec.rb'
+
+# Offense count: 3
+# Configuration parameters: AssignmentOnly.
+RSpec/InstanceVariable:
+  Exclude:
+    - 'spec/trading/matching/order_book_spec.rb'
+
+# Offense count: 2
+RSpec/LeakyConstantDeclaration:
+  Exclude:
+    - 'spec/lib/peatio/bitzlato/wallet_spec.rb'
+
+# Offense count: 87
+RSpec/LetSetup:
+  Enabled: false
+
+# Offense count: 19
+RSpec/MissingExampleGroupArgument:
+  Exclude:
+    - 'spec/api/v2/management/engines_spec.rb'
+    - 'spec/api/v2/management/markets_spec.rb'
+    - 'spec/models/order_spec.rb'
+    - 'spec/services/withdrawer_spec.rb'
+
+# Offense count: 6
+RSpec/MultipleDescribes:
+  Exclude:
+    - 'spec/api/v2/account/beneficiaries_spec.rb'
+    - 'spec/models/beneficiary_spec.rb'
+    - 'spec/models/order_spec.rb'
+    - 'spec/models/trade_spec.rb'
+    - 'spec/models/tradinng_fee_spec.rb'
+    - 'spec/models/withdraw_limit_spec.rb'
+
+# Offense count: 923
+RSpec/MultipleExpectations:
+  Max: 47
+
+# Offense count: 267
+# Configuration parameters: AllowSubject.
+RSpec/MultipleMemoizedHelpers:
+  Max: 23
+
+# Offense count: 896
+# Configuration parameters: IgnoreSharedExamples.
+RSpec/NamedSubject:
+  Enabled: false
+
+# Offense count: 188
+RSpec/NestedGroups:
+  Max: 7
+
+# Offense count: 1
+RSpec/OverwritingSetup:
+  Exclude:
+    - 'spec/api/v2/account/internal_transfer_spec.rb'
+
+# Offense count: 29
+RSpec/RepeatedDescription:
+  Exclude:
+    - 'spec/api/v2/admin/adjustments_spec.rb'
+    - 'spec/api/v2/admin/members_spec.rb'
+    - 'spec/api/v2/admin/trades_spec.rb'
+    - 'spec/api/v2/coin_gecko/orderbook_spec.rb'
+    - 'spec/api/v2/coin_market_cap/orderbook_spec.rb'
+    - 'spec/api/v2/management/orders_spec.rb'
+    - 'spec/api/v2/market/orders_spec.rb'
+    - 'spec/models/concerns/precision_validator_spec.rb'
+    - 'spec/models/market_spec.rb'
+
+# Offense count: 2
+RSpec/RepeatedExample:
+  Exclude:
+    - 'spec/api/v2/market/orders_spec.rb'
+
+# Offense count: 2
+RSpec/RepeatedExampleGroupBody:
+  Exclude:
+    - 'spec/api/v2/account/beneficiaries_spec.rb'
+
+# Offense count: 2
+RSpec/RepeatedExampleGroupDescription:
+  Exclude:
+    - 'spec/api/v2/admin/abilities_spec.rb'
+
+# Offense count: 28
+RSpec/ScatteredSetup:
+  Exclude:
+    - 'spec/api/v2/account/balances_spec.rb'
+    - 'spec/api/v2/account/internal_transfer_spec.rb'
+    - 'spec/api/v2/account/withdraws_spec.rb'
+    - 'spec/api/v2/coin_gecko/tickers_spec.rb'
+    - 'spec/api/v2/coin_market_cap/ticker_spec.rb'
+    - 'spec/api/v2/management/jwt_authentication_middleware_spec.rb'
+    - 'spec/api/v2/management/transfers_spec.rb'
+
+# Offense count: 3
+# Configuration parameters: Include.
+# Include: db/migrate/*.rb
+Rails/CreateTableWithTimestamps:
+  Exclude:
+    - 'db/migrate/20180112151205_init_schema.rb'
+    - 'db/migrate/20200414155144_create_engines.rb'
+    - 'db/migrate/20200804091304_create_jobs.rb'
+
+# Offense count: 1
+# Configuration parameters: EnforcedStyle, AllowToTime.
+# SupportedStyles: strict, flexible
+Rails/Date:
+  Exclude:
+    - 'spec/factories/operations.rb'
+

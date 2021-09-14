@@ -75,7 +75,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         beneficiary_data.merge!(currency: :btc)
         request
         expect(response.status).to eq 200
-        expect(response_body.all? { |b| b['currency'] == 'btc' }).to be_truthy
+        expect(response_body).to be_all { |b| b['currency'] == 'btc' }
       end
 
       context 'fiat currency' do
@@ -85,7 +85,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
           beneficiary_data.merge!(currency: :usd)
           request
           expect(response.status).to eq 200
-          expect(response_body.all? { |b| b['currency'] == 'usd' }).to be_truthy
+          expect(response_body).to be_all { |b| b['currency'] == 'usd' }
           expect(usd_beneficiary_for_member.id).to eq response_body.first['id']
           expect(usd_beneficiary_for_member.data[:account_number]).to eq response_body.first['data']['account_number']
         end
@@ -106,7 +106,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         beneficiary_data.merge!(state: :pending)
         request
         expect(response.status).to eq 200
-        expect(response_body.all? { |b| b['state'] == 'pending' }).to be_truthy
+        expect(response_body).to be_all { |b| b['state'] == 'pending' }
       end
     end
 
@@ -119,7 +119,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         beneficiary_data.merge!(currency: :btc, state: :active)
         request
         expect(response.status).to eq 200
-        expect(response_body.all? { |b| b['currency'] == 'btc' && b['state'] == 'active' }).to be_truthy
+        expect(response_body).to be_all { |b| b['currency'] == 'btc' && b['state'] == 'active' }
       end
     end
   end

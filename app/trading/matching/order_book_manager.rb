@@ -7,7 +7,7 @@ module Matching
     def self.build_order(attrs)
       attrs.symbolize_keys!
 
-      raise ArgumentError, "Missing ord_type: #{attrs.inspect}" unless attrs[:ord_type].present?
+      raise ArgumentError, "Missing ord_type: #{attrs.inspect}" if attrs[:ord_type].blank?
 
       klass = ::Matching.const_get "#{attrs[:ord_type]}_order".camelize
       klass.new attrs

@@ -157,7 +157,7 @@ describe API::V2::Account::Balances, type: :request do
           api_get '/api/v2/account/balances', token: token, params: { search: { currency_code: 'abc' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
-          expect(result.blank?).to be_truthy
+          expect(result).to be_blank
         end
       end
 
@@ -180,7 +180,7 @@ describe API::V2::Account::Balances, type: :request do
           api_get '/api/v2/account/balances', token: token, params: { search: { currency_name: 'abc' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
-          expect(result.blank?).to be_truthy
+          expect(result).to be_blank
         end
       end
 

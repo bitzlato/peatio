@@ -28,7 +28,7 @@ class CreateWithdrawDestinationsDropFundSource < ActiveRecord::Migration[4.2]
 
     Withdraw.transaction do
       Withdraw.find_each do |withdraw|
-        if Withdraws::Fiat === withdraw
+        if withdraw.is_a?(Withdraws::Fiat)
           WithdrawDestination::Fiat.create! \
             label: withdraw.fund_extra,
             member: withdraw.member,

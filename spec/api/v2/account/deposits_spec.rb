@@ -123,7 +123,7 @@ describe API::V2::Account::Deposits, type: :request do
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 2
-      expect(result.all? { |d| d['currency'] == 'usd' }).to be_truthy
+      expect(result).to be_all { |d| d['currency'] == 'usd' }
     end
 
     it 'returns deposits with txid filter' do
@@ -131,7 +131,7 @@ describe API::V2::Account::Deposits, type: :request do
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 1
-      expect(result.all? { |d| d['txid'] == Deposit.first.txid }).to be_truthy
+      expect(result).to be_all { |d| d['txid'] == Deposit.first.txid }
     end
 
     it 'returns deposits for currency btc' do
@@ -139,7 +139,7 @@ describe API::V2::Account::Deposits, type: :request do
       result = JSON.parse(response.body)
 
       expect(response.headers.fetch('Total')).to eq '2'
-      expect(result.all? { |d| d['currency'] == 'btc' }).to be_truthy
+      expect(result).to be_all { |d| d['currency'] == 'btc' }
     end
 
     it 'return 404 if txid not exist' do

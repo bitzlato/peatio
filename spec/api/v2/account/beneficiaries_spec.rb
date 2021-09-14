@@ -80,7 +80,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     it do
       api_get endpoint, params: { currency: :btc }, token: token
       expect(response.status).to eq 200
-      expect(response_body.all? { |b| b['currency'] == 'btc' }).to be_truthy
+      expect(response_body).to be_all { |b| b['currency'] == 'btc' }
     end
   end
 
@@ -96,7 +96,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     it do
       api_get endpoint, params: { state: :pending }, token: token
       expect(response.status).to eq 200
-      expect(response_body.all? { |b| b['state'] == 'pending' }).to be_truthy
+      expect(response_body).to be_all { |b| b['state'] == 'pending' }
     end
   end
 
@@ -108,7 +108,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     it do
       api_get endpoint, params: { currency: :btc, state: :active }, token: token
       expect(response.status).to eq 200
-      expect(response_body.all? { |b| b['currency'] == 'btc' && b['state'] == 'active' }).to be_truthy
+      expect(response_body).to be_all { |b| b['currency'] == 'btc' && b['state'] == 'active' }
     end
   end
 

@@ -89,7 +89,7 @@ describe API::V2::Account::Withdraws, type: :request do
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 1
-      expect(result.all? { |d| d['rid'] == btc_withdraws.first.rid }).to be_truthy
+      expect(result).to be_all { |d| d['rid'] == btc_withdraws.first.rid }
     end
 
     it 'filters withdraws by multiple states' do
@@ -382,8 +382,8 @@ describe API::V2::Account::Withdraws, type: :request do
     it 'returns withdrawals sums' do
       api_get '/api/v2/account/withdraws/sums', token: token
 
-      expect(response_body.key?('last_24_hours')).to be_truthy
-      expect(response_body.key?('last_1_month')).to be_truthy
+      expect(response_body).to be_key('last_24_hours')
+      expect(response_body).to be_key('last_1_month')
     end
 
     context 'unauthorized' do

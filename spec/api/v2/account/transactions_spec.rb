@@ -112,14 +112,14 @@ describe API::V2::Account::Transactions, type: :request do
         api_get '/api/v2/account/transactions', params: { currency: 'USD' }, token: token
         result = JSON.parse(response.body)
 
-        expect(result.pluck('confimations').none?).to be_truthy
+        expect(result.pluck('confimations')).to be_none
       end
 
       it 'returns valid number in confirmations field for coin' do
         api_get '/api/v2/account/transactions', params: { currency: 'btc' }, token: token
         result = JSON.parse(response.body)
 
-        expect(result.pluck('confimations').any? { |c| c.nil? ? true : c > 1 }).to be_truthy
+        expect(result.pluck('confimations')).to be_any { |c| c.nil? ? true : c > 1 }
       end
 
       it 'returns transaction with txid filter' do
@@ -127,7 +127,7 @@ describe API::V2::Account::Transactions, type: :request do
         result = JSON.parse(response.body)
 
         expect(result.size).to eq 1
-        expect(result.all? { |d| d['txid'] == Deposits::Coin.first.txid }).to be_truthy
+        expect(result).to be_all { |d| d['txid'] == Deposits::Coin.first.txid }
       end
 
       context 'state filters' do
