@@ -17,8 +17,8 @@ module API
                    desc: -> { V2::Entities::Market.documentation[:symbol] }
           optional :market_type,
                    values: { value: -> { ::Market::TYPES }, message: 'market.market.invalid_market_type' },
-                   desc: -> { V2::Entities::Market.documentation[:type] },
-                   default: -> { ::Market::DEFAULT_TYPE }
+                   desc: -> { V2::Entities::Market.documentation[:type][:desc] },
+                   default: ::Market::DEFAULT_TYPE
           optional :base_unit,
                    type: String,
                    values: { value: -> { ::Market.active.pluck(:base_unit) }, message: 'market.market.doesnt_exist' },
@@ -147,8 +147,8 @@ module API
                    desc: -> { V2::Entities::Market.documentation[:symbol] }
           optional :market_type,
                    values: { value: -> { ::Market::TYPES }, message: 'market.market.invalid_market_type' },
-                   desc: -> { V2::Entities::Market.documentation[:type] },
-                   default: -> { ::Market::DEFAULT_TYPE }
+                   desc: -> { V2::Entities::Market.documentation[:type][:desc] },
+                   default: ::Market::DEFAULT_TYPE
           optional :side,
                    type: String,
                    values: %w(sell buy),

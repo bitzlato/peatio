@@ -8,7 +8,7 @@ module API
 
         desc 'Returns withdraw limits table as paginated collection',
              is_array: true,
-             success: API::V2::Admin::Entities::WithdrawLimit
+             success: API::V2::Entities::WithdrawLimit
         params do
           optional :group,
                    type: String,

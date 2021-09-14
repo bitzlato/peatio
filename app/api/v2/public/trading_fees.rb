@@ -22,8 +22,8 @@ module API
                              message: 'public.trading_fee.market_doesnt_exist' }
           optional :market_type,
                    values: { value: -> { ::Market::TYPES }, message: 'management.trading_fee.invalid_market_type' },
-                   desc: -> { API::V2::Admin::Entities::Market.documentation[:type] },
-                   default: -> { ::Market::DEFAULT_TYPE }
+                   desc: -> { API::V2::Admin::Entities::Market.documentation[:type][:desc] },
+                   default: ::Market::DEFAULT_TYPE
           use :pagination
           use :ordering
         end

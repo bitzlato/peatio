@@ -54,7 +54,7 @@ module API
           if: ->(account, _options) { account.enable_invoice? },
           documentation: {
             desc: 'Show intention form instead of payment address generation',
-            type: JSON
+            type: 'boolean'
           }
         )
       end
