@@ -71,8 +71,17 @@ class EthereumGateway < AbstractGateway
                           meta: {})
 
     raise 'amount must be a Money' unless amount.is_a? Money
-    # TODO estimate by GasEstimator
-    gas_limit = amount.currency.token? ? blockchain.client_options[:token_gas_limit] : blockchain.client_options[:base_gas_limit]
+    gas_factor = blockchain.client_options[:gas_factor] || 1
+    gas_price ||= (fetch_gas_price * gas_factor).to_i
+    gas_limit ||= GasEstimator
+      .new(client)
+      .call(from_address: from_address,
+            to_address: to_address,
+            contract_addresses: [contract_address].compact,
+            account_native: contract_addresses.nil?,
+            gas_limits: gas_limits,
+            gas_price: gas_price)
+
     monefy_transaction(
       TransactionCreator
       .new(client)
@@ -80,8 +89,7 @@ class EthereumGateway < AbstractGateway
             to_address: to_address,
             amount: amount.base_units,
             secret: secret,
-            gas_limit: gas_limit || raise('No gas limit defined'),
-            gas_factor: blockchain.client_options[:gas_factor] || 1,
+            gas_price: gas_price,
             contract_address: contract_address,
             subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee,
             nonce: nonce

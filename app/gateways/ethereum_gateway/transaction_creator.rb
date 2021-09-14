@@ -15,8 +15,7 @@ class EthereumGateway
              gas_factor: 1)
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
-
-      raise 'No gas limit defined' if gas_limit.nil?
+      raise 'No gas limit' if gas_limit.nil?
       raise Error, 'zero amount transction' if amount.zero?
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
@@ -51,15 +50,6 @@ class EthereumGateway
                                 subtract_fee: false)
 
       raise 'amount must be an integer' unless amount.is_a? Integer
-
-      gas_limit ||= GasEstimator
-        .new(client)
-        .call(from_address: from_address,
-              to_address: to_address,
-              contract_addresses: [],
-              account_native: true,
-              gas_limits: [],
-              gas_price: gas_price)
 
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= gas_limit.to_i * gas_price.to_i if subtract_fee
@@ -102,7 +92,7 @@ class EthereumGateway
                                   contract_address:,
                                   nonce: nil,
                                   secret:,
-                                  gas_limit: nil,
+                                  gas_limit:,
                                   gas_price:)
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
