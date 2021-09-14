@@ -1,7 +1,7 @@
 class CompactLiabilities < ActiveRecord::Migration[5.2]
   def up_mysql
     execute 'DROP procedure IF EXISTS `compact_orders`;'
-    execute <<-SQL
+    execute <<-SQL.squish
 
     CREATE PROCEDURE `compact_orders`(
         IN min_date DATETIME,
@@ -42,7 +42,7 @@ class CompactLiabilities < ActiveRecord::Migration[5.2]
   end
 
   def up_postgresql
-    execute <<-SQL
+    execute <<-SQL.squish
     CREATE OR REPLACE FUNCTION compact_orders(
         min_date DATE,
         max_date DATE,

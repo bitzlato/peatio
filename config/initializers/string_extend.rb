@@ -14,7 +14,7 @@ module Enumerize
 
         @values.reject do |value|
           if options[:only]
-            !only.include?(value)
+            only.exclude?(value)
           elsif options[:except]
             except.include?(value)
           end

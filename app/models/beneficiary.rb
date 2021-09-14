@@ -19,7 +19,7 @@ class Beneficiary < ApplicationRecord
   STATES_AVAILABLE_FOR_MEMBER = %i[pending active]
 
   PIN_LENGTH  = 6
-  PIN_RANGE   = 10**5..10**Beneficiary::PIN_LENGTH
+  PIN_RANGE   = (10**5)..(10**Beneficiary::PIN_LENGTH)
 
   # == Attributes ===========================================================
 

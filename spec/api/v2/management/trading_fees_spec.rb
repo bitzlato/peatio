@@ -15,7 +15,7 @@ describe API::V2::Management::TradingFees, type: :request do
       post_json '/api/v2/management/fee_schedule/trading_fees', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
-    let(:data) {}
+    let(:data) {} # rubocop:disable Lint/EmptyBlock
     let(:signers) { %i[alex jeff] }
 
     before do

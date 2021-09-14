@@ -60,7 +60,7 @@ class Member < ApplicationRecord
   # @deprecated
   def touch_accounts
     Currency.find_each do |currency|
-      next if accounts.where(currency: currency).exists?
+      next if accounts.exists?(currency: currency)
       accounts.create!(currency: currency)
     end
   end

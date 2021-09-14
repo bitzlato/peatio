@@ -3,7 +3,7 @@
 
 module Workers
   module AMQP
-    class Base
+    class Base # rubocop:disable Lint/EmptyClass
     end
   end
 end

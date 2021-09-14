@@ -139,6 +139,7 @@ module Matching
               (res = client.get_result) or break
               res.check
               res.each do |_row|
+                # WTF?
               end
             end
           else

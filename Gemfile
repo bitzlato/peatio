@@ -94,6 +94,7 @@ group :development do
 
   gem 'rspec'
   gem 'guard'
+  gem 'guard-rubocop'
   gem 'guard-rspec', github: 'caspark/guard-rspec' # Use from github to remove rspec < 4.0 dependencies
 end
 

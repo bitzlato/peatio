@@ -5,35 +5,35 @@ module API
   module V2
     module Management
       class Markets < Grape::API
-        helpers do
-          # Collection of shared params, used to
-          # generate required/optional Grape params.
-          OPTIONAL_MARKET_PARAMS ||= {
-            amount_precision: {
-              type: { value: Integer, message: 'management.market.non_integer_amount_precision' },
-              values: { value: -> (p){ p && p >= 0 }, message: 'management.market.invalid_amount_precision' },
-              default: 4,
-              desc: -> { API::V2::Management::Entities::Market.documentation[:amount_precision][:desc] }
-            },
-            price_precision: {
-              type: { value: Integer, message: 'management.market.non_integer_price_precision' },
-              values: { value: -> (p){ p && p >= 0 }, message: 'management.market.invalid_price_precision' },
-              default: 4,
-              desc: -> { API::V2::Management::Entities::Market.documentation[:price_precision][:desc] }
-            },
-            max_price: {
-              type: { value: BigDecimal, message: 'management.market.non_decimal_max_price' },
-              values: { value: -> (p){ p >= 0 }, message: 'management.market.invalid_max_price' },
-              default: 0.0,
-              desc: -> { API::V2::Management::Entities::Market.documentation[:max_price][:desc] }
-            },
-            state: {
-              values: { value: ::Market::STATES, message: 'management.market.invalid_state' },
-              default: 'enabled',
-              desc: -> { API::V2::Management::Entities::Market.documentation[:state][:desc] }
-            },
-          }
+        # Collection of shared params, used to
+        # generate required/optional Grape params.
+        OPTIONAL_MARKET_PARAMS = {
+          amount_precision: {
+            type: { value: Integer, message: 'management.market.non_integer_amount_precision' },
+            values: { value: -> (p){ p && p >= 0 }, message: 'management.market.invalid_amount_precision' },
+            default: 4,
+            desc: -> { API::V2::Management::Entities::Market.documentation[:amount_precision][:desc] }
+          },
+          price_precision: {
+            type: { value: Integer, message: 'management.market.non_integer_price_precision' },
+            values: { value: -> (p){ p && p >= 0 }, message: 'management.market.invalid_price_precision' },
+            default: 4,
+            desc: -> { API::V2::Management::Entities::Market.documentation[:price_precision][:desc] }
+          },
+          max_price: {
+            type: { value: BigDecimal, message: 'management.market.non_decimal_max_price' },
+            values: { value: -> (p){ p >= 0 }, message: 'management.market.invalid_max_price' },
+            default: 0.0,
+            desc: -> { API::V2::Management::Entities::Market.documentation[:max_price][:desc] }
+          },
+          state: {
+            values: { value: ::Market::STATES, message: 'management.market.invalid_state' },
+            default: 'enabled',
+            desc: -> { API::V2::Management::Entities::Market.documentation[:state][:desc] }
+          },
+        }
 
+        helpers do
           params :create_market_params do
             OPTIONAL_MARKET_PARAMS.each do |key, params|
               optional key, params
