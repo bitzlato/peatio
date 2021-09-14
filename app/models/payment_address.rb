@@ -71,7 +71,7 @@ class PaymentAddress < ApplicationRecord
   end
 
   def address_url
-    blockchain.explore_address_url address if blockchain
+    blockchain&.explore_address_url address
   end
 
   def update_balances!

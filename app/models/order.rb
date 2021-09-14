@@ -127,7 +127,7 @@ class Order < ApplicationRecord
       end
     rescue => e
       order = find(id)
-      order.update!(state: ::Order::REJECT) if order
+      order&.update!(state: ::Order::REJECT)
 
       raise e
     end

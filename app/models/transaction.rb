@@ -126,6 +126,6 @@ class Transaction < ApplicationRecord
   end
 
   def transaction_url
-    blockchain.explore_transaction_url txid if blockchain
+    blockchain&.explore_transaction_url txid
   end
 end

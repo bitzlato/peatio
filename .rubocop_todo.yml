@@ -1358,19 +1358,6 @@ Style/RescueModifier:
 # SupportedStyles: implicit, explicit
 Style/RescueStandardError:
   Enabled: false
-
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil, AllowedMethods.
-# AllowedMethods: present?, blank?, presence, try, try!
-Style/SafeNavigation:
-  Exclude:
-    - 'app/api/v2/entities/base.rb'
-    - 'app/api/v2/management/entities/base.rb'
-    - 'app/models/order.rb'
-    - 'app/models/payment_address.rb'
-    - 'app/models/transaction.rb'
-    - 'app/models/wallet.rb'
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: ExactNameMatch, AllowPredicates, AllowDSLWriters, IgnoreClassMethods, AllowedMethods.
