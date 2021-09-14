@@ -78,7 +78,7 @@ class EthereumGateway < AbstractGateway
       .call(from_address: from_address,
             to_address: to_address,
             contract_addresses: [contract_address].compact,
-            account_native: contract_addresses.nil?,
+            account_native: contract_address.nil?,
             gas_limits: gas_limits,
             gas_price: gas_price)
 
