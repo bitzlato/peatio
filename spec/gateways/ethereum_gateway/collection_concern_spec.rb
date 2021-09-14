@@ -21,6 +21,7 @@ describe ::EthereumGateway::CollectionConcern do
     let(:eth_money_amount) { 2.to_money('eth') }
     let(:balances) { { Money::Currency.find('eth') => eth_money_amount} }
     let(:payment_address) { create :payment_address, blockchain: blockchain }
+    let(:gas_limits) { { nil => nil } }
 
     context 'there are native and tokens on the address' do
       before do
@@ -40,6 +41,7 @@ describe ::EthereumGateway::CollectionConcern do
                 to_address: hot_wallet.address,
                 amounts: {nil => eth_money_amount.base_units },
                 gas_factor: 1,
+                gas_limits: gas_limits,
                 secret: payment_address.secret)
           .once
         EthereumGateway
