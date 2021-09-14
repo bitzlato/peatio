@@ -18,10 +18,10 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.integer  "currency",        limit: 4
       t.integer  "fun",             limit: 4
     end
-    add_index "account_versions", ["account_id", "reason"], name: "index_account_versions_on_account_id_and_reason", using: :btree
+    add_index "account_versions", %w[account_id reason], name: "index_account_versions_on_account_id_and_reason", using: :btree
     add_index "account_versions", ["account_id"], name: "index_account_versions_on_account_id", using: :btree
-    add_index "account_versions", ["member_id", "reason"], name: "index_account_versions_on_member_id_and_reason", using: :btree
-    add_index "account_versions", ["modifiable_id", "modifiable_type"], name: "index_account_versions_on_modifiable_id_and_modifiable_type", using: :btree
+    add_index "account_versions", %w[member_id reason], name: "index_account_versions_on_member_id_and_reason", using: :btree
+    add_index "account_versions", %w[modifiable_id modifiable_type], name: "index_account_versions_on_modifiable_id_and_modifiable_type", using: :btree
     create_table "accounts", force: :cascade do |t|
       t.integer  "member_id",                       limit: 4
       t.integer  "currency",                        limit: 4
@@ -33,7 +33,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.decimal  "out",                                       precision: 32, scale: 16
       t.integer  "default_withdraw_fund_source_id", limit: 4
     end
-    add_index "accounts", ["member_id", "currency"], name: "index_accounts_on_member_id_and_currency", using: :btree
+    add_index "accounts", %w[member_id currency], name: "index_accounts_on_member_id_and_currency", using: :btree
     add_index "accounts", ["member_id"], name: "index_accounts_on_member_id", using: :btree
     create_table "api_tokens", force: :cascade do |t|
       t.integer  "member_id",       limit: 4,   null: false
@@ -65,7 +65,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.string   "source_state",   limit: 255
       t.string   "target_state",   limit: 255
     end
-    add_index "audit_logs", ["auditable_id", "auditable_type"], name: "index_audit_logs_on_auditable_id_and_auditable_type", using: :btree
+    add_index "audit_logs", %w[auditable_id auditable_type], name: "index_audit_logs_on_auditable_id_and_auditable_type", using: :btree
     add_index "audit_logs", ["operator_id"], name: "index_audit_logs_on_operator_id", using: :btree
     create_table "authentications", force: :cascade do |t|
       t.string   "provider",   limit: 255
@@ -77,7 +77,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.string   "nickname",   limit: 255
     end
     add_index "authentications", ["member_id"], name: "index_authentications_on_member_id", using: :btree
-    add_index "authentications", ["provider", "uid"], name: "index_authentications_on_provider_and_uid", using: :btree
+    add_index "authentications", %w[provider uid], name: "index_authentications_on_provider_and_uid", using: :btree
     create_table "deposits", force: :cascade do |t|
       t.integer  "account_id",             limit: 4
       t.integer  "member_id",              limit: 4
@@ -97,7 +97,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.integer  "payment_transaction_id", limit: 4
       t.integer  "txout",                  limit: 4
     end
-    add_index "deposits", ["txid", "txout"], name: "index_deposits_on_txid_and_txout", using: :btree
+    add_index "deposits", %w[txid txout], name: "index_deposits_on_txid_and_txout", using: :btree
     create_table "fund_sources", force: :cascade do |t|
       t.integer  "member_id",  limit: 4
       t.integer  "currency",   limit: 4
@@ -153,8 +153,8 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.decimal  "funds_received",             precision: 32, scale: 16, default: 0.0
       t.integer  "trades_count",   limit: 4,                             default: 0
     end
-    add_index "orders", ["currency", "state"], name: "index_orders_on_currency_and_state", using: :btree
-    add_index "orders", ["member_id", "state"], name: "index_orders_on_member_id_and_state", using: :btree
+    add_index "orders", %w[currency state], name: "index_orders_on_currency_and_state", using: :btree
+    add_index "orders", %w[member_id state], name: "index_orders_on_member_id_and_state", using: :btree
     add_index "orders", ["member_id"], name: "index_orders_on_member_id", using: :btree
     add_index "orders", ["state"], name: "index_orders_on_state", using: :btree
     create_table "partial_trees", force: :cascade do |t|
@@ -188,7 +188,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.string   "type",          limit: 60
       t.integer  "txout",         limit: 4
     end
-    add_index "payment_transactions", ["txid", "txout"], name: "index_payment_transactions_on_txid_and_txout", using: :btree
+    add_index "payment_transactions", %w[txid txout], name: "index_payment_transactions_on_txid_and_txout", using: :btree
     add_index "payment_transactions", ["type"], name: "index_payment_transactions_on_type", using: :btree
     create_table "proofs", force: :cascade do |t|
       t.string   "root",       limit: 255
@@ -227,7 +227,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.text     "object",     limit: 65535
       t.datetime "created_at"
     end
-    add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
+    add_index "versions", %w[item_type item_id], name: "index_versions_on_item_type_and_item_id", using: :btree
     create_table "withdraws", force: :cascade do |t|
       t.string   "sn",         limit: 255
       t.integer  "account_id", limit: 4

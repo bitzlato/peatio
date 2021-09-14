@@ -11,7 +11,7 @@ describe API::V2::Account::Deposits, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Deposit', 'PaymentAddress']}})
+    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>%w[Deposit PaymentAddress]}})
   end
 
   describe 'POST /api/v2/account/deposits/intention' do
@@ -90,13 +90,13 @@ describe API::V2::Account::Deposits, type: :request do
 
     it 'filters deposits by multiple states' do
       create(:deposit_btc, member: member, aasm_state: :rejected)
-      api_get '/api/v2/account/deposits', params: { state: ['canceled', 'rejected'] }, token: token
+      api_get '/api/v2/account/deposits', params: { state: %w[canceled rejected] }, token: token
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 1
 
       create(:deposit_btc, member: member, aasm_state: :canceled)
-      api_get '/api/v2/account/deposits', params: { state: ['canceled', 'rejected'] }, token: token
+      api_get '/api/v2/account/deposits', params: { state: %w[canceled rejected] }, token: token
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 2

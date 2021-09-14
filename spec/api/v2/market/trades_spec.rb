@@ -182,7 +182,7 @@ describe API::V2::Market::Trades, type: :request do
     end
 
     it 'returns trades for several markets' do
-      api_get '/api/v2/market/trades', params: { market: ['btc_usd', 'btc_eth'] }, token: token
+      api_get '/api/v2/market/trades', params: { market: %w[btc_usd btc_eth] }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful

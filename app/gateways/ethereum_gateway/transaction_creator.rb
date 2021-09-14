@@ -117,7 +117,7 @@ class EthereumGateway
         contract_address: contract_address,
         options: {
           gas_price: gas_price,
-          gas_limit: gas_limit,
+          gas_limit: gas_limit
         }
       ).freeze
     end

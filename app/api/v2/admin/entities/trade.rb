@@ -32,7 +32,7 @@ module API
             :maker_fee,
             documentation: {
               type: BigDecimal,
-              desc: 'Trade maker fee percentage.',
+              desc: 'Trade maker fee percentage.'
             },
             if: ->(object, options) { options[:extended] }
           ) { |trade| trade.maker_order.maker_fee }
@@ -41,7 +41,7 @@ module API
             :maker_fee_amount,
             documentation: {
               type: BigDecimal,
-              desc: 'Trade maker fee amount.',
+              desc: 'Trade maker fee amount.'
             }
           ) { |trade| fee_amount(trade, trade.maker_order) }
 
@@ -87,7 +87,7 @@ module API
             :taker_fee,
             documentation: {
               type: BigDecimal,
-              desc: 'Trade taker fee percentage.',
+              desc: 'Trade taker fee percentage.'
             },
             if: ->(object, options) { options[:extended] }
           ) { |trade| trade.taker_order.taker_fee }
@@ -96,7 +96,7 @@ module API
             :taker_fee_amount,
             documentation: {
               type: BigDecimal,
-              desc: 'Trade taker fee amount.',
+              desc: 'Trade taker fee amount.'
             }
           ) { |trade| fee_amount(trade, trade.taker_order) }
 

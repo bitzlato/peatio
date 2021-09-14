@@ -10,7 +10,7 @@ describe API::V2::Account::Transactions, type: :request do
     let(:balance) { 100000 }
 
     before do
-      Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Deposit', 'Withdraw']}})
+      Ability.stubs(:user_permissions).returns({'member'=>{'read'=>%w[Deposit Withdraw]}})
     end
 
     context 'successful' do
@@ -142,11 +142,11 @@ describe API::V2::Account::Transactions, type: :request do
         it 'returns transactions with more than one deposit state' do
           expect(Deposit.count).to eq 20
 
-          api_get '/api/v2/account/transactions', params: { deposit_state: ['accepted', 'submitted'] }, token: token
+          api_get '/api/v2/account/transactions', params: { deposit_state: %w[accepted submitted] }, token: token
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Deposit' }.count).to eq 16
-          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to match_array(['submitted', 'accepted'])
+          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to match_array(%w[submitted accepted])
         end
 
         it 'returns transactions with one deposit state' do
@@ -162,11 +162,11 @@ describe API::V2::Account::Transactions, type: :request do
         it 'returns transactions with more than one withdraw state' do
           expect(Withdraw.count).to eq 20
 
-          api_get '/api/v2/account/transactions', params: { withdraw_state: ['accepted', 'prepared'] }, token: token
+          api_get '/api/v2/account/transactions', params: { withdraw_state: %w[accepted prepared] }, token: token
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Withdraw' }.count).to eq 16
-          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to match_array(['prepared', 'accepted'])
+          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to match_array(%w[prepared accepted])
         end
 
         it 'returns transactions with one withdraw state' do
@@ -195,13 +195,13 @@ describe API::V2::Account::Transactions, type: :request do
           expect(Withdraw.count).to eq 20
           expect(Deposit.count).to eq 20
 
-          api_get '/api/v2/account/transactions', params: { withdraw_state: ['rejected', 'accepted'], deposit_state: ['rejected', 'accepted'] }, token: token
+          api_get '/api/v2/account/transactions', params: { withdraw_state: %w[rejected accepted], deposit_state: %w[rejected accepted] }, token: token
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Deposit' }.count).to eq 8
           expect(result.select { |t| t['type'] == 'Withdraw' }.count).to eq 8
-          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to match_array(['accepted','rejected'])
-          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to match_array(['accepted','rejected'])
+          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to match_array(%w[accepted rejected])
+          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to match_array(%w[accepted rejected])
         end
       end
     end

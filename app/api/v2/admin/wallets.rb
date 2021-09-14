@@ -17,7 +17,7 @@ module API
           values: { value: Wallet::STATES, message: 'admin.wallet.invalid_status' },
           default: 'active',
           desc: -> { API::V2::Admin::Entities::Wallet.documentation[:status][:desc] }
-        },
+        }
       }
 
       class Wallets < Grape::API

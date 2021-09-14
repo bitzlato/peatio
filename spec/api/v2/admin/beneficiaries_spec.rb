@@ -57,16 +57,16 @@ describe API::V2::Admin::Beneficiaries, type: :request do
       end
 
       it 'by state' do
-        api_get url, token: token, params: { state: ['pending', 'archived'] }
+        api_get url, token: token, params: { state: %w[pending archived] }
 
-        expect(response_body.count).to eq(Beneficiary.where(state: ['pending', 'archived']).count)
+        expect(response_body.count).to eq(Beneficiary.where(state: %w[pending archived]).count)
       end
 
       context 'by currency' do
         it 'by crypto currency' do
-          api_get url, token: token, params: { currency: ['eth', 'btc'] }
+          api_get url, token: token, params: { currency: %w[eth btc] }
 
-          expect(response_body.count).to eq(Beneficiary.where(currency_id: ['eth', 'btc']).count)
+          expect(response_body.count).to eq(Beneficiary.where(currency_id: %w[eth btc]).count)
         end
 
         it 'by fiat currency' do

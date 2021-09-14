@@ -18,7 +18,7 @@ module API
             values: { value: %w(active disabled), message: 'management.wallet.invalid_status' },
             default: 'active',
             desc: -> { API::V2::Management::Entities::Wallet.documentation[:status][:desc] }
-          },
+          }
         }
 
         helpers ::API::V2::ParamHelpers

@@ -357,7 +357,7 @@ describe Order, '#trigger_private_event' do
         at:               subject.created_at.to_i,
         created_at:       subject.created_at.to_i,
         updated_at:       subject.updated_at.to_i,
-        trades_count:     subject.trades_count,
+        trades_count:     subject.trades_count
       }
     end
 

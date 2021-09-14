@@ -30,7 +30,7 @@ module API
             values: { value: ::Market::STATES, message: 'management.market.invalid_state' },
             default: 'enabled',
             desc: -> { API::V2::Management::Entities::Market.documentation[:state][:desc] }
-          },
+          }
         }
 
         helpers do

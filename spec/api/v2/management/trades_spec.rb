@@ -64,7 +64,7 @@ describe API::V2::Management::Trades, type: :request do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
     scopes: {
-      read_trades:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] },
+      read_trades:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] }
     }
   end
 

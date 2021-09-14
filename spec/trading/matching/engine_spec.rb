@@ -659,8 +659,8 @@ describe Matching::Engine do
     before(:each) { subject.initializing = false }
 
     it 'should publish increment of orderbook' do
-      ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["10.0", "5.0"], "sequence" => 2, })
-      ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "bids" => ["10.0", "5.0"], "sequence" => 3, })
+      ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["10.0", "5.0"], "sequence" => 2 })
+      ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "bids" => ["10.0", "5.0"], "sequence" => 3 })
 
       subject.publish_increment(market.symbol, :ask, ask.price, ask.volume)
       subject.publish_increment(market.symbol, :bid, bid.price, bid.volume)
@@ -682,7 +682,7 @@ describe Matching::Engine do
       ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
         "asks" => [["12.0", "1.0"], ["14.0", "1.0"]],
         "bids" => [["11.0", "2.0"], ["10.0", "2.0"]],
-        "sequence" => 1,
+        "sequence" => 1
       })
       subject.publish_snapshot
     end
@@ -697,7 +697,7 @@ describe Matching::Engine do
         ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
           "asks" => [["14.0", "1.0"]],
           "bids" => [["11.0", "2.0"]],
-          "sequence" => 1,
+          "sequence" => 1
         })
         ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["11.0", "2.0"], "sequence" => 2 })
         subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
@@ -711,7 +711,7 @@ describe Matching::Engine do
         ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
           "asks" => [["14.0", "1.0"]],
           "bids" => [["11.0", "2.0"]],
-          "sequence" => 1,
+          "sequence" => 1
         })
         ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["11.0", "2.0"], "sequence" => 2 })
         subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
@@ -751,7 +751,7 @@ describe Matching::Engine do
         subject.submit(bid1)
         ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
           "asks" => [["14.0", "1.0"]],
-          "bids" => [["11.0", "2.0"]],
+          "bids" => [["11.0", "2.0"]]
         }).never
         ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["11.0", "2.0"], "sequence" => 2 })
         subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)

@@ -197,7 +197,7 @@ describe Bitzlato::Wallet do
           expect(transaction.options['voucher']).to be_present
           expect(transaction.options['links']).to be_a(Array)
           expect(transaction.options['links'].count).to eq(2)
-          expect(transaction.options['links'].first.keys).to eq(['title', 'url'])
+          expect(transaction.options['links'].first.keys).to eq(%w[title url])
         end
       end
     end
@@ -228,7 +228,7 @@ describe Bitzlato::Wallet do
         expect(result[:amount]).to eq 1.1
         expect(result[:links]).to be_a(Array)
         expect(result[:links].count).to eq(2)
-        expect(result[:links].first.keys).to eq(['title', 'url'])
+        expect(result[:links].first.keys).to eq(%w[title url])
         expect(result[:expires_at]).to be_a(Time)
       end
     end

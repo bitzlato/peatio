@@ -86,7 +86,7 @@ class Transaction < ApplicationRecord
       currency_id:     tx.currency_id,
       blockchain_id:   tx.blockchain_id,
       txid:            tx.id,
-      options:         tx.options,
+      options:         tx.options
     }.deep_merge(extra)
 
     # TODO There are problem with save 'kind'a attribuve with upsert

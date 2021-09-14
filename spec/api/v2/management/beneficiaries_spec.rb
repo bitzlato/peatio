@@ -20,7 +20,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
     let(:member) { create(:member, :level_3) }
     let(:beneficiary_data) do
       {
-        uid: member.uid,
+        uid: member.uid
       }
     end
 

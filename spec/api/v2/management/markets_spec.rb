@@ -7,7 +7,7 @@ describe API::V2::Management::Markets, type: :request do
     management_api_v1_security_configuration.merge! \
       scopes: {
         write_markets: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] },
-        read_markets: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] },
+        read_markets: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] }
       }
   end
 

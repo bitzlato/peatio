@@ -111,7 +111,7 @@ module API
                                     .eq(state: 'wait', market_type: 'spot')
                                     .translate(market: :market_id)
                                     .merge({
-                                      type_eq: params[:side].present? ? params[:side] == 'buy' ? 'OrderBid' : 'OrderAsk' : nil,
+                                      type_eq: params[:side].present? ? params[:side] == 'buy' ? 'OrderBid' : 'OrderAsk' : nil
                                     }).build
 
             orders = Order.ransack(ransack_params)

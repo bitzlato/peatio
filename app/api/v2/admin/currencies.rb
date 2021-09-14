@@ -82,7 +82,7 @@ module API
           },
           icon_url: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:icon_url][:desc] } },
           description: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:description][:desc] } },
-          homepage: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:homepage][:desc] } },
+          homepage: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:homepage][:desc] } }
         }
 
         helpers ::API::V2::Admin::Helpers

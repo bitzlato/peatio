@@ -62,7 +62,7 @@ module OrderServices
     def amqp_event_payload_with_uuid(uuid:, payload:)
       {
         uuid: uuid,
-        payload: payload,
+        payload: payload
       }
     end
 

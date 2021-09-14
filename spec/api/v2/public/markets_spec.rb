@@ -332,7 +332,7 @@ describe API::V2::Public::Markets, type: :request do
           high: point[2],
           low: point[3],
           close: point[4],
-          volume: point[5],
+          volume: point[5]
         },
         tags:
         {

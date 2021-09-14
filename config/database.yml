@@ -23,7 +23,7 @@ development:
 
 test:
   <<: *default
-  database: peatio_test<%= ENV['TEST_ENV_NUMBER'] %>_<%= ENV["CI_NODE_INDEX"] %>
+  database: peatio_test<%= ENV['TEST_ENV_NUMBER'] %>
 
 staging:
   <<: *default

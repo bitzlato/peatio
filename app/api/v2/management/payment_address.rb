@@ -36,10 +36,10 @@ module API
             error!({ errors: ['account.wallet.not_found'] }, 422)
           end
 
-          unless params[:remote].nil?
-            pa = member.payment_address!(wallet.id, params[:remote])
-          else
+          if params[:remote].nil?
             pa = member.payment_address!(wallet.id)
+          else
+            pa = member.payment_address!(wallet.id, params[:remote])
           end
 
           begin

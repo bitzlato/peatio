@@ -19,13 +19,13 @@ Rails.configuration.x.jwt_options = {
   aud: ENV['JWT_AUDIENCE'].to_s.split(',').reject(&:blank?),
   verify_aud: ENV['JWT_AUDIENCE'].present?,
   sub: 'session',
-  verify_sub: true,
+  verify_sub: true
 }.compact.tap do |jwt_options|
   leeway_options = {
     leeway: ENV['JWT_DEFAULT_LEEWAY'],
     iat_leeway: ENV['JWT_ISSUED_AT_LEEWAY'],
     exp_leeway: ENV['JWT_EXPIRATION_LEEWAY'],
-    nbf_leeway: ENV['JWT_NOT_BEFORE_LEEWAY'],
+    nbf_leeway: ENV['JWT_NOT_BEFORE_LEEWAY']
   }.compact.transform_values!(&:to_i)
 
   jwt_options.merge!(leeway_options)

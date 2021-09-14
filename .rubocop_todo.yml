@@ -2288,13 +2288,6 @@ Style/TrailingCommaInArrayLiteral:
     - 'spec/lib/peatio/bitzlato/wallet_spec.rb'
     - 'spec/models/market_spec.rb'
 
-# Offense count: 40
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleForMultiline.
-# SupportedStylesForMultiline: comma, consistent_comma, no_comma
-Style/TrailingCommaInHashLiteral:
-  Enabled: false
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: ExactNameMatch, AllowPredicates, AllowDSLWriters, IgnoreClassMethods, AllowedMethods.
@@ -2302,43 +2295,6 @@ Style/TrailingCommaInHashLiteral:
 Style/TrivialAccessors:
   Exclude:
     - 'lib/peatio/amqp/event_api.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/UnlessElse:
-  Exclude:
-    - 'app/api/v2/management/payment_address.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/UnpackFirst:
-  Exclude:
-    - 'lib/peatio/uuid.rb'
-
-# Offense count: 37
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, MinSize, WordRegex.
-# SupportedStyles: percent, brackets
-Style/WordArray:
-  Exclude:
-    - 'db/migrate/20180112151205_init_schema.rb'
-    - 'db/migrate/20210414105529_change_primary_key_to_big_int.rb'
-    - 'db/migrate/20210823065105_add_unique_blockchain_index_to_transactions.rb'
-    - 'spec/api/v2/account/deposits_spec.rb'
-    - 'spec/api/v2/account/transactions_spec.rb'
-    - 'spec/api/v2/account/withdraws_spec.rb'
-    - 'spec/api/v2/admin/abilities_spec.rb'
-    - 'spec/api/v2/admin/beneficiaries_spec.rb'
-    - 'spec/api/v2/market/orders_spec.rb'
-    - 'spec/api/v2/market/trades_spec.rb'
-    - 'spec/lib/peatio/bitzlato/wallet_spec.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/ZeroLengthPredicate:
-  Exclude:
-    - 'lib/daemons/amqp_daemon.rb'
-    - 'lib/daemons/daemons.rb'
 
 # Offense count: 756
 # Cop supports --auto-correct.

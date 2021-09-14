@@ -78,7 +78,7 @@ module Jobs::Cron
           "DepositCoin" => "1970-01-01 00:00:00.000",
           "Withdraw" => "1970-01-01 00:00:00.000",
           "Adjustment" => "1970-01-01 00:00:00.000",
-          "Transfer" => 0,
+          "Transfer" => 0
         }
         ActiveRecord::Base.connection.select_all(query).rows.each do |name, idx|
           case name
@@ -281,7 +281,7 @@ module Jobs::Cron
                 total_credit_fees: 0,
                 total_credit: 0,
                 total_debit: 0,
-                total_amount: 0,
+                total_amount: 0
               }
             end
           end

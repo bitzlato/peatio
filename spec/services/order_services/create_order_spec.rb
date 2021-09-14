@@ -9,7 +9,7 @@ describe OrderServices::CreateOrder do
       market: market,
       side: 'buy', # buy/sell
       volume: '1'.to_d,
-      ord_type: 'market', # limit/market
+      ord_type: 'market' # limit/market
     }
   }
 
@@ -48,7 +48,7 @@ describe OrderServices::CreateOrder do
             side: 'buy', # buy/sell
             volume: '1000'.to_d,
             ord_type: 'market', # limit/market
-            uuid: uuid,
+            uuid: uuid
           }
         }
 
@@ -59,7 +59,7 @@ describe OrderServices::CreateOrder do
             'order_error',
             {
               uuid: uuid,
-              payload: 'market.order.insufficient_market_liquidity',
+              payload: 'market.order.insufficient_market_liquidity'
             }
           )
           result = service.perform(**ton_of_btc_params)
@@ -139,7 +139,7 @@ describe OrderServices::CreateOrder do
           market: market,
           side: 'buy', # buy/sell
           volume: '1'.to_d,
-          ord_type: 'market', # limit/market
+          ord_type: 'market' # limit/market
         }
       }
 

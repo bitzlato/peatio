@@ -117,7 +117,7 @@ describe ::EthereumGateway::TransactionCreator do
           to: contract_address,
           data: '0xa9059cbb0000000000000000000000006d6cabaa7232d7f45b143b445114f7e92350a2aa000000000000000000000000000000000000000000000000000000000010c8e0',
           gas: '0x' + (gas_limit.to_s 16),
-          gasPrice: '0x' + transaction_gas_price.to_s(16),
+          gasPrice: '0x' + transaction_gas_price.to_s(16)
         }, secret] }
     end
     let(:result_transaction_hash) do
@@ -131,7 +131,7 @@ describe ::EthereumGateway::TransactionCreator do
         options: {
           'gas_limit' => gas_limit,
           'gas_factor' => gas_factor,
-          'gas_price' => transaction_gas_price,
+          'gas_price' => transaction_gas_price
         }
       }
     end

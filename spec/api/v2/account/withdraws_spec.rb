@@ -97,13 +97,13 @@ describe API::V2::Account::Withdraws, type: :request do
 
     it 'filters withdraws by multiple states' do
       create(:usd_withdraw, member: member, aasm_state: :rejected)
-      api_get '/api/v2/account/withdraws', params: { state: ['canceled', 'rejected'] }, token: token
+      api_get '/api/v2/account/withdraws', params: { state: %w[canceled rejected] }, token: token
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 1
 
       create(:usd_withdraw, member: member, aasm_state: :canceled)
-      api_get '/api/v2/account/withdraws', params: { state: ['canceled', 'rejected'] }, token: token
+      api_get '/api/v2/account/withdraws', params: { state: %w[canceled rejected] }, token: token
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 2

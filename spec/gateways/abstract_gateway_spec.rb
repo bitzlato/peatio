@@ -21,7 +21,7 @@ describe ::AbstractGateway do
         to_address: '145',
         block_number: 1,
         status: 'success',
-        contract_address: nil,
+        contract_address: nil
       }}
       let(:reference) { create :deposit, :deposit_eth }
 
