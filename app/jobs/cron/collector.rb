@@ -10,7 +10,7 @@ module Jobs
         sleep 300
       end
 
-      def process_address(payment_address)
+      def self.process_address(payment_address)
         next unless payment_address.has_collectable_balances?
         if payment_address.has_enough_gas_to_collect?
           payment_address.collect!
