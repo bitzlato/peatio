@@ -32,7 +32,7 @@ describe Beneficiary, 'Validations' do
     context 'nil pin' do
       subject { build(:beneficiary) }
 
-      before { Beneficiary.expects(:generate_pin).returns(nil) }
+      before { described_class.expects(:generate_pin).returns(nil) }
 
       it { expect(subject).not_to be_valid }
     end
@@ -42,7 +42,7 @@ describe Beneficiary, 'Validations' do
     context 'float pin' do
       subject { build(:beneficiary) }
 
-      before { Beneficiary.expects(:generate_pin).returns(3.14) }
+      before { described_class.expects(:generate_pin).returns(3.14) }
 
       it { expect(subject).not_to be_valid }
     end

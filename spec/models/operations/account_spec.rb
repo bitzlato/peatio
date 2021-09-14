@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe Operations::Account do
-  let(:account) { Operations::Account.find_by(code: '101') }
+  let(:account) { described_class.find_by(code: '101') }
 
   describe '#code' do
     it 'validates presence' do
@@ -47,7 +47,7 @@ describe Operations::Account do
     end
 
     it 'validates uniqueness scoped to type and currency_type' do
-      account = Operations::Account.new
+      account = described_class.new
 
       # an already existing (kind, type, currency_type)
       account.kind          = :main

@@ -4,7 +4,7 @@ describe Matching::LimitOrder do
   context 'initialize' do
     it 'throws invalid order error for empty attributes' do
       expect do
-        Matching::LimitOrder.new(type: '', price: '', volume: '')
+        described_class.new(type: '', price: '', volume: '')
       end.to raise_error(Matching::OrderError)
     end
 

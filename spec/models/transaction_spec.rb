@@ -27,7 +27,7 @@ describe Transaction do
     context 'creates first time' do
       subject { described_class.upsert_transaction! peatio_transaction }
 
-      it { expect(subject).to be_a Transaction }
+      it { expect(subject).to be_a described_class }
       it { expect(subject.kind).to eq 'deposit' }
     end
 

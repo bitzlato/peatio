@@ -2,7 +2,7 @@
 
 describe UserAbility do
   context 'abilities for member' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'member') }
 
@@ -10,7 +10,7 @@ describe UserAbility do
   end
 
   context 'abilities for superadmin' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'superadmin') }
 
@@ -18,7 +18,7 @@ describe UserAbility do
   end
 
   context 'abilities for admin' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'admin') }
 
@@ -26,7 +26,7 @@ describe UserAbility do
   end
 
   context 'abilities for compliance' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'compliance') }
 
@@ -34,7 +34,7 @@ describe UserAbility do
   end
 
   context 'abilities for support' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'support') }
 
@@ -42,7 +42,7 @@ describe UserAbility do
   end
 
   context 'abilities for technical' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'technical') }
 
@@ -50,7 +50,7 @@ describe UserAbility do
   end
 
   context 'abilities for reporter' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'reporter') }
 
@@ -58,7 +58,7 @@ describe UserAbility do
   end
 
   context 'abilities for accountant' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'accountant') }
 
@@ -66,7 +66,7 @@ describe UserAbility do
   end
 
   context 'abilities for broker' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'broker') }
 
@@ -74,7 +74,7 @@ describe UserAbility do
   end
 
   context 'abilities for trader' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'trader') }
 
@@ -82,7 +82,7 @@ describe UserAbility do
   end
 
   context 'abilities for maker' do
-    subject(:ability) { UserAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'maker') }
 

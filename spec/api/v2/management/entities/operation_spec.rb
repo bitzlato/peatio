@@ -3,7 +3,7 @@
 describe API::V2::Management::Entities::Operation do
   Operations::Account::PLATFORM_TYPES.each do |op_type|
     context op_type do
-      subject { OpenStruct.new API::V2::Management::Entities::Operation.represent(record).serializable_hash }
+      subject { OpenStruct.new described_class.represent(record).serializable_hash }
 
       let(:record) { create(op_type) }
 
@@ -33,7 +33,7 @@ describe API::V2::Management::Entities::Operation do
 
   Operations::Account::MEMBER_TYPES.each do |op_type|
     context op_type do
-      subject { OpenStruct.new API::V2::Management::Entities::Operation.represent(record).serializable_hash }
+      subject { OpenStruct.new described_class.represent(record).serializable_hash }
 
       let(:record) { create(op_type, :with_member) }
 

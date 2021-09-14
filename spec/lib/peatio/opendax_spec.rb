@@ -11,7 +11,7 @@ RSpec.describe Peatio::Upstream::Opendax do
     }.stringify_keys
   end
 
-  let(:opendax) { Peatio::Upstream::Opendax.new(upstream_opendax_config) }
+  let(:opendax) { described_class.new(upstream_opendax_config) }
 
   let(:msg) do
     {

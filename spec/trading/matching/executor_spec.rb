@@ -2,7 +2,7 @@
 
 describe Matching::Executor do
   subject do
-    Matching::Executor.new(
+    described_class.new(
       action: 'execute',
       trade: {
         market_id: market.symbol,
@@ -115,7 +115,7 @@ describe Matching::Executor do
     let(:bid) { create(:order_bid, :btc_usd, price: nil, ord_type: 'market', volume: '2.0'.to_d, locked: '3.0'.to_d, member: bob) }
 
     it 'cancels the market order' do
-      executor = Matching::Executor.new(
+      executor = described_class.new(
         action: 'execute',
         trade: {
           market_id: market.symbol,
@@ -134,7 +134,7 @@ describe Matching::Executor do
 
   context 'unlock not used funds' do
     subject do
-      Matching::Executor.new(
+      described_class.new(
         action: 'execute',
         trade: {
           market_id: market.symbol,

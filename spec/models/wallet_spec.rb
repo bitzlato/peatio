@@ -33,7 +33,7 @@ describe Wallet do
     end
 
     it 'validates name uniqueness' do
-      subject.name = Wallet.first.name
+      subject.name = described_class.first.name
       expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Name has already been taken']
     end

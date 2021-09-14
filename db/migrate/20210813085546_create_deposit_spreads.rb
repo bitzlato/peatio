@@ -33,7 +33,7 @@ class CreateDepositSpreads < ActiveRecord::Migration[5.2]
           meta: { spread: spread }
         )
       rescue StandardError => e
-        puts "#{e} for #{spread}"
+        Rails.logger.debug { "#{e} for #{spread}" }
       end
     end
 

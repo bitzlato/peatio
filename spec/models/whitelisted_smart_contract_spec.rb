@@ -32,7 +32,7 @@ describe WhitelistedSmartContract, 'Validations' do
     end
 
     it 'validates whitelisted address address uniqueness' do
-      subject.address = WhitelistedSmartContract.first.address
+      subject.address = described_class.first.address
       expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Address has already been taken']
     end

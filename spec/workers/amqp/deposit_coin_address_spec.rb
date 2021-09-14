@@ -18,14 +18,14 @@ describe Workers::AMQP::DepositCoinAddress do
     if defined? Mysql2
       Member.stubs(:find).raises(Mysql2::Error::ConnectionError.new(''))
       expect do
-        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
+        described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
       end.to raise_error Mysql2::Error::ConnectionError
     end
 
     if defined? PG
       Member.stubs(:find).raises(PG::Error.new(''))
       expect do
-        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
+        described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
       end.to raise_error PG::Error
     end
   end
@@ -41,7 +41,7 @@ describe Workers::AMQP::DepositCoinAddress do
     end
 
     it 'is passed to blockchain service' do
-      Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
+      described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
       expect(subject).to eq address
       payment_address.reload
       expect(payment_address.as_json
@@ -56,7 +56,7 @@ describe Workers::AMQP::DepositCoinAddress do
       end
 
       it 'is passed to blockchain service' do
-        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
+        described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
         expect(subject).to eq address
         payment_address.reload
         expect(payment_address.as_json
@@ -75,7 +75,7 @@ describe Workers::AMQP::DepositCoinAddress do
       end
 
       it 'shouldnt create address' do
-        Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
+        described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
         expect(subject).to eq nil
         payment_address.reload
         expect(payment_address.as_json

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 describe UUID do
-  let(:uuid) { UUID.generate }
+  let(:uuid) { described_class.generate }
   let(:invalid_uuid) { 'bcfbd6f6-8c-4bcd-b76a-ed68a01347a5' }
   let(:type) { UUID::Type.new }
-  let(:correct_uuid) { UUID.validate(uuid) }
-  let(:incorrect_uuid) { UUID.validate(invalid_uuid) }
+  let(:correct_uuid) { described_class.validate(uuid) }
+  let(:incorrect_uuid) { described_class.validate(invalid_uuid) }
 
   it 'seizlizes and deserializes correctly' do
     bytes = type.serialize(uuid)

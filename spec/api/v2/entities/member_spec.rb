@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe API::V2::Entities::Member do
-  subject { OpenStruct.new API::V2::Entities::Member.represent(member).serializable_hash }
+  subject { OpenStruct.new described_class.represent(member).serializable_hash }
 
   let(:member) { create(:member, :level_3) }
 

@@ -132,7 +132,7 @@ module Workers
             f.puts 'BID'
           end
 
-          puts "#{id} limit orderbook dumped to #{dump_file}."
+          Rails.logger.debug { "#{id} limit orderbook dumped to #{dump_file}." }
         end
       end
 
@@ -150,7 +150,7 @@ module Workers
             f.puts 'BID'
           end
 
-          puts "#{id} market orderbook dumped to #{dump_file}."
+          Rails.logger.debug { "#{id} market orderbook dumped to #{dump_file}." }
         end
       end
     end

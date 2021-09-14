@@ -2,7 +2,7 @@
 
 describe AdminAbility do
   context 'abilities for superadmin' do
-    subject(:ability) { AdminAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'superadmin') }
 
@@ -61,7 +61,7 @@ describe AdminAbility do
   end
 
   context 'abilities for admin' do
-    subject(:ability) { AdminAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'admin') }
 
@@ -90,7 +90,7 @@ describe AdminAbility do
   end
 
   context 'abilities for compliance' do
-    subject(:ability) { AdminAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'compliance') }
 
@@ -108,7 +108,7 @@ describe AdminAbility do
   end
 
   context 'abilities for support' do
-    subject(:ability) { AdminAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'support') }
 
@@ -126,7 +126,7 @@ describe AdminAbility do
   end
 
   context 'abilities for technical' do
-    subject(:ability) { AdminAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'technical') }
 
@@ -149,7 +149,7 @@ describe AdminAbility do
   end
 
   context 'abilities for reporter' do
-    subject(:ability) { AdminAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'reporter') }
 
@@ -167,7 +167,7 @@ describe AdminAbility do
   end
 
   context 'abilities for accountant' do
-    subject(:ability) { AdminAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'accountant') }
 
@@ -189,7 +189,7 @@ describe AdminAbility do
   end
 
   context 'abilities for member' do
-    subject(:ability) { AdminAbility.new(member) }
+    subject(:ability) { described_class.new(member) }
 
     let(:member) { create(:member, role: 'member') }
 

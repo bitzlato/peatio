@@ -2,7 +2,7 @@
 
 describe CORS::Validations do
   describe 'validate origins' do
-    subject { CORS::Validations.validate_origins(ENV['API_CORS_ORIGINS']) }
+    subject { described_class.validate_origins(ENV['API_CORS_ORIGINS']) }
 
     context 'set API_CORS_ORIGINS as "*"' do
       before { ENV['API_CORS_ORIGINS'] = '*' }
@@ -38,7 +38,7 @@ describe CORS::Validations do
   end
 
   describe 'validate max age' do
-    subject { CORS::Validations.validate_max_age(ENV['API_CORS_MAX_AGE']) }
+    subject { described_class.validate_max_age(ENV['API_CORS_MAX_AGE']) }
 
     context 'set API_CORS_MAX_AGE as "6200"' do
       before { ENV['API_CORS_MAX_AGE'] = '6200' }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe WithdrawLimit, 'Validations' do
-  before { WithdrawLimit.delete_all }
+  before { described_class.delete_all }
 
   context 'group presence' do
     context 'nil group' do
@@ -61,13 +61,13 @@ describe WithdrawLimit, 'Validations' do
 end
 
 describe WithdrawLimit, 'Class Methods' do
-  before { WithdrawLimit.delete_all }
+  before { described_class.delete_all }
 
   describe '#for' do
     let!(:member) { create(:member) }
 
     context 'get withdraw_limit with kyc_level and group' do
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       let!(:member) { create(:member, level: 1) }
       let(:withdraw) { Withdraw.new(member: member) }
@@ -87,7 +87,7 @@ describe WithdrawLimit, 'Class Methods' do
     end
 
     context 'get withdraw_limit with group' do
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       before do
         create(:withdraw_limit, group: 'vip-0')
@@ -104,7 +104,7 @@ describe WithdrawLimit, 'Class Methods' do
     end
 
     context 'get withdraw_limit with kyc_level' do
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       before do
         create(:withdraw_limit, kyc_level: 1)
@@ -119,7 +119,7 @@ describe WithdrawLimit, 'Class Methods' do
     end
 
     context 'get default withdraw_limit' do
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       before do
         create(:withdraw_limit, group: 'vip-1')
@@ -135,7 +135,7 @@ describe WithdrawLimit, 'Class Methods' do
     end
 
     context 'get default withdraw_limit (doesnt create it)' do
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       let(:withdraw) { Withdraw.new(member: member) }
 

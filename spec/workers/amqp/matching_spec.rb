@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe Workers::AMQP::Matching do
-  subject { Workers::AMQP::Matching.new }
+  subject { described_class.new }
 
   let(:alice)  { who_is_billionaire }
   let(:bob)    { who_is_billionaire }
@@ -103,7 +103,7 @@ describe Workers::AMQP::Matching do
   end
 
   context 'dryrun' do
-    subject { Workers::AMQP::Matching.new(mode: :dryrun) }
+    subject { described_class.new(mode: :dryrun) }
 
     let!(:bid) { create(:order_bid, :btc_usd, price: '4001', volume: '8.0', member: bob) }
 

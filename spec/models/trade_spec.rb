@@ -39,7 +39,7 @@ describe Trade, '#trade_from_influx_after_date' do
 
   context 'no trades executed yet' do
     it 'returns trade' do
-      expect(Trade.trade_from_influx_after_date(:btc_usd, Time.now)).to eq([])
+      expect(described_class.trade_from_influx_after_date(:btc_usd, Time.now)).to eq([])
     end
   end
 
@@ -62,7 +62,7 @@ describe Trade, '#trade_from_influx_after_date' do
     end
 
     it 'returns trade' do
-      expect(Trade.trade_from_influx_after_date(trade.market_id, Time.now - 1.minute).except(:time)).to eq(expected_trade)
+      expect(described_class.trade_from_influx_after_date(trade.market_id, Time.now - 1.minute).except(:time)).to eq(expected_trade)
     end
   end
 
@@ -90,7 +90,7 @@ describe Trade, '#trade_from_influx_after_date' do
     end
 
     it 'returns trade' do
-      expect(Trade.trade_from_influx_after_date(trade1.market_id, Time.now - 1.minute).except(:time)).to eq(expected_trade)
+      expect(described_class.trade_from_influx_after_date(trade1.market_id, Time.now - 1.minute).except(:time)).to eq(expected_trade)
     end
   end
 end
@@ -100,7 +100,7 @@ describe Trade, '#trade_from_influx_before_date' do
 
   context 'no trades executed yet' do
     it 'returns trade' do
-      expect(Trade.trade_from_influx_before_date(:btc_usd, Time.now)).to eq([])
+      expect(described_class.trade_from_influx_before_date(:btc_usd, Time.now)).to eq([])
     end
   end
 
@@ -123,7 +123,7 @@ describe Trade, '#trade_from_influx_before_date' do
     end
 
     it 'returns trade' do
-      expect(Trade.trade_from_influx_before_date(trade.market_id, Time.now + 3.minutes).except(:time)).to eq(expected_trade)
+      expect(described_class.trade_from_influx_before_date(trade.market_id, Time.now + 3.minutes).except(:time)).to eq(expected_trade)
     end
   end
 
@@ -150,7 +150,7 @@ describe Trade, '#trade_from_influx_before_date' do
     end
 
     it 'returns trade' do
-      expect(Trade.trade_from_influx_before_date(trade1.market_id, Time.now + 3.minutes).except(:time)).to eq(expected_trade)
+      expect(described_class.trade_from_influx_before_date(trade1.market_id, Time.now + 3.minutes).except(:time)).to eq(expected_trade)
     end
   end
 end
@@ -160,7 +160,7 @@ describe Trade, '#nearest_trade_from_influx' do
 
   context 'no trades executed yet' do
     it 'returns trade' do
-      expect(Trade.nearest_trade_from_influx(:btc_usd, Time.now)).to eq([])
+      expect(described_class.nearest_trade_from_influx(:btc_usd, Time.now)).to eq([])
     end
   end
 
@@ -183,7 +183,7 @@ describe Trade, '#nearest_trade_from_influx' do
     end
 
     it 'returns trade' do
-      expect(Trade.nearest_trade_from_influx(trade.market_id, Time.now + 3.minutes).except(:time)).to eq(expected_trade)
+      expect(described_class.nearest_trade_from_influx(trade.market_id, Time.now + 3.minutes).except(:time)).to eq(expected_trade)
     end
   end
 
@@ -206,7 +206,7 @@ describe Trade, '#nearest_trade_from_influx' do
     end
 
     it 'returns trade' do
-      expect(Trade.nearest_trade_from_influx(trade.market_id, Time.now).except(:time)).to eq(expected_trade)
+      expect(described_class.nearest_trade_from_influx(trade.market_id, Time.now).except(:time)).to eq(expected_trade)
     end
   end
 end
@@ -216,7 +216,7 @@ describe Trade, '#market_ticker_from_influx' do
 
   context 'no trades executed yet' do
     it 'returns ticker' do
-      expect(Trade.market_ticker_from_influx(:btc_usd)).to eq([])
+      expect(described_class.market_ticker_from_influx(:btc_usd)).to eq([])
     end
   end
 
@@ -239,7 +239,7 @@ describe Trade, '#market_ticker_from_influx' do
     end
 
     it 'returns ticker' do
-      expect(Trade.market_ticker_from_influx(trade.market_id).except(:time)).to eq(expected_ticker)
+      expect(described_class.market_ticker_from_influx(trade.market_id).except(:time)).to eq(expected_ticker)
     end
   end
 
@@ -266,7 +266,7 @@ describe Trade, '#market_ticker_from_influx' do
     end
 
     it 'returns ticker' do
-      expect(Trade.market_ticker_from_influx(trade1.market_id).except(:time)).to eq(expected_ticker)
+      expect(described_class.market_ticker_from_influx(trade1.market_id).except(:time)).to eq(expected_ticker)
     end
   end
 end

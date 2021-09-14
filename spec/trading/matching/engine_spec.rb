@@ -9,7 +9,7 @@ describe Matching::Engine do
     end
   end
 
-  subject { Matching::Engine.new(market, mode: :run) }
+  subject { described_class.new(market, mode: :run) }
 
   let(:market) { Market.find_spot_by_symbol('btc_usd') }
   let(:price)  { 10.to_d }
@@ -22,7 +22,7 @@ describe Matching::Engine do
   before          { subject.stubs(:orderbook).returns(orderbook) }
 
   context 'submit market order 2' do
-    subject { Matching::Engine.new(market, mode: :dryrun) }
+    subject { described_class.new(market, mode: :dryrun) }
 
     context 'sell market order 1' do
       # We have the next state of bid(buy) order book.
@@ -643,7 +643,7 @@ describe Matching::Engine do
   end
 
   context 'dryrun' do
-    subject { Matching::Engine.new(market, mode: :dryrun) }
+    subject { described_class.new(market, mode: :dryrun) }
 
     it 'does not publish matched trades' do
       AMQP::Queue.expects(:enqueue).never

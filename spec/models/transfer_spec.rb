@@ -172,11 +172,11 @@ describe Transfer do
 
   context 'do_transfer!' do
     subject do
-      Transfer.create!(attributes_for(:transfer,
-                                      liabilities: liabilities,
-                                      assets: assets,
-                                      revenues: revenues,
-                                      expenses: expenses))
+      described_class.create!(attributes_for(:transfer,
+                                             liabilities: liabilities,
+                                             assets: assets,
+                                             revenues: revenues,
+                                             expenses: expenses))
     end
 
     let(:asset1) { build(:asset, credit: 9, currency: currency_btc) }
@@ -193,7 +193,7 @@ describe Transfer do
     it 'creates transfer' do
       expect do
         subject
-      end.to change(Transfer, :count).by 1
+      end.to change(described_class, :count).by 1
     end
 
     context 'update_legacy_balances' do
@@ -246,7 +246,7 @@ describe Transfer do
                 Account::AccountError
               end
               nil
-            end.not_to change(Transfer, :count)
+            end.not_to change(described_class, :count)
           end
         end
       end

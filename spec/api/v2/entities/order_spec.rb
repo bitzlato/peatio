@@ -12,7 +12,7 @@ describe API::V2::Entities::Order do
   end
 
   context 'default exposure' do
-    subject { OpenStruct.new API::V2::Entities::Order.represent(order, {}).serializable_hash }
+    subject { OpenStruct.new described_class.represent(order, {}).serializable_hash }
 
     it do
       expect(subject.id).to eq order.id
@@ -44,7 +44,7 @@ describe API::V2::Entities::Order do
       create(:trade, :btc_usd, maker_order: order, amount: '8.0', price: '12')
       create(:trade, :btc_usd, maker_order: order, amount: '0.99', price: '12.56')
 
-      json = API::V2::Entities::Order.represent(order, type: :full).serializable_hash
+      json = described_class.represent(order, type: :full).serializable_hash
       expect(json[:trades].size).to eq 2
     end
   end

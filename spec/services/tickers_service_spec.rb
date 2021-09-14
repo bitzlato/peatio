@@ -2,7 +2,7 @@
 
 describe TickersService, '#ticker' do
   let(:market) { Market.all.sample.id.to_sym }
-  let(:service) { TickersService }
+  let(:service) { described_class }
 
   context 'no trades executed' do
     let(:default) do

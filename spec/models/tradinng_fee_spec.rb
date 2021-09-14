@@ -23,7 +23,7 @@ describe TradingFee, 'Relationships' do
 end
 
 describe TradingFee, 'Validations' do
-  before { TradingFee.delete_all }
+  before { described_class.delete_all }
 
   context 'market_type presence' do
     context 'nil market_type' do
@@ -173,13 +173,13 @@ describe TradingFee, 'Validations' do
 end
 
 describe TradingFee, 'Class Methods' do
-  before { TradingFee.delete_all }
+  before { described_class.delete_all }
 
   describe '#for' do
     let!(:member) { create(:member) }
 
     context 'get trading_fee with marker_id and group' do
-      subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
+      subject { described_class.for(group: order.member.group, market_id: order.market_id) }
 
       before do
         create(:trading_fee, market_id: :btc_usd, group: 'vip-0')
@@ -198,7 +198,7 @@ describe TradingFee, 'Class Methods' do
     end
 
     context 'get trading_fee with group' do
-      subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
+      subject { described_class.for(group: order.member.group, market_id: order.market_id) }
 
       before do
         create(:trading_fee, market_id: :any, group: 'vip-1')
@@ -216,7 +216,7 @@ describe TradingFee, 'Class Methods' do
     end
 
     context 'get trading_fee with market_id' do
-      subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
+      subject { described_class.for(group: order.member.group, market_id: order.market_id) }
 
       before do
         create(:trading_fee, market_id: :any, group: 'vip-0')
@@ -234,7 +234,7 @@ describe TradingFee, 'Class Methods' do
     end
 
     context 'get default trading_fee' do
-      subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
+      subject { described_class.for(group: order.member.group, market_id: order.market_id) }
 
       before do
         create(:trading_fee, market_id: :any, group: 'vip-1')
@@ -252,7 +252,7 @@ describe TradingFee, 'Class Methods' do
     end
 
     context 'get default trading_fee (doesnt create it)' do
-      subject { TradingFee.for(group: order.member.group, market_id: order.market_id) }
+      subject { described_class.for(group: order.member.group, market_id: order.market_id) }
 
       let(:order) { Order.new(member: member, market_id: :btc_eth) }
 

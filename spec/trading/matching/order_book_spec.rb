@@ -2,7 +2,7 @@
 
 describe Matching::OrderBook do
   describe '#find' do
-    subject { Matching::OrderBook.new('btc_usd', :ask) }
+    subject { described_class.new('btc_usd', :ask) }
 
     it 'finds specific order' do
       o1 = Matching.mock_limit_order(type: :ask, price: '1.0'.to_d)
@@ -16,7 +16,7 @@ describe Matching::OrderBook do
   end
 
   describe '#add' do
-    subject { Matching::OrderBook.new('btc_usd', :ask) }
+    subject { described_class.new('btc_usd', :ask) }
 
     it 'rejects invalid order whose volume is zero' do
       expect do
@@ -52,12 +52,12 @@ describe Matching::OrderBook do
       order = Matching.mock_limit_order(type: :ask)
 
       AMQP::Queue.expects(:enqueue).with(:slave_book, { action: 'add', order: order.attributes }, persistent: false).never
-      Matching::OrderBook.new('btc_usd', :ask, broadcast: false).add order
+      described_class.new('btc_usd', :ask, broadcast: false).add order
     end
   end
 
   describe '#remove' do
-    subject { Matching::OrderBook.new('btc_usd', :ask) }
+    subject { described_class.new('btc_usd', :ask) }
 
     it 'removes market order' do
       subject.define_singleton_method(:legacy_add) do |order|
@@ -115,7 +115,7 @@ describe Matching::OrderBook do
 
   describe '#best_limit_price' do
     it 'returns highest bid price' do
-      book = Matching::OrderBook.new('btc_usd', :bid)
+      book = described_class.new('btc_usd', :bid)
       o1   = Matching.mock_limit_order(type: :bid, price: '1.0'.to_d)
       o2   = Matching.mock_limit_order(type: :bid, price: '2.0'.to_d)
       book.add o1
@@ -125,7 +125,7 @@ describe Matching::OrderBook do
     end
 
     it 'returns lowest ask price' do
-      book = Matching::OrderBook.new('btc_usd', :ask)
+      book = described_class.new('btc_usd', :ask)
       o1   = Matching.mock_limit_order(type: :ask, price: '1.0'.to_d)
       o2   = Matching.mock_limit_order(type: :ask, price: '2.0'.to_d)
       book.add o1
@@ -135,19 +135,19 @@ describe Matching::OrderBook do
     end
 
     it 'returns nil if there`s no limit order' do
-      book = Matching::OrderBook.new('btc_usd', :ask)
+      book = described_class.new('btc_usd', :ask)
       expect(book.best_limit_price).to be_nil
     end
   end
 
   describe '#top' do
     it 'returns nil for empty book' do
-      book = Matching::OrderBook.new('btc_usd', :ask)
+      book = described_class.new('btc_usd', :ask)
       expect(book.top).to be_nil
     end
 
     it 'finds ask order with lowest price' do
-      book = Matching::OrderBook.new('btc_usd', :ask)
+      book = described_class.new('btc_usd', :ask)
       o1 = Matching.mock_limit_order(type: :ask, price: '1.0'.to_d)
       o2 = Matching.mock_limit_order(type: :ask, price: '2.0'.to_d)
       book.add o1
@@ -157,7 +157,7 @@ describe Matching::OrderBook do
     end
 
     it 'finds bid order with highest price' do
-      book = Matching::OrderBook.new('btc_usd', :bid)
+      book = described_class.new('btc_usd', :bid)
       o1 = Matching.mock_limit_order(type: :bid, price: '1.0'.to_d)
       o2 = Matching.mock_limit_order(type: :bid, price: '2.0'.to_d)
       book.add o1
@@ -167,7 +167,7 @@ describe Matching::OrderBook do
     end
 
     it 'favors earlier order if orders have same price' do
-      book = Matching::OrderBook.new('btc_usd', :ask)
+      book = described_class.new('btc_usd', :ask)
       o1 = Matching.mock_limit_order(type: :ask, price: '1.0'.to_d)
       o2 = Matching.mock_limit_order(type: :ask, price: '1.0'.to_d)
       book.add o1
@@ -178,7 +178,7 @@ describe Matching::OrderBook do
   end
 
   describe '#fill_top' do
-    subject { Matching::OrderBook.new('btc_usd', :ask) }
+    subject { described_class.new('btc_usd', :ask) }
 
     it 'raises error if there is no top order' do
       expect do
@@ -207,7 +207,7 @@ describe Matching::OrderBook do
   end
 
   context 'on_change callback provided' do
-    subject { Matching::OrderBook.new('btc_usd', :ask, on_change: callback) }
+    subject { described_class.new('btc_usd', :ask, on_change: callback) }
 
     let(:callback) { Object.new }
 

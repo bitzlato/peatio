@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe Matching::PriceLevel do
-  subject  { Matching::PriceLevel.new('1.0'.to_d) }
+  subject  { described_class.new('1.0'.to_d) }
 
   let(:o1) { Matching.mock_limit_order(type: :ask) }
   let(:o2) { Matching.mock_limit_order(type: :ask) }

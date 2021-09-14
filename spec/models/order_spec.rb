@@ -3,10 +3,10 @@
 describe Order, 'validations', type: :model do
   context 'validations' do
     subject do
-      Order.validators
-           .select { |v| v.is_a? ActiveRecord::Validations::PresenceValidator }
-           .map(&:attributes)
-           .flatten
+      described_class.validators
+                     .select { |v| v.is_a? ActiveRecord::Validations::PresenceValidator }
+                     .map(&:attributes)
+                     .flatten
     end
 
     it do
@@ -72,8 +72,8 @@ describe Order, '#submit' do
   let(:order_ask) { create(:order_ask, :with_deposit_liability, state: 'pending', price: '12.32'.to_d, volume: '123.12345678') }
 
   before do
-    Order.submit(order_bid.id)
-    Order.submit(order_ask.id)
+    described_class.submit(order_bid.id)
+    described_class.submit(order_ask.id)
   end
 
   it do
@@ -89,13 +89,13 @@ describe Order, '#submit' do
 
     it 'insufficient balance' do
       expect do
-        Order.submit(order.id)
+        described_class.submit(order.id)
       end.to raise_error(Account::AccountError)
       expect(order.reload.state).to eq('reject')
     end
 
     it 'rejected order' do
-      Order.submit(rejected_order.id)
+      described_class.submit(rejected_order.id)
       expect(rejected_order.reload.state).to eq('reject')
     end
   end
@@ -103,14 +103,14 @@ describe Order, '#submit' do
   if defined? Mysql2
     it 'mysql connection error' do
       ActiveRecord::Base.stubs(:transaction).raises(Mysql2::Error::ConnectionError.new(''))
-      expect { Order.submit(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
+      expect { described_class.submit(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
     end
   end
 
   if defined? PG
     it 'postgresql connection error' do
       ActiveRecord::Base.stubs(:transaction).raises(PG::Error.new(''))
-      expect { Order.cancel(order.id) }.to raise_error(PG::Error)
+      expect { described_class.cancel(order.id) }.to raise_error(PG::Error)
     end
   end
 end
@@ -121,14 +121,14 @@ describe Order, '#cancel' do
   if defined? Mysql2
     it 'mysql connection error' do
       ActiveRecord::Base.stubs(:transaction).raises(Mysql2::Error::ConnectionError.new(''))
-      expect { Order.cancel(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
+      expect { described_class.cancel(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
     end
   end
 
   if defined? PG
     it 'postgresql connection error' do
       ActiveRecord::Base.stubs(:transaction).raises(PG::Error.new(''))
-      expect { Order.cancel(order.id) }.to raise_error(PG::Error)
+      expect { described_class.cancel(order.id) }.to raise_error(PG::Error)
     end
   end
 end

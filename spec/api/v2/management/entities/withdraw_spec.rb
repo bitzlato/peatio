@@ -2,7 +2,7 @@
 
 describe API::V2::Management::Entities::Withdraw do
   context 'fiat' do
-    subject { OpenStruct.new API::V2::Management::Entities::Withdraw.represent(record).serializable_hash }
+    subject { OpenStruct.new described_class.represent(record).serializable_hash }
 
     let(:rid) { Faker::Bank.iban }
     let(:member) { create(:member, :barong) }
@@ -24,7 +24,7 @@ describe API::V2::Management::Entities::Withdraw do
   end
 
   context 'coin' do
-    subject { OpenStruct.new API::V2::Management::Entities::Withdraw.represent(record).serializable_hash }
+    subject { OpenStruct.new described_class.represent(record).serializable_hash }
 
     let(:rid) { Faker::Blockchain::Bitcoin.address }
     let(:member) { create(:member, :barong) }

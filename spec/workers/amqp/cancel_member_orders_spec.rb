@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe Workers::AMQP::CancelMemberOrders do
-  subject { Workers::AMQP::CancelMemberOrders.new }
+  subject { described_class.new }
 
   let!(:member) { create(:member, :level_3) }
   let!(:account) do

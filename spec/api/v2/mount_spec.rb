@@ -15,7 +15,7 @@ module API
 end
 
 describe API::V2::Mount, type: :request do
-  let(:middlewares) { API::V2::Mount.middleware }
+  let(:middlewares) { described_class.middleware }
 
   it 'uses attack middleware' do
     expect(middlewares.drop(1)).to eq [[:use, Rack::Attack]]

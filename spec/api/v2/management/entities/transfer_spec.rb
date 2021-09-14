@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe API::V2::Management::Entities::Transfer do
-  subject { OpenStruct.new API::V2::Management::Entities::Transfer.represent(record.reload).serializable_hash }
+  subject { OpenStruct.new described_class.represent(record.reload).serializable_hash }
 
   let(:record) { create(:transfer) }
 

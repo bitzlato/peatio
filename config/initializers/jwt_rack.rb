@@ -27,6 +27,6 @@ Rails.application.config.middleware.use JWT::Rack::Auth, auth_args
 
 if Rails.env.development? && ENV.key?('DUMMY_JWT_BEARER')
   require 'dummy_jwt_middleware'
-  puts 'Use dummy JWT Bearer'
+  Rails.logger.debug 'Use dummy JWT Bearer'
   Rails.application.config.middleware.insert_before JWT::Rack::Auth, DummyJwtMiddleware, bearer: ENV['DUMMY_JWT_BEARER']
 end

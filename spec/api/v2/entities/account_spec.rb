@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe API::V2::Entities::Account do
-  subject { OpenStruct.new API::V2::Entities::Account.represent(account).serializable_hash }
+  subject { OpenStruct.new described_class.represent(account).serializable_hash }
 
   let(:account) { create(:account, :btc, balance: 100) }
 

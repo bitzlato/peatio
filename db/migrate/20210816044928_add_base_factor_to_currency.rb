@@ -7,7 +7,7 @@ class AddBaseFactorToCurrency < ActiveRecord::Migration[5.2]
     Currency.find_each do |c|
       c.update base_factor: c.money_currency.base_factor
 
-      puts "precision for #{c.id} is difference #{c.precision} <> #{c.money_currency.precision}" unless c.read_attribute(:precision) == c.money_currency.precision
+      Rails.logger.debug { "precision for #{c.id} is difference #{c.precision} <> #{c.money_currency.precision}" } unless c.read_attribute(:precision) == c.money_currency.precision
     end
 
     change_column_null :currencies, :base_factor, false
