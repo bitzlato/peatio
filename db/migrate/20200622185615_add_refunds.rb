@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddRefunds < ActiveRecord::Migration[5.2]
   def change
     create_table :refunds do |t|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   class DepositCollector < AbstractCommand
     def call(deposit)

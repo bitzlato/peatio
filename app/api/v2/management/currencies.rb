@@ -80,7 +80,7 @@ module API
           icon_url: { desc: -> { API::V2::Management::Entities::Currency.documentation[:icon_url][:desc] } },
           description: { desc: -> { API::V2::Management::Entities::Currency.documentation[:description][:desc] } },
           homepage: { desc: -> { API::V2::Management::Entities::Currency.documentation[:homepage][:desc] } }
-        }
+        }.freeze
 
         helpers do
           params :create_currency_params do

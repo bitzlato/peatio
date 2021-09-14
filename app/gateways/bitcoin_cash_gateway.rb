@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BitcoinCashGateway < AbstractGateway
   def self.format_address(address, format)
     address = AdequateCryptoAddress.address(address, :bch)

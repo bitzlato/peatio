@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BlockchainService
   Error = Class.new(StandardError)
   BalanceLoadError = Class.new(StandardError)

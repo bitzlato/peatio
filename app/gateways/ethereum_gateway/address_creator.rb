@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   class AddressCreator < AbstractCommand
     def call(secret = nil)

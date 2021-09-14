@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UniqueIndexesInTranscations < ActiveRecord::Migration[5.2]
   def change
     remove_index :transactions, name: :index_transactions_on_blockchain_id_and_txid_and_txout

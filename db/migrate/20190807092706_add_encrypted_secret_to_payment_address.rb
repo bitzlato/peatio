@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddEncryptedSecretToPaymentAddress < ActiveRecord::Migration[5.2]
   def up
     secrets = PaymentAddress.pluck(:id, :secret)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddWalletBalance < ActiveRecord::Migration[5.2]
   def change
     case ActiveRecord::Base.connection.adapter_name

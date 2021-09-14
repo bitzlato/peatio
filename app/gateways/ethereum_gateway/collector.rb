@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   # Refuel address to have enough gas for future token's and ethereum transfer
   #

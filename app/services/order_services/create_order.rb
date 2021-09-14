@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module OrderServices
   class CreateOrder
     include ServiceBase
 
-    POSSIBLE_SIDE_VALUES = %i[sell buy]
+    POSSIBLE_SIDE_VALUES = %i[sell buy].freeze
 
     def initialize(member:)
       @member = member

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameHdwalletGateway < ActiveRecord::Migration[5.2]
   def up
     Wallet.where(gateway: %w[opendax ow_hdwallet]).each do |w|

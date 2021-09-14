@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UniqueIndexInTransactions < ActiveRecord::Migration[5.2]
   def up
     Transaction.where(txout: nil).group(:txid).count.each do |txid, count|

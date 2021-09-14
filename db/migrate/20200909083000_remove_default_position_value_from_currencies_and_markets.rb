@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveDefaultPositionValueFromCurrenciesAndMarkets < ActiveRecord::Migration[5.2]
   def up
     change_column :currencies, :position, :integer, default: nil

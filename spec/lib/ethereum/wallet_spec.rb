@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe 'Ethereum::Eth::Wallet' do
   pending
 

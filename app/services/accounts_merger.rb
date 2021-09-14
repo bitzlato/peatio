@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AccountsMerger
   def call(from_currency, to_currency)
     puts "Migrates accounts from #{from_currency} to #{to_currency}"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ImproveIndexes < ActiveRecord::Migration[4.2]
   def change
     remove_index :trades, column: [:market_id]

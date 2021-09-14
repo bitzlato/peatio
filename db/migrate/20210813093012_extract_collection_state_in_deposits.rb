@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ExtractCollectionStateInDeposits < ActiveRecord::Migration[5.2]
   def change
     add_column :deposits, :collection_state, :string, null: false, default: 'pending'

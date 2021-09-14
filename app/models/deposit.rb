@@ -12,7 +12,7 @@ class Deposit < ApplicationRecord
   include FeeChargeable
 
   extend Enumerize
-  TRANSFER_TYPES = { fiat: 100, crypto: 200 }
+  TRANSFER_TYPES = { fiat: 100, crypto: 200 }.freeze
 
   belongs_to :currency, required: true, touch: false
   belongs_to :member, required: true

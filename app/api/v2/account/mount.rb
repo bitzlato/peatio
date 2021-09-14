@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module API::V2
   module Account
     class Mount < Grape::API

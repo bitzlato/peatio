@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Run polling process for supported gateways
 module Jobs
   module Cron

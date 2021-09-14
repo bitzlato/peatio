@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Bitzlato::Wallet do
   let(:wallet) { Bitzlato::Wallet.new }
   let(:uri) { ENV.fetch('BITZLATO_API_URL') }

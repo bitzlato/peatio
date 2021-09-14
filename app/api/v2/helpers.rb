@@ -92,9 +92,10 @@ module API
         per_page = params[:limit] || Kaminari.config.default_per_page
         per_page = [per_page.to_i, Kaminari.config.max_per_page].compact.min
 
-        result = if collection.is_a?(::ActiveRecord::Relation)
+        result = case collection
+                 when ::ActiveRecord::Relation
                    collection.page(params[:page].to_i).per(per_page)
-                 elsif collection.is_a?(Array)
+                 when Array
                    Kaminari.paginate_array(collection).page(params[:page].to_i).per(per_page)
                  end
         result.tap do |data|

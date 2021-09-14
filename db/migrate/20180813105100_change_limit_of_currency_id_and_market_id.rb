@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeLimitOfCurrencyIdAndMarketId < ActiveRecord::Migration[4.2]
   def self.up
     change_column :markets, :ask_unit, :string, limit: 10

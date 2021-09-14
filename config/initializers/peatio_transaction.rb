@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Peatio::Transaction
   alias_attribute :id, :hash
   alias_attribute :txid, :hash

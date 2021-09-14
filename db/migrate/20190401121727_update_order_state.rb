@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdateOrderState < ActiveRecord::Migration[5.0]
   def up
     case ActiveRecord::Base.connection.adapter_name

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe ::EthereumGateway::Collector do
   subject { described_class.new(ethereum_client) }
 

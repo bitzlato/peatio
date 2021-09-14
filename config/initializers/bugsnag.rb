@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if defined? Bugsnag
   Bugsnag.configure do |config|
     config.app_version = AppVersion.format('%M.%m.%p')

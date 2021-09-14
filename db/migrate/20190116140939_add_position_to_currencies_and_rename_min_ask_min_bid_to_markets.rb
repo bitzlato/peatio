@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddPositionToCurrenciesAndRenameMinAskMinBidToMarkets < ActiveRecord::Migration[4.2]
   def change
     add_column :currencies, :position, :integer, default: 0, null: false, after: :withdraw_limit_72h unless column_exists?(:currencies, :position)

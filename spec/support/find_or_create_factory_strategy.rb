@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Source https://gist.github.com/hiasinho/0ed0567dfc091047dc26
 module FactoryBot
   module Strategy

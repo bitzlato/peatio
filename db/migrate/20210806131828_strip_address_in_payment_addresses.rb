@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StripAddressInPaymentAddresses < ActiveRecord::Migration[5.2]
   def change
     PaymentAddress.where(address: '').update_all address: nil

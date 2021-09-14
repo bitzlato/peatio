@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddCategoryTransfers < ActiveRecord::Migration[5.2]
   def up
     change_column :transfers, :key, :string, limit: 30, null: false

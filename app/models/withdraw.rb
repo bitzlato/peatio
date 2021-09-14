@@ -15,7 +15,7 @@ class Withdraw < ApplicationRecord
   serialize :error, JSON unless Rails.configuration.database_support_json
   serialize :metadata, JSON unless Rails.configuration.database_support_json
 
-  TRANSFER_TYPES = { fiat: 100, crypto: 200 }
+  TRANSFER_TYPES = { fiat: 100, crypto: 200 }.freeze
 
   belongs_to :blockchain, required: true, touch: false
   belongs_to :currency, required: true, touch: false

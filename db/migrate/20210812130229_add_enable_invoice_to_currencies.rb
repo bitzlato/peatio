@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddEnableInvoiceToCurrencies < ActiveRecord::Migration[5.2]
   def change
     add_column :currencies, :enable_invoice, :boolean, null: false, default: false

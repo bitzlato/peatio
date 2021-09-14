@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   class BlockFetcher < AbstractCommand
     def call(block_number, contract_addresses: nil, follow_addresses: nil, follow_txids: nil)

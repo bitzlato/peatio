@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jobs::Cron
   class StatsMemberPnl
     Error = Class.new(StandardError)
@@ -211,7 +213,7 @@ module Jobs::Cron
 
         return [] if exclude_user_ids.include?(member.id)
 
-        if adjustment.amount < 0
+        if adjustment.amount.negative?
           total_credit = total_credit_value = 0
           total_debit = -adjustment.amount
           total_debit_value = total_debit * price_at(adjustment.currency_id, pnl_currency.id, adjustment.created_at)
@@ -357,7 +359,7 @@ module Jobs::Cron
           end
         end
         @exclude_user_ids = nil # Remove the cache
-        sleep 3 if l_count == 0
+        sleep 3 if l_count.zero?
       end
 
       def build_query_idx(pnl_currency, currency_id, reference_type, idx)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdateMarketsAskFeeBidFee < ActiveRecord::Migration[5.2]
   def up
     rename_column :markets, :ask_fee, :maker_fee if column_exists?(:markets, :ask_fee)

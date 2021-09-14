@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Bitcoin::Wallet do
   let(:wallet) { Bitcoin::Wallet.new }
 

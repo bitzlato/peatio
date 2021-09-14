@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class IncreaseTimestampPrecision < ActiveRecord::Migration[5.2]
   def up
     change_column(:trades, :created_at, :datetime, limit: 3)

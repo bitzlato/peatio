@@ -66,7 +66,7 @@ module API
             keychain = security_configuration
                        .fetch(:keychain)
                        .slice(*scope.fetch(:permitted_signers))
-                       .each_with_object({}) { |(k, v), memo| memo[k] = v.fetch(:value) }
+                       .transform_values { |v| v.fetch(:value) }
             result   = JWT::Multisig.verify_jwt(jwt, keychain, security_configuration.fetch(:jwt, {}))
           rescue StandardError => e
             raise Exceptions::Authentication, \

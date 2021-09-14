@@ -90,7 +90,7 @@ module Matching
 
     def limit_orders
       orders = {}
-      @limit_orders.keys.each { |k| orders[k] = @limit_orders[k].orders }
+      @limit_orders.each_key { |k| orders[k] = @limit_orders[k].orders }
       orders
     end
 
@@ -120,14 +120,16 @@ module Matching
       end
     end
 
-    def ask_limit_top # lowest price wins
+    # lowest price wins
+    def ask_limit_top
       return if @limit_orders.empty?
 
       price, level = @limit_orders.first
       level.top
     end
 
-    def bid_limit_top # highest price wins
+    # highest price wins
+    def bid_limit_top
       return if @limit_orders.empty?
 
       price, level = @limit_orders.last

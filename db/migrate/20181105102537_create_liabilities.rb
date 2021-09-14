@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateLiabilities < ActiveRecord::Migration[4.2]
   def change
     create_table :liabilities do |t|

@@ -14,10 +14,10 @@ class Beneficiary < ApplicationRecord
   STATES_MAPPING = { pending: 0, active: 1, archived: 2, aml_processing: 3, aml_suspicious: 4 }.freeze
 
   STATES = %i[pending aml_processing aml_suspicious active archived].freeze
-  STATES_AVAILABLE_FOR_MEMBER = %i[pending active]
+  STATES_AVAILABLE_FOR_MEMBER = %i[pending active].freeze
 
   PIN_LENGTH  = 6
-  PIN_RANGE   = (10**5)..(10**Beneficiary::PIN_LENGTH)
+  PIN_RANGE   = ((10**5)..(10**Beneficiary::PIN_LENGTH)).freeze
 
   # == Attributes ===========================================================
 

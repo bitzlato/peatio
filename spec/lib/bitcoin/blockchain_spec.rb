@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Bitcoin::Blockchain do
   context :features do
     it 'defaults' do

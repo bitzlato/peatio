@@ -68,7 +68,7 @@ module API
       class IntegerGTZero < Grape::Validations::Base
         def validate_param!(name, params)
           return unless params.key?(name)
-          return if params[name].to_s.to_i > 0
+          return if params[name].to_s.to_i.positive?
 
           raise Grape::Exceptions::Validation,
                 params: [@scope.full_name(name)],

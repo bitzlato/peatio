@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Withdrawer
   class Error < StandardError
     def initialize(message, options = {})

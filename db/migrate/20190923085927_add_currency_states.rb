@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddCurrencyStates < ActiveRecord::Migration[5.2]
   def change
     add_column :currencies, :deposit_enabled, :boolean, default: true, null: false, after: :enabled

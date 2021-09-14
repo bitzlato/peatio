@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Transaction < ApplicationRecord
   include TransactionKindDefiner
   include TransactionReferences
@@ -47,15 +49,15 @@ class Transaction < ApplicationRecord
     update_reference
   end
 
-  KINDS = %w[refill internal gas_refuel withdraw unauthorized_withdraw deposit collection unknown]
+  KINDS = %w[refill internal gas_refuel withdraw unauthorized_withdraw deposit collection unknown].freeze
   enum kind: KINDS, _prefix: true
   validates :kind, presence: true, inclusion: { in: kinds.keys }
 
-  ADDRESS_KINDS = { unknown: 1, wallet: 2, deposit: 3, absence: 4 }
+  ADDRESS_KINDS = { unknown: 1, wallet: 2, deposit: 3, absence: 4 }.freeze
   enum to: ADDRESS_KINDS, _prefix: true
   enum from: ADDRESS_KINDS, _prefix: true
 
-  DIRECTIONS = { unknown: 0, income: 1, outcome: 2, internal: 3, failed: 4 }
+  DIRECTIONS = { unknown: 0, income: 1, outcome: 2, internal: 3, failed: 4 }.freeze
   enum direction: DIRECTIONS, _prefix: true
 
   validates :to, inclusion: { in: tos.keys }

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BitcoinGateway < AbstractGateway
   def self.case_sensitive?
     true

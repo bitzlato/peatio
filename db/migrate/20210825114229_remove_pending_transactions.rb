@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemovePendingTransactions < ActiveRecord::Migration[5.2]
   def change
     Transaction.where(status: :pending).each do |t|

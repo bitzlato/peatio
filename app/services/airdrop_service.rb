@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Make an incentive airdrop deposit
 #
 class AirdropService

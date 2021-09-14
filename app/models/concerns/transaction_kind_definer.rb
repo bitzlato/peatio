@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module TransactionKindDefiner
   def define_kind
     if to_deposit?

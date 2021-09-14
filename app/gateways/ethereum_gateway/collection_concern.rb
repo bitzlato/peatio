@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   module CollectionConcern
     # Collect money only if there are balance more than the amount to payed gas

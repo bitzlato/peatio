@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   class TransactionFetcher < AbstractCommand
     def call(txid, txout = nil)

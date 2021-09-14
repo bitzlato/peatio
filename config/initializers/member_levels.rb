@@ -12,5 +12,5 @@
     raise ArgumentError, "The value of #{var} (#{n.inspect}) is not a valid number."
   end
 
-  raise ArgumentError, "The value of #{var} (#{n.inspect}) must be in range of [0, 99]." if n.to_i < 0 || n.to_i > 99
+  raise ArgumentError, "The value of #{var} (#{n.inspect}) must be in range of [0, 99]." if n.to_i.negative? || n.to_i > 99
 end

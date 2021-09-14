@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ServiceBase
   class Result
     attr_reader :data, :errors

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateTradingFees < ActiveRecord::Migration[5.2]
   def change
     create_table :trading_fees do |t|

@@ -30,7 +30,7 @@ module API
             default: 'enabled',
             desc: -> { API::V2::Management::Entities::Market.documentation[:state][:desc] }
           }
-        }
+        }.freeze
 
         helpers do
           params :create_market_params do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddEncryptedServerToBlockchain < ActiveRecord::Migration[5.2]
   def up
     unless column_exists?(:blockchains, :server_encrypted)

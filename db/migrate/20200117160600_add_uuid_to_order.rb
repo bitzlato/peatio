@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUUIDToOrder < ActiveRecord::Migration[5.2]
   def change
     add_column :orders, :uuid, :binary, limit: 16, index: { unique: true }, after: :id

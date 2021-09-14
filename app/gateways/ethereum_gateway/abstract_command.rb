@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   class AbstractCommand
     include NumericHelpers
@@ -159,9 +161,10 @@ class EthereumGateway
     end
 
     def transaction_status(block_txn)
-      if block_txn['status'] == STATUS_SUCCESS
+      case block_txn['status']
+      when STATUS_SUCCESS
         Transaction::SUCCESS_STATUS
-      elsif block_txn['status'] == STATUS_FAILED
+      when STATUS_FAILED
         Transaction::FAIL_STATUS
       else
         Transaction::PENDING_STATUS

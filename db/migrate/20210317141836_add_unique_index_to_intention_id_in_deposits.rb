@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUniqueIndexToIntentionIdInDeposits < ActiveRecord::Migration[5.2]
   def change
     add_index :deposits, %i[currency_id intention_id], unique: true, where: 'intention_id is not null'

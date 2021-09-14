@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddTransferTypeInDepostWithdraw < ActiveRecord::Migration[5.2]
   def up
     add_column :deposits, :transfer_type, :integer, after: :type unless column_exists?(:deposits, :transfer_type)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Peatio::Wallet
   def self.registry
     raise 'deprecated'

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   class GasEstimator < AbstractCommand
     Error = Class.new StandardError

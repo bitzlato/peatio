@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   class TransactionCreator < AbstractCommand
     Error = Class.new StandardError

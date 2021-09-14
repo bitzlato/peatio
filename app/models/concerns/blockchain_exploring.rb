@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module BlockchainExploring
   def explorer=(hash)
     write_attribute(:explorer_address, hash.fetch('address'))

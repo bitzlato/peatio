@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddAccountableFeeToTransactions < ActiveRecord::Migration[5.2]
   def change
     add_column :transactions, :accountable_fee, :boolean, null: false, default: false

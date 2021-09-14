@@ -35,7 +35,7 @@ module API
             default: 'enabled',
             desc: -> { API::V2::Admin::Entities::Market.documentation[:state][:desc] }
           }
-        }
+        }.freeze
 
         helpers ::API::V2::Admin::Helpers
         helpers do

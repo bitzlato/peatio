@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe API::V2::Management::Trades, type: :request do
   let(:member) do
     create(:member, :level_3).tap do |m|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe API::V2::Management::Exceptions::Base do
   it do
     expect(API::V2::Management::Exceptions::Base.new(message: 'Wrong argument.').inspect).to eq \

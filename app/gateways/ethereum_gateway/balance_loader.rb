@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'abstract_command'
 class EthereumGateway
   class BalanceLoader < AbstractCommand

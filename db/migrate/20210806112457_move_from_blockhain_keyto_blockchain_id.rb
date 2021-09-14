@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MoveFromBlockhainKeytoBlockchainId < ActiveRecord::Migration[5.2]
   def change
     Blockchain.where(key: 'eth-mainet').update_all key: 'eth-mainnet'

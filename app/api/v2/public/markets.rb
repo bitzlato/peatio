@@ -69,7 +69,7 @@ module API
 
             present paginate(Rails.cache.fetch("markets_#{params}", expires_in: 600) { search.result.load.to_a }),
                     with: API::V2::Entities::Market,
-                    extended: !!params[:extended]
+                    extended: !params[:extended].nil?
           end
 
           desc 'Get the order book of specified market.',

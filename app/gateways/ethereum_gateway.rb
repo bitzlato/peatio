@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Proxy to Ethereum.
 #
 # Converts amounts from money to ethereum base units.

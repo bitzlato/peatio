@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if defined? MoneyRails
   MoneyRails.configure do |config|
     config.default_bank = nil

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeAddressLimit < ActiveRecord::Migration[4.2]
   def change
     change_column :deposits, :address, :string, limit: 95

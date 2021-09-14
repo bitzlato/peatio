@@ -18,7 +18,7 @@ module API
             default: 'active',
             desc: -> { API::V2::Management::Entities::Wallet.documentation[:status][:desc] }
           }
-        }
+        }.freeze
 
         helpers ::API::V2::ParamHelpers
         helpers do

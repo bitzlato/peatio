@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # enco  ding: UTF-8
 # froz  en_string_literal: true
 

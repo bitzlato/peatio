@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   module BalancesConcern
     def load_balances(address)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ReplaceDepositConfirmationsWithMinConfirmations < ActiveRecord::Migration[4.2]
   class Currency < ActiveRecord::Base
     serialize :options, JSON

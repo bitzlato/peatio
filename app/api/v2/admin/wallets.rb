@@ -17,7 +17,7 @@ module API
           default: 'active',
           desc: -> { API::V2::Admin::Entities::Wallet.documentation[:status][:desc] }
         }
-      }
+      }.freeze
 
       class Wallets < Grape::API
         helpers ::API::V2::Admin::Helpers

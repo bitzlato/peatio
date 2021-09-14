@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Refunder
   def refund!(refund)
     pa = PaymentAddress.find_by(
