@@ -40,7 +40,7 @@ module API
 
       mount Public::Mount        => :public
       mount Account::Mount       => :account
-      mount Market::Mount        => :market
+      mount ::API::V2::Market::Mount => :market
       mount CoinMarketCap::Mount => :coinmarketcap
       mount CoinGecko::Mount => :coingecko
 
@@ -57,7 +57,7 @@ module API
                                   contact_name:   Peatio::App.config.official_name,
                                   contact_email:  Peatio::App.config.official_email,
                                   contact_url:    Peatio::App.config.official_website,
-                                  licence:       'MIT',
+                                  license:       'MIT',
                                   license_url:   'https://github.com/openware/peatio/blob/master/LICENSE.md'
                                 },
                                 models: [

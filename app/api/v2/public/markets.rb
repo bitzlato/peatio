@@ -37,7 +37,7 @@ module API
             optional :type,
                      type: { value: String, message: 'public.market.non_string_market_type' },
                      values: { value: -> { ::Market::TYPES }, message: 'public.market.invalid_market_type' },
-                     default: "spot",  # -> { ::Market::DEFAULT_TYPE },
+                     default: ::Market::DEFAULT_TYPE,
                      desc: 'Strict filter for market type'
             optional :search, type: JSON, default: {} do
               optional :base_code,

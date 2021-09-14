@@ -65,7 +65,7 @@ module API
                                     contact_name:   Peatio::App.config.official_name,
                                     contact_email:  Peatio::App.config.official_email,
                                     contact_url:    Peatio::App.config.official_website,
-                                    licence:        'MIT',
+                                    license:        'MIT',
                                     license_url:    'https://github.com/openware/peatio/blob/master/LICENSE.md'
                                   },
                                   models: [
