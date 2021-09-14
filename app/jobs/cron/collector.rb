@@ -2,23 +2,23 @@ module Jobs
   module Cron
     class Collector
       def self.process
-        return # TODO
-        new.process
+        return if Rails.env.production?
+        # TODO select only payment addresses with enough balance
+        PaymentAddress.collection_required.lock.each do |pa|
+          process_address payment_address
+        end
         sleep 300
       end
 
-      def process
-        # TODO select only payment addresses with enough balance
-        PaymentAddress.collection_required.lock.each do |pa|
-          next unless pa.has_collectable_balances?
-          if pa.has_enough_gas_to_collect?
-            pa.collect!
-          else
-            pa.refuel_gas!
-          end
-        rescue => err
-          report_exception err, true, payment_address_id: pa.id
+      def process_address(payment_address)
+        next unless payment_address.has_collectable_balances?
+        if payment_address.has_enough_gas_to_collect?
+          payment_address.collect!
+        else
+          payment_address.refuel_gas!
         end
+      rescue => err
+        report_exception err, true, payment_address_id: payment_address.id
       end
     end
   end
