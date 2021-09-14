@@ -84,6 +84,8 @@ group :development, :test do
 end
 
 group :development do
+  gem 'rubocop'
+  gem 'rubocop-rails'
   gem 'foreman'
   gem 'annotate'
   gem 'ruby-prof',  '~> 0.17.0', require: false
@@ -102,7 +104,6 @@ group :test do
   gem 'mocha',               '~> 1.8', require: false
   gem 'factory_bot_rails', '~> 5.0', '>= 5.0.2'
   gem 'timecop',             '~> 0.9'
-  gem 'rubocop-rspec',       '~> 1.32', require: false
 end
 
 # Load gems from Gemfile.plugin.
@@ -149,3 +150,4 @@ gem "request_store", "~> 1.5"
 
 gem "faraday-detailed_logger", "~> 2.3"
 gem "faraday_curl", "~> 0.0.2"
+
