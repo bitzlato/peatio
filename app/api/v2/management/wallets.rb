@@ -10,7 +10,7 @@ module API
         OPTIONAL_WALLET_PARAMS = {
           max_balance: {
             type: { value: BigDecimal, message: 'management.blockchain.non_decimal_max_balance' },
-            values: { value: -> (p){ p >= 0 }, message: 'management.wallet.invalid_max_balance' },
+            values: { value: ->(p) { p >= 0 }, message: 'management.wallet.invalid_max_balance' },
             default: 0.0,
             desc: -> { API::V2::Management::Entities::Wallet.documentation[:max_balance][:desc] }
           },
@@ -150,10 +150,10 @@ module API
         end
         post '/wallets' do
           ransack_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
-                             .eq(:blockchain_key)
-                             .translate_in(currencies: :currencies_id)
-                             .merge(kind_eq: params[:kind].present? ? Wallet.kinds[params[:kind].to_sym] : nil)
-                             .build
+                                                                  .eq(:blockchain_key)
+                                                                  .translate_in(currencies: :currencies_id)
+                                                                  .merge(kind_eq: params[:kind].present? ? Wallet.kinds[params[:kind].to_sym] : nil)
+                                                                  .build
 
           search = ::Wallet.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"

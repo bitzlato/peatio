@@ -23,10 +23,9 @@ module API
                      desc: 'Beneficiary currency code.'
             optional :state,
                      type: String,
-                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'account.beneficiary.invalid_state'},
+                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'account.beneficiary.invalid_state' },
                      desc: 'Defines either beneficiary active - user can use it to withdraw money'\
                            'or pending - requires beneficiary activation with pin.'
-
           end
           get do
             user_authorize! :read, ::Beneficiary
@@ -104,17 +103,17 @@ module API
             # Since data is stored in MySQL JSON format we iterate through all
             # beneficiaries one by one to detect duplicated address.
             if currency.coin? &&
-                current_user
-                  .beneficiaries
-                  .available_to_member
-                  .where(currency: currency)
-                  .any? { |b| b.data['address'] == declared_params.dig(:data, :address) }
+               current_user
+               .beneficiaries
+               .available_to_member
+               .where(currency: currency)
+               .any? { |b| b.data['address'] == declared_params.dig(:data, :address) }
               error!({ errors: ['account.beneficiary.duplicate_address'] }, 422)
             end
 
             present current_user
-                      .beneficiaries
-                      .create!(declared_params),
+              .beneficiaries
+              .create!(declared_params),
                     with: API::V2::Entities::Beneficiary
           rescue ActiveRecord::RecordInvalid => e
             report_exception(e)
@@ -131,9 +130,9 @@ module API
             user_authorize! :update, ::Beneficiary
 
             beneficiary = current_user
-                              .beneficiaries
-                              .available_to_member
-                              .find(params[:id])
+                          .beneficiaries
+                          .available_to_member
+                          .find(params[:id])
 
             unless beneficiary.pending?
               error!({ errors: ['account.beneficiary.cant_resend'] }, 422)
@@ -146,7 +145,6 @@ module API
             beneficiary.regenerate_pin!
             status 204
           end
-
 
           desc 'Activates beneficiary with pin',
                success: API::V2::Entities::Beneficiary
@@ -164,9 +162,9 @@ module API
             user_authorize! :update, ::Beneficiary
 
             beneficiary = current_user
-                            .beneficiaries
-                            .available_to_member
-                            .find(params[:id])
+                          .beneficiaries
+                          .available_to_member
+                          .find(params[:id])
 
             unless beneficiary.pending?
               error!({ errors: ['account.beneficiary.cant_activate'] }, 422)
@@ -190,9 +188,9 @@ module API
             user_authorize! :destroy, ::Beneficiary
 
             beneficiary = current_user
-                            .beneficiaries
-                            .available_to_member
-                            .find(params[:id])
+                          .beneficiaries
+                          .available_to_member
+                          .find(params[:id])
 
             if beneficiary.archive!
               body false

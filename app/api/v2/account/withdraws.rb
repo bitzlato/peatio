@@ -5,7 +5,6 @@ module API
   module V2
     module Account
       class Withdraws < Grape::API
-
         before { withdraws_must_be_permitted! }
 
         desc 'List your withdraws as paginated collection.',
@@ -14,7 +13,7 @@ module API
         params do
           optional :currency,
                    type: String,
-                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                    desc: 'Currency code.'
           optional :limit,
                    type: { value: Integer, message: 'account.withdraw.non_integer_limit' },
@@ -38,7 +37,7 @@ module API
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'
           optional :page,
                    type: { value: Integer, message: 'account.withdraw.non_integer_page' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'account.withdraw.non_positive_page'},
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'account.withdraw.non_positive_page' },
                    default: 1,
                    desc: 'Page number (defaults to 1).'
         end
@@ -77,7 +76,7 @@ module API
                    desc: 'ID of Active Beneficiary belonging to user.'
           requires :currency,
                    type: String,
-                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                    desc: 'The currency code.'
           requires :amount,
                    type: { value: BigDecimal, message: 'account.withdraw.non_decimal_amount' },
@@ -92,9 +91,9 @@ module API
           user_authorize! :create, ::Withdraw
 
           beneficiary = current_user
-                          .beneficiaries
-                          .available_to_member
-                          .find_by(id: params[:beneficiary_id])
+                        .beneficiaries
+                        .available_to_member
+                        .find_by(id: params[:beneficiary_id])
 
           if beneficiary.blank?
             error!({ errors: ['account.beneficiary.doesnt_exist'] }, 422)
@@ -115,10 +114,10 @@ module API
           # TODO: Delete subclasses from Deposit and Withdraw
           withdraw = "withdraws/#{currency.type}".camelize.constantize.new \
             beneficiary: beneficiary,
-            sum:         params[:amount],
-            member:      current_user,
-            currency:    currency,
-            note:        params[:note]
+            sum: params[:amount],
+            member: current_user,
+            currency: currency,
+            note: params[:note]
           withdraw.save!
           withdraw.with_lock { withdraw.accept! }
           present withdraw, with: API::V2::Entities::Withdraw

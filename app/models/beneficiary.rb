@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 class Beneficiary < ApplicationRecord
-
   # == Constants ============================================================
 
   extend Enumerize
@@ -122,16 +121,16 @@ class Beneficiary < ApplicationRecord
   # == Instance Methods =====================================================
 
   def as_json_for_event_api
-    { user:        { uid: member.uid, email: member.email },
-      currency:    currency_id,
-      name:        name,
+    { user: { uid: member.uid, email: member.email },
+      currency: currency_id,
+      name: name,
       description: description,
-      data:        data,
-      pin:         pin,
-      state:       state,
-      sent_at:     sent_at.iso8601,
-      created_at:  created_at.iso8601,
-      updated_at:  updated_at.iso8601 }
+      data: data,
+      pin: pin,
+      state: state,
+      sent_at: sent_at.iso8601,
+      created_at: created_at.iso8601,
+      updated_at: updated_at.iso8601 }
   end
 
   def aml_check!
@@ -180,11 +179,13 @@ class Beneficiary < ApplicationRecord
 
   def coin_rid
     return unless currency.coin?
+
     data.symbolize_keys[:address]
   end
 
   def fiat_rid
     return unless currency.fiat?
+
     '%s-%s-%08d' % [data.symbolize_keys[:full_name].downcase.split.join('-'), currency_id.downcase, id]
   end
 end

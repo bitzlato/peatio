@@ -12,8 +12,8 @@ class EthereumGateway
     def load_erc20_balance(address, contract_address)
       data = abi_encode('balanceOf(address)', normalize_address(address))
       client.json_rpc(:eth_call, [{ to: contract_address, data: data }, 'latest'])
-        .hex
-        .to_i
+            .hex
+            .to_i
     end
   end
 end

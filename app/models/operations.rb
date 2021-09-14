@@ -9,7 +9,7 @@ module Operations
 
     def split_account_number(account_number:)
       splitted_account_number = account_number.split('-')
-      
+
       # Paying attention to currency names contained '-'
       if splitted_account_number[1].to_i.to_s == splitted_account_number[1]
         currency_id = splitted_account_number[0]

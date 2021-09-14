@@ -11,10 +11,10 @@ module API
              success: API::V2::Admin::Entities::InternalTransfer
         params do
           optional :sender,
-                   values:  { value: -> (v) { Member.where('uid = ? OR username = ?', v, v).present? }, message: 'admin.receiver.doesnt_exist' },
+                   values: { value: ->(v) { Member.where('uid = ? OR username = ?', v, v).present? }, message: 'admin.receiver.doesnt_exist' },
                    desc: 'Sender uid or username.'
           optional :receiver,
-                   values:  { value: -> (v) { Member.where('uid = ? OR username = ?', v, v).present? }, message: 'admin.receiver.doesnt_exist' },
+                   values: { value: ->(v) { Member.where('uid = ? OR username = ?', v, v).present? }, message: 'admin.receiver.doesnt_exist' },
                    desc: 'Receiver uid or username.'
           use :currency
           use :pagination
@@ -35,10 +35,10 @@ module API
           end
 
           ransack_params = Helpers::RansackBuilder.new(params)
-                             .eq(:sender_id, :receiver_id)
-                             .translate_in(currency: :currency_id)
-                             .with_daterange
-                             .build
+                                                  .eq(:sender_id, :receiver_id)
+                                                  .translate_in(currency: :currency_id)
+                                                  .with_daterange
+                                                  .build
 
           search = ::InternalTransfer.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"

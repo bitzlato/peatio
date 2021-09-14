@@ -30,8 +30,8 @@ module API
             desc: 'Member accounts.'
           }
         ) do |m|
-            m.accounts.includes(:currency)
-          end
+          m.accounts.includes(:currency)
+        end
       end
     end
   end

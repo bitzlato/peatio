@@ -28,12 +28,12 @@ module API
         logger.formatter = GrapeLogging::Formatters::Rails.new
       end
       use GrapeLogging::Middleware::RequestLogger,
-          logger:    logger,
+          logger: logger,
           log_level: :info,
-          include:   [GrapeLogging::Loggers::Response.new,
-                      GrapeLogging::Loggers::FilterParameters.new,
-                      GrapeLogging::Loggers::ClientEnv.new,
-                      GrapeLogging::Loggers::RequestHeaders.new]
+          include: [GrapeLogging::Loggers::Response.new,
+                    GrapeLogging::Loggers::FilterParameters.new,
+                    GrapeLogging::Loggers::ClientEnv.new,
+                    GrapeLogging::Loggers::RequestHeaders.new]
 
       include Constraints
       include ExceptionHandlers
@@ -46,19 +46,19 @@ module API
 
       # The documentation is accessible at http://localhost:3000/swagger?url=/api/v2/swagger
       # Add swagger documentation for Peatio User API
-      add_swagger_documentation base_path:   File.join(API::Mount::PREFIX, API_VERSION, 'peatio'),
+      add_swagger_documentation base_path: File.join(API::Mount::PREFIX, API_VERSION, 'peatio'),
                                 add_base_path: true,
-                                mount_path:  '/swagger',
+                                mount_path: '/swagger',
                                 api_version: API_VERSION,
                                 doc_version: Peatio::Application::VERSION,
                                 info: {
-                                  title:         "Peatio User API #{API_VERSION}",
-                                  description:   'API for Peatio application.',
-                                  contact_name:   Peatio::App.config.official_name,
-                                  contact_email:  Peatio::App.config.official_email,
-                                  contact_url:    Peatio::App.config.official_website,
-                                  license:       'MIT',
-                                  license_url:   'https://github.com/openware/peatio/blob/master/LICENSE.md'
+                                  title: "Peatio User API #{API_VERSION}",
+                                  description: 'API for Peatio application.',
+                                  contact_name: Peatio::App.config.official_name,
+                                  contact_email: Peatio::App.config.official_email,
+                                  contact_url: Peatio::App.config.official_website,
+                                  license: 'MIT',
+                                  license_url: 'https://github.com/openware/peatio/blob/master/LICENSE.md'
                                 },
                                 models: [
                                   API::V2::Entities::Currency,
@@ -78,7 +78,7 @@ module API
                                   Bearer: {
                                     type: 'apiKey',
                                     name: 'JWT',
-                                    in:   'header'
+                                    in: 'header'
                                   }
                                 }
 

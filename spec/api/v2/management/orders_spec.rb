@@ -180,7 +180,6 @@ describe API::V2::Management::Orders, type: :request do
     let(:data) { {} }
 
     context 'peatio order cancel' do
-
       it 'cancels the orders on peatio spot market' do
         data[:market] = 'btc_usd'
 
@@ -202,7 +201,6 @@ describe API::V2::Management::Orders, type: :request do
         request
         expect(response).to have_http_status 204
       end
-
     end
 
     context 'third party orders cancel' do

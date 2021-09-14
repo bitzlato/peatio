@@ -59,7 +59,6 @@ describe WithdrawLimit, 'Class Methods' do
   context '#for' do
     let!(:member) { create(:member) }
 
-
     context 'get withdraw_limit with kyc_level and group' do
       let!(:member) { create(:member, level: 1) }
       before do

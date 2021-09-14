@@ -13,11 +13,12 @@ module FeeChargeable
     if self <= Deposit
       before_validation on: :create do
         next unless currency
+
         self.fee  ||= currency.deposit_fee
         self.amount = amount.to_d - fee
       end
 
-      validates :fee, numericality: { less_than: :amount }, if: -> (record) { record.amount.to_d > 0.to_d }
+      validates :fee, numericality: { less_than: :amount }, if: ->(record) { record.amount.to_d > 0.to_d }
     end
 
     if self <= Withdraw

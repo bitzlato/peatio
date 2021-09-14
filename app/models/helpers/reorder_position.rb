@@ -2,7 +2,6 @@
 
 module Helpers
   module ReorderPosition
-
     # Function which insert object inside existing list
     def insert_position(model)
       # Get current currency amount

@@ -13,8 +13,10 @@ class ConvertToLegacyBitcoinCashAddresses < ActiveRecord::Migration[4.2]
 
     Currency.find_by_id(:bch).tap do |ccy|
       break unless ccy
+
       PaymentAddress.where(currency: ccy).find_each do |pa|
         next if pa.address.blank?
+
         pa.update_columns(address: CashAddr::Converter.to_legacy_address(pa.address))
       end
     end

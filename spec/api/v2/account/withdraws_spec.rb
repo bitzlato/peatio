@@ -8,7 +8,7 @@ describe API::V2::Account::Withdraws, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Withdraw'],'create'=>['Withdraw']}})
+    Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['Withdraw'], 'create' => ['Withdraw'] } })
   end
 
   describe 'GET /api/v2/account/withdraws' do
@@ -73,7 +73,7 @@ describe API::V2::Account::Withdraws, type: :request do
 
       expect(response).to be_successful
       expect(response.headers.fetch('Total')).to eq '40'
-      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[ btc usd ]
+      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[btc usd]
     end
 
     it 'returns withdraws specified currency' do
@@ -82,9 +82,8 @@ describe API::V2::Account::Withdraws, type: :request do
 
       expect(response).to be_successful
       expect(response.headers.fetch('Total')).to eq '20'
-      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[ btc ]
+      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[btc]
     end
-
 
     it 'returns withdraws with txid filter' do
       api_get '/api/v2/account/withdraws', params: { rid: btc_withdraws.first.rid }, token: token
@@ -93,7 +92,6 @@ describe API::V2::Account::Withdraws, type: :request do
       expect(result.size).to eq 1
       expect(result.all? { |d| d['rid'] == btc_withdraws.first.rid }).to be_truthy
     end
-
 
     it 'filters withdraws by multiple states' do
       create(:usd_withdraw, member: member, aasm_state: :rejected)
@@ -172,16 +170,16 @@ describe API::V2::Account::Withdraws, type: :request do
     end
 
     let :data do
-      { uid:            member.uid,
-        currency:       currency.code,
-        amount:         amount,
+      { uid: member.uid,
+        currency: currency.code,
+        amount: amount,
         beneficiary_id: beneficiary.id,
-        otp:            123456 }
+        otp: 123456 }
     end
 
     let(:account) { member.get_account(currency) }
     let(:balance) { 1.2 }
-    let(:long_note) { (0...257).map { (65 + rand(26)).chr }.join }
+    let(:long_note) { (0...257).map { rand(65..90).chr }.join }
     before { account.plus_funds(balance) }
     before { Vault::TOTP.stubs(:validate?).returns(true) }
 

@@ -24,27 +24,27 @@ describe API::V2::Admin::Members, type: :request do
       end
 
       it 'validates permissions' do
-        api_get'/api/v2/admin/members', token: member_token
+        api_get '/api/v2/admin/members', token: member_token
         expect(response.code).to eq '403'
         expect(response).to include_api_error('admin.ability.not_permitted')
       end
 
       it 'authenticate admin' do
-        api_get'/api/v2/admin/members', token: token
+        api_get '/api/v2/admin/members', token: token
         expect(response).to be_successful
       end
     end
 
     context 'filtering' do
       it 'returns all members' do
-        api_get'/api/v2/admin/members', token: token
+        api_get '/api/v2/admin/members', token: token
         result = JSON.parse(response.body)
 
         expect(result.length).to eq(Member.count)
       end
 
       it 'filters by role & state' do
-        api_get'/api/v2/admin/members', token: token, params: { role: 'admin', state: 'active' }
+        api_get '/api/v2/admin/members', token: token, params: { role: 'admin', state: 'active' }
         result = JSON.parse(response.body)
         expected = Member.where(role: 'admin', state: 'active').pluck(:id)
 
@@ -52,7 +52,7 @@ describe API::V2::Admin::Members, type: :request do
       end
 
       it 'filters by group' do
-        api_get'/api/v2/admin/members', token: token, params: { group: 'any' }
+        api_get '/api/v2/admin/members', token: token, params: { group: 'any' }
         result = JSON.parse(response.body)
         expected = Member.where(group: 'any').pluck(:id)
 
@@ -60,7 +60,7 @@ describe API::V2::Admin::Members, type: :request do
       end
 
       it 'filters by uid' do
-        api_get'/api/v2/admin/members', token: token, params: { uid: uid }
+        api_get '/api/v2/admin/members', token: token, params: { uid: uid }
         result = JSON.parse(response.body)
         expect(result.length).to eq 1
         expect(result.first['id']).to eq admin.id
@@ -70,7 +70,7 @@ describe API::V2::Admin::Members, type: :request do
     context 'accounts' do
       before { admin.touch_accounts }
       it 'returns accounts for all currencies' do
-        api_get'/api/v2/admin/members', token: token, params: { uid: uid }
+        api_get '/api/v2/admin/members', token: token, params: { uid: uid }
         result = JSON.parse(response.body)
         expect(result.first['accounts'].count).to eq(Currency.count)
       end
@@ -101,12 +101,13 @@ describe API::V2::Admin::Members, type: :request do
       let(:address) { Faker::Blockchain::Bitcoin.address }
       let(:coin) { Currency.find(:btc) }
 
-      let!(:beneficiary) do create(:beneficiary,
-                                   member: member,
-                                   currency: coin,
-                                   state: :active,
-                                   data: generate(:btc_beneficiary_data).merge(address: address)) end
-
+      let!(:beneficiary) do
+        create(:beneficiary,
+               member: member,
+               currency: coin,
+               state: :active,
+               data: generate(:btc_beneficiary_data).merge(address: address))
+      end
 
       it 'returns user entities' do
         api_get '/api/v2/admin/members/UID1234', token: token
@@ -134,11 +135,13 @@ describe API::V2::Admin::Members, type: :request do
       context 'fiat beneficiary' do
         let(:fiat) { Currency.find(:usd) }
 
-        let!(:beneficiary) do create(:beneficiary,
-                                     member: member,
-                                     currency: fiat,
-                                     state: :active,
-                                     data: generate(:fiat_beneficiary_data)) end
+        let!(:beneficiary) do
+          create(:beneficiary,
+                 member: member,
+                 currency: fiat,
+                 state: :active,
+                 data: generate(:fiat_beneficiary_data))
+        end
 
         it 'returns user entities' do
           api_get "/api/v2/admin/members/#{member.uid}", token: token

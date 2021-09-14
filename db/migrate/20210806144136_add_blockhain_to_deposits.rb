@@ -3,6 +3,7 @@ class AddBlockhainToDeposits < ActiveRecord::Migration[5.2]
     add_reference :deposits, :blockchain
     Deposit.find_each do |d|
       raise "No blockchain for currency #{d.currency.id}" if d.currency.blockchain.nil?
+
       Deposit.where(id: d.id).update_all blockchain_id: d.currency.blockchain.id
     end
 

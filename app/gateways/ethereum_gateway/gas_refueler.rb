@@ -28,22 +28,22 @@ class EthereumGateway
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
       required_gas = GasEstimator
-        .new(client)
-        .call(from_address: gas_wallet_address,
-              contract_addresses: contract_addresses.compact,
-              to_address: target_address,
-              account_native: false,
-              gas_limits: gas_limits,
-              gas_price: gas_price)
+                     .new(client)
+                     .call(from_address: gas_wallet_address,
+                           contract_addresses: contract_addresses.compact,
+                           to_address: target_address,
+                           account_native: false,
+                           gas_limits: gas_limits,
+                           gas_price: gas_price)
 
       transcation_gas_limit ||= GasEstimator
-        .new(client)
-        .call(from_address: gas_wallet_address,
-              to_address: target_address,
-              contract_addresses: [],
-              account_native: true,
-              gas_limits: gas_limits,
-              gas_price: gas_price)
+                                .new(client)
+                                .call(from_address: gas_wallet_address,
+                                      to_address: target_address,
+                                      contract_addresses: [],
+                                      account_native: true,
+                                      gas_limits: gas_limits,
+                                      gas_price: gas_price)
 
       required_amount = (required_gas * gas_price) + (transcation_gas_limit * gas_price)
       if balance_on_target_address >= required_amount
@@ -60,16 +60,16 @@ class EthereumGateway
                   " transaction amount: #{transaction_amount} = required_gas * gas_price - balance_on_target_address")
 
       tx = TransactionCreator.new(client).create_eth_transaction!(
-          amount:       transaction_amount,
-          from_address: gas_wallet_address,
-          secret:       gas_wallet_secret,
-          to_address:   target_address,
-          subtract_fee: false,
-          gas_limit:    transcation_gas_limit,
-          gas_price:    gas_price)
+        amount: transaction_amount,
+        from_address: gas_wallet_address,
+        secret: gas_wallet_secret,
+        to_address: target_address,
+        subtract_fee: false,
+        gas_limit: transcation_gas_limit,
+        gas_price: gas_price
+      )
       tx.options.merge! gas_factor: gas_factor, required_amount: required_amount, required_gas: required_gas
       tx
     end
   end
 end
-

@@ -24,7 +24,7 @@ describe CORS::Validations do
     context 'set multiple API_CORS_ORIGINS' do
       before { ENV['API_CORS_ORIGINS'] = 'https://localhost,https://domain.com' }
 
-      it { is_expected.to eq(['https://localhost','https://domain.com']) }
+      it { is_expected.to eq(['https://localhost', 'https://domain.com']) }
 
       after { ENV['API_CORS_ORIGINS'] = nil }
     end

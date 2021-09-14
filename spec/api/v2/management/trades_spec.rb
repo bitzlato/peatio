@@ -13,7 +13,6 @@ describe API::V2::Management::Trades, type: :request do
     end
   end
 
-
   let(:btc_usd_ask) do
     create(
       :order_ask,
@@ -63,9 +62,9 @@ describe API::V2::Management::Trades, type: :request do
   before do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
-    scopes: {
-      read_trades:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] }
-    }
+      scopes: {
+        read_trades: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] }
+      }
   end
 
   def request

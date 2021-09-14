@@ -1,7 +1,7 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
-%w[ deposit withdraw trading ].each do |ability|
+%w[deposit withdraw trading].each do |ability|
   var = "MINIMUM_MEMBER_LEVEL_FOR_#{ability.upcase}"
   n   = ENV[var]
 

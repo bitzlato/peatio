@@ -29,7 +29,7 @@ describe Matching::OrderBook do
       subject.add Matching.mock_limit_order(type: :ask)
 
       o1 = Matching.mock_market_order(type: :ask)
-      expect{ subject.add o1 }.to raise_error(Matching::MarketOrderbookError)
+      expect { subject.add o1 }.to raise_error(Matching::MarketOrderbookError)
     end
 
     it 'should create price level for order with new price' do

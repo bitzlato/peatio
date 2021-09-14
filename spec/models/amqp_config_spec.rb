@@ -10,15 +10,15 @@ end
 
 describe AMQP::Config do
   let(:config) do
-    Hashie::Mash.new(connect:   { host: '127.0.0.1' },
-                     exchange:  { testx:  { name: 'testx', type: 'fanout' },
-                                  testd:  { name: 'testd', type: 'direct' },
-                                  topicx: { name: 'topicx', type: 'topic' } },
-                     queue:     { testq: { name: 'testq', durable: true } },
-                     binding:   {
-                       test:    { queue: 'testq', exchange: 'testx' },
-                       testd:   { queue: 'testq', exchange: 'testd' },
-                       topic:   { queue: 'testq', exchange: 'topicx', topics: 'test.a,test.b' },
+    Hashie::Mash.new(connect: { host: '127.0.0.1' },
+                     exchange: { testx: { name: 'testx', type: 'fanout' },
+                                 testd: { name: 'testd', type: 'direct' },
+                                 topicx: { name: 'topicx', type: 'topic' } },
+                     queue: { testq: { name: 'testq', durable: true } },
+                     binding: {
+                       test: { queue: 'testq', exchange: 'testx' },
+                       testd: { queue: 'testq', exchange: 'testd' },
+                       topic: { queue: 'testq', exchange: 'topicx', topics: 'test.a,test.b' },
                        default: { queue: 'testq' }
                      })
   end

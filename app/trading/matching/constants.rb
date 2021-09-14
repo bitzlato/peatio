@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 module Matching
-
   # NOTE: Name is TradeStruct for not confusing it with ActiveRecord Trade model.
   # TODO: Use TradeStruct instead of trade_price, trade_volume, trade_funds.
   TradeStruct = Struct.new(:price, :amount, :total)
@@ -12,20 +11,18 @@ module Matching
   Error = Class.new(StandardError)
 
   class OrderError < Error
-
     attr_reader :order
 
-    def initialize(order, message=nil)
+    def initialize(order, message = nil)
       @order = order
       super "#{message} (#{order.attributes})"
     end
   end
 
   class TradeError < Error
-
     attr_reader :trade
 
-    def initialize(trade, message=nil)
+    def initialize(trade, message = nil)
       @trade = trade
       super "#{message} (#{trade})"
     end
@@ -34,7 +31,9 @@ module Matching
   # TODO: Use OrderError & TradeError instead of
   # NotEnoughVolume, ExceedSumLimit, TradeExecutionError.
   class NotEnoughVolume < Error; end
+
   class ExceedSumLimit < Error; end
+
   class MarketOrderbookError < OrderError; end
 
   class TradeExecutionError < Error

@@ -10,19 +10,19 @@ module API
         OPTIONAL_MARKET_PARAMS = {
           amount_precision: {
             type: { value: Integer, message: 'admin.market.non_integer_amount_precision' },
-            values: { value: -> (p){ p && p >= 0 }, message: 'admin.market.invalid_amount_precision' },
+            values: { value: ->(p) { p && p >= 0 }, message: 'admin.market.invalid_amount_precision' },
             default: 4,
             desc: -> { API::V2::Admin::Entities::Market.documentation[:amount_precision][:desc] }
           },
           price_precision: {
             type: { value: Integer, message: 'admin.market.non_integer_price_precision' },
-            values: { value: -> (p){ p && p >= 0 }, message: 'admin.market.invalid_price_precision' },
+            values: { value: ->(p) { p && p >= 0 }, message: 'admin.market.invalid_price_precision' },
             default: 4,
             desc: -> { API::V2::Admin::Entities::Market.documentation[:price_precision][:desc] }
           },
           max_price: {
             type: { value: BigDecimal, message: 'admin.market.non_decimal_max_price' },
-            values: { value: -> (p){ p >= 0 }, message: 'admin.market.invalid_max_price' },
+            values: { value: ->(p) { p >= 0 }, message: 'admin.market.invalid_max_price' },
             default: 0.0,
             desc: -> { API::V2::Admin::Entities::Market.documentation[:max_price][:desc] }
           },
@@ -91,7 +91,7 @@ module API
                    values: { value: -> { ::Market::TYPES }, message: 'admin.market.invalid_market_type' },
                    default: -> { ::Market::DEFAULT_TYPE }
         end
-        get '/markets/:symbol', requirements: { symbol: /[\w\.\-]+/ } do
+        get '/markets/:symbol', requirements: { symbol: /[\w.\-]+/ } do
           admin_authorize! :read, ::Market
 
           present ::Market.find_by_symbol_and_type(params[:symbol], params[:type]), with: API::V2::Admin::Entities::Market
@@ -110,11 +110,11 @@ module API
                    desc: -> { API::V2::Admin::Entities::Market.documentation[:quote_unit][:desc] }
           requires :min_price,
                    type: { value: BigDecimal, message: 'admin.market.non_decimal_min_price' },
-                   values: { value: -> (p){ p && p >= 0 }, message: 'admin.market.invalid_min_price' },
+                   values: { value: ->(p) { p && p >= 0 }, message: 'admin.market.invalid_min_price' },
                    desc: -> { API::V2::Admin::Entities::Market.documentation[:min_price][:desc] }
           requires :min_amount,
                    type: { value: BigDecimal, message: 'admin.market.non_decimal_min_amount' },
-                   values: { value: -> (p){ p && p >= 0 }, message: 'admin.market.invalid_min_amount' },
+                   values: { value: ->(p) { p && p >= 0 }, message: 'admin.market.invalid_min_amount' },
                    desc: -> { API::V2::Admin::Entities::Market.documentation[:min_amount][:desc] }
           optional :type,
                    type: { value: String, message: 'admin.market.non_string_market_type' },
@@ -167,19 +167,18 @@ module API
                    desc: -> { API::V2::Admin::Entities::Market.documentation[:engine_id][:desc] }
           optional :position,
                    type: { value: Integer, message: 'admin.market.non_integer_position' },
-                   values: { value: -> (p){ p >= ::Market::TOP_POSITION }, message: 'admin.market.invalid_position' },
+                   values: { value: ->(p) { p >= ::Market::TOP_POSITION }, message: 'admin.market.invalid_position' },
                    desc: -> { API::V2::Admin::Entities::Market.documentation[:position][:desc] }
           optional :min_price,
                    type: { value: BigDecimal, message: 'admin.market.non_decimal_min_price' },
-                   values: { value: -> (p){ p >= 0 }, message: 'admin.market.invalid_min_price' },
+                   values: { value: ->(p) { p >= 0 }, message: 'admin.market.invalid_min_price' },
                    desc: -> { API::V2::Admin::Entities::Market.documentation[:min_price][:desc] }
           optional :min_amount,
                    type: { value: BigDecimal, message: 'admin.market.non_decimal_min_amount' },
-                   values: { value: -> (p){ p >= 0 }, message: 'admin.market.invalid_min_amount' },
+                   values: { value: ->(p) { p >= 0 }, message: 'admin.market.invalid_min_amount' },
                    desc: -> { API::V2::Admin::Entities::Market.documentation[:min_amount][:desc] }
 
           exactly_one_of :id, :symbol
-
         end
         post '/markets/update' do
           admin_authorize! :update, ::Market

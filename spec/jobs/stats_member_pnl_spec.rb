@@ -130,8 +130,8 @@ describe Jobs::Cron::StatsMemberPnl do
         let!(:coin_withdraw) { create(:btc_withdraw, amount: 0.2.to_d, aasm_state: 'succeed', member: member) }
         let!(:pnl) do
           create(:stats_member_pnl, currency_id: coin_withdraw.currency_id, pnl_currency_id: 'eth', total_debit: 0.1,
-                             total_debit_fees: 0.01, total_debit_value: 0.3,
-                             member_id: coin_withdraw.member_id)
+                                    total_debit_fees: 0.01, total_debit_value: 0.3,
+                                    member_id: coin_withdraw.member_id)
         end
         let!(:liability) do
           create(:liability, id: 2, member_id: coin_withdraw.member_id, currency_id: coin_withdraw.currency_id,
@@ -231,7 +231,7 @@ describe Jobs::Cron::StatsMemberPnl do
           expect(StatsMemberPnl.last.total_debit_fees).to eq 0
           expect(StatsMemberPnl.last.total_credit_fees).to eq 0
           expect(StatsMemberPnl.last.total_credit_value).to eq 1.0 * btc_eth_price
-          expect(StatsMemberPnl.last.total_balance_value).to eq  half * btc_eth_price
+          expect(StatsMemberPnl.last.total_balance_value).to eq half * btc_eth_price
           expect(StatsMemberPnl.last.average_balance_price).to eq btc_eth_price
         end
       end
@@ -316,7 +316,7 @@ describe Jobs::Cron::StatsMemberPnl do
         let!(:coin_deposit) { create(:deposit, :deposit_btc, amount: '0.1'.to_d) }
         let!(:pnl) do
           create(:stats_member_pnl, currency_id: coin_deposit.currency_id, pnl_currency_id: 'eth', total_credit: 0.1,
-                             total_credit_fees: '0.01'.to_d, total_credit_value: '0.3'.to_d, total_balance_value: '0.3'.to_d, member_id: coin_deposit.member_id)
+                                    total_credit_fees: '0.01'.to_d, total_credit_value: '0.3'.to_d, total_balance_value: '0.3'.to_d, member_id: coin_deposit.member_id)
         end
 
         before do
@@ -350,28 +350,28 @@ describe Jobs::Cron::StatsMemberPnl do
 
         let!(:pnl1) do
           create(:stats_member_pnl, pnl_currency_id: 'eth', currency_id: 'btc',
-                             total_credit: 2.0, total_credit_fees: 0.2, total_credit_value: 11.0, total_balance_value: 11.0, total_debit: 0.02,
-                             average_balance_price: 5.5,
-                             total_debit_value: 1.0, member_id: trade.maker_order.member.id)
+                                    total_credit: 2.0, total_credit_fees: 0.2, total_credit_value: 11.0, total_balance_value: 11.0, total_debit: 0.02,
+                                    average_balance_price: 5.5,
+                                    total_debit_value: 1.0, member_id: trade.maker_order.member.id)
         end
 
         let!(:pnl2) do
           create(:stats_member_pnl, pnl_currency_id: 'eth', currency_id: 'usd',
-                             total_credit: 0.1, total_credit_fees: 0.01, total_credit_value: 0.3, total_debit: 0.2,
-                             total_debit_value: 10.0, member_id: trade.maker_order.member.id)
+                                    total_credit: 0.1, total_credit_fees: 0.01, total_credit_value: 0.3, total_debit: 0.2,
+                                    total_debit_value: 10.0, member_id: trade.maker_order.member.id)
         end
 
         let!(:pnl3) do
           create(:stats_member_pnl, pnl_currency_id: 'eth', currency_id: 'usd',
-                             total_credit: 0.4, total_credit_fees: 0.01, total_credit_value: 0.3, total_debit: 0.2,
-                             average_balance_price: 0.1,
-                             total_debit_value: 10.0, member_id: trade.taker_order.member.id)
+                                    total_credit: 0.4, total_credit_fees: 0.01, total_credit_value: 0.3, total_debit: 0.2,
+                                    average_balance_price: 0.1,
+                                    total_debit_value: 10.0, member_id: trade.taker_order.member.id)
         end
 
         let!(:pnl4) do
           create(:stats_member_pnl, pnl_currency_id: 'eth', currency_id: 'btc',
-                             total_credit: 0.4, total_credit_fees: 0.01, total_credit_value: 0.3,
-                             total_debit: 0.2, total_debit_value: 10.0, member_id: trade.taker_order.member.id)
+                                    total_credit: 0.4, total_credit_fees: 0.01, total_credit_value: 0.3,
+                                    total_debit: 0.2, total_debit_value: 10.0, member_id: trade.taker_order.member.id)
         end
 
         before do
@@ -474,14 +474,14 @@ describe Jobs::Cron::StatsMemberPnl do
         let!(:trade) do
           create(
             :trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d,
-            maker_order: create(:order_bid, :btc_eth, member: maker),
-            taker_order: create(:order_ask, :btc_eth, member: maker)
+                              maker_order: create(:order_bid, :btc_eth, member: maker),
+                              taker_order: create(:order_ask, :btc_eth, member: maker)
           )
 
           create(
             :trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d,
-            maker_order: create(:order_bid, :btc_eth, member: maker),
-            taker_order: create(:order_ask, :btc_eth, member: maker2)
+                              maker_order: create(:order_bid, :btc_eth, member: maker),
+                              taker_order: create(:order_ask, :btc_eth, member: maker2)
           )
         end
         let!(:pnl) { create(:stats_member_pnl) }
@@ -495,13 +495,12 @@ describe Jobs::Cron::StatsMemberPnl do
           expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(0)
         end
       end
-
     end
   end
 
   context 'process' do
     before do
-      Jobs::Cron::StatsMemberPnl.stubs(:pnl_currencies).returns([Market.first.quote_unit, Market.second.quote_unit].map{|id| Currency.find(id)})
+      Jobs::Cron::StatsMemberPnl.stubs(:pnl_currencies).returns([Market.first.quote_unit, Market.second.quote_unit].map { |id| Currency.find(id) })
     end
 
     context 'no liabilities' do

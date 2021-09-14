@@ -47,5 +47,4 @@ describe Member do
       expect(member.trades.order('id')).to eq [t1, t2]
     end
   end
-
 end

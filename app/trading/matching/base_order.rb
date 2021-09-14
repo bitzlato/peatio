@@ -4,7 +4,6 @@
 module Matching
   # TODO: doc.
   class BaseOrder
-
     attr_reader :id, :timestamp, :type, :market, :volume
 
     def initialize(attrs)

@@ -6,7 +6,7 @@ describe API::V2::Management::Deposits, type: :request do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
       scopes: {
-        read_deposits:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] },
+        read_deposits: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] },
         write_deposits: { permitted_signers: %i[alex jeff james], mandatory_signers: %i[alex jeff] }
       }
   end
@@ -86,9 +86,9 @@ describe API::V2::Management::Deposits, type: :request do
     let!(:account) { member.get_account(:usd) }
     let(:amount) { 750.77 }
     let :data do
-      { uid:      member.uid,
+      { uid: member.uid,
         currency: currency.code,
-        amount:   amount.to_s }
+        amount: amount.to_s }
     end
     let(:signers) { %i[alex jeff] }
 

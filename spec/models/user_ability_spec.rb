@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 describe UserAbility do
-
   context 'abilities for member' do
     let(:member) { create(:member, role: 'member') }
     subject(:ability) { UserAbility.new(member) }

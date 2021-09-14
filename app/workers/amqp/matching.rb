@@ -4,7 +4,6 @@
 module Workers
   module AMQP
     class Matching < Base
-
       class DryrunError < StandardError
         attr :engine
 
@@ -13,7 +12,7 @@ module Workers
         end
       end
 
-      def initialize(options={})
+      def initialize(options = {})
         @options = options
         reload 'all'
       end
@@ -54,7 +53,7 @@ module Workers
         end
       rescue DryrunError => e
         # stop started engines
-        engines.each {|id, engine| engine.shift_gears(:dryrun) unless engine == e.engine }
+        engines.each { |id, engine| engine.shift_gears(:dryrun) unless engine == e.engine }
 
         Rails.logger.fatal { "#{market} engine failed to start. Matched during dryrun:" }
         e.engine.queue.each do |trade|
@@ -92,8 +91,8 @@ module Workers
           else
             accept = ENV['ACCEPT_MINUTES'] ? ENV['ACCEPT_MINUTES'].to_i : 30
             order_ids = engine.queue
-              .map {|args| [args[1][:trade][:maker_order_id], args[1][:trade][:taker_order_id]] }
-              .flatten.uniq
+                              .map { |args| [args[1][:trade][:maker_order_id], args[1][:trade][:taker_order_id]] }
+                              .flatten.uniq
 
             orders = Order.where('created_at < ?', accept.minutes.ago).where(id: order_ids)
             if orders.exists?
@@ -101,7 +100,7 @@ module Workers
               raise DryrunError, engine
             else
               # only buffered orders matched, just publish trades and continue
-              engine.queue.each {|args| ::AMQP::Queue.enqueue(*args) }
+              engine.queue.each { |args| ::AMQP::Queue.enqueue(*args) }
               engine.shift_gears :run
             end
           end
@@ -124,12 +123,12 @@ module Workers
             f.puts 'ASK'
             limit_orders[:ask].keys.reverse.each do |k|
               f.puts k.to_s('F')
-              limit_orders[:ask][k].each {|o| f.puts "\t#{o.label}" }
+              limit_orders[:ask][k].each { |o| f.puts "\t#{o.label}" }
             end
-            f.puts '-'*40
+            f.puts '-' * 40
             limit_orders[:bid].keys.reverse.each do |k|
               f.puts k.to_s('F')
-              limit_orders[:bid][k].each {|o| f.puts "\t#{o.label}" }
+              limit_orders[:bid][k].each { |o| f.puts "\t#{o.label}" }
             end
             f.puts 'BID'
           end
@@ -146,9 +145,9 @@ module Workers
 
           File.open(dump_file, 'w') do |f|
             f.puts 'ASK'
-            market_orders[:ask].each {|o| f.puts "\t#{o.label}" }
-            f.puts '-'*40
-            market_orders[:bid].each {|o| f.puts "\t#{o.label}" }
+            market_orders[:ask].each { |o| f.puts "\t#{o.label}" }
+            f.puts '-' * 40
+            market_orders[:bid].each { |o| f.puts "\t#{o.label}" }
             f.puts 'BID'
           end
 

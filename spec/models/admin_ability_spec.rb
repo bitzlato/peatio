@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 describe AdminAbility do
-
   context 'abilities for superadmin' do
     let(:member) { create(:member, role: 'superadmin') }
     subject(:ability) { AdminAbility.new(member) }

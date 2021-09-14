@@ -13,18 +13,18 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
                                "symbol=#{currency.id}")
               .to_return(body:
                 {
-                  'status'=>
+                  'status' =>
                       {
-                        'error_code'=>0,
-                        'error_message'=>nil,
-                        'elapsed'=>12,
-                        'credit_count'=>1,
-                        'notice'=>nil
+                        'error_code' => 0,
+                        'error_message' => nil,
+                        'elapsed' => 12,
+                        'credit_count' => 1,
+                        'notice' => nil
                       },
-                  'data'=>
+                  'data' =>
                     [
                       {
-                        'id'=>1
+                        'id' => 1
                       }
                     ]
                 }.to_json)
@@ -51,14 +51,14 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
                                "symbol=#{currency.id}")
               .to_return(status: 400, body:
                 {
-                  'status'=>
+                  'status' =>
                     {
-                      'timestamp'=>'2020-09-25T08:43:56.778Z',
-                      'error_code'=>400,
-                      'error_message'=>'Invalid value for \'symbol\': \'TESTTEST\'',
-                      'elapsed'=>0,
-                      'credit_count'=>0,
-                      'notice'=>nil
+                      'timestamp' => '2020-09-25T08:43:56.778Z',
+                      'error_code' => 400,
+                      'error_message' => 'Invalid value for \'symbol\': \'TESTTEST\'',
+                      'elapsed' => 0,
+                      'credit_count' => 0,
+                      'notice' => nil
                     }
                 }.to_json)
           end
@@ -81,7 +81,7 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
               stub_request(:get, 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&'\
                                  'listing_status=active&'\
                                  "symbol=#{currency.id}")
-                  .to_raise(Faraday::Error)
+                .to_raise(Faraday::Error)
             end
           end
 

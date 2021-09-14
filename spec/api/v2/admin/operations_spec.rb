@@ -17,13 +17,13 @@ describe API::V2::Admin::Operations, type: :request do
       end
 
       it 'validates permissions' do
-        api_get'/api/v2/admin/expenses', token: member_token
+        api_get '/api/v2/admin/expenses', token: member_token
         expect(response.code).to eq '403'
         expect(response).to include_api_error('admin.ability.not_permitted')
       end
 
       it 'authenticate admin' do
-        api_get'/api/v2/admin/liabilities', token: token
+        api_get '/api/v2/admin/liabilities', token: token
         expect(response).to be_successful
       end
     end
@@ -50,7 +50,7 @@ describe API::V2::Admin::Operations, type: :request do
         result = JSON.parse(response.body)
         expected = assets.select { |a| a.currency_id == 'usd' }
 
-        expect(result.map { |a| a['id'] }).to match_array expected.map { |e| e.id }
+        expect(result.map { |a| a['id'] }).to match_array expected.map(&:id)
       end
 
       it 'orders by debit ascending' do
@@ -58,7 +58,7 @@ describe API::V2::Admin::Operations, type: :request do
         result = JSON.parse(response.body)
         expected = assets.sort { |a, b| a.debit <=> b.debit }
 
-        expect(result.map { |a| a['id'] }).to match_array expected.map { |e| e.id }
+        expect(result.map { |a| a['id'] }).to match_array expected.map(&:id)
       end
     end
 
@@ -84,7 +84,7 @@ describe API::V2::Admin::Operations, type: :request do
         result = JSON.parse(response.body)
         expected = expenses.select { |a| a.reference_type == 'Deposit' }
 
-        expect(result.map { |e| e['id'] }).to match_array expected.map { |e| e.id }
+        expect(result.map { |e| e['id'] }).to match_array expected.map(&:id)
       end
 
       it 'fileters by created_at_to' do
@@ -92,7 +92,7 @@ describe API::V2::Admin::Operations, type: :request do
         result = JSON.parse(response.body)
         expected = expenses.select { |l| l.created_at < 3.days.ago }
 
-        expect(result.map { |a| a['id'] }).to match_array expected.map { |e| e.id }
+        expect(result.map { |a| a['id'] }).to match_array expected.map(&:id)
       end
 
       it 'filters by created_at_from' do
@@ -100,7 +100,7 @@ describe API::V2::Admin::Operations, type: :request do
         result = JSON.parse(response.body)
         expected = expenses.select { |l| l.created_at >= 3.days.ago }
 
-        expect(result.map { |a| a['id'] }).to match_array expected.map { |e| e.id }
+        expect(result.map { |a| a['id'] }).to match_array expected.map(&:id)
       end
     end
 
@@ -126,7 +126,7 @@ describe API::V2::Admin::Operations, type: :request do
         result = JSON.parse(response.body)
         expected = revenues.select { |a| a.code == 302 }
 
-        expect(result.map { |r| r['id'] }).to match_array expected.map { |e| e.id }
+        expect(result.map { |r| r['id'] }).to match_array expected.map(&:id)
       end
 
       it 'filters by reference id' do
@@ -134,7 +134,7 @@ describe API::V2::Admin::Operations, type: :request do
         result = JSON.parse(response.body)
         expected = revenues.select { |a| a.reference_id == 1 }
 
-        expect(result.map { |r| r['id'] }).to match_array expected.map { |e| e.id }
+        expect(result.map { |r| r['id'] }).to match_array expected.map(&:id)
       end
     end
 
@@ -160,7 +160,7 @@ describe API::V2::Admin::Operations, type: :request do
         result = JSON.parse(response.body)
         expected = liabilities.select { |l| l.member.uid == member.uid }
 
-        expect(result.map { |a| a['id'] }).to match_array expected.map { |e| e.id }
+        expect(result.map { |a| a['id'] }).to match_array expected.map(&:id)
       end
 
       it 'orders by credit descending' do
@@ -168,7 +168,7 @@ describe API::V2::Admin::Operations, type: :request do
         result = JSON.parse(response.body)
         expected = liabilities.sort { |a, b| b.credit <=> a.credit }
 
-        expect(result.map { |a| a['id'] }).to match_array expected.map { |e| e.id }
+        expect(result.map { |a| a['id'] }).to match_array expected.map(&:id)
       end
     end
   end

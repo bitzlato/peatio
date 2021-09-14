@@ -29,8 +29,8 @@ module API
         end
         get '/trading_fees' do
           ransack_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
-                             .eq(:group, :market_id, :market_type)
-                             .build
+                                                                  .eq(:group, :market_id, :market_type)
+                                                                  .build
 
           search = TradingFee.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"

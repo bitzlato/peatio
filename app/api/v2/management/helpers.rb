@@ -23,11 +23,11 @@ module API
         def create_platform_operation!(attrs)
           currency = Currency.find(attrs.fetch(:currency))
           klass = ::Operations::Account
-                    .find_by(code: attrs.fetch(:code))
-                    .type
-                    .yield_self { |type| "operations/#{type}" }
-                    .camelize
-                    .constantize
+                  .find_by(code: attrs.fetch(:code))
+                  .type
+                  .yield_self { |type| "operations/#{type}" }
+                  .camelize
+                  .constantize
 
           if klass == ::Operations::Revenue && attrs[:uid]
             member_id = Member.find_by!(uid: attrs.fetch(:uid)).id
@@ -58,11 +58,11 @@ module API
           member = Member.find_by!(uid: attrs.fetch(:uid))
           currency = Currency.find(attrs.fetch(:currency))
           klass = ::Operations::Account
-                    .find_by(code: attrs.fetch(:code))
-                    .type
-                    .yield_self { |type| "operations/#{type}" }
-                    .camelize
-                    .constantize
+                  .find_by(code: attrs.fetch(:code))
+                  .type
+                  .yield_self { |type| "operations/#{type}" }
+                  .camelize
+                  .constantize
 
           if attrs[:credit].present?
             amount = attrs.fetch(:credit)

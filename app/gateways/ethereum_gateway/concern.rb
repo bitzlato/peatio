@@ -10,6 +10,7 @@ class EthereumGateway
 
     def normalize_txid(txid)
       return nil if txid.nil?
+
       txid.to_s.downcase
     end
 

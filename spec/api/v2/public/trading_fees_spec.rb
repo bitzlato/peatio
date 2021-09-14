@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 describe API::V2::Public::TradingFees, type: :request do
-
   before(:each) { clear_redis }
   describe 'GET /trading_fees' do
     before do

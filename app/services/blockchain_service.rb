@@ -34,7 +34,8 @@ class BlockchainService
     destroyed = 0
     blockchain.transactions.where(reference_id: nil).find_each do |t|
       next if txids.include?(t.txid) || addresses.include?(t.from_address) || addresses.include?(t.to_address)
-      destroyed +=1
+
+      destroyed += 1
       t.destroy!
     end
     destroyed
@@ -56,14 +57,14 @@ class BlockchainService
     dispatch_deposits! block_number
 
     Blockchain.transaction do
-      bn = blockchain.
-        block_numbers.
-        upsert!(number: block_number, error_message: nil, status: :processing).
-        lock!
+      bn = blockchain
+           .block_numbers
+           .upsert!(number: block_number, error_message: nil, status: :processing)
+           .lock!
 
       transactions = gateway.fetch_block_transactions(block_number)
 
-      withdraw_scope =  blockchain.withdraws.where.not(txid: nil).where(block_number: [nil,block_number])
+      withdraw_scope = blockchain.withdraws.where.not(txid: nil).where(block_number: [nil, block_number])
       if Rails.env.production?
         withdraw_txids = withdraw_scope.confirming.pluck(:txid)
       else
@@ -116,12 +117,12 @@ class BlockchainService
   attr_reader :withdrawal, :deposit, :fetched_transaction
 
   def dispatch_deposits! block_number
-    blockchain.
-      deposits.
-      accepted.
-      where('block_number <= ?', latest_block_number - blockchain.min_confirmations).
-      lock.
-      find_each do |deposit|
+    blockchain
+      .deposits
+      .accepted
+      .where('block_number <= ?', latest_block_number - blockchain.min_confirmations)
+      .lock
+      .find_each do |deposit|
       logger.info("Dispatch deposit #{deposit.id}, confirmation #{latest_block_number - deposit.block_number}>=#{blockchain.min_confirmations}")
       deposit.dispatch!
     end
@@ -147,17 +148,16 @@ class BlockchainService
       return
     end
 
-
     @deposit = Deposits::Coin.find_or_create_by!(
       currency_id: transaction.currency_id,
       txid: transaction.hash,
       txout: transaction.txout # what for? it is usable for blockchain only?
     ) do |d|
-      d.address=transaction.to_address
-      d.money_amount=transaction.amount
-      d.member=address.member
-      d.from_addresses=transaction.from_addresses.presence || raise('No transaction from_addresses')
-      d.block_number=transaction.block_number || raise("Transaction #{transaction} has no block_number")
+      d.address = transaction.to_address
+      d.money_amount = transaction.amount
+      d.member = address.member
+      d.from_addresses = transaction.from_addresses.presence || raise('No transaction from_addresses')
+      d.block_number = transaction.block_number || raise("Transaction #{transaction} has no block_number")
     end
     deposit.with_lock do
       if deposit.block_number.nil?
@@ -165,6 +165,7 @@ class BlockchainService
         deposit.update! block_number: transaction.block_number
       end
       raise "Amounts different #{deposit.id}" unless transaction.amount == deposit.money_amount
+
       logger.info("Found or created suitable deposit #{deposit.id} for txid #{transaction.id}, amount #{transaction.amount}")
       if deposit.submitted?
         if transaction.amount < Currency.find(transaction.amount.currency.id).min_deposit_amount_money
@@ -180,12 +181,11 @@ class BlockchainService
         end
       end
     end
-
   end
 
   def update_or_create_withdraw(transaction)
     @withdrawal = blockchain.withdraws.confirming
-      .find_by(currency_id: transaction.currency_id, txid: transaction.hash)
+                            .find_by(currency_id: transaction.currency_id, txid: transaction.hash)
 
     # Skip non-existing in database withdrawals.
     if withdrawal.blank?
@@ -211,6 +211,7 @@ class BlockchainService
 
   def fetch_transaction(tx)
     return tx unless tx.status.pending?
+
     @fetched_transaction ||= gateway.fetch_transaction tx.txid, tx.txout
   end
 

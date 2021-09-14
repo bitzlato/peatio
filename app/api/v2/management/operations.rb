@@ -5,7 +5,6 @@ module API
   module V2
     module Management
       class Operations < Grape::API
-
         # POST: api/v2/management/assets
         # POST: api/v2/management/expenses
         # POST: api/v2/management/revenues

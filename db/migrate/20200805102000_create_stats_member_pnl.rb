@@ -13,7 +13,7 @@ class CreateStatsMemberPnl < ActiveRecord::Migration[5.2]
       t.decimal :total_credit_value,   precision: 48, scale: 16, default: 0
       t.decimal :total_debit_value,    precision: 48, scale: 16, default: 0
       t.decimal :total_balance_value,  precision: 48, scale: 16, default: 0
-      t.decimal :average_balance_price,precision: 48, scale: 16, default: 0
+      t.decimal :average_balance_price, precision: 48, scale: 16, default: 0
       t.datetime :created_at, null: false, default: -> { 'CURRENT_TIMESTAMP' }
 
       case ActiveRecord::Base.connection.adapter_name

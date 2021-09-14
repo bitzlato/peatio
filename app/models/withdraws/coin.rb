@@ -5,7 +5,6 @@
 # TODO: Delete this class and update type column
 module Withdraws
   class Coin < Withdraw
-
     before_validation if: :blockchain do
       self.rid = blockchain.normalize_address rid if rid?
       self.txid = blockchain.normalize_txid txid if txid?
@@ -13,6 +12,7 @@ module Withdraws
 
     validate if: :blockchain do
       return unless rid?
+
       errors.add(:rid, :invalid) unless blockchain.valid_address? rid
     end
 

@@ -11,7 +11,7 @@ describe ::EthereumGateway::GasEstimator do
     WebMock.allow_net_connect!
   end
 
-  let(:gas_price)      { 10 }
+  let(:gas_price) { 10 }
 
   context 'returns estimated gas' do
     let(:contract_addresses) { [Faker::Blockchain::Ethereum.address, Faker::Blockchain::Ethereum.address] }
@@ -26,7 +26,7 @@ describe ::EthereumGateway::GasEstimator do
         estimated_gas: estimated_gas1,
         from: from_address,
         to: contract_addresses.first.downcase,
-        data: abi_encode('transfer(address,uint256)', to_address, '0x'+EthereumGateway::GasEstimator::DEFAULT_AMOUNT.to_s(16))
+        data: abi_encode('transfer(address,uint256)', to_address, '0x' + EthereumGateway::GasEstimator::DEFAULT_AMOUNT.to_s(16))
       )
       stub_estimate_gas(
         gas_price: gas_price,
@@ -34,7 +34,7 @@ describe ::EthereumGateway::GasEstimator do
         estimated_gas: estimated_gas2,
         from: from_address,
         to: contract_addresses.second.downcase,
-        data: abi_encode('transfer(address,uint256)', to_address, '0x'+EthereumGateway::GasEstimator::DEFAULT_AMOUNT.to_s(16))
+        data: abi_encode('transfer(address,uint256)', to_address, '0x' + EthereumGateway::GasEstimator::DEFAULT_AMOUNT.to_s(16))
       )
       stub_estimate_gas(
         gas_price: gas_price,
@@ -68,16 +68,16 @@ describe ::EthereumGateway::GasEstimator do
         method: 'eth_estimateGas',
         params: [
           {
-            gasPrice: '0x'+ gas_price.to_s(16),
+            gasPrice: '0x' + gas_price.to_s(16),
             from: from_address,
             to: contract_addresses.first,
-            data: abi_encode('transfer(address,uint256)', to_address, '0x'+EthereumGateway::GasEstimator::DEFAULT_AMOUNT.to_s(16))
+            data: abi_encode('transfer(address,uint256)', to_address, '0x' + EthereumGateway::GasEstimator::DEFAULT_AMOUNT.to_s(16))
           }
         ]
       }
       stub_request(:post, node_uri)
         .with(body: body.to_json)
-        .to_raise(Ethereum::Client::NoEnoughtAmount.new(1,2,3))
+        .to_raise(Ethereum::Client::NoEnoughtAmount.new(1, 2, 3))
     end
 
     subject do

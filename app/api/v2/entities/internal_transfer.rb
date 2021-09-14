@@ -5,7 +5,6 @@ module API
   module V2
     module Entities
       class InternalTransfer < Base
-
         expose(
           :currency_id,
           as: :currency,
@@ -22,7 +21,7 @@ module API
             desc: 'The internal transfer sender.'
           }
         ) do |transfer|
-            transfer.sender&.username
+          transfer.sender&.username
         end
 
         expose(
@@ -32,7 +31,7 @@ module API
             desc: 'The internal transfer receiver.'
           }
         ) do |transfer|
-            transfer.receiver&.username
+          transfer.receiver&.username
         end
 
         expose(
@@ -42,7 +41,7 @@ module API
             desc: 'The internal transfer sender.'
           }
         ) do |transfer|
-            transfer.sender.uid
+          transfer.sender.uid
         end
 
         expose(
@@ -52,7 +51,7 @@ module API
             desc: 'The internal transfer receiver.'
           }
         ) do |transfer|
-            transfer.receiver.uid
+          transfer.receiver.uid
         end
 
         expose(

@@ -3,7 +3,7 @@
 
 describe PaymentAddress do
   context '.create' do
-    let(:member)  { create(:member, :level_3) }
+    let(:member) { create(:member, :level_3) }
     let!(:account) { member.get_account(:btc) }
     let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet' }
     let(:secret) { 's3cr3t' }
@@ -42,7 +42,7 @@ describe PaymentAddress do
 
   context 'methods' do
     context 'status' do
-      let(:member)  { create(:member, :level_3) }
+      let(:member) { create(:member, :level_3) }
       let!(:account) { member.get_account(:btc) }
       let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet' }
 

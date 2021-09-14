@@ -3,7 +3,6 @@
 
 module Matching
   class PriceLevel
-
     attr :price, :orders
 
     def initialize(price)

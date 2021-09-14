@@ -5,7 +5,7 @@ describe API::V2::Management::Engines, type: :request do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
       scopes: {
-        read_engines:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] },
+        read_engines: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] },
         write_engines: { permitted_signers: %i[alex jeff james], mandatory_signers: %i[alex jeff] }
       }
   end

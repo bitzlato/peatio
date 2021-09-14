@@ -6,9 +6,9 @@ describe API::V2::Management::Operations, type: :request do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
       scopes: {
-        read_operations:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] },
+        read_operations: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] },
         write_operations: { permitted_signers: %i[alex jeff james], mandatory_signers: %i[alex jeff] }
-    }
+      }
   end
 
   describe 'list operations' do
@@ -38,9 +38,9 @@ describe API::V2::Management::Operations, type: :request do
 
           it 'returns operations by currency' do
             operations = "operations/#{op_type}"
-                            .camelize
-                            .constantize
-                            .where(currency_id: :btc)
+                         .camelize
+                         .constantize
+                         .where(currency_id: :btc)
             expect(JSON.parse(response.body).count).to eq operations.count
             expect(JSON.parse(response.body).map { |h| h['currency'] }).to\
               eq operations.pluck(:currency_id)
@@ -54,10 +54,10 @@ describe API::V2::Management::Operations, type: :request do
             expect(response).to have_http_status(200)
             expect(JSON.parse(response.body).count).to eq 7
             credits = "operations/#{op_type}"
-                        .camelize
-                        .constantize
-                        .order(id: :desc)
-                        .pluck(:credit)
+                      .camelize
+                      .constantize
+                      .order(id: :desc)
+                      .pluck(:credit)
 
             # Consider that credit sequence is unique.
             expect(JSON.parse(response.body).map { |h| h['credit'].to_d }).to eq credits[8..15]
@@ -85,9 +85,9 @@ describe API::V2::Management::Operations, type: :request do
           it 'returns operations by currency' do
             expect(response).to have_http_status(200)
             operations = "operations/#{op_type}"
-                           .camelize
-                           .constantize
-                           .where(currency_id: :btc)
+                         .camelize
+                         .constantize
+                         .where(currency_id: :btc)
             expect(JSON.parse(response.body).count).to eq operations.count
             expect(JSON.parse(response.body).map { |h| h['currency'] }).to\
               eq operations.pluck(:currency_id)
@@ -105,9 +105,9 @@ describe API::V2::Management::Operations, type: :request do
             expect(response).to have_http_status(200)
             request(op_type.to_s.pluralize)
             operations = "operations/#{op_type}"
-                           .camelize
-                           .constantize
-                           .where(member: member)
+                         .camelize
+                         .constantize
+                         .where(member: member)
             expect(JSON.parse(response.body).count).to eq operations.count
             expect(JSON.parse(response.body).map { |h| h['uid'] }).to\
               eq [member.uid] * operations_number
@@ -123,9 +123,9 @@ describe API::V2::Management::Operations, type: :request do
 
           def equal_amount!(response, optional_field, op_type)
             operations = "operations/#{op_type}"
-                           .camelize
-                           .constantize
-                           .where(optional_field)
+                         .camelize
+                         .constantize
+                         .where(optional_field)
             expect(JSON.parse(response.body).count).to eq operations.count
           end
 
@@ -156,10 +156,10 @@ describe API::V2::Management::Operations, type: :request do
           it 'returns operations between 48h and 24h ago' do
             request(op_type.to_s.pluralize)
             operations = "operations/#{op_type}"
-                           .camelize
-                           .constantize
-                           .where('created_at >= ?', time_from)
-                           .where('created_at < ?', time_to)
+                         .camelize
+                         .constantize
+                         .where('created_at >= ?', time_from)
+                         .where('created_at < ?', time_to)
             expect(JSON.parse(response.body).count).to eq operations.count
           end
         end
@@ -172,13 +172,13 @@ describe API::V2::Management::Operations, type: :request do
           it 'returns second page of operations' do
             expect(JSON.parse(response.body).count).to eq 7
             credits = "operations/#{op_type}"
-                        .camelize
-                        .constantize
-                        .order(id: :desc)
-                        .pluck(:credit)
+                      .camelize
+                      .constantize
+                      .order(id: :desc)
+                      .pluck(:credit)
 
             # Consider that credit sequence is unique.
-            expect(JSON.parse(response.body).map{ |h| h['credit'].to_d }).to eq credits[8..15]
+            expect(JSON.parse(response.body).map { |h| h['credit'].to_d }).to eq credits[8..15]
           end
         end
       end
@@ -196,7 +196,7 @@ describe API::V2::Management::Operations, type: :request do
         let(:signers) { %i[alex jeff] }
         let(:data) do
           { currency: currency.code,
-            code:     Operations::Account.find_by(type: op_type, currency_type: currency.type).code}
+            code: Operations::Account.find_by(type: op_type, currency_type: currency.type).code }
         end
 
         context 'credit' do
@@ -218,8 +218,8 @@ describe API::V2::Management::Operations, type: :request do
 
           it 'saves operation' do
             op_klass = "operations/#{op_type}"
-                         .camelize
-                         .constantize
+                       .camelize
+                       .constantize
             expect { request(op_type.to_s.pluralize) }.to \
               change(op_klass, :count).by(1)
           end
@@ -255,8 +255,8 @@ describe API::V2::Management::Operations, type: :request do
 
           it 'saves operation' do
             op_klass = "operations/#{op_type}"
-                         .camelize
-                         .constantize
+                       .camelize
+                       .constantize
             expect { request(op_type.to_s.pluralize) }.to \
               change(op_klass, :count).by(1)
           end
@@ -271,8 +271,8 @@ describe API::V2::Management::Operations, type: :request do
         let(:member) { create(:member, :barong) }
         let(:data) do
           { currency: currency.code,
-            code:     Operations::Account.find_by(type: op_type, currency_type: currency.type, kind: :main).code,
-            uid:      member.uid }
+            code: Operations::Account.find_by(type: op_type, currency_type: currency.type, kind: :main).code,
+            uid: member.uid }
         end
 
         context 'credit' do
@@ -295,8 +295,8 @@ describe API::V2::Management::Operations, type: :request do
 
           it 'saves operation' do
             op_klass = "operations/#{op_type}"
-                         .camelize
-                         .constantize
+                       .camelize
+                       .constantize
             expect { request(op_type.to_s.pluralize) }.to \
               change(op_klass, :count).by(1)
           end
@@ -322,7 +322,7 @@ describe API::V2::Management::Operations, type: :request do
           before do
             # Create credit operation to avoid negative balance.
             create(op_type, :with_member, credit: amount,
-                   member: member, currency: currency)
+                                          member: member, currency: currency)
             data[:debit] = amount
             request(op_type.to_s.pluralize)
           end
@@ -343,8 +343,8 @@ describe API::V2::Management::Operations, type: :request do
             # So we can create one more debit operation.
             create(op_type, :with_member, credit: amount, member: member, currency: currency)
             op_klass = "operations/#{op_type}"
-                         .camelize
-                         .constantize
+                       .camelize
+                       .constantize
             expect { request(op_type.to_s.pluralize) }.to \
               change(op_klass, :count).by(1)
           end

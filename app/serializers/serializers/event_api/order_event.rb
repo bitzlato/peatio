@@ -6,26 +6,26 @@ module Serializers
     class OrderEvent
       def call(order)
         {
-          id:                     order.id,
-          market:                 order.market_id,
-          type:                   type(order),
-          trader_uid:             Member.uid(order.member_id),
-          income_unit:            buy?(order) ? order.ask : order.bid,
-          income_fee_type:        'relative',
+          id: order.id,
+          market: order.market_id,
+          type: type(order),
+          trader_uid: Member.uid(order.member_id),
+          income_unit: buy?(order) ? order.ask : order.bid,
+          income_fee_type: 'relative',
           income_maker_fee_value: order.maker_fee.to_s('F'),
           income_taker_fee_value: order.taker_fee.to_s('F'),
-          outcome_unit:           buy?(order) ? order.bid : order.ask,
-          outcome_fee_type:       'relative',
-          outcome_fee_value:      '0.0',
-          initial_income_amount:  initial_income_amount(order),
-          current_income_amount:  current_income_amount(order),
+          outcome_unit: buy?(order) ? order.bid : order.ask,
+          outcome_fee_type: 'relative',
+          outcome_fee_value: '0.0',
+          initial_income_amount: initial_income_amount(order),
+          current_income_amount: current_income_amount(order),
           initial_outcome_amount: initial_outcome_amount(order),
           current_outcome_amount: current_outcome_amount(order),
-          strategy:               order.ord_type,
-          price:                  order.price.to_s('F'),
-          state:                  state(order),
-          trades_count:           order.trades_count,
-          created_at:             order.created_at.iso8601
+          strategy: order.ord_type,
+          price: order.price.to_s('F'),
+          state: state(order),
+          trades_count: order.trades_count,
+          created_at: order.created_at.iso8601
         }
       end
 
@@ -35,12 +35,13 @@ module Serializers
         end
       end
 
-    private
+      private
+
       def state(order)
         case order.state
-          when Order::CANCEL then 'canceled'
-          when Order::DONE   then 'completed'
-          else 'open'
+        when Order::CANCEL then 'canceled'
+        when Order::DONE   then 'completed'
+        else 'open'
         end
       end
 

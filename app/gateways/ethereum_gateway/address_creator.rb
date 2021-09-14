@@ -4,7 +4,7 @@ class EthereumGateway
       secret ||= PasswordGenerator.generate
       {
         address: normalize_address(client.json_rpc(:personal_newAccount, [secret])),
-        secret:  secret
+        secret: secret
       }
     rescue Ethereum::Client::Error => e
       raise Peatio::Wallet::ClientError, e

@@ -4,10 +4,10 @@ class CreateWallets < ActiveRecord::Migration[4.2]
       t.string  :currency_id,               limit: 5
       t.string  :name,                      limit: 64
       t.string  :address,     null: false
-      t.string  :kind,        null: false,  limit: 32
+      t.string  :kind,        null: false, limit: 32
       t.integer :nsig
       t.integer :parent
-      t.string  :status,      null: true,   limit: 32
+      t.string  :status, null: true, limit: 32
 
       t.timestamps null: false
     end

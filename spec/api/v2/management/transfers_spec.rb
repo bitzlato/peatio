@@ -6,9 +6,9 @@ describe API::V2::Management::Transfers, type: :request do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
       scopes: {
-      read_transfers:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] },
-      write_transfers: { permitted_signers: %i[alex jeff james], mandatory_signers: %i[alex jeff] }
-    }
+        read_transfers: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] },
+        write_transfers: { permitted_signers: %i[alex jeff james], mandatory_signers: %i[alex jeff] }
+      }
   end
 
   describe 'create operation' do
@@ -19,7 +19,7 @@ describe API::V2::Management::Transfers, type: :request do
     let(:currency) { Currency.coins.sample }
     let(:signers) { %i[alex jeff] }
     let(:data) do
-      { key:  generate(:transfer_key),
+      { key: generate(:transfer_key),
         category: Transfer::CATEGORIES.sample,
         description: "Referral program payoffs (#{Time.now.to_date})",
         operations: operations }
@@ -88,7 +88,7 @@ describe API::V2::Management::Transfers, type: :request do
     end
 
     context 'empty category' do
-      let(:operations) {[valid_operation]}
+      let(:operations) { [valid_operation] }
 
       before do
         data.delete(:category)
@@ -102,7 +102,7 @@ describe API::V2::Management::Transfers, type: :request do
     end
 
     context 'empty description' do
-      let(:operations) {[valid_operation]}
+      let(:operations) { [valid_operation] }
 
       before do
         data.delete(:description)
@@ -113,7 +113,7 @@ describe API::V2::Management::Transfers, type: :request do
     end
 
     context 'empty operations' do
-      let(:operations) {[]}
+      let(:operations) { [] }
 
       before { request }
 
@@ -163,7 +163,7 @@ describe API::V2::Management::Transfers, type: :request do
     end
 
     context 'existing transfer key' do
-      let(:operations) {[valid_operation]}
+      let(:operations) { [valid_operation] }
       before do
         t = create(:transfer)
         data[:key] = t.key
@@ -184,18 +184,18 @@ describe API::V2::Management::Transfers, type: :request do
       let(:operation) do
         {
           currency: :btc,
-          amount:   '1.1',
+          amount: '1.1',
           account_src: {
             code: 202,
-            uid:  sender_member.uid
+            uid: sender_member.uid
           },
           account_dst: {
             code: 202,
-            uid:  receiver_member.uid
+            uid: receiver_member.uid
           }
         }
       end
-      let(:operations) {[operation]}
+      let(:operations) { [operation] }
 
       before { request }
 
@@ -213,9 +213,9 @@ describe API::V2::Management::Transfers, type: :request do
       before do
         # Credit Revenue accounts.
         create(:revenue, currency_id: base_unit,
-               code: coin_revenues_code, credit: 10)
+                         code: coin_revenues_code, credit: 10)
         create(:revenue, currency_id: quote_unit,
-               code: fiat_revenues_code, credit: 100)
+                         code: fiat_revenues_code, credit: 100)
       end
 
       let(:referrer1) { create(:member, :barong) }
@@ -251,7 +251,7 @@ describe API::V2::Management::Transfers, type: :request do
         [
           {
             currency: base_unit,
-            amount:   '0.0001',
+            amount: '0.0001',
             account_src: {
               code: coin_revenues_code
             },
@@ -262,7 +262,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: base_unit,
-            amount:   '0.00015',
+            amount: '0.00015',
             account_src: {
               code: coin_revenues_code
             },
@@ -273,7 +273,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: base_unit,
-            amount:   '0.0003',
+            amount: '0.0003',
             account_src: {
               code: coin_revenues_code
             },
@@ -284,7 +284,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: quote_unit,
-            amount:   '0.075',
+            amount: '0.075',
             account_src: {
               code: fiat_revenues_code
             },
@@ -295,7 +295,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: quote_unit,
-            amount:   '0.05',
+            amount: '0.05',
             account_src: {
               code: fiat_revenues_code
             },
@@ -330,10 +330,10 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it 'updates legacy balances' do
-        expect { request }.to change{ referrer1.get_account(base_unit).balance }.by(0.0001 + 0.0003).and \
-                              change{ referrer2.get_account(base_unit).balance }.by(0.00015).and \
-                              change{ referrer2.get_account(quote_unit).balance }.by(0.05).and \
-                              change{ referrer3.get_account(quote_unit).balance }.by(0.075)
+        expect { request }.to change { referrer1.get_account(base_unit).balance }.by(0.0001 + 0.0003).and \
+          change { referrer2.get_account(base_unit).balance }.by(0.00015).and \
+            change { referrer2.get_account(quote_unit).balance }.by(0.05).and \
+              change { referrer3.get_account(quote_unit).balance }.by(0.075)
       end
 
       context 'wrong account code' do
@@ -341,9 +341,9 @@ describe API::V2::Management::Transfers, type: :request do
           [
             {
               currency: base_unit,
-              amount:   '0.0001',
+              amount: '0.0001',
               account_src: {
-                code: fiat_revenues_code  # Wrong code because base_unit is coin.
+                code: fiat_revenues_code # Wrong code because base_unit is coin.
               },
               account_dst: {
                 code: coin_liabilities_code,
@@ -352,7 +352,7 @@ describe API::V2::Management::Transfers, type: :request do
             },
             {
               currency: quote_unit,
-              amount:  '0.05',
+              amount: '0.05',
               account_src: {
                 code: fiat_revenues_code
               },
@@ -397,9 +397,9 @@ describe API::V2::Management::Transfers, type: :request do
         #   2. Credit token-distribution Liabilities account.
         # So we keep Balance Sheet equal Income Statement.
         create(:asset, currency_id: coin,
-               code: coin_assets_code, credit: 1000)
+                       code: coin_assets_code, credit: 1000)
         create(:liability, currency_id: coin,
-               code: coin_distribution_account_code, credit: 1000, member_id: nil)
+                           code: coin_distribution_account_code, credit: 1000, member_id: nil)
       end
 
       let(:member1) { create(:member, :barong) }
@@ -414,13 +414,12 @@ describe API::V2::Management::Transfers, type: :request do
         coin_distribution_account[:code]
       end
       let(:coin_distribution_account) do
-        { code:           292,
-          type:           :liability,
-          kind:           'token-distribution',
-          currency_type:  :coin,
-          description:    'Token Distributions Liabilities Account',
-          scope:          :platform
-        }
+        { code: 292,
+          type: :liability,
+          kind: 'token-distribution',
+          currency_type: :coin,
+          description: 'Token Distributions Liabilities Account',
+          scope: :platform }
       end
 
       # Balance changes:
@@ -435,7 +434,7 @@ describe API::V2::Management::Transfers, type: :request do
         [
           {
             currency: coin,
-            amount:   10,
+            amount: 10,
             account_src: {
               code: coin_distribution_account_code
             },
@@ -446,7 +445,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: coin,
-            amount:   5,
+            amount: 5,
             account_src: {
               code: coin_distribution_account_code
             },
@@ -477,8 +476,8 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it 'updates legacy balance' do
-        expect { request }.to change{ member1.get_account(coin).balance }.by(10).and \
-                              change{ member2.get_account(coin).balance }.by(5)
+        expect { request }.to change { member1.get_account(coin).balance }.by(10).and \
+          change { member2.get_account(coin).balance }.by(5)
       end
     end
   end

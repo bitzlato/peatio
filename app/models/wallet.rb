@@ -29,11 +29,11 @@ class Wallet < ApplicationRecord
 
   SETTING_ATTRIBUTES.each do |attribute|
     define_method attribute do
-      self.settings[attribute.to_s]
+      settings[attribute.to_s]
     end
 
     define_method "#{attribute}=".to_sym do |value|
-      self.settings = self.settings.merge(attribute.to_s => value)
+      self.settings = settings.merge(attribute.to_s => value)
     end
   end
 
@@ -48,11 +48,11 @@ class Wallet < ApplicationRecord
   validates :address, presence: true
   validate :gateway_wallet_kind_support
 
-  validates :status,  inclusion: { in: STATES }
+  validates :status, inclusion: { in: STATES }
 
   validates :max_balance, numericality: { greater_than_or_equal_to: 0 }
 
-  scope :active,   -> { where(status: :active) }
+  scope :active, -> { where(status: :active) }
   scope :active_retired, -> { where(status: %w[active retired]) }
   scope :deposit,  -> { where(kind: kinds(deposit: true, values: true)) }
   scope :fee,      -> { where(use_as_fee_source: true) }
@@ -81,16 +81,16 @@ class Wallet < ApplicationRecord
       super + %w(blockchain_key_eq)
     end
 
-    def kinds(options={})
+    def kinds(options = {})
       ENUMERIZED_KINDS
         .yield_self do |kinds|
           case
           when options.fetch(:deposit, false)
-            kinds.select { |_k, v| [1,4].include? v / 100 }
+            kinds.select { |_k, v| [1, 4].include? v / 100 }
           when options.fetch(:fee, false)
             kinds.select { |_k, v| v / 100 == 2 }
           when options.fetch(:withdraw, false)
-            kinds.select { |_k, v| [3,4].include? v / 100 }
+            kinds.select { |_k, v| [3, 4].include? v / 100 }
           else
             kinds
           end
@@ -144,12 +144,13 @@ class Wallet < ApplicationRecord
 
   def blockchain_key=(key)
     return self.blockchain = nil if key.nil?
+
     self.blockchain = Blockchain.find_by(key: key) || raise("No blockchain with key #{key}")
   end
 
   def update_balances!
     # TODO: Получать балансы со шлюза
-    balances = current_balance.each_with_object({}) do |(k,v), a|
+    balances = current_balance.each_with_object({}) do |(k, v), a|
       currency_id = k.is_a?(Money::Currency) ? k.id.downcase : k
       a[currency_id] = v.nil? ? nil : v.to_d
     end
@@ -210,6 +211,7 @@ class Wallet < ApplicationRecord
 
   def generate_settings
     return unless address.blank? && settings[:uri].present? && currencies.present?
+
     result = create_address!.reverse_merge details: {}
   rescue StandardError => e
     Rails.logger.info { "Cannot generate wallet address and secret error: #{e.message}" }
@@ -217,7 +219,7 @@ class Wallet < ApplicationRecord
   ensure
     if result.present?
       self.address = result.delete(:address)
-      self.settings = self.settings.merge(result)
+      self.settings = settings.merge(result)
     end
   end
 end

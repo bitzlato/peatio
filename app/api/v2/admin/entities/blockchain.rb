@@ -8,7 +8,7 @@ module API
         class Blockchain < API::V2::Entities::Base
           expose(
             :id,
-            documentation:{
+            documentation: {
               type: Integer,
               desc: 'Unique blockchain identifier in database.'
             }
@@ -16,7 +16,7 @@ module API
 
           expose(
             :key,
-            documentation:{
+            documentation: {
               type: String,
               desc: 'Unique key to identify blockchain.'
             }
@@ -24,7 +24,7 @@ module API
 
           expose(
             :name,
-            documentation:{
+            documentation: {
               type: String,
               desc: 'A name to identify blockchain.'
             }
@@ -32,7 +32,7 @@ module API
 
           expose(
             :client,
-            documentation:{
+            documentation: {
               type: String,
               desc: 'Integrated blockchain client.'
             }
@@ -40,7 +40,7 @@ module API
 
           expose(
             :height,
-            documentation:{
+            documentation: {
               type: Integer,
               desc: 'The number of blocks preceding a particular block on blockchain.'
             }
@@ -48,7 +48,7 @@ module API
 
           expose(
             :explorer_address,
-            documentation:{
+            documentation: {
               type: String,
               desc: 'Blockchain explorer address template.'
             }
@@ -56,7 +56,7 @@ module API
 
           expose(
             :explorer_transaction,
-            documentation:{
+            documentation: {
               type: String,
               desc: 'Blockchain explorer transaction template.'
             }
@@ -64,7 +64,7 @@ module API
 
           expose(
             :min_confirmations,
-            documentation:{
+            documentation: {
               type: Integer,
               desc: 'Minimum number of confirmations.'
             }
@@ -72,7 +72,7 @@ module API
 
           expose(
             :status,
-            documentation:{
+            documentation: {
               type: String,
               desc: 'Blockchain status (active/disabled).'
             }

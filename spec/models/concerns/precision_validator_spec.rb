@@ -4,6 +4,7 @@
 class Validatable
   include ActiveModel::Validations
   attr_accessor :amount
+
   validates :amount, precision: { less_than_or_eq_to: 2 }
 end
 

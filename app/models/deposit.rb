@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 class Deposit < ApplicationRecord
-
   # TODO: rename dispatched to completed
   #
   serialize :error, JSON unless Rails.configuration.database_support_json
@@ -26,11 +25,11 @@ class Deposit < ApplicationRecord
   scope :recent, -> { order(id: :desc) }
 
   before_validation on: :create do
-    self.blockchain ||= self.currency.try(:blockchain)
+    self.blockchain ||= currency.try(:blockchain)
   end
 
   before_create do
-    self.blockchain ||= self.currency.blockchain || raise("No blockchain currency #{currency.id}") if currency.present?
+    self.blockchain ||= currency.blockchain || raise("No blockchain currency #{currency.id}") if currency.present?
   end
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
@@ -120,6 +119,7 @@ class Deposit < ApplicationRecord
   def confirmations
     return 0 if block_number.blank?
     return blockchain.processed_height - block_number if (blockchain.processed_height - block_number) >= 0
+
     nil
   rescue StandardError => e
     report_exception(e)
@@ -131,8 +131,8 @@ class Deposit < ApplicationRecord
   end
 
   def add_error(e)
-    error_hash = e.is_a?(StandardError) ?  { class: e.class.to_s, message: e.message } : { message: e}
-    update!(error: self.deposit_errors + [error_hash] )
+    error_hash = e.is_a?(StandardError) ? { class: e.class.to_s, message: e.message } : { message: e }
+    update!(error: deposit_errors + [error_hash])
   end
 
   def account
@@ -152,18 +152,18 @@ class Deposit < ApplicationRecord
   end
 
   def as_json_for_event_api
-    { tid:                      tid,
-      user:                     { uid: member.uid, email: member.email },
-      uid:                      member.uid,
-      currency:                 currency_id,
-      amount:                   amount.to_s('F'),
-      state:                    aasm_state,
-      blockchain_state:         blockchain.status,
-      created_at:               created_at.iso8601,
-      updated_at:               updated_at.iso8601,
-      completed_at:             completed_at&.iso8601,
-      blockchain_address:       address,
-      blockchain_txid:          txid }
+    { tid: tid,
+      user: { uid: member.uid, email: member.email },
+      uid: member.uid,
+      currency: currency_id,
+      amount: amount.to_s('F'),
+      state: aasm_state,
+      blockchain_state: blockchain.status,
+      created_at: created_at.iso8601,
+      updated_at: updated_at.iso8601,
+      completed_at: completed_at&.iso8601,
+      blockchain_address: address,
+      blockchain_txid: txid }
   end
 
   def completed?
@@ -185,6 +185,7 @@ class Deposit < ApplicationRecord
 
   def money_amount=(value)
     raise 'must be Money' unless value.is_a? Money
+
     self.amount = value.to_d
   end
 
@@ -229,12 +230,12 @@ class Deposit < ApplicationRecord
   def record_complete_operations!
     transaction do
       Operations::Liability.transfer!(
-        amount:     amount,
-        currency:   currency,
-        reference:  self,
-        from_kind:  :locked,
-        to_kind:    :main,
-        member_id:  member_id
+        amount: amount,
+        currency: currency,
+        reference: self,
+        from_kind: :locked,
+        to_kind: :main,
+        member_id: member_id
       )
     end
   end

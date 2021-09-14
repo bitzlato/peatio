@@ -1,7 +1,6 @@
 class CreateAdjustments < ActiveRecord::Migration[5.2]
   def change
     create_table :adjustments do |t|
-
       t.string :reason, null: false
       t.text :description, null: false
       t.bigint :creator_id, null: false
@@ -13,7 +12,6 @@ class CreateAdjustments < ActiveRecord::Migration[5.2]
       t.integer :category, limit: 1, null: false
       t.integer :state, limit: 1, null: false
       t.timestamps null: false
-
     end
 
     add_index :adjustments, :currency_id

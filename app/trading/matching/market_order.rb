@@ -5,7 +5,6 @@ require_relative 'constants'
 
 module Matching
   class MarketOrder < BaseOrder
-
     attr_reader :locked
 
     def initialize(attrs)
@@ -33,10 +32,12 @@ module Matching
 
     def fill(_trade_price, trade_volume, trade_funds)
       raise NotEnoughVolume if trade_volume > @volume
+
       @volume -= trade_volume
 
       funds = type == :ask ? trade_volume : trade_funds
       raise ExceedSumLimit if funds > @locked
+
       @locked -= funds
     end
 
@@ -58,13 +59,13 @@ module Matching
     end
 
     def attributes
-      { id:        @id,
+      { id: @id,
         timestamp: @timestamp,
-        type:      @type,
-        locked:    @locked,
-        volume:    @volume,
-        market:    @market,
-        ord_type:  'market' }
+        type: @type,
+        locked: @locked,
+        volume: @volume,
+        market: @market,
+        ord_type: 'market' }
     end
   end
 end

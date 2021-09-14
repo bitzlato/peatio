@@ -3,7 +3,6 @@
 
 describe Blockchain do
   context 'validations' do
-
     subject { build(:blockchain, 'eth-rinkeby') }
 
     it 'checks valid record' do

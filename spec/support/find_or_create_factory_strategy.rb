@@ -18,6 +18,7 @@ module FactoryBot
 
       def get_overrides(evaluation = nil)
         return @overrides unless @overrides.nil?
+
         evaluation.instance_variable_get(:@attribute_assigner).instance_variable_get(:@evaluator).instance_variable_get(:@overrides).clone
       end
     end

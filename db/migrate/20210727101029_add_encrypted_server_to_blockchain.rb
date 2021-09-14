@@ -4,7 +4,7 @@ class AddEncryptedServerToBlockchain < ActiveRecord::Migration[5.2]
       server = Blockchain.pluck(:id, :server)
 
       remove_column :blockchains, :server
-      add_column :blockchains, :server_encrypted , :string, limit: 1024, after: :client
+      add_column :blockchains, :server_encrypted, :string, limit: 1024, after: :client
 
       server.each do |s|
         atr = Blockchain.__vault_attributes[:server]
@@ -23,7 +23,7 @@ class AddEncryptedServerToBlockchain < ActiveRecord::Migration[5.2]
       server = Blockchain.pluck(:id, :server_encrypted)
 
       add_column :blockchains, :server, :string, limit: 1000, default: '', null: false, after: :client
-      remove_column :blockchains, :server_encrypted , :string, limit: 1024, after: :client
+      remove_column :blockchains, :server_encrypted, :string, limit: 1024, after: :client
 
       server.each do |s|
         atr = Blockchain.__vault_attributes[:server]

@@ -56,17 +56,17 @@ module API
         # Add swagger documentation for Peatio Management API
         add_swagger_documentation base_path: File.join(API::Mount::PREFIX, API::V2::Mount::API_VERSION, PREFIX, 'peatio'),
                                   add_base_path: true,
-                                  mount_path:  '/swagger',
+                                  mount_path: '/swagger',
                                   api_version: API::V2::Mount::API_VERSION,
                                   doc_version: Peatio::Application::VERSION,
                                   info: {
-                                    title:          "Peatio Management API #{API::V2::Mount::API_VERSION}",
-                                    description:    'Management API is server-to-server API with high privileges.',
-                                    contact_name:   Peatio::App.config.official_name,
-                                    contact_email:  Peatio::App.config.official_email,
-                                    contact_url:    Peatio::App.config.official_website,
-                                    license:        'MIT',
-                                    license_url:    'https://github.com/openware/peatio/blob/master/LICENSE.md'
+                                    title: "Peatio Management API #{API::V2::Mount::API_VERSION}",
+                                    description: 'Management API is server-to-server API with high privileges.',
+                                    contact_name: Peatio::App.config.official_name,
+                                    contact_email: Peatio::App.config.official_email,
+                                    contact_url: Peatio::App.config.official_website,
+                                    license: 'MIT',
+                                    license_url: 'https://github.com/openware/peatio/blob/master/LICENSE.md'
                                   },
                                   models: [
                                     API::V2::Management::Entities::Balance,

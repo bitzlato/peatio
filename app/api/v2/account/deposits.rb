@@ -70,7 +70,7 @@ module API
                    desc: 'Number of deposits per page (defaults to 100, maximum is 100).'
           optional :page,
                    type: { value: Integer, message: 'account.deposit.non_integer_page' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'account.deposit.non_positive_page'},
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'account.deposit.non_positive_page' },
                    default: 1,
                    desc: 'Page number (defaults to 1).'
         end
@@ -111,7 +111,7 @@ module API
         params do
           requires :currency,
                    type: String,
-                   values: { value: -> { Currency.coins.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
+                   values: { value: -> { Currency.coins.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                    desc: 'The account you want to deposit to.'
           given :currency do
             optional :address_format,
@@ -121,7 +121,7 @@ module API
                      desc: 'Address format legacy/cash'
           end
         end
-        get '/deposit_address/:currency', requirements: { currency: /[\w\.\-]+/ } do
+        get '/deposit_address/:currency', requirements: { currency: /[\w.\-]+/ } do
           user_authorize! :read, ::PaymentAddress
 
           currency = Currency.find(params[:currency])

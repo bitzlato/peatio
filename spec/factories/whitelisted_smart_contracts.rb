@@ -4,7 +4,7 @@
 FactoryBot.define do
   factory :whitelisted_smart_contract do
     trait :address_1 do
-      id                 { 1 }
+      id { 1 }
       association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       address            { '0xbbd602bb278edff65cbc967b9b62095ad5be23a3' }
       state              { 'active' }

@@ -1,12 +1,14 @@
 class Withdrawer
   class Error < StandardError
-    def initialize(message, options={})
+    def initialize(message, options = {})
       @options = options
       @message = message
     end
+
     def as_json
       options.merge message: message
     end
+
     def to_s
       message
     end
@@ -57,7 +59,7 @@ class Withdrawer
     rescue Busy, Fail => e
       # TODO: repeat withdraw for Busy
       withdraw.fail!
-      logger.warn e.as_json.merge( id: withdraw.id )
+      logger.warn e.as_json.merge(id: withdraw.id)
     rescue StandardError => e
       logger.warn id: withdraw.id, message: 'Setting withdraw state to errored.'
       report_exception e, true, withdraw_id: withdraw.id
@@ -71,21 +73,21 @@ class Withdrawer
 
   def push_transaction_to_gateway!(withdraw, nonce: nil, gas_factor: nil)
     withdraw_wallet =
-      withdraw.
-        blockchain.
-        withdraw_wallet_for_currency(withdraw.currency) ||
-        raise(NoHotWallet, 'No hot withdraw wallet for withdraw', withdraw_id:  withdraw.id)
+      withdraw
+      .blockchain
+      .withdraw_wallet_for_currency(withdraw.currency) ||
+      raise(NoHotWallet, 'No hot withdraw wallet for withdraw', withdraw_id: withdraw.id)
 
-    withdraw.blockchain.gateway.
-      create_transaction!(
-        from_address:     withdraw_wallet.address,
-        to_address:       withdraw.to_address,
-        amount:           withdraw.money_amount,
-        contract_address: withdraw.currency.contract_address,
-        secret:           withdraw_wallet.secret,
-        nonce:            nonce,
-        gas_factor:       gas_factor,
-        meta:             { withdraw_tid: withdraw.tid }
-    ) || raise("No transaction returned for withdraw (#{withdraw.id})")
+    withdraw.blockchain.gateway
+            .create_transaction!(
+              from_address: withdraw_wallet.address,
+              to_address: withdraw.to_address,
+              amount: withdraw.money_amount,
+              contract_address: withdraw.currency.contract_address,
+              secret: withdraw_wallet.secret,
+              nonce: nonce,
+              gas_factor: gas_factor,
+              meta: { withdraw_tid: withdraw.tid }
+            ) || raise("No transaction returned for withdraw (#{withdraw.id})")
   end
 end

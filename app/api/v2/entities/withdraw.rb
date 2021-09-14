@@ -93,8 +93,8 @@ module API
         expose(
           :transfer_type,
           documentation: {
-              type: String,
-              desc: 'Withdraw transfer type'
+            type: String,
+            desc: 'Withdraw transfer type'
           }
         )
 
@@ -120,7 +120,7 @@ module API
 
         expose(
           :transfer_links,
-          if: ->(withdraw) { withdraw.metadata.has_key? 'links' },
+          if: ->(withdraw) { withdraw.metadata.key? 'links' },
           documentation: {
             type: JSON,
             desc: 'Links to confirm withdraw on external resource',

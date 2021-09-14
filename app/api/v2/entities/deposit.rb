@@ -68,8 +68,8 @@ module API
         expose(
           :transfer_type,
           documentation: {
-              type: String,
-              desc: 'Deposit transfer type'
+            type: String,
+            desc: 'Deposit transfer type'
           }
         )
 

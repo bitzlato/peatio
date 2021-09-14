@@ -36,11 +36,11 @@ module API
           admin_authorize! :read, ::Deposit
 
           ransack_params = Helpers::RansackBuilder.new(params)
-                             .eq(:id, :txid, :tid, :address)
-                             .translate(state: :aasm_state, uid: :member_uid, currency: :currency_id, email: :member_email)
-                             .with_daterange
-                             .merge(type_eq: params[:type].present? ? "Deposits::#{params[:type].capitalize}" : nil)
-                             .build
+                                                  .eq(:id, :txid, :tid, :address)
+                                                  .translate(state: :aasm_state, uid: :member_uid, currency: :currency_id, email: :member_email)
+                                                  .with_daterange
+                                                  .merge(type_eq: params[:type].present? ? "Deposits::#{params[:type].capitalize}" : nil)
+                                                  .build
 
           search = Deposit.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
@@ -83,7 +83,7 @@ module API
              success: API::V2::Admin::Entities::Deposit
         params do
           requires :uid,
-                   values: { value: -> (v) { Member.exists?(uid: v) }, message: 'admin.deposit.user_doesnt_exist' },
+                   values: { value: ->(v) { Member.exists?(uid: v) }, message: 'admin.deposit.user_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:uid][:desc] }
           requires :currency,
                    values: { value: -> { Currency.fiats.codes(bothcase: true) }, message: 'admin.deposit.currency_doesnt_exist' },
@@ -140,7 +140,7 @@ module API
              success: API::V2::Admin::Entities::Deposit
         params do
           requires :uid,
-                   values: { value: -> (v) { Member.exists?(uid: v) }, message: 'admin.deposit.user_doesnt_exist' },
+                   values: { value: ->(v) { Member.exists?(uid: v) }, message: 'admin.deposit.user_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:uid][:desc] }
           requires :currency,
                    values: { value: -> { Currency.codes }, message: 'admin.deposit.currency_doesnt_exist' },

@@ -239,7 +239,6 @@ describe API::V2::Admin::Adjustments, type: :request do
         expect(result['reason']).to eq('Adjustment')
       end
 
-
       it 'doesnt requires for expense receiving account' do
         api_post '/api/v2/admin/adjustments/new', token: token, params: params.merge(receiving_account_code: 402).except(:receiving_member_uid)
 
@@ -276,8 +275,8 @@ describe API::V2::Admin::Adjustments, type: :request do
       expect do
         api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
       end.to change { adjustment.reload.state }.to('accepted')
-      .and change { Operations::Asset.count }.by(1)
-      .and change { Operations::Liability.count }.by(1)
+                                               .and change { Operations::Asset.count }.by(1)
+                                                                                      .and change { Operations::Liability.count }.by(1)
 
       expect(response).to be_successful
     end
@@ -325,8 +324,8 @@ describe API::V2::Admin::Adjustments, type: :request do
         expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
         end.to change { adjustment.reload.state }.to('accepted')
-        .and change { Operations::Asset.count }.by(1)
-        .and change { Operations::Expense.count }.by(1)
+                                                 .and change { Operations::Asset.count }.by(1)
+                                                                                        .and change { Operations::Expense.count }.by(1)
 
         expect(response).to be_successful
       end

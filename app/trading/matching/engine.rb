@@ -5,7 +5,6 @@ require_relative 'constants'
 
 module Matching
   class Engine
-
     ORDER_SUBMIT_MAX_ATTEMPTS = 3
     MIN_INCREMENT_COUNT_TO_SNAPSHOT = 20
     MIN_PERIOD_TO_SNAPSHOT = 10.second
@@ -13,9 +12,10 @@ module Matching
 
     attr :orderbook, :mode, :queue
     attr_accessor :initializing, :snapshot_time, :increment_count, :sequence_number
+
     delegate :ask_orders, :bid_orders, to: :orderbook
 
-    def initialize(market, options={})
+    def initialize(market, options = {})
       @market    = market
       @orderbook = OrderBookManager.new(market.symbol, on_change: method(:publish_increment))
       @initializing = true
@@ -32,7 +32,7 @@ module Matching
       case mode
       when :dryrun
         @queue = []
-        class <<@queue
+        class << @queue
           def enqueue(*args)
             push args
           end
@@ -131,10 +131,10 @@ module Matching
     def publish_snapshot
       @snapshot_time = Time.now
       ::AMQP::Queue.enqueue_event('public', @market.symbol, 'ob-snap', {
-        'asks' => ask_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}[0..300],
-        'bids' => bid_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}.reverse[0..300],
-        'sequence' => @sequence_number
-      })
+                                    'asks' => ask_orders.limit_orders.map { |k, v| [k.to_s, v.map(&:volume).sum.to_s] }[0..300],
+                                    'bids' => bid_orders.limit_orders.map { |k, v| [k.to_s, v.map(&:volume).sum.to_s] }.reverse[0..300],
+                                    'sequence' => @sequence_number
+                                  })
     end
 
     def publish_increment(market, side, price, amount)
@@ -151,9 +151,9 @@ module Matching
       @increment_count += 1
       @sequence_number += 1
       ::AMQP::Queue.enqueue_event('public', market, 'ob-inc', {
-        "#{side}s" => [price.to_s, amount.to_s],
-        'sequence' => @sequence_number
-      })
+                                    "#{side}s" => [price.to_s, amount.to_s],
+                                    'sequence' => @sequence_number
+                                  })
     end
 
     private
@@ -176,7 +176,8 @@ module Matching
                          taker_order_id: taker_order.id,
                          strike_price: price,
                          amount: amount,
-                         total: total } },
+                         total: total
+                       } },
                      { persistent: false })
     end
 

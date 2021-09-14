@@ -14,15 +14,17 @@ describe ::AbstractGateway do
 
   context '#monefy_transaction' do
     context 'monefy hash transcation' do
-      let(:hash_transaction) do {
-        currency_id: 'eth',
-        amount: 1000000000002,
-        from_address: '123',
-        to_address: '145',
-        block_number: 1,
-        status: 'success',
-        contract_address: nil
-      } end
+      let(:hash_transaction) do
+        {
+          currency_id: 'eth',
+          amount: 1000000000002,
+          from_address: '123',
+          to_address: '145',
+          block_number: 1,
+          status: 'success',
+          contract_address: nil
+        }
+      end
       let(:reference) { create :deposit, :deposit_eth }
 
       it do
@@ -32,14 +34,16 @@ describe ::AbstractGateway do
       end
     end
     context 'monefy peatio transcation' do
-      let(:peatio_transaction) do Peatio::Transaction.new(
-        currency_id: 'eth',
-        amount: 100000000002,
-        from_address: '123',
-        to_address: '145',
-        block_number: 1,
-        status: 'success'
-      ) end
+      let(:peatio_transaction) do
+        Peatio::Transaction.new(
+          currency_id: 'eth',
+          amount: 100000000002,
+          from_address: '123',
+          to_address: '145',
+          block_number: 1,
+          status: 'success'
+        )
+      end
       let(:reference) { create :deposit, :deposit_eth }
 
       it do

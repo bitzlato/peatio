@@ -3,7 +3,7 @@
 
 class GoodCurrencyForeignKey < ActiveRecord::Migration[4.2]
   def change
-    %i[ account_versions accounts deposits fund_sources payment_addresses payment_transactions proofs withdraws ].each do |t|
+    %i[account_versions accounts deposits fund_sources payment_addresses payment_transactions proofs withdraws].each do |t|
       remove_index t, :currency if index_exists?(t, :currency)
       rename_column t, :currency, :currency_id
       add_index t, :currency_id

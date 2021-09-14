@@ -28,9 +28,9 @@ module API
           admin_authorize! :read, ::Member
 
           ransack_params = Helpers::RansackBuilder.new(params)
-                             .eq(:uid, :email, :state, :role, :group)
-                             .with_daterange
-                             .build
+                                                  .eq(:uid, :email, :state, :role, :group)
+                                                  .with_daterange
+                                                  .build
 
           search = Member.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"

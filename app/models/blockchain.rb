@@ -28,7 +28,7 @@ class Blockchain < ApplicationRecord
             :min_confirmations,
             numericality: { greater_than_or_equal_to: 1, only_integer: true }
   validates :server, url: { allow_blank: true }
-  before_create { self.key = self.key.strip.downcase }
+  before_create { self.key = key.strip.downcase }
 
   scope :active, -> { where(status: :active) }
 
@@ -60,9 +60,9 @@ class Blockchain < ApplicationRecord
     @blockchain_service ||= BlockchainService.new(self)
   end
 
-  def find_money_currency(contract_address=nil)
+  def find_money_currency(contract_address = nil)
     currencies.map(&:money_currency)
-      .find { |mc| mc.contract_address.presence == contract_address.presence } ||
+              .find { |mc| mc.contract_address.presence == contract_address.presence } ||
       raise("No found currency for '#{contract_address || :nil}' contract address in blockchain '#{key}'")
   end
 
@@ -79,11 +79,11 @@ class Blockchain < ApplicationRecord
   end
 
   def withdraw_wallet_for_currency(currency)
-    wallets.
-      active.
-      hot.
-      with_withdraw_currency(currency).
-      take
+    wallets
+      .active
+      .hot
+      .with_withdraw_currency(currency)
+      .take
   end
 
   def wallets_addresses

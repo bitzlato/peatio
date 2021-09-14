@@ -3,13 +3,13 @@
 
 describe AMQP::Queue do
   let(:config) do
-    Hashie::Mash.new(connect:   { host: '127.0.0.1' },
-                     exchange:  { testx: { name: 'testx', type: 'fanout' } },
-                     queue:     { testq: { name: 'testq', durable: true },
-                                  testd: { name: 'testd' } },
-                     binding:   {
-                       test:    { queue: 'testq', exchange: 'testx' },
-                       testd:   { queue: 'testd' },
+    Hashie::Mash.new(connect: { host: '127.0.0.1' },
+                     exchange: { testx: { name: 'testx', type: 'fanout' } },
+                     queue: { testq: { name: 'testq', durable: true },
+                              testd: { name: 'testd' } },
+                     binding: {
+                       test: { queue: 'testq', exchange: 'testx' },
+                       testd: { queue: 'testd' },
                        default: { queue: 'testq' }
                      })
   end

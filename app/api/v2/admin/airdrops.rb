@@ -7,7 +7,6 @@ module API
   module V2
     module Admin
       class Airdrops < Grape::API
-
         desc 'Process user airdrop'
         params do
           requires :file,

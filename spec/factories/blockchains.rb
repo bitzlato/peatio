@@ -4,7 +4,7 @@
 FactoryBot.define do
   factory :blockchain do
     gateway_klass { DummyGateway.name }
-    client_options          { {token_gas_limit: 110_000, base_gas_limit: 11_000, gas_factor: 1} }
+    client_options { { token_gas_limit: 110_000, base_gas_limit: 11_000, gas_factor: 1 } }
 
     trait 'bitzlato' do
       key                     { 'bitzlato' }
@@ -56,18 +56,18 @@ FactoryBot.define do
       initialize_with         { Blockchain.find_or_create_by(key: key) }
     end
 
-    #trait 'eth-mainet' do
-      #key                     { 'eth-mainet' }
-      #gateway_klass           { EthereumGateway.name }
-      #name                    { 'Ethereum Mainet' }
-      #server                  { 'http://127.0.0.1:8545' }
-      #height                  { 2500000 }
-      #min_confirmations       { 4 }
-      #explorer_address        { 'https://etherscan.io/address/#{address}' }
-      #explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
-      #status                  { 'disabled' }
-      #initialize_with         { Blockchain.find_or_create_by(key: key) }
-    #end
+    # trait 'eth-mainet' do
+    # key                     { 'eth-mainet' }
+    # gateway_klass           { EthereumGateway.name }
+    # name                    { 'Ethereum Mainet' }
+    # server                  { 'http://127.0.0.1:8545' }
+    # height                  { 2500000 }
+    # min_confirmations       { 4 }
+    # explorer_address        { 'https://etherscan.io/address/#{address}' }
+    # explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
+    # status                  { 'disabled' }
+    # initialize_with         { Blockchain.find_or_create_by(key: key) }
+    # end
 
     trait 'bsc-testnet' do
       key                     { 'btc-testnet' }

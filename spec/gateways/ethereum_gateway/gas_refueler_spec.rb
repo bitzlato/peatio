@@ -42,29 +42,29 @@ describe ::EthereumGateway::GasRefueler do
     let(:contract_addresses) { [] }
     context 'it has zero ethereum balance' do
       let(:balance_on_target_address) { 0 }
-      it { expect{ result }.to raise_error described_class::NoTokens }
+      it { expect { result }.to raise_error described_class::NoTokens }
     end
     context 'it has small ethereum balance' do
       let(:balance_on_target_address) { 10000 }
-      it { expect{ result }.to raise_error described_class::NoTokens }
+      it { expect { result }.to raise_error described_class::NoTokens }
     end
     context 'it has big ethereum balance' do
       let(:balance_on_target_address) { 10**18 }
-      it { expect{ result }.to raise_error described_class::NoTokens }
+      it { expect { result }.to raise_error described_class::NoTokens }
     end
   end
 
   context 'address has tokens' do
     let(:balance_on_target_address) { 0 }
-    let(:contract_addresses) { [Faker::Blockchain::Ethereum.address]  }
+    let(:contract_addresses) { [Faker::Blockchain::Ethereum.address] }
     before do
       stub_estimate_gas(
-        id:            3,
-        from:          from_address,
-        to:            contract_addresses.first,
-        gas_price:     gas_price,
+        id: 3,
+        from: from_address,
+        to: contract_addresses.first,
+        gas_price: gas_price,
         estimated_gas: estimated_gas,
-        data:          abi_encode('transfer(address,uint256)', to_address, '0x'+EthereumGateway::GasEstimator::DEFAULT_AMOUNT.to_s(16))
+        data: abi_encode('transfer(address,uint256)', to_address, '0x' + EthereumGateway::GasEstimator::DEFAULT_AMOUNT.to_s(16))
       )
       stub_estimate_gas(
         id: 4,
@@ -79,12 +79,12 @@ describe ::EthereumGateway::GasRefueler do
     context 'and it has no enough ethereum balance' do
       before do
         stub_personal_send_transaction(
-          value:        value,
+          value: value,
           from_address: from_address,
-          to_address:   to_address,
-          gas:          gas_limit,
-          gas_price:    gas_price,
-          id:           5
+          to_address: to_address,
+          gas: gas_limit,
+          gas_price: gas_price,
+          id: 5
         )
       end
       let(:balance_on_target_address) { 10000 }
@@ -99,8 +99,8 @@ describe ::EthereumGateway::GasRefueler do
           from_addresses: [from_address],
           options: {
             'gas_factor' => refuel_gas_factor,
-            'gas_limit' =>  gas_limit,
-            'gas_price' =>  transaction_gas_price,
+            'gas_limit' => gas_limit,
+            'gas_price' => transaction_gas_price,
             'subtract_fee' => false,
             'required_amount' => 2462460000000000,
             'required_gas' => estimated_gas
@@ -111,7 +111,7 @@ describe ::EthereumGateway::GasRefueler do
     end
     context 'and it has enough ethereum balance' do
       let(:balance_on_target_address) { 10**18 }
-      it { expect{ result }.to raise_error described_class::Balanced }
+      it { expect { result }.to raise_error described_class::Balanced }
     end
   end
 end

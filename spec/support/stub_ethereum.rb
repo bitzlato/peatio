@@ -19,7 +19,7 @@ module EthereumHelpers
       .to_return(body: response.to_json)
   end
 
-  def stub_gas_fetching(gas_price: , id:)
+  def stub_gas_fetching(gas_price:, id:)
     body = {
       jsonrpc: '2.0',
       id: id,
@@ -37,7 +37,7 @@ module EthereumHelpers
       id: id,
       method: 'eth_estimateGas',
       params: [
-        {gasPrice: '0x'+ gas_price.to_s(16), from: from, to: to, data: data, value: value.nil? ? nil : '0x' + value.to_s(16)}.compact
+        { gasPrice: '0x' + gas_price.to_s(16), from: from, to: to, data: data, value: value.nil? ? nil : '0x' + value.to_s(16) }.compact
       ]
     }
     stub_request(:post, node_uri)

@@ -2,13 +2,11 @@
 # frozen_string_literal: true
 
 def catch_and_report_exception(options = {})
-  begin
-    yield
-    nil
-  rescue options.fetch(:class) { StandardError } => e
-    report_exception(e)
-    e
-  end
+  yield
+  nil
+rescue options.fetch(:class) { StandardError } => e
+  report_exception(e)
+  e
 end
 
 # report_api_error sample output.
@@ -35,6 +33,7 @@ end
 
 def report_exception_to_ets(exception, meta = {})
   return if Rails.env.test? || Rails.env.development?
+
   Bugsnag.notify exception do |b|
     b.meta_data = meta
   end if defined?(Bugsnag)

@@ -8,7 +8,7 @@ module API
         class Wallet < API::V2::Entities::Base
           expose(
             :id,
-            documentation:{
+            documentation: {
               type: Integer,
               desc: 'Unique wallet identifier in database.'
             }
@@ -17,16 +17,16 @@ module API
           expose(
             :name,
             documentation: {
-                type: String,
-                desc: 'Wallet name.'
+              type: String,
+              desc: 'Wallet name.'
             }
           )
 
           expose(
             :kind,
             documentation: {
-                type: String,
-                desc: "Kind of wallet 'deposit','fee','hot','warm' or 'cold'."
+              type: String,
+              desc: "Kind of wallet 'deposit','fee','hot','warm' or 'cold'."
             }
           )
 
@@ -34,33 +34,33 @@ module API
             :currency_ids,
             as: :currencies,
             documentation: {
-                is_array: true,
-                desc: 'Wallet currency code.',
-                example: -> { ::Currency.visible.codes }
+              is_array: true,
+              desc: 'Wallet currency code.',
+              example: -> { ::Currency.visible.codes }
             }
           )
 
           expose(
             :address,
             documentation: {
-                type: String,
-                desc: 'Wallet address.'
+              type: String,
+              desc: 'Wallet address.'
             }
           )
 
           expose(
             :gateway,
             documentation: {
-                type: String,
-                desc: 'Wallet gateway.'
+              type: String,
+              desc: 'Wallet gateway.'
             }
           )
 
           expose(
             :max_balance,
             documentation: {
-                type: BigDecimal,
-                desc: 'Wallet max balance.'
+              type: BigDecimal,
+              desc: 'Wallet max balance.'
             }
           )
 
@@ -75,16 +75,16 @@ module API
           expose(
             :blockchain_key,
             documentation: {
-                type: String,
-                desc: 'Wallet blockchain key.'
+              type: String,
+              desc: 'Wallet blockchain key.'
             }
           )
 
           expose(
             :status,
             documentation: {
-                type: String,
-                desc: 'Wallet status (active/disabled).'
+              type: String,
+              desc: 'Wallet status (active/disabled).'
             }
           )
 

@@ -7,7 +7,7 @@ class Operation < ApplicationRecord
   belongs_to :reference, polymorphic: true
   belongs_to :currency, foreign_key: :currency_id
   belongs_to :account, class_name: 'Operations::Account',
-             foreign_key: :code, primary_key: :code
+                       foreign_key: :code, primary_key: :code
 
   validates :credit, :debit, numericality: { greater_than_or_equal_to: 0 }
   validates :currency, :code, presence: true
@@ -44,8 +44,8 @@ class Operation < ApplicationRecord
       return if amount.zero?
 
       opt[:code] ||= Operations::Account.find_by(
-        type:          operation_type,
-        kind:          kind,
+        type: operation_type,
+        kind: kind,
         currency_type: currency.type
       ).code
 
@@ -58,8 +58,8 @@ class Operation < ApplicationRecord
       return if amount.zero?
 
       opt[:code] ||= Operations::Account.find_by(
-        type:          operation_type,
-        kind:          kind,
+        type: operation_type,
+        kind: kind,
         currency_type: currency.type
       ).code
 

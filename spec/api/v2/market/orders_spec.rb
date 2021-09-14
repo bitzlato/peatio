@@ -8,7 +8,7 @@ describe API::V2::Market::Orders, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Order'],'create'=>['Order'],'update'=>['Order']}})
+    Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['Order'], 'create' => ['Order'], 'update' => ['Order'] } })
   end
 
   describe 'GET /api/v2/market/orders' do
@@ -165,8 +165,8 @@ describe API::V2::Market::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['ord_type']}.uniq.size).to eq 1
-      expect(result.map{|r| r['ord_type']}.uniq.first).to eq 'limit'
+      expect(result.map { |r| r['ord_type'] }.uniq.size).to eq 1
+      expect(result.map { |r| r['ord_type'] }.uniq.first).to eq 'limit'
     end
 
     it 'returns orders with type sell' do
@@ -174,8 +174,8 @@ describe API::V2::Market::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['side']}.uniq.size).to eq 1
-      expect(result.map{|r| r['side']}.uniq.first).to eq 'sell'
+      expect(result.map { |r| r['side'] }.uniq.size).to eq 1
+      expect(result.map { |r| r['side'] }.uniq.first).to eq 'sell'
     end
 
     it 'returns orders with base unit btc' do
@@ -298,9 +298,9 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'should get 404 error when order doesn\'t exist' do
-        api_get '/api/v2/market/orders/1234', token: token
-        expect(response.code).to eq '404'
-        expect(response).to include_api_error('record.not_found')
+      api_get '/api/v2/market/orders/1234', token: token
+      expect(response.code).to eq '404'
+      expect(response).to include_api_error('record.not_found')
     end
 
     it 'should raise error' do
@@ -573,7 +573,6 @@ describe API::V2::Market::Orders, type: :request do
         expect(response).to include_api_error('record.not_found')
       end
 
-
       it 'should not cancel specified qe order by id' do
         api_post "/api/v2/market/orders/#{qe_order.id}/cancel", token: token
         expect(response.code).to eq '404'
@@ -607,7 +606,6 @@ describe API::V2::Market::Orders, type: :request do
     it 'should cancel all my orders' do
       member.orders.each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
-
       end
 
       expect do
@@ -620,7 +618,6 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     context 'third party order' do
-
       before do
         Market.find_spot_by_symbol('btc_usd').engine.update(driver: 'finex-spot')
         Market.find_spot_by_symbol('btc_eth').engine.update(driver: 'finex-spot')

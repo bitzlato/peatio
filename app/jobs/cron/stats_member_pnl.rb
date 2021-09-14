@@ -2,8 +2,8 @@ module Jobs::Cron
   class StatsMemberPnl
     Error = Class.new(StandardError)
 
-    class <<self
-      def process_currency(pnl_currency, currency, batch_size=1000)
+    class << self
+      def process_currency(pnl_currency, currency, batch_size = 1000)
         queries = []
         idx = last_idx(pnl_currency, currency)
 
@@ -25,36 +25,36 @@ module Jobs::Cron
         trade_idx = adjustment_idx = transfer_idx = withdraw_idx = deposit_fiat_idx = deposit_coin_idx = nil
 
         ActiveRecord::Base.connection.select_all(query).rows.each do |r|
-            Rails.logger.info { "Processing: #{r[0]} #{r[1]} (#{pnl_currency.id} / #{currency.id})" }
-            case r[0]
-              when 'Adjustment'
-                adjustment = Adjustment.find(r[1])
-                adjustment_idx = (adjustment.updated_at.to_f * 1000).to_i + 1
-                queries += process_adjustment(pnl_currency, adjustment)
-              when 'Deposit'
-                deposit = Deposit.find(r[1])
-                queries += process_deposit(pnl_currency, deposit)
-                case deposit
-                when Deposits::Fiat
-                  deposit_fiat_idx = (deposit.completed_at.to_f * 1000).to_i + 1
-                when Deposits::Coin
-                  deposit_coin_idx = (deposit.created_at.to_f * 1000).to_i + 1
-                end
-              when 'Trade'
-                trade = Trade.find(r[1])
-                trade_idx = trade.id
-                buy_order = trade.buy_order
-                sell_order = trade.sell_order
-                queries += process_trade(pnl_currency, currency, trade, buy_order)
-                queries += process_trade(pnl_currency, currency, trade, sell_order)
-              when 'Withdraw'
-                withdraw = Withdraw.find(r[1])
-                withdraw_idx = (withdraw.completed_at.to_f * 1000).to_i + 1
-                queries += process_withdraw(pnl_currency, withdraw)
-              when 'Transfer'
-                queries += process_transfer(pnl_currency, currency, r[1])
-                transfer_idx = r[1]
+          Rails.logger.info { "Processing: #{r[0]} #{r[1]} (#{pnl_currency.id} / #{currency.id})" }
+          case r[0]
+          when 'Adjustment'
+            adjustment = Adjustment.find(r[1])
+            adjustment_idx = (adjustment.updated_at.to_f * 1000).to_i + 1
+            queries += process_adjustment(pnl_currency, adjustment)
+          when 'Deposit'
+            deposit = Deposit.find(r[1])
+            queries += process_deposit(pnl_currency, deposit)
+            case deposit
+            when Deposits::Fiat
+              deposit_fiat_idx = (deposit.completed_at.to_f * 1000).to_i + 1
+            when Deposits::Coin
+              deposit_coin_idx = (deposit.created_at.to_f * 1000).to_i + 1
             end
+          when 'Trade'
+            trade = Trade.find(r[1])
+            trade_idx = trade.id
+            buy_order = trade.buy_order
+            sell_order = trade.sell_order
+            queries += process_trade(pnl_currency, currency, trade, buy_order)
+            queries += process_trade(pnl_currency, currency, trade, sell_order)
+          when 'Withdraw'
+            withdraw = Withdraw.find(r[1])
+            withdraw_idx = (withdraw.completed_at.to_f * 1000).to_i + 1
+            queries += process_withdraw(pnl_currency, withdraw)
+          when 'Transfer'
+            queries += process_transfer(pnl_currency, currency, r[1])
+            transfer_idx = r[1]
+          end
         end
         l_count = queries.size
 
@@ -92,7 +92,7 @@ module Jobs::Cron
       end
 
       def pnl_currencies
-        @pnl_currencies ||= ENV.fetch('PNL_CURRENCIES', '').split(',').map {|id| Currency.find(id) }
+        @pnl_currencies ||= ENV.fetch('PNL_CURRENCIES', '').split(',').map { |id| Currency.find(id) }
       end
 
       def conversion_paths
@@ -120,6 +120,7 @@ module Jobs::Cron
           paths[mid] = markets.split(',').map do |m|
             a, b = m.split('/')
             raise 'Failed to parse CONVERSION_PATHS' if a.to_s.empty? || b.to_s.empty?
+
             reverse = false
             if a.start_with?('_')
               reverse = true
@@ -166,6 +167,7 @@ module Jobs::Cron
 
         market = trade.market
         return [] unless [market.quote_unit, market.base_unit].include?(currency.id)
+
         if order.side == 'buy'
           total_credit_fees = trade.amount * trade.order_fee(order)
           total_credit = trade.amount - total_credit_fees
@@ -350,16 +352,14 @@ module Jobs::Cron
         @sleep_until ||= {}
         pnl_currencies.each do |pnl_currency|
           Currency.visible.each do |currency|
-            begin
-              ts = @sleep_until[[pnl_currency.id, currency.id]]
-              if ts.nil? || ts < Time.now.to_i
-                l_count += process_currency(pnl_currency, currency)
-              end
-            rescue StandardError => e
-              Rails.logger.error("Failed to process currency #{pnl_currency.id}/#{currency.id}: #{e}: #{e.backtrace.join("\n")}")
-              @sleep_until[[pnl_currency.id, currency.id]] = Time.now.to_i + 300
-              # TODO: Count the error in prometheus for this currency
+            ts = @sleep_until[[pnl_currency.id, currency.id]]
+            if ts.nil? || ts < Time.now.to_i
+              l_count += process_currency(pnl_currency, currency)
             end
+          rescue StandardError => e
+            Rails.logger.error("Failed to process currency #{pnl_currency.id}/#{currency.id}: #{e}: #{e.backtrace.join("\n")}")
+            @sleep_until[[pnl_currency.id, currency.id]] = Time.now.to_i + 300
+            # TODO: Count the error in prometheus for this currency
           end
         end
         @exclude_user_ids = nil # Remove the cache

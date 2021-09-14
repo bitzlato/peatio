@@ -6,7 +6,6 @@ module API
     module Management
       module Entities
         class Currency < ::API::V2::Entities::Currency
-
           expose(
             :code,
             documentation: {
@@ -36,8 +35,8 @@ module API
             documentation: {
               type: Integer,
               desc: 'Fraction of the basic monetary unit.'
-            }
-          ) { |currency| currency.subunits }
+            }, &:subunits
+          )
 
           expose(
             :options,
@@ -45,7 +44,7 @@ module API
               type: JSON,
               desc: 'Currency options.'
             },
-            if: -> (currency){ currency.coin? }
+            if: ->(currency) { currency.coin? }
           )
 
           expose(

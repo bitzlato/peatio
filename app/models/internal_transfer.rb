@@ -36,7 +36,6 @@ class InternalTransfer < ApplicationRecord
   def direction(user)
     user == sender ? 'out' : 'in'
   end
-
 end
 
 # == Schema Information

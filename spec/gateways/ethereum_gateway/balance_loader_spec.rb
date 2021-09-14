@@ -50,7 +50,7 @@ describe ::EthereumGateway::BalanceLoader do
     end
     let(:contract_address) { '0x87099add3bcc0821b5b151307c147215f839a110' }
 
-    before  do
+    before do
       stub_request(:post, uri)
         .with(body: { jsonrpc: '2.0',
                       id: 1,
@@ -63,7 +63,7 @@ describe ::EthereumGateway::BalanceLoader do
                         },
                         'latest'
                       ] }.to_json)
-                        .to_return(body: response.to_json)
+        .to_return(body: response.to_json)
     end
 
     it 'requests rpc eth_call and get token balance' do

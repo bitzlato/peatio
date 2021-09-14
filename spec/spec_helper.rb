@@ -9,11 +9,11 @@ ENV['RAILS_ENV'] ||= 'test'
 ENV['EVENT_API_JWT_PRIVATE_KEY'] ||= Base64.urlsafe_encode64(OpenSSL::PKey::RSA.generate(2048).to_pem)
 ENV['PEATIO_JWT_PRIVATE_KEY'] ||= Base64.urlsafe_encode64(OpenSSL::PKey::RSA.generate(2048).to_pem)
 ENV['WITHDRAW_ADMIN_APPROVE'] = 'true'
-ENV['MINIMUM_MEMBER_LEVEL_FOR_DEPOSIT']='3'
-ENV['MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW']='3'
-ENV['MINIMUM_MEMBER_LEVEL_FOR_TRADING']='3'
-ENV['JWT_PUBLIC_KEY']=nil
-ENV['VAULT_ENABLED']='false'
+ENV['MINIMUM_MEMBER_LEVEL_FOR_DEPOSIT'] = '3'
+ENV['MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW'] = '3'
+ENV['MINIMUM_MEMBER_LEVEL_FOR_TRADING'] = '3'
+ENV['JWT_PUBLIC_KEY'] = nil
+ENV['VAULT_ENABLED'] = 'false'
 
 # We remove lib/peatio.rb from LOAD_PATH because of conflict with peatio gem.
 # lib/peatio.rb is added to LOAD_PATH later after requiring gems.
@@ -26,14 +26,14 @@ require 'rspec/retry'
 require 'webmock/rspec'
 require 'cancan/matchers'
 
-ENV['BITZLATO_API_KEY']=
-  {kty:'EC',alg:'ES256',crv:'P-256',
-   x:'wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus',
-   y:'OL-0AqcTNoaCBVAEpDNsU1bpZA7eQ9CtGPZGmEEg5QI',
-   d:'nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk'}.to_json
-ENV['BITZLATO_API_URL']='http://127.0.0.1:8000'
-ENV['BITZLATO_API_CLIENT_UID']='merchant_uid'
-ENV['BITZLATO_WITHDRAW_POLLING_METHODS']='voucher,payment'
+ENV['BITZLATO_API_KEY'] =
+  { kty: 'EC', alg: 'ES256', crv: 'P-256',
+    x: 'wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus',
+    y: 'OL-0AqcTNoaCBVAEpDNsU1bpZA7eQ9CtGPZGmEEg5QI',
+    d: 'nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk' }.to_json
+ENV['BITZLATO_API_URL'] = 'http://127.0.0.1:8000'
+ENV['BITZLATO_API_CLIENT_UID'] = 'merchant_uid'
+ENV['BITZLATO_WITHDRAW_POLLING_METHODS'] = 'voucher,payment'
 WebMock.allow_net_connect!
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -114,7 +114,7 @@ RSpec.configure do |config|
     end
 
     Wallet.delete_all
-    %i[eth_deposit eth_hot eth_warm eth_fee trst_deposit trst_hot btc_hot btc_deposit ].each do |name|
+    %i[eth_deposit eth_hot eth_warm eth_fee trst_deposit trst_hot btc_hot btc_deposit].each do |name|
       FactoryBot.create(:wallet, name)
     end
 

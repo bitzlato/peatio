@@ -80,7 +80,7 @@ describe Workers::AMQP::DepositCoinAddress do
         payment_address.reload
         expect(payment_address.as_json
                  .deep_symbolize_keys
-                 .slice(:address, :secret, :details)).to eq(create_address_result.merge(details: {:address_id=>'address_id'}))
+                 .slice(:address, :secret, :details)).to eq(create_address_result.merge(details: { :address_id => 'address_id' }))
       end
     end
   end

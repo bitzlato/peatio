@@ -4,7 +4,6 @@
 require 'rack/cors'
 
 describe Rack::Cors, type: :request do
-
   let(:member) { create(:member, :level_3) }
   let(:frontend_url) { 'https://frontend.io' }
   let(:local_url) { 'http://localhost:3000' }

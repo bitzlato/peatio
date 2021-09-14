@@ -43,6 +43,7 @@ module API
           service = w.service
 
           next unless service.adapter.respond_to?(:trigger_webhook_event)
+
           event = service.trigger_webhook_event(request)
 
           next unless event.present?
@@ -57,6 +58,7 @@ module API
           service = w.service
 
           next unless service.adapter.respond_to?(:trigger_webhook_event)
+
           transactions = service.trigger_webhook_event(request)
 
           next unless transactions.present?
@@ -75,6 +77,7 @@ module API
           service = w.service
 
           next unless service.adapter.respond_to?(:trigger_webhook_event)
+
           transactions = service.trigger_webhook_event(request)
 
           next unless transactions.present?

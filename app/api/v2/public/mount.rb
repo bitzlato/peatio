@@ -4,7 +4,6 @@ module API
   module V2
     module Public
       class Mount < Grape::API
-
         before { set_ets_context! }
 
         mount Public::Currencies

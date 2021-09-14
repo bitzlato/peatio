@@ -37,6 +37,7 @@ module Matching
       [@maker_order, @taker_order].each do |order|
         order.with_lock do
           next unless order.state == Order::WAIT
+
           AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
         end
       end
@@ -56,7 +57,7 @@ module Matching
       @trade
     end
 
-  private
+    private
 
     def validate!
       ask, bid = @maker_order.side == 'sell' ? [@maker_order, @taker_order] : [@taker_order, @maker_order]
@@ -86,20 +87,20 @@ module Matching
         validate!
 
         accounts_table = Account
-          .lock
-          .select(:member_id, :currency_id, :balance, :locked)
-          .where(member_id: [@maker_order.member_id, @taker_order .member_id].uniq, currency_id: [@market.base_unit, @market.quote_unit])
-          .each_with_object({}) { |record, memo| memo["#{record.currency_id}:#{record.member_id}"] = record }
+                         .lock
+                         .select(:member_id, :currency_id, :balance, :locked)
+                         .where(member_id: [@maker_order.member_id, @taker_order.member_id].uniq, currency_id: [@market.base_unit, @market.quote_unit])
+                         .each_with_object({}) { |record, memo| memo["#{record.currency_id}:#{record.member_id}"] = record }
 
         @trade = Trade.new \
-          maker_order:   @maker_order,
-          maker_id:      @maker_order.member_id,
-          taker_order:   @taker_order,
-          taker_id:      @taker_order.member_id,
-          price:         @price,
-          amount:        @amount,
-          total:         @total,
-          market:        @market
+          maker_order: @maker_order,
+          maker_id: @maker_order.member_id,
+          taker_order: @taker_order,
+          taker_id: @taker_order.member_id,
+          price: @price,
+          amount: @amount,
+          total: @total,
+          market: @market
 
         strike(@trade, @maker_order, accounts_table["#{@maker_order.outcome_currency.id}:#{@maker_order.member_id}"], accounts_table["#{@maker_order.income_currency.id}:#{@maker_order.member_id}"])
         strike(@trade, @taker_order, accounts_table["#{@taker_order.outcome_currency.id}:#{@taker_order.member_id}"], accounts_table["#{@taker_order.income_currency.id}:#{@taker_order.member_id}"])
@@ -156,8 +157,8 @@ module Matching
     def publish_trade
       AMQP::Queue.publish :trade, @trade.as_json, {
         headers: {
-          type:     :local,
-          market:   @market.symbol,
+          type: :local,
+          market: @market.symbol,
           maker_id: @maker_id,
           taker_id: @taker_id
         }
@@ -185,11 +186,11 @@ module Matching
       raise TradeExecutionError.new \
         maker_order: @maker_order.attributes,
         taker_order: @taker_order.attributes,
-        price:       @price,
-        amount:      @amount,
-        total:       @total,
-        code:        code,
-        message:     message
+        price: @price,
+        amount: @amount,
+        total: @total,
+        code: code,
+        message: message
     end
 
     def strike(trade, order, outcome_account, income_account)

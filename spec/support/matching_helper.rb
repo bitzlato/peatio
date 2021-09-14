@@ -26,8 +26,8 @@ module Matching
       Matching::LimitOrder.new({
         id: @@mock_order_id,
         timestamp: Time.now.to_i,
-        volume: 1 + rand(10),
-        price:  3000 + rand(3000),
+        volume: rand(1..10),
+        price: rand(3000..5999),
         market: 'btc_usd'
       }.merge(attrs))
     end
@@ -37,8 +37,8 @@ module Matching
       Matching::MarketOrder.new({
         id: @@mock_order_id,
         timestamp: Time.now.to_i,
-        volume: 1 + rand(10),
-        locked: 15_000 + rand(15_000),
+        volume: rand(1..10),
+        locked: rand(15000..29999),
         market: 'btc_usd'
       }.merge(attrs))
     end

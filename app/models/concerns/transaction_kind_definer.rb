@@ -39,6 +39,7 @@ module TransactionKindDefiner
 
   def define_direction
     return :failed if failed?
+
     if from_wallet? || from_deposit?
       if to_wallet? || to_deposit?
         :internal

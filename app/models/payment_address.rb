@@ -114,7 +114,7 @@ class PaymentAddress < ApplicationRecord
     ::AMQP::Queue.enqueue_event('private', member.uid, :deposit_address,
                                 type: :create,
                                 currencies: currencies.codes,
-                                address:  address)
+                                address: address)
   end
 
   def currency

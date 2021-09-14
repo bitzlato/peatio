@@ -129,7 +129,6 @@ describe API::V2::Management::Markets, type: :request do
       post_json '/api/v2/management/markets/list', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
-
     let(:data) { {} }
     let(:signers) { %i[alex jeff] }
 
@@ -192,7 +191,6 @@ describe API::V2::Management::Markets, type: :request do
       end
     end
   end
-
 
   describe 'create market' do
     def request

@@ -57,17 +57,15 @@ module API
         end
 
         post '/orders/:id/cancel' do
-          begin
-            order = Order.find(params[:id])
-            order.trigger_cancellation
-            present order, with: API::V2::Management::Entities::Order
-            status 200
-          rescue ActiveRecord::RecordNotFound => e
-            # RecordNotFound in rescued by ExceptionsHandler.
-            raise(e)
-          rescue
-            error!({ errors: ['management.order.cancel_error'] }, 422)
-          end
+          order = Order.find(params[:id])
+          order.trigger_cancellation
+          present order, with: API::V2::Management::Entities::Order
+          status 200
+        rescue ActiveRecord::RecordNotFound => e
+          # RecordNotFound in rescued by ExceptionsHandler.
+          raise(e)
+        rescue
+          error!({ errors: ['management.order.cancel_error'] }, 422)
         end
 
         desc 'Cancel all open orders' do

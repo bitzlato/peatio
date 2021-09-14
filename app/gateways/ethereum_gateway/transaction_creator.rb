@@ -11,15 +11,17 @@ class EthereumGateway
              contract_address: nil,
              subtract_fee: false,
              gas_price: nil,
-             gas_limit: ,
+             gas_limit:,
              gas_factor: 1)
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
       raise 'No gas limit' if gas_limit.nil?
       raise Error, 'zero amount transction' if amount.zero?
+
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
       raise 'gas price zero' if gas_price.zero?
+
       peatio_transaction = contract_address.present? ?
         create_erc20_transaction!(amount: amount,
                                   from_address: from_address,
@@ -65,20 +67,20 @@ class EthereumGateway
         client
         .json_rpc(:personal_sendTransaction,
                   [{
-          from:     normalize_address(from_address),
-          to:       normalize_address(to_address),
-          nonce:    nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
-          value:    '0x' + amount.to_s(16),
-          gas:      '0x' + gas_limit.to_i.to_s(16),
-          gasPrice: '0x' + gas_price.to_i.to_s(16)
-        }.compact, secret])
+                    from: normalize_address(from_address),
+                    to: normalize_address(to_address),
+                    nonce: nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
+                    value: '0x' + amount.to_s(16),
+                    gas: '0x' + gas_limit.to_i.to_s(16),
+                    gasPrice: '0x' + gas_price.to_i.to_s(16)
+                  }.compact, secret])
       )
 
       Peatio::Transaction.new(
         from_address: from_address,
-        to_address:   to_address,
-        amount:       amount,
-        hash:         normalize_address(txid),
+        to_address: to_address,
+        amount: amount,
+        hash: normalize_address(txid),
         options: {
           gas_price: gas_price,
           gas_limit: gas_limit,
@@ -101,19 +103,19 @@ class EthereumGateway
       txid = validate_txid!(
         client.json_rpc(:personal_sendTransaction,
                         [{
-          from:     normalize_address(from_address),
-          nonce:    nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
-          to:       contract_address,
-          data:     data,
-          gas:      '0x' + gas_limit.to_i.to_s(16),
-          gasPrice: '0x' + gas_price.to_i.to_s(16)
-        }.compact, secret])
+                          from: normalize_address(from_address),
+                          nonce: nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
+                          to: contract_address,
+                          data: data,
+                          gas: '0x' + gas_limit.to_i.to_s(16),
+                          gasPrice: '0x' + gas_price.to_i.to_s(16)
+                        }.compact, secret])
       )
       Peatio::Transaction.new(
         from_address: from_address,
-        to_address:   to_address,
-        amount:       amount,
-        hash:         normalize_address(txid),
+        to_address: to_address,
+        amount: amount,
+        hash: normalize_address(txid),
         contract_address: contract_address,
         options: {
           gas_price: gas_price,

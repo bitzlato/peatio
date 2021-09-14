@@ -1,5 +1,4 @@
 class DummyGateway < AbstractGateway
-
   private
 
   def build_client

@@ -33,7 +33,7 @@ module API
           filters = declared(params, include_missing: false)
                     .except(:ticker_id, :limit)
 
-          Trade.public_from_influx(market.symbol, params[:limit], filters).each_with_object({'buy' => [], 'sell' => []}) do |trade, hash|
+          Trade.public_from_influx(market.symbol, params[:limit], filters).each_with_object({ 'buy' => [], 'sell' => [] }) do |trade, hash|
             hash[trade[:taker_type]] << format_trade(trade)
           end
         end

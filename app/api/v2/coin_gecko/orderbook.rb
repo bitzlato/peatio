@@ -26,8 +26,8 @@ module API
           # Depth = 100 means 50 for each bid/ask side
           # Not defined or 0 = full order book
           unless params[:depth].to_d.zero?
-            asks = asks[0, params[:depth]/2]
-            bids = bids[0, params[:depth]/2]
+            asks = asks[0, params[:depth] / 2]
+            bids = bids[0, params[:depth] / 2]
           end
 
           orderbook = OrderBook.new market, asks, bids

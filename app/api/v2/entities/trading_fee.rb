@@ -4,7 +4,7 @@ module API
       class TradingFee < API::V2::Entities::Base
         expose(
           :id,
-          documentation:{
+          documentation: {
             type: Integer,
             desc: 'Unique trading fee table identifier in database.'
           }
@@ -12,7 +12,7 @@ module API
 
         expose(
           :group,
-          documentation:{
+          documentation: {
             type: String,
             desc: 'Member group for define maker/taker fee.'
           }
@@ -20,7 +20,7 @@ module API
 
         expose(
           :market_id,
-          documentation:{
+          documentation: {
             type: String,
             desc: 'Market id for define maker/taker fee.'
           }
@@ -28,7 +28,7 @@ module API
 
         expose(
           :market_type,
-          documentation:{
+          documentation: {
             type: String,
             desc: 'Market type.'
           }
@@ -36,7 +36,7 @@ module API
 
         expose(
           :maker,
-          documentation:{
+          documentation: {
             type: BigDecimal,
             desc: 'Market maker fee.'
           }
@@ -44,7 +44,7 @@ module API
 
         expose(
           :taker,
-          documentation:{
+          documentation: {
             type: BigDecimal,
             desc: 'Market taker fee.'
           }

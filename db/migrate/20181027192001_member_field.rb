@@ -1,6 +1,5 @@
 class MemberField < ActiveRecord::Migration[4.2]
   def change
-
     change_table :members do |t|
       t.remove :level
       t.remove :sn

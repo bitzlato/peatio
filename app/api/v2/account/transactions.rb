@@ -1,13 +1,12 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
- require_relative '../validations'
+require_relative '../validations'
 
 module API
   module V2
     module Account
       class Transactions < Grape::API
-
         before { deposits_must_be_permitted! }
         before { withdraws_must_be_permitted! }
 
@@ -59,11 +58,10 @@ module API
 
           optional :page,
                    type: { value: Integer, message: 'account.transactions.non_integer_page' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'account.transactions.non_positive_page'},
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'account.transactions.non_positive_page' },
                    allow_blank: false,
                    default: 1,
                    desc: 'Specify the page of paginated results.'
-
         end
         get '/transactions' do
           user_authorize! :read, ::Withdraw

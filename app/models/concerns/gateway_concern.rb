@@ -44,6 +44,7 @@ module GatewayConcern
 
   def gateway_klass=(value)
     return self.client = nil if value.blank?
+
     self.client = value.to_s.remove(GATEWAY_PREFIX).downcase
   end
 end

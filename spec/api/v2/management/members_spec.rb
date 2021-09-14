@@ -6,7 +6,7 @@ describe API::V2::Management::Members, type: :request do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
       scopes: {
-        write_members:  { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex jeff] }
+        write_members: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex jeff] }
       }
   end
 
@@ -21,7 +21,7 @@ describe API::V2::Management::Members, type: :request do
     it 'returns member' do
       request
       expect(response).to have_http_status(200)
-      expect(JSON.parse(response.body)).to include( data )
+      expect(JSON.parse(response.body)).to include(data)
     end
 
     context 'invalid params' do
@@ -62,7 +62,7 @@ describe API::V2::Management::Members, type: :request do
       post_json '/api/v2/management/members/group', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
-    let(:data) { {uid: member.uid, group: 'vip-1'} }
+    let(:data) { { uid: member.uid, group: 'vip-1' } }
     let(:signers) { %i[alex jeff] }
     let(:member) { create(:member, :barong) }
 
@@ -73,7 +73,7 @@ describe API::V2::Management::Members, type: :request do
     end
 
     context 'invalid uid' do
-      let(:data) { { uid: 'fake_uid', group: 'vip-1' }  }
+      let(:data) { { uid: 'fake_uid', group: 'vip-1' } }
       it 'returns status 404 and error' do
         request
         expect(response).to have_http_status(404)
@@ -82,7 +82,7 @@ describe API::V2::Management::Members, type: :request do
     end
 
     context 'invalid record' do
-      let(:data) { { uid: member.uid, group: 'vip-12222222222222222222222222222' }  }
+      let(:data) { { uid: member.uid, group: 'vip-12222222222222222222222222222' } }
       it 'returns status 422 and error' do
         request
         expect(response).to have_http_status(422)

@@ -7,7 +7,7 @@ class BitzlatoGateway < AbstractGateway
 
   def self.valid_address?(address)
     is_bitcoin_address = BitcoinGateway.valid_address?(address)
-    is_bitzlato_address = address=~/^[a-zA-Z0-9_]{2,15}$/i
+    is_bitzlato_address = address =~ /^[a-zA-Z0-9_]{2,15}$/i
     !is_bitcoin_address && is_bitzlato_address
   end
 
@@ -37,7 +37,8 @@ class BitzlatoGateway < AbstractGateway
       end
       deposit.with_lock do
         next if deposit.dispatched?
-        unless deposit.amount==intention[:amount]
+
+        unless deposit.amount == intention[:amount]
           report_exception(
             "Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} in blockchain #{blockchain.name}",
             true,
@@ -65,6 +66,7 @@ class BitzlatoGateway < AbstractGateway
     client.poll_withdraws.each do |withdraw_info|
       next unless withdraw_info.is_done
       next if withdraw_info.withdraw_id.nil?
+
       withdraw = withdraw_info.withdraw_id.start_with?('TID') ?
         Withdraw.find_by(tid: withdraw_info.withdraw_id) :
         Withdraw.find_by(id: withdraw_info.withdraw_id)
@@ -72,7 +74,7 @@ class BitzlatoGateway < AbstractGateway
         Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.withdraw_id} in blockchain #{blockchain.name}")
         next
       end
-      if withdraw.amount!=withdraw_info.amount
+      if withdraw.amount != withdraw_info.amount
         Rails.logger.warn("Withdraw and intention amounts are not equeal #{withdraw.amount}<>#{withdraw_info.amount} with withdraw_info ##{withdraw_info.withdraw_id} in blockchain #{blockchain.name}")
         next
       end
@@ -94,11 +96,12 @@ class BitzlatoGateway < AbstractGateway
                           secret: nil,
                           meta: {})
     raise 'amount must be a Money' unless amount.is_a? Money
+
     client.create_transaction!(
-        key: meta.fetch(:withdraw_tid), # It is also posible to use nonce
-        to_address: to_address,
-        cryptocurrency: amount.currency.id.upcase,
-        amount: amount.to_d
+      key: meta.fetch(:withdraw_tid), # It is also posible to use nonce
+      to_address: to_address,
+      cryptocurrency: amount.currency.id.upcase,
+      amount: amount.to_d
     ).dup.tap do |tx|
       tx.currency_id = amount.currency.id
       tx.blockchain_id = blockchain.id
@@ -109,6 +112,7 @@ class BitzlatoGateway < AbstractGateway
   def create_invoice!(deposit)
     deposit.with_lock do
       raise "Depost has wrong state #{deposit.aasm_state}. Must be submitted" unless deposit.submitted?
+
       invoice = client.create_invoice!(
         amount: deposit.amount,
         comment: I18n.t('deposit_comment', account_id: deposit.member.uid, deposit_id: deposit.id, email: deposit.member.email),
@@ -136,11 +140,11 @@ class BitzlatoGateway < AbstractGateway
 
     blockchain.currencies.each do |currency|
       deposit.account.member.beneficiaries
-        .create_with(data: { address: address }, state: :active)
-        .find_or_create_by!(
-          name: beneficiary_name,
-          currency: currency
-      )
+             .create_with(data: { address: address }, state: :active)
+             .find_or_create_by!(
+               name: beneficiary_name,
+               currency: currency
+             )
     end
   end
 

@@ -53,7 +53,8 @@ module API
             documentation: {
               type: String,
               desc: 'The shared user ID.'
-            }) { |operation| operation.try(:member).try(:uid) }
+            }
+          ) { |operation| operation.try(:member).try(:uid) }
 
           expose(
             :account_kind,
@@ -77,7 +78,8 @@ module API
             documentation: {
               type: String,
               desc: 'The type of operations.'
-            }) { |operation| operation.reference_type.downcase if operation.reference_type.present? }
+            }
+          ) { |operation| operation.reference_type.downcase if operation.reference_type.present? }
 
           expose(
             :created_at,

@@ -4,7 +4,6 @@ module API
   module V2
     module Admin
       class ImportConfigs < Grape::API
-
         desc 'Import currencies, blockchains and wallets from json/yaml file'
         params do
           requires :file,

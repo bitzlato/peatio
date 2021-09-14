@@ -9,6 +9,7 @@ module TIDIdentifiable
 
     before_validation do
       next unless tid.blank?
+
       begin
         self.tid = "TID#{SecureRandom.hex(5).upcase}"
       end while self.class.where(tid: tid).any?

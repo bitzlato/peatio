@@ -6,6 +6,7 @@ class Peatio::Transaction
   #  %w[success pending failed rejected].freeze
   def status=(s)
     raise "Unknown status #{s}" unless STATUSES.include? s.to_s
+
     @status = s.to_s
   end
 
@@ -14,7 +15,8 @@ class Peatio::Transaction
   end
 
   def from_address
-    raise "Transaction #{self.as_json} has multiply from_addresses" if Array(from_addresses).many?
+    raise "Transaction #{as_json} has multiply from_addresses" if Array(from_addresses).many?
+
     from_addresses.try(:first)
   end
 end

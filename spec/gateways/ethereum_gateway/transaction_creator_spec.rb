@@ -50,13 +50,13 @@ describe ::EthereumGateway::TransactionCreator do
 
   let(:result) do
     subject.call(
-      amount:           amount,
-      gas_limit:        gas_limit,
-      from_address:     from_address,
-      to_address:       to_address,
-      secret:           secret,
-      subtract_fee:     subtract_fee,
-      gas_factor:       gas_factor,
+      amount: amount,
+      gas_limit: gas_limit,
+      from_address: from_address,
+      to_address: to_address,
+      secret: secret,
+      subtract_fee: subtract_fee,
+      gas_factor: gas_factor,
       contract_address: contract_address
     )
   end

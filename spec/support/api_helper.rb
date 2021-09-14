@@ -78,7 +78,7 @@ module APITestHelpers
     require 'base64'
     OpenSSL::PKey::RSA.generate(2048).yield_self do |p|
       Rails.configuration.x.jwt_public_key = p.public_key
-      { public:  Base64.urlsafe_encode64(p.public_key.to_pem),
+      { public: Base64.urlsafe_encode64(p.public_key.to_pem),
         private: Base64.urlsafe_encode64(p.to_pem) }
     end
   end
@@ -94,12 +94,12 @@ module APITestHelpers
 
   def management_api_v1_keychain
     require 'openssl'
-    { james:  OpenSSL::PKey::RSA.generate(2048),
-      john:   OpenSSL::PKey::RSA.generate(2048 ),
-      david:  OpenSSL::PKey::RSA.generate(2048 ),
-      robert: OpenSSL::PKey::RSA.generate(2048 ),
-      alex:   OpenSSL::PKey::RSA.generate(2048 ),
-      jeff:   OpenSSL::PKey::RSA.generate(2048 ) }
+    { james: OpenSSL::PKey::RSA.generate(2048),
+      john: OpenSSL::PKey::RSA.generate(2048),
+      david: OpenSSL::PKey::RSA.generate(2048),
+      robert: OpenSSL::PKey::RSA.generate(2048),
+      alex: OpenSSL::PKey::RSA.generate(2048),
+      jeff: OpenSSL::PKey::RSA.generate(2048) }
   end
   memoize :management_api_v1_keychain
 

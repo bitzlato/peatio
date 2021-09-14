@@ -99,7 +99,6 @@ module Workers
 
             # Check for blockchain config changes in 30 seconds.
             sleep 30
-
           rescue StandardError => e
             raise e if is_db_connection_error?(e)
 

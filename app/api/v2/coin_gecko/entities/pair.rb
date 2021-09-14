@@ -10,10 +10,8 @@ module API
             documentation: {
               type: String,
               desc: 'Identifier of a ticker with delimiter to separate base/target, eg. BTC_ETH.'
-            }
-          ) do |market|
-            market.underscore_name
-          end
+            }, &:underscore_name
+          )
 
           expose(
             :base,

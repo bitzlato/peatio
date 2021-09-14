@@ -6,7 +6,6 @@ module API
     module Management
       class Beneficiaries < Grape::API
         namespace :beneficiaries do
-
           desc 'Get list of user beneficiaries' do
             @settings[:scope] = :read_beneficiaries
             success API::V2::Management::Entities::Beneficiary
@@ -22,19 +21,18 @@ module API
                      desc: 'Beneficiary currency code.'
             optional :state,
                      type: String,
-                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state'},
+                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state' },
                      desc: 'Defines either beneficiary active - user can use it to withdraw money'\
                            'or pending - requires beneficiary activation with pin.'
-
           end
           post '/list' do
-            member  = Member.find_by!(uid: params[:uid])
+            member = Member.find_by!(uid: params[:uid])
 
             member
               .beneficiaries
               .available_to_member
               .tap { |q| q.where!(currency_id: params[:currency_id]) if params[:currency_id].present? }
-              .tap {|q| q.where!(state: params[:state]) if params[:state].present? }
+              .tap { |q| q.where!(state: params[:state]) if params[:state].present? }
               .yield_self { |b| present paginate(b), with: API::V2::Management::Entities::Beneficiary }
 
             status 200
@@ -68,7 +66,7 @@ module API
                      desc: 'The shared user ID.'
             optional :state,
                      type: String,
-                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state'},
+                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state' },
                      desc: 'Defines either beneficiary active - user can use it to withdraw money'\
                            'or pending - requires beneficiary activation with pin.'
           end
@@ -88,17 +86,17 @@ module API
             # Since data is stored in MySQL JSON format we iterate through all
             # beneficiaries one by one to detect duplicated address.
             if currency.coin? &&
-                member
-                  .beneficiaries
-                  .available_to_member
-                  .where(currency: currency)
-                  .any? { |b| b.data['address'] == declared_params.dig(:data, :address) }
+               member
+               .beneficiaries
+               .available_to_member
+               .where(currency: currency)
+               .any? { |b| b.data['address'] == declared_params.dig(:data, :address) }
               error!({ errors: ['management.beneficiary.duplicate_address'] }, 422)
             end
 
             present member
-                      .beneficiaries
-                      .create!(declared_params.except(:uid)),
+              .beneficiaries
+              .create!(declared_params.except(:uid)),
                     with: API::V2::Management::Entities::Beneficiary
           rescue ActiveRecord::RecordInvalid => e
             report_exception(e)

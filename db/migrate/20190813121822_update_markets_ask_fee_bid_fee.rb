@@ -37,7 +37,6 @@ class UpdateMarketsAskFeeBidFee < ActiveRecord::Migration[5.2]
     else
       raise "Unsupported adapter: #{ActiveRecord::Base.connection.adapter_name}"
     end
-
   end
 
   def down

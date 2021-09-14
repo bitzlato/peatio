@@ -8,7 +8,7 @@ class RemoveFieldsFromCurrenices < ActiveRecord::Migration[4.2]
   def change
     Ccy.where(type: :coin).find_each do |ccy|
       ccy.update_columns \
-      options: ccy.options.except('supports_hd_protocol', 'allow_multiple_deposit_addresses')
+        options: ccy.options.except('supports_hd_protocol', 'allow_multiple_deposit_addresses')
     end
   end
 end

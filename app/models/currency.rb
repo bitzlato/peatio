@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 class Currency < ApplicationRecord
-
   # == Constants ============================================================
 
   # TODO: remove erc20 contract_address
@@ -32,7 +31,7 @@ class Currency < ApplicationRecord
 
   OPTIONS_ATTRIBUTES.each do |attribute|
     define_method attribute do
-      self.options[attribute.to_s]
+      options[attribute.to_s]
     end
 
     define_method "#{attribute}=".to_sym do |value|
@@ -203,6 +202,7 @@ class Currency < ApplicationRecord
 
   def token_name
     return unless token?
+
     id.to_s.upcase.split(ID_SEPARATOR).first.presence
   end
 
@@ -214,12 +214,13 @@ class Currency < ApplicationRecord
   # that is valued at a fraction (usually one hundredth)
   # of the basic monetary unit
   def subunits=(n)
-    self.base_factor = 10 ** n
+    self.base_factor = 10**n
   end
 
   def subunits
     Math.log(base_factor, 10).round
   end
+
   # This method defines that token currency need to have parent_id and coin type
   # We use parent_id for token type to inherit some useful info such as blockchain_key from parent currency
   # For coin currency enough to have only coin type
@@ -243,10 +244,10 @@ class Currency < ApplicationRecord
     # We pass options are available as top-level hash keys and via options for
     # compatibility with Wallet#to_wallet_api_settings.
     opt = options.compact.deep_symbolize_keys
-    opt.deep_symbolize_keys.merge(id:                    id,
-                                  base_factor:           base_factor,
+    opt.deep_symbolize_keys.merge(id: id,
+                                  base_factor: base_factor,
                                   min_collection_amount: min_collection_amount,
-                                  options:               opt)
+                                  options: opt)
   end
 
   def min_deposit_amount_money

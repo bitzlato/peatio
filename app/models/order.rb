@@ -32,7 +32,7 @@ class Order < ApplicationRecord
   validates :price, numericality: { greater_than: 0 }, if: ->(order) { order.ord_type == 'limit' }
 
   validates :origin_volume,
-            numericality: { greater_than: 0, greater_than_or_equal_to: ->(order){ order.market.min_amount } },
+            numericality: { greater_than: 0, greater_than_or_equal_to: ->(order) { order.market.min_amount } },
             on: :create
 
   validates :origin_volume, precision: { less_than_or_eq_to: ->(o) { o.market.amount_precision } },
@@ -46,12 +46,12 @@ class Order < ApplicationRecord
                     if: ->(o) { o.price.present? }, on: :create
 
   validates :price,
-            numericality: { less_than_or_equal_to: ->(order){ order.market.max_price }},
+            numericality: { less_than_or_equal_to: ->(order) { order.market.max_price } },
             if: ->(order) { order.is_limit_order? && order.market.max_price.nonzero? },
             on: :create
 
   validates :price,
-            numericality: { greater_than_or_equal_to: ->(order){ order.market.min_price }},
+            numericality: { greater_than_or_equal_to: ->(order) { order.market.min_price } },
             if: :is_limit_order?, on: :create
 
   attr_readonly :member_id,
@@ -103,10 +103,10 @@ class Order < ApplicationRecord
     next unless ord_type == 'limit'
 
     event = case state
-      when 'cancel' then 'order_canceled'
-      when 'done'   then 'order_completed'
-      else 'order_updated'
-    end
+            when 'cancel' then 'order_canceled'
+            when 'done'   then 'order_completed'
+            else 'order_updated'
+            end
 
     Serializers::EventAPI.const_get(event.camelize).call(self).tap do |payload|
       EventAPI.notify ['market', market_id, event].join('.'), payload
@@ -224,66 +224,66 @@ class Order < ApplicationRecord
 
   def for_notify
     {
-      id:               id,
-      market:           market_id,
-      kind:             kind,
-      side:             side,
-      ord_type:         ord_type,
-      price:            price&.to_s('F'),
-      avg_price:        avg_price&.to_s('F'),
-      state:            state,
-      origin_volume:    origin_volume.to_s('F'),
+      id: id,
+      market: market_id,
+      kind: kind,
+      side: side,
+      ord_type: ord_type,
+      price: price&.to_s('F'),
+      avg_price: avg_price&.to_s('F'),
+      state: state,
+      origin_volume: origin_volume.to_s('F'),
       remaining_volume: volume.to_s('F'),
-      executed_volume:  (origin_volume - volume).to_s('F'),
-      at:               at,
-      created_at:       created_at.to_i,
-      updated_at:       updated_at.to_i,
-      trades_count:     trades_count
+      executed_volume: (origin_volume - volume).to_s('F'),
+      at: at,
+      created_at: created_at.to_i,
+      updated_at: updated_at.to_i,
+      trades_count: trades_count
     }
   end
 
   def to_matching_attributes
-    { id:        id,
-      market:    market_id,
-      type:      type[-3, 3].downcase.to_sym,
-      ord_type:  ord_type,
-      volume:    volume,
-      price:     price,
-      locked:    locked,
+    { id: id,
+      market: market_id,
+      type: type[-3, 3].downcase.to_sym,
+      ord_type: ord_type,
+      volume: volume,
+      price: price,
+      locked: locked,
       timestamp: created_at.to_i }
   end
 
   def as_json_for_events_processor
     {
-      id:            id,
-      member_id:     member_id,
-      member_uid:    member.uid,
-      ask:           ask,
-      bid:           bid,
-      type:          type,
-      ord_type:      ord_type,
-      price:         price,
-      volume:        volume,
+      id: id,
+      member_id: member_id,
+      member_uid: member.uid,
+      ask: ask,
+      bid: bid,
+      type: type,
+      ord_type: ord_type,
+      price: price,
+      volume: volume,
       origin_volume: origin_volume,
-      market_id:     market_id,
-      maker_fee:     maker_fee,
-      taker_fee:     taker_fee,
-      locked:        locked,
-      state:         read_attribute_before_type_cast(:state)
+      market_id: market_id,
+      maker_fee: maker_fee,
+      taker_fee: taker_fee,
+      locked: locked,
+      state: read_attribute_before_type_cast(:state)
     }
   end
 
   def as_json_for_third_party
     {
-      uuid:          uuid,
-      market_id:     market_id,
-      member_uid:    member.uid,
+      uuid: uuid,
+      market_id: market_id,
+      member_uid: member.uid,
       origin_volume: origin_volume,
-      volume:        volume,
-      price:         price,
-      side:          type,
-      type:          ord_type,
-      created_at:    created_at.to_i
+      volume: volume,
+      price: price,
+      side: type,
+      type: ord_type,
+      created_at: created_at.to_i
     }
   end
 
@@ -302,12 +302,12 @@ class Order < ApplicationRecord
       # Debit main fiat/crypto Liability account.
       # Credit locked fiat/crypto Liability account.
       Operations::Liability.transfer!(
-        amount:     locked,
-        currency:   currency,
-        reference:  self,
-        from_kind:  :main,
-        to_kind:    :locked,
-        member_id:  member_id
+        amount: locked,
+        currency: currency,
+        reference: self,
+        from_kind: :main,
+        to_kind: :locked,
+        member_id: member_id
       )
     end
   end
@@ -317,12 +317,12 @@ class Order < ApplicationRecord
       # Debit locked fiat/crypto Liability account.
       # Credit main fiat/crypto Liability account.
       Operations::Liability.transfer!(
-        amount:     locked,
-        currency:   currency,
-        reference:  self,
-        from_kind:  :locked,
-        to_kind:    :main,
-        member_id:  member_id
+        amount: locked,
+        currency: currency,
+        reference: self,
+        from_kind: :locked,
+        to_kind: :main,
+        member_id: member_id
       )
     end
   end

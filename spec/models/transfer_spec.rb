@@ -157,7 +157,6 @@ describe Transfer do
           let(:expense2) { build(:expense, credit: 4, currency: currency_btc) }
           let(:expense3) { build(:expense, :debit, debit: 3, currency: currency_btc) }
 
-
           let(:assets) { [asset1, asset2, asset3] }
           let(:liabilities) { [liability1, liability2, liability3] }
           let(:revenues) { [revenue1, revenue2, revenue3] }
@@ -242,7 +241,7 @@ describe Transfer do
             expect do
               subject rescue Account::AccountError
               nil
-            end.to_not change{ Transfer.count }
+            end.to_not change { Transfer.count }
           end
         end
       end

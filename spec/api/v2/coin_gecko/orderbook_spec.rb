@@ -14,7 +14,7 @@ describe API::V2::CoinGecko::Orderbook, type: :request do
 
     context 'valid market param' do
       it 'sorts asks and bids from highest to lowest' do
-        get '/api/v2/coingecko/orderbook', params: { ticker_id: 'BTC_USD'}
+        get '/api/v2/coingecko/orderbook', params: { ticker_id: 'BTC_USD' }
         expect(response).to be_successful
         result = JSON.parse(response.body)
         expect(result['asks'].size).to eq 2

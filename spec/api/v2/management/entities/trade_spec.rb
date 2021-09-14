@@ -23,7 +23,6 @@ describe API::V2::Management::Entities::Trade do
     expect(subject.taker_member_uid).to eq trade.taker.uid
   end
 
-
   context 'sell order maker' do
     it { expect(subject.taker_type).to eq 'buy' }
   end

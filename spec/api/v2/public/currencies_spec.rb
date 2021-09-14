@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 describe API::V2::Public::Currencies, type: :request do
-
   before(:each) { clear_redis }
   describe 'GET /api/v2/public/currencies/:id' do
     let(:fiat) { Currency.find(:usd) }

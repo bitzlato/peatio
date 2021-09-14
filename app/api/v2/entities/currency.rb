@@ -18,11 +18,11 @@ module API
         expose(
           :name,
           documentation: {
-              type: String,
-              desc: 'Currency name',
-              example: -> { ::Currency.visible.first.name }
+            type: String,
+            desc: 'Currency name',
+            example: -> { ::Currency.visible.first.name }
           },
-          if: -> (currency){ currency.name.present? }
+          if: ->(currency) { currency.name.present? }
         )
 
         expose(
@@ -37,19 +37,19 @@ module API
         expose(
           :token_name,
           documentation: {
-              type: String,
-              desc: 'Token name',
-              example: -> { ::Currency.visible.tokens.first.try(:token_name) || 'USDT' }
+            type: String,
+            desc: 'Token name',
+            example: -> { ::Currency.visible.tokens.first.try(:token_name) || 'USDT' }
           },
-          if: -> (currency){ currency.token? }
+          if: ->(currency) { currency.token? }
         )
 
         expose(
           :icon_id,
           documentation: {
-              type: String,
-              desc: 'Icon identifier',
-              example: -> { ::Currency.visible.first.try(:icon_key) || 'usdt' }
+            type: String,
+            desc: 'Icon identifier',
+            example: -> { ::Currency.visible.first.try(:icon_key) || 'usdt' }
           }
         )
 
@@ -69,7 +69,7 @@ module API
             desc: 'Currency parent id',
             example: -> { ::Currency.visible.first.parent_id }
           },
-          if: -> (currency){ currency.parent_id.present? }
+          if: ->(currency) { currency.parent_id.present? }
         )
 
         expose(
@@ -85,7 +85,7 @@ module API
             desc: 'Currency transaction exprorer url template',
             example: 'https://testnet.blockchain.info/tx/'
           },
-          if: -> (currency){ currency.coin? }
+          if: ->(currency) { currency.coin? }
         )
 
         expose(
@@ -94,7 +94,7 @@ module API
             desc: 'Currency address exprorer url template',
             example: 'https://testnet.blockchain.info/address/'
           },
-          if: -> (currency){ currency.coin? }
+          if: ->(currency) { currency.coin? }
         )
 
         expose(
@@ -201,7 +201,7 @@ module API
             desc: 'Currency icon',
             example: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg'
           },
-          if: -> (currency){ currency.icon_url.present? }
+          if: ->(currency) { currency.icon_url.present? }
         )
 
         expose(

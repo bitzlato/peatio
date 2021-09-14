@@ -11,7 +11,7 @@ describe API::V2::Account::Deposits, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>%w[Deposit PaymentAddress]}})
+    Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => %w[Deposit PaymentAddress] } })
   end
 
   describe 'POST /api/v2/account/deposits/intention' do
@@ -23,7 +23,7 @@ describe API::V2::Account::Deposits, type: :request do
     end
 
     it 'returns with auth token deposits' do
-      AMQP::Queue.expects(:enqueue).with(:deposit_intention,  anything, { persistent: true }).once
+      AMQP::Queue.expects(:enqueue).with(:deposit_intention, anything, { persistent: true }).once
       api_post '/api/v2/account/deposits/intention', token: token, params: { currency: currency.id, amount: amount }
 
       expect(response).to be_successful
@@ -246,7 +246,7 @@ describe API::V2::Account::Deposits, type: :request do
       context 'eth address' do
         let(:currency) { eth }
         let(:blockchain) { find_or_create :blockchain, 'eth-rinkeby', key: 'eth-rinkeby' }
-        let(:address) { Faker::Blockchain::Ethereum.address  }
+        let(:address) { Faker::Blockchain::Ethereum.address }
         before { member.payment_address(blockchain).update!(address: address) }
 
         it 'expose data about eth address' do

@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 Rails.application.configure do
-
   # Available levels (verbosity goes from high to less): debug, info, warn, error, fatal.
   # Default level for production is warn, otherwise – debug.
   log_level = ENV['LOG_LEVEL'].presence || (Rails.env.production? ? :warn : :debug)

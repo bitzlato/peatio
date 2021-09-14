@@ -21,25 +21,25 @@ describe API::V2::Management::Entities::Transfer do
 
     it do
       record_assets = API::V2::Management::Entities::Operation
-                        .represent(record.reload.assets)
+                      .represent(record.reload.assets)
       expect(subject.assets.to_json).to eq record_assets.to_json
     end
 
     it do
       record_expenses = API::V2::Management::Entities::Operation
-                          .represent(record.reload.expenses)
+                        .represent(record.reload.expenses)
       expect(subject.expenses.to_json).to eq record_expenses.to_json
     end
 
     it do
       record_liabilities = API::V2::Management::Entities::Operation
-                             .represent(record.reload.liabilities)
+                           .represent(record.reload.liabilities)
       expect(subject.liabilities.to_json).to eq record_liabilities.to_json
     end
 
     it do
       record_revenues = API::V2::Management::Entities::Operation
-                             .represent(record.reload.revenues)
+                        .represent(record.reload.revenues)
       expect(subject.revenues.to_json).to eq record_revenues.to_json
     end
   end

@@ -5,7 +5,7 @@ require_relative 'boot'
 
 require 'rails'
 
-%w( active_record action_controller action_view active_job ).each { |framework| require "#{framework}/railtie" }
+%w(active_record action_controller action_view active_job).each { |framework| require "#{framework}/railtie" }
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -13,7 +13,6 @@ Bundler.require(*Rails.groups)
 
 module Peatio
   class Application < Rails::Application
-
     # Eager loading app dir.
     config.eager_load_paths += Dir[Rails.root.join('app')]
 

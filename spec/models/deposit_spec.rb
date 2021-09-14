@@ -63,23 +63,23 @@ describe Deposit do
   context :spread_between_wallets! do
     pending
 
-    #let(:spread) do
-      #[Peatio::Transaction.new(to_address: 'to-address-1', amount: 1.2),
-       #Peatio::Transaction.new(to_address: 'to-address-2', amount: 2.5)]
-    #end
-    #let(:deposit) { create(:deposit_btc, amount: 3.7) }
+    # let(:spread) do
+    # [Peatio::Transaction.new(to_address: 'to-address-1', amount: 1.2),
+    # Peatio::Transaction.new(to_address: 'to-address-2', amount: 2.5)]
+    # end
+    # let(:deposit) { create(:deposit_btc, amount: 3.7) }
 
-    #before do
-      #DepositSpreader.any_instance.expects(:call).returns(spread)
-    #end
+    # before do
+    # DepositSpreader.any_instance.expects(:call).returns(spread)
+    # end
 
-    #it 'spreads deposit between wallets' do
-      #expect(deposit.spread).to eq([])
-      #expect(deposit.spread_between_wallets!).to be_truthy
-      #expect(deposit.reload.spread).to eq(spread.map(&:as_json).map(&:symbolize_keys))
+    # it 'spreads deposit between wallets' do
+    # expect(deposit.spread).to eq([])
+    # expect(deposit.spread_between_wallets!).to be_truthy
+    # expect(deposit.reload.spread).to eq(spread.map(&:as_json).map(&:symbolize_keys))
 
-      #expect(deposit.spread_between_wallets!).to be_falsey
-    #end
+    # expect(deposit.spread_between_wallets!).to be_falsey
+    # end
   end
 
   context :accept do
@@ -301,17 +301,17 @@ describe Deposit do
     end
   end
 
-  #context :err do
-    #let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
+  # context :err do
+  # let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
 
-    #subject { crypto_deposit }
-    #it 'transitions to :errored after calling #err!' do
-      #subject.accept!
-      #subject.process!
-      #subject.err! StandardError.new "This is an exception"
+  # subject { crypto_deposit }
+  # it 'transitions to :errored after calling #err!' do
+  # subject.accept!
+  # subject.process!
+  # subject.err! StandardError.new "This is an exception"
 
-      #expect(subject.errored?).to be true
-      #expect(subject.error).to eq [{"class"=>"StandardError", "message"=>"This is an exception"}]
-    #end
-  #end
+  # expect(subject.errored?).to be true
+  # expect(subject.error).to eq [{"class"=>"StandardError", "message"=>"This is an exception"}]
+  # end
+  # end
 end

@@ -3,7 +3,8 @@ class Refunder
     pa = PaymentAddress.find_by(
       blockchain: refund.deposit.blockchain,
       member: refund.deposit.member,
-      address: refund.deposit.address)
+      address: refund.deposit.address
+    )
     # NOTE: Deposit wallet configuration is tricky because wallet URI
     #       is saved on Wallet model but wallet address and secret
     #       are saved in PaymentAddress.

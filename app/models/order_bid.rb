@@ -35,6 +35,7 @@ class OrderBid < Order
 
   def avg_price
     return ::Trade::ZERO if funds_received.zero?
+
     market.round_price(funds_used / funds_received)
   end
 

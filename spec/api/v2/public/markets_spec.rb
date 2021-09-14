@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 describe API::V2::Public::Markets, type: :request do
-
   before(:each) { clear_redis }
   describe 'GET /api/v2/markets' do
     before { create(:market, :eth_usd) }
@@ -411,7 +410,6 @@ describe API::V2::Public::Markets, type: :request do
       end
 
       context 'with time_from and time_to' do
-
         it 'time_to less than time_from' do
           time_from = first_point.first + (2 * point_period)
           time_to = first_point.first - (2 * point_period)
@@ -539,7 +537,7 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'single trade was executed' do
-      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
       let(:expected_ticker) do
         { 'low' => '5.0', 'high' => '5.0',
           'open' => '5.0', 'last' => '5.0',
@@ -559,8 +557,8 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'multiple trades were executed' do
-      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
-      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
+      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d) }
 
       let(:expected_ticker) do
         { 'low' => '5.0', 'high' => '6.0',
@@ -589,7 +587,7 @@ describe API::V2::Public::Markets, type: :request do
         { 'low' => '0.0', 'high' => '0.0',
           'open' => '0.0', 'last' => '0.0',
           'volume' => '0.0', 'vol' => '0.0', 'amount' => '0.0',
-          'avg_price' => '0.0', 'price_change_percent' => '+0.00%'  }
+          'avg_price' => '0.0', 'price_change_percent' => '+0.00%' }
       end
 
       it 'returns market tickers' do
@@ -611,7 +609,7 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'single trade was executed' do
-      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
       let(:expected_ticker) do
         { 'low' => '5.0', 'high' => '5.0',
           'open' => '5.0', 'last' => '5.0',
@@ -630,8 +628,8 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'multiple trades were executed' do
-      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
-      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
+      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d) }
 
       # open = 6.0 because it takes last by default.
       # to make it work correctly need to run k-line daemon.
@@ -682,7 +680,6 @@ describe API::V2::Public::Markets, type: :request do
     let!(:ask_trade) { create(:trade, :btc_usd, maker_order: ask, created_at: 2.days.ago) }
     let!(:bid_trade) { create(:trade, :btc_usd, taker_order: bid, created_at: 1.day.ago) }
 
-
     after do
       delete_measurments('trades')
     end
@@ -713,7 +710,7 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     it 'returns 1 trade' do
-      get "/api/v2/public/markets/#{market}/trades", params: {limit: 1}
+      get "/api/v2/public/markets/#{market}/trades", params: { limit: 1 }
 
       expect(response).to be_successful
       expect(JSON.parse(response.body).size).to eq 1
@@ -730,7 +727,7 @@ describe API::V2::Public::Markets, type: :request do
       trade = create(:trade, :btc_usd, taker_order: bid, created_at: 6.hours.ago)
       trade.write_to_influx
 
-      get "/api/v2/public/markets/#{market}/trades", params: { limit: 2, order_by: 'asc'}
+      get "/api/v2/public/markets/#{market}/trades", params: { limit: 2, order_by: 'asc' }
 
       expect(response).to be_successful
       expect(JSON.parse(response.body).count).to eq 2

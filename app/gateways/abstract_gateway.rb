@@ -7,9 +7,9 @@ class AbstractGateway
 
   def self.normalize_address(address)
     # self.address = CashAddr::Converter.to_cash_address(address) if gateway.supports_cash_addr_format?
-    #if blockchain.supports_cash_addr_format? && rid? && CashAddr::Converter.is_valid?(rid)
-      #self.rid = CashAddr::Converter.to_cash_address(rid)
-    #end
+    # if blockchain.supports_cash_addr_format? && rid? && CashAddr::Converter.is_valid?(rid)
+    # self.rid = CashAddr::Converter.to_cash_address(rid)
+    # end
     address
   end
 
@@ -80,17 +80,21 @@ class AbstractGateway
   def kind_of_address(address)
     if address.is_a?(Enumerable)
       raise 'multiple addresses' if address.many?
+
       address = address.first
     end
     return :wallet if address.in? blockchain.wallets_addresses
     return :deposit if address.in? blockchain.deposit_addresses
+
     :unknown
   end
 
   def monefy_transaction(hash, extras = {})
     return if hash.nil?
+
     if hash.is_a? Peatio::Transaction
       raise "Sourced transaction must be plain #{hash}" if hash.amount.is_a? Money
+
       tx = hash
     else
       tx = Peatio::Transaction.new(hash)

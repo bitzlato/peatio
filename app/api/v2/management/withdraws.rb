@@ -5,21 +5,20 @@ module API
   module V2
     module Management
       class Withdraws < Grape::API
-
         helpers do
           def perform_action(withdraw, action)
             withdraw.with_lock do
               case action
-                when 'process'
-                  withdraw.accept!
-                  # Process fiat withdraw immediately. Crypto withdraws will be processed by workers.
-                  if withdraw.currency.fiat?
-                    withdraw.process!
-                    withdraw.dispatch!
-                    withdraw.success!
-                  end
-                when 'cancel'
-                  withdraw.cancel!
+              when 'process'
+                withdraw.accept!
+                # Process fiat withdraw immediately. Crypto withdraws will be processed by workers.
+                if withdraw.currency.fiat?
+                  withdraw.process!
+                  withdraw.dispatch!
+                  withdraw.success!
+                end
+              when 'cancel'
+                withdraw.cancel!
               end
             end
           end

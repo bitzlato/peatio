@@ -44,7 +44,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.string   'trusted_ip_list', limit: 255
       t.string   'label',           limit: 255
       t.datetime 'expires_at'
-      t.string   'scopes',          limit: 255
+      t.string   'scopes', limit: 255
       t.datetime 'deleted_at'
     end
     add_index 'api_tokens', ['access_key'], name: 'index_api_tokens_on_access_key', unique: true, using: :btree
@@ -74,7 +74,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.integer  'member_id',  limit: 4
       t.datetime 'created_at'
       t.datetime 'updated_at'
-      t.string   'nickname',   limit: 255
+      t.string   'nickname', limit: 255
     end
     add_index 'authentications', ['member_id'], name: 'index_authentications_on_member_id', using: :btree
     add_index 'authentications', %w[provider uid], name: 'index_authentications_on_provider_and_uid', using: :btree
@@ -103,7 +103,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.integer  'currency',   limit: 4
       t.string   'extra',      limit: 255
       t.string   'uid',        limit: 255
-      t.boolean  'is_locked',              default: false
+      t.boolean  'is_locked', default: false
       t.datetime 'created_at'
       t.datetime 'updated_at'
       t.datetime 'deleted_at'
@@ -130,7 +130,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.datetime 'updated_at'
       t.boolean  'disabled',                 default: false
       t.boolean  'api_disabled',             default: false
-      t.string   'nickname',     limit: 255
+      t.string   'nickname', limit: 255
     end
     create_table 'orders', force: :cascade do |t|
       t.integer  'bid',            limit: 4
@@ -139,19 +139,19 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.decimal  'price',                      precision: 32, scale: 16
       t.decimal  'volume',                     precision: 32, scale: 16
       t.decimal  'origin_volume',              precision: 32, scale: 16
-      t.integer  'state',          limit: 4
+      t.integer  'state', limit: 4
       t.datetime 'done_at'
       t.string   'type',           limit: 8
       t.integer  'member_id',      limit: 4
       t.datetime 'created_at'
       t.datetime 'updated_at'
       t.string   'sn',             limit: 255
-      t.string   'source',         limit: 255,                                         null: false
+      t.string   'source',         limit: 255, null: false
       t.string   'ord_type',       limit: 10
       t.decimal  'locked',                     precision: 32, scale: 16
       t.decimal  'origin_locked',              precision: 32, scale: 16
       t.decimal  'funds_received',             precision: 32, scale: 16, default: 0.0
-      t.integer  'trades_count',   limit: 4,                             default: 0
+      t.integer  'trades_count', limit: 4, default: 0
     end
     add_index 'orders', %w[currency state], name: 'index_orders_on_currency_and_state', using: :btree
     add_index 'orders', %w[member_id state], name: 'index_orders_on_member_id_and_state', using: :btree
@@ -174,8 +174,8 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.string   'secret',     limit: 255
     end
     create_table 'payment_transactions', force: :cascade do |t|
-      t.string   'txid',          limit: 255
-      t.decimal  'amount',                    precision: 32, scale: 16
+      t.string   'txid', limit: 255
+      t.decimal  'amount', precision: 32, scale: 16
       t.integer  'confirmations', limit: 4
       t.string   'address',       limit: 255
       t.integer  'state',         limit: 4
@@ -193,7 +193,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
     create_table 'proofs', force: :cascade do |t|
       t.string   'root',       limit: 255
       t.integer  'currency',   limit: 4
-      t.boolean  'ready',                    default: false
+      t.boolean  'ready', default: false
       t.datetime 'created_at'
       t.datetime 'updated_at'
       t.string   'sum',        limit: 255
@@ -211,7 +211,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.datetime 'updated_at'
       t.integer  'ask_member_id', limit: 4
       t.integer  'bid_member_id', limit: 4
-      t.decimal  'funds',                   precision: 32, scale: 16
+      t.decimal  'funds', precision: 32, scale: 16
     end
     add_index 'trades', ['ask_id'], name: 'index_trades_on_ask_id', using: :btree
     add_index 'trades', ['ask_member_id'], name: 'index_trades_on_ask_member_id', using: :btree
@@ -242,8 +242,8 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.datetime 'done_at'
       t.string   'txid',       limit: 255
       t.string   'aasm_state', limit: 255
-      t.decimal  'sum',                    precision: 32, scale: 16, default: 0.0, null: false
-      t.string   'type',       limit: 255
+      t.decimal  'sum', precision: 32, scale: 16, default: 0.0, null: false
+      t.string   'type', limit: 255
     end
   end
 

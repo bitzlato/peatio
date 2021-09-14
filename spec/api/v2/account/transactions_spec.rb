@@ -10,7 +10,7 @@ describe API::V2::Account::Transactions, type: :request do
     let(:balance) { 100000 }
 
     before do
-      Ability.stubs(:user_permissions).returns({'member'=>{'read'=>%w[Deposit Withdraw]}})
+      Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => %w[Deposit Withdraw] } })
     end
 
     context 'successful' do

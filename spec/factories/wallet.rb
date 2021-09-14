@@ -3,7 +3,6 @@
 
 FactoryBot.define do
   factory :wallet do
-
     trait :eth_deposit do
       after(:create) do |w|
         CurrencyWallet.create(currency_id: 'eth', wallet_id: w.id)
@@ -187,7 +186,7 @@ FactoryBot.define do
       after(:create) do |w|
         CurrencyWallet.create(currency_id: 'fake', wallet_id: w.id)
       end
-      use_as_fee_source  { true }
+      use_as_fee_source { true }
       association :blockchain, strategy: :find_or_create, key: 'fake-testnet'
       name               { 'Fake Currency Fee Wallet' }
       address            { 'fake-fee' }

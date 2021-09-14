@@ -34,25 +34,25 @@ describe Market do
 
   context 'validations' do
     let(:valid_attributes) do
-      { base_currency:    :btc,
-        quote_currency:   :trst,
-        engine:           create(:engine),
-        min_amount:       0.0001,
-        min_price:        0.0001,
+      { base_currency: :btc,
+        quote_currency: :trst,
+        engine: create(:engine),
+        min_amount: 0.0001,
+        min_price: 0.0001,
         amount_precision: 4,
-        price_precision:  4,
-        position:         100 }
+        price_precision: 4,
+        position: 100 }
     end
 
     let(:mirror_attributes) do
-      { base_currency:    :usd,
-        quote_currency:   :btc,
-        engine:           create(:engine),
-        min_amount:       0.0001,
-        min_price:        0.0001,
+      { base_currency: :usd,
+        quote_currency: :btc,
+        engine: create(:engine),
+        min_amount: 0.0001,
+        min_price: 0.0001,
         amount_precision: 4,
-        price_precision:  4,
-        position:         100 }
+        price_precision: 4,
+        position: 100 }
     end
 
     let(:disabled_currency) { Currency.find_by_id(:eur) }
@@ -66,7 +66,7 @@ describe Market do
     it 'validates type precision' do
       record = Market.new(valid_attributes.merge(type: ''))
       record.save
-      expect(record.errors.full_messages).to include(/can\'t be blank/i)
+      expect(record.errors.full_messages).to include(/can't be blank/i)
     end
 
     it 'validates type value' do
@@ -206,18 +206,16 @@ describe Market do
 
   context 'callbacks' do
     let(:valid_attributes) do
-      { base_currency:    :btc,
-        quote_currency:   :trst,
-        engine:           create(:engine),
-        min_amount:       0.0001,
-        min_price:        0.0001,
+      { base_currency: :btc,
+        quote_currency: :trst,
+        engine: create(:engine),
+        min_amount: 0.0001,
+        min_price: 0.0001,
         amount_precision: 4,
-        price_precision:  4
-      }
+        price_precision: 4 }
     end
 
     context 'after_create' do
-
       it 'move to the bottom if there is no position' do
         expect(Market.ordered.pluck(:symbol, :position)).to eq [['btc_usd', 1], ['btc_eth', 2], ['btc_eth', 3]]
         Market.create(valid_attributes)

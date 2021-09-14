@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 begin
   types = YAML.load_file("#{Rails.root}/config/transfer_types.yml").symbolize_keys
   Deposit::TRANSFER_TYPES.merge!(types[:deposit])

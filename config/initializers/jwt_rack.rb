@@ -15,12 +15,12 @@ end
 
 # TODO: Fixme in jwt-rack handle api/v2// as api/v2.
 auth_args = {
-  secret:   Rails.configuration.x.jwt_public_key,
-  options:  Rails.configuration.x.jwt_options,
-  verify:   Rails.configuration.x.jwt_public_key.present?,
-  exclude:  %w(/api/v2/public /api/v2//public /api/v2/management /api/v2//management
-               /api/v2/swagger /api/v2//swagger /api/v2/admin/swagger /api/v2//admin/swagger
-               /api/v2/coinmarketcap /api/v2//coinmarketcap /api/v2/coingecko /api/v2//coingecko),
+  secret: Rails.configuration.x.jwt_public_key,
+  options: Rails.configuration.x.jwt_options,
+  verify: Rails.configuration.x.jwt_public_key.present?,
+  exclude: %w(/api/v2/public /api/v2//public /api/v2/management /api/v2//management
+              /api/v2/swagger /api/v2//swagger /api/v2/admin/swagger /api/v2//admin/swagger
+              /api/v2/coinmarketcap /api/v2//coinmarketcap /api/v2/coingecko /api/v2//coingecko),
   on_error: on_error
 }
 
@@ -31,4 +31,3 @@ if Rails.env.development? && ENV.key?('DUMMY_JWT_BEARER')
   puts 'Use dummy JWT Bearer'
   Rails.application.config.middleware.insert_before JWT::Rack::Auth, DummyJwtMiddleware, bearer: ENV['DUMMY_JWT_BEARER']
 end
-

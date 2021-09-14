@@ -6,7 +6,7 @@ describe API::V2::Management::Accounts, type: :request do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
       scopes: {
-        read_accounts:  { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] }
+        read_accounts: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] }
       }
   end
 
@@ -15,7 +15,7 @@ describe API::V2::Management::Accounts, type: :request do
       post_json '/api/v2/management/accounts/balance', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
-    let(:data) { { uid: member.uid, currency: 'usd'} }
+    let(:data) { { uid: member.uid, currency: 'usd' } }
     let(:signers) { %i[alex jeff] }
     let(:member) { create(:member, :barong) }
 
@@ -43,7 +43,7 @@ describe API::V2::Management::Accounts, type: :request do
       post_json '/api/v2/management/accounts/balances', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
-    let(:data) { { currency: 'usd'} }
+    let(:data) { { currency: 'usd' } }
     let(:signers) { %i[alex jeff] }
     let!(:members) { create_list(:member, 12, :barong) }
     let!(:deposits) do

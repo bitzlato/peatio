@@ -16,7 +16,6 @@
 # Bid/Quote currency/unit = USD.
 
 class Market < ApplicationRecord
-
   self.inheritance_column = nil
 
   # == Constants ============================================================
@@ -115,18 +114,18 @@ class Market < ApplicationRecord
               less_than_or_equal_to: ->(m) { FUNDS_PRECISION - m.price_precision }
             }
 
-  validates :base_currency, :quote_currency, inclusion: { in: -> (_) { Currency.codes } }
+  validates :base_currency, :quote_currency, inclusion: { in: ->(_) { Currency.codes } }
 
   validates :min_price,
             presence: true,
-            numericality: { greater_than_or_equal_to: ->(market){ market.min_price_by_precision } }
+            numericality: { greater_than_or_equal_to: ->(market) { market.min_price_by_precision } }
   validates :max_price,
-            numericality: { allow_blank: true, greater_than_or_equal_to: ->(market){ market.min_price }},
+            numericality: { allow_blank: true, greater_than_or_equal_to: ->(market) { market.min_price } },
             if: ->(market) { !market.max_price.zero? }
 
   validates :min_amount,
             presence: true,
-            numericality: { greater_than_or_equal_to: ->(market){ market.min_amount_by_precision } }
+            numericality: { greater_than_or_equal_to: ->(market) { market.min_amount_by_precision } }
 
   validates :state, inclusion: { in: STATES }
 

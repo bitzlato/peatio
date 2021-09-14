@@ -2,7 +2,7 @@
 
 describe API::V2::Account::InternalTransfers, type: :request do
   let(:endpoint) { '/api/v2/account/internal_transfers' }
-  let(:member) { create(:member, :level_3, email: 'example@gmail.com', uid: 'ID73BF61C8H0',  username: 'membertest') }
+  let(:member) { create(:member, :level_3, email: 'example@gmail.com', uid: 'ID73BF61C8H0', username: 'membertest') }
   let(:member_receiver) { create(:member, :level_3, email: 'receiver@gmail.com', uid: 'ID84BF61C8H0', username: 'test1') }
   let(:token) { jwt_for(member) }
 
@@ -41,7 +41,7 @@ describe API::V2::Account::InternalTransfers, type: :request do
 
       expect(response).to be_successful
       expect(response.headers.fetch('Total')).to eq '7'
-      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[ btc usd ]
+      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[btc usd]
     end
 
     it 'returns all internal transfers' do
@@ -75,10 +75,10 @@ describe API::V2::Account::InternalTransfers, type: :request do
     let(:amount) { 0.15 }
 
     let :data do
-      { username_or_uid:            member_receiver.uid,
-        currency:                   currency.code,
-        amount:                     amount,
-        otp:                        123456 }
+      { username_or_uid: member_receiver.uid,
+        currency: currency.code,
+        amount: amount,
+        otp: 123456 }
     end
 
     let(:account) { member.get_account(currency) }
@@ -195,5 +195,4 @@ describe API::V2::Account::InternalTransfers, type: :request do
       expect(response).to include_api_error('account.internal_transfer.can_not_tranfer_to_yourself')
     end
   end
-
 end

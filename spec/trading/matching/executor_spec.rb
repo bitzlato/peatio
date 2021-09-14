@@ -12,12 +12,12 @@ describe Matching::Executor do
     Matching::Executor.new(
       action: 'execute',
       trade: {
-        market_id:      market.symbol,
+        market_id: market.symbol,
         maker_order_id: ask.id,
         taker_order_id: bid.id,
-        strike_price:   price.to_s('F'),
-        amount:         volume.to_s('F'),
-        total:          (price * volume).to_s('F')
+        strike_price: price.to_s('F'),
+        amount: volume.to_s('F'),
+        total: (price * volume).to_s('F')
       }
     )
   end
@@ -39,7 +39,6 @@ describe Matching::Executor do
       expect { subject.execute! }.to raise_error(Matching::TradeExecutionError)
     end
   end
-
 
   context 'invalid ask price' do
     let(:ask) { ::Matching::LimitOrder.new create(:order_ask, :btc_usd, price: price + 1, volume: volume, member: alice).to_matching_attributes }
@@ -120,12 +119,12 @@ describe Matching::Executor do
       executor = Matching::Executor.new(
         action: 'execute',
         trade: {
-          market_id:      market.symbol,
+          market_id: market.symbol,
           maker_order_id: ask.id,
           taker_order_id: bid.id,
-          strike_price:   '2.0'.to_d,
-          amount:         '1.5'.to_d,
-          total:          '3.0'.to_d
+          strike_price: '2.0'.to_d,
+          amount: '1.5'.to_d,
+          total: '3.0'.to_d
         }
       )
       executor.execute!
@@ -142,12 +141,12 @@ describe Matching::Executor do
       Matching::Executor.new(
         action: 'execute',
         trade: {
-          market_id:      market.symbol,
+          market_id: market.symbol,
           maker_order_id: ask.id,
           taker_order_id: bid.id,
-          strike_price:   price - 1, # so bid order only used (price-1)*volume
-          amount:         volume.to_s('F'),
-          total:          ((price - 1) * volume).to_s('F')
+          strike_price: price - 1, # so bid order only used (price-1)*volume
+          amount: volume.to_s('F'),
+          total: ((price - 1) * volume).to_s('F')
         }
       )
     end

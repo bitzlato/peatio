@@ -5,21 +5,20 @@ require_relative 'constants'
 
 module Matching
   class OrderBook
-
     attr :side
 
-    def initialize(market, side, options={})
+    def initialize(market, side, options = {})
       @market = market
       @side   = side.to_sym
       @limit_orders = RBTree.new
       @market_orders = RBTree.new
       @on_change = options[:on_change]
 
-      singleton = class<<self;self;end
+      singleton = class << self; self; end
       singleton.send :define_method, :limit_top, self.class.instance_method("#{@side}_limit_top")
     end
 
-    def notify_change(market, side, price, amount=nil)
+    def notify_change(market, side, price, amount = nil)
       return unless @on_change
 
       amount ||= yield
@@ -92,7 +91,7 @@ module Matching
 
     def limit_orders
       orders = {}
-      @limit_orders.keys.each {|k| orders[k] = @limit_orders[k].orders }
+      @limit_orders.keys.each { |k| orders[k] = @limit_orders[k].orders }
       orders
     end
 
@@ -124,12 +123,14 @@ module Matching
 
     def ask_limit_top # lowest price wins
       return if @limit_orders.empty?
+
       price, level = @limit_orders.first
       level.top
     end
 
     def bid_limit_top # highest price wins
       return if @limit_orders.empty?
+
       price, level = @limit_orders.last
       level.top
     end

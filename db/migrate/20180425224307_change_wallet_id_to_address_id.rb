@@ -5,6 +5,7 @@ class ChangeWalletIdToAddressId < ActiveRecord::Migration[4.2]
   def change
     return unless defined?(PaymentAddress)
     return unless column_exists?(:payment_addresses, :details)
+
     PaymentAddress.find_each do |pa|
       pa.details['wallet_id'].tap do |wallet_id|
         if wallet_id

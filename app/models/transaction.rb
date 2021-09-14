@@ -70,23 +70,24 @@ class Transaction < ApplicationRecord
     raise 'transaction must be a Peatio::Transaction' unless tx.is_a? Peatio::Transaction
     raise 'transaction amount must be a Money' unless tx.amount.is_a? Money
     raise 'transaction fee must be nil or a Money' unless tx.fee.nil? || tx.fee.is_a?(Money)
+
     # TODO: just now created transaction has no txout. Available to change txout from nil to number
 
     attrs = {
-      fee:             tx.fee.nil? ? nil : tx.fee.to_d,
+      fee: tx.fee.nil? ? nil : tx.fee.to_d,
       fee_currency_id: tx.fee_currency_id,
-      block_number:    tx.block_number,
-      status:          tx.status,
-      txout:           tx.txout, # change nil to zero
-      from_address:    tx.from_address,
-      from:            tx.from || raise('No "from" kind in tx'),
-      amount:          tx.amount.nil? ? nil : tx.amount.to_d,
-      to_address:      tx.to_address,
-      to:              tx.to || raise('No "to" kind in tx'),
-      currency_id:     tx.currency_id,
-      blockchain_id:   tx.blockchain_id,
-      txid:            tx.id,
-      options:         tx.options
+      block_number: tx.block_number,
+      status: tx.status,
+      txout: tx.txout, # change nil to zero
+      from_address: tx.from_address,
+      from: tx.from || raise('No "from" kind in tx'),
+      amount: tx.amount.nil? ? nil : tx.amount.to_d,
+      to_address: tx.to_address,
+      to: tx.to || raise('No "to" kind in tx'),
+      currency_id: tx.currency_id,
+      blockchain_id: tx.blockchain_id,
+      txid: tx.id,
+      options: tx.options
     }.deep_merge(extra)
 
     # TODO: There are problem with save 'kind'a attribuve with upsert

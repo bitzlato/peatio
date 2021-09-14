@@ -10,18 +10,18 @@ FactoryBot.define do
   end
 
   sequence(:fiat_beneficiary_data) do
-    { full_name:                    Faker::Name.name_with_middle,
-      address:                      Faker::Address.full_address,
-      country:                      Faker::Address.country,
-      account_number:               Faker::Bank.account_number,
-      account_type:                 %w[saving checking money-market CDs retirement].sample,
-      bank_name:                    Faker::Bank.name,
-      bank_address:                 Faker::Address.full_address,
-      bank_country:                 Faker::Address.country,
-      bank_swift_code:              Faker::Bank.swift_bic,
-      intermediary_bank_name:       Faker::Bank.name,
-      intermediary_bank_address:    Faker::Address.full_address,
-      intermediary_bank_country:    Faker::Address.country,
+    { full_name: Faker::Name.name_with_middle,
+      address: Faker::Address.full_address,
+      country: Faker::Address.country,
+      account_number: Faker::Bank.account_number,
+      account_type: %w[saving checking money-market CDs retirement].sample,
+      bank_name: Faker::Bank.name,
+      bank_address: Faker::Address.full_address,
+      bank_country: Faker::Address.country,
+      bank_swift_code: Faker::Bank.swift_bic,
+      intermediary_bank_name: Faker::Bank.name,
+      intermediary_bank_address: Faker::Address.full_address,
+      intermediary_bank_country: Faker::Address.country,
       intermediary_bank_swift_code: Faker::Bank.swift_bic }
   end
 

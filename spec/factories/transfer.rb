@@ -7,7 +7,7 @@ FactoryBot.define do
   end
 
   factory :transfer do
-    key  { generate(:transfer_key) }
+    key { generate(:transfer_key) }
     category { Transfer::CATEGORIES.sample }
     description { "#{category} for #{Time.now.to_date}" }
 

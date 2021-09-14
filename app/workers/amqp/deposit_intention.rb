@@ -7,7 +7,6 @@ module Workers
       def process(payload)
         payload.symbolize_keys!
 
-
         deposit = Deposit.find_by_id(payload[:deposit_id])
         unless deposit
           Rails.logger.warn do

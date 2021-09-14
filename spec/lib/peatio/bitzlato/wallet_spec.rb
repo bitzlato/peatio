@@ -11,35 +11,35 @@ describe Bitzlato::Wallet do
 
     context :poll_payments do
       let(:response) do
-          [
-            {
-              publicName: 'dapi',
-              links: nil,
-              amount: 0.21,
-              cryptocurrency: 'BTC',
-              type: 'auto',
-              status: 'done',
-              date: 1616396531426
-            },
-            {
-              publicName: 'dapi',
-              links: nil,
-              amount: 0.2,
-              cryptocurrency: 'BTC',
-              type: 'auto',
-              status: 'done',
-              date: 1616396505639
-            },
-            {
-              publicName: 'dapi',
-              links: nil,
-              amount: 0.19,
-              cryptocurrency: 'BTC',
-              type: 'auto',
-              status: 'done',
-              date: 1616396365270
-            }
-          ]
+        [
+          {
+            publicName: 'dapi',
+            links: nil,
+            amount: 0.21,
+            cryptocurrency: 'BTC',
+            type: 'auto',
+            status: 'done',
+            date: 1616396531426
+          },
+          {
+            publicName: 'dapi',
+            links: nil,
+            amount: 0.2,
+            cryptocurrency: 'BTC',
+            type: 'auto',
+            status: 'done',
+            date: 1616396505639
+          },
+          {
+            publicName: 'dapi',
+            links: nil,
+            amount: 0.19,
+            cryptocurrency: 'BTC',
+            type: 'auto',
+            status: 'done',
+            date: 1616396365270
+          }
+        ]
       end
 
       it do
@@ -104,7 +104,8 @@ describe Bitzlato::Wallet do
               status: 'cashed',
               cashedBy: 'EasySammieFrey'
             }
-          ] }
+          ]
+        }
       end
 
       it do
@@ -126,7 +127,6 @@ describe Bitzlato::Wallet do
         expect(withdraws).to be_a Array
       end
     end
-
 
     context :create_transaction! do
       context :voucher do
@@ -154,10 +154,10 @@ describe Bitzlato::Wallet do
       end
 
       context :create_payment! do
-        let(:response) { { paymentId: 12 }}
+        let(:response) { { paymentId: 12 } }
         it 'show create withdrawal transaction' do
           stub_request(:post, uri + '/api/gate/v1/payments/create')
-            .with( body: '{"clientProvidedId":12,"client":1,"cryptocurrency":"BTC","amount":123,"payedBefore":true}' )
+            .with(body: '{"clientProvidedId":12,"client":1,"cryptocurrency":"BTC","amount":123,"payedBefore":true}')
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
           transaction = wallet.create_payment!(key: 12, to_address: 1, cryptocurrency: 'BTC', amount: 123)
@@ -170,25 +170,24 @@ describe Bitzlato::Wallet do
       context :create_voucher! do
         let(:response) do
           {
-            'deepLinkCode'=>'someHash',
-            'currency'=>{'code'=>'USD', 'amount'=>'6965'},
-            'cryptocurrency'=>{'code'=>'BTC', 'amount'=>'0.12'},
-            'createdAt'=>1616075809783,
-            'links'=>[
-              {'type'=>'telegram bot @BTC_STAGE_BOT', 'url'=>'https://telegram.me/BTC_STAGE_BOT?start=someHash'},
-              {'type'=>'web exchange', 'url'=>'https://s-www.lgk.one/p2p/?start=someHash'}
+            'deepLinkCode' => 'someHash',
+            'currency' => { 'code' => 'USD', 'amount' => '6965' },
+            'cryptocurrency' => { 'code' => 'BTC', 'amount' => '0.12' },
+            'createdAt' => 1616075809783,
+            'links' => [
+              { 'type' => 'telegram bot @BTC_STAGE_BOT', 'url' => 'https://telegram.me/BTC_STAGE_BOT?start=someHash' },
+              { 'type' => 'web exchange', 'url' => 'https://s-www.lgk.one/p2p/?start=someHash' }
             ],
-            'status'=>'active',
-            'cashedBy'=>nil,
-            'comment'=>nil
+            'status' => 'active',
+            'cashedBy' => nil,
+            'comment' => nil
           }
         end
 
         it 'create voucher' do
           stub_request(:post, uri + '/api/p2p/vouchers/')
-            .with(body: {cryptocurrency:'BTC',amount:123,method:'crypto', currency: 'USD'}.to_json)
+            .with(body: { cryptocurrency: 'BTC', amount: 123, method: 'crypto', currency: 'USD' }.to_json)
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
-
 
           transaction = wallet.create_voucher!(cryptocurrency: 'BTC', amount: 123)
 
@@ -205,21 +204,21 @@ describe Bitzlato::Wallet do
     context :create_invoice! do
       let(:response) do
         {
-          'id'=>21,
-          'cryptocurrency'=>'BTC',
-          'amount'=>'1.1',
-          'comment'=>'gift from drew',
-          'link'=>{'telegram'=>'https://t.me/BTC_STAGE_BOT?start=b_9ac6b97e09ecbbfc0d365421f6b98a33', 'web'=>'https://s-www.lgk.one/p2p/?start=b_9ac6b97e09ecbbfc0d365421f6b98a33'},
-          'createdAt'=>1615444044115,
-          'expiryAt'=>1615530444115,
-          'completedAt'=>nil,
-          'status'=>'active'
+          'id' => 21,
+          'cryptocurrency' => 'BTC',
+          'amount' => '1.1',
+          'comment' => 'gift from drew',
+          'link' => { 'telegram' => 'https://t.me/BTC_STAGE_BOT?start=b_9ac6b97e09ecbbfc0d365421f6b98a33', 'web' => 'https://s-www.lgk.one/p2p/?start=b_9ac6b97e09ecbbfc0d365421f6b98a33' },
+          'createdAt' => 1615444044115,
+          'expiryAt' => 1615530444115,
+          'completedAt' => nil,
+          'status' => 'active'
         }
       end
 
       it 'should create an invoice' do
         stub_request(:post, uri + '/api/gate/v1/invoices/')
-          .with(body: {cryptocurrency:'BTC',amount:123,comment:'Exchange service deposit for account uid12312'}.to_json)
+          .with(body: { cryptocurrency: 'BTC', amount: 123, comment: 'Exchange service deposit for account uid12312' }.to_json)
           .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
         result = wallet.create_invoice!(comment: 'Exchange service deposit for account uid12312', amount: 123, currency_id: 'BTC')

@@ -9,4 +9,3 @@ module Peatio::Blockchain
     raise 'deprecated'
   end
 end
-

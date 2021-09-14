@@ -28,8 +28,8 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
   end
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Beneficiary'],'update'=>['Beneficiary'],
-                                                         'create'=> ['Beneficiary'],'destroy'=> ['Beneficiary']}})
+    Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['Beneficiary'], 'update' => ['Beneficiary'],
+                                                             'create' => ['Beneficiary'], 'destroy' => ['Beneficiary'] } })
   end
 
   context 'without JWT' do
@@ -355,7 +355,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
             create(:beneficiary,
                    member: member,
                    currency_id: beneficiary_data[:currency],
-                   data: {address: beneficiary_data.dig(:data, :address)})
+                   data: { address: beneficiary_data.dig(:data, :address) })
           end
 
           it do
@@ -368,8 +368,8 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         context 'different currencies' do
           let(:eth_beneficiary_data) do
             beneficiary_data.merge({
-              data: { address: Faker::Blockchain::Ethereum.address }
-            })
+                                     data: { address: Faker::Blockchain::Ethereum.address }
+                                   })
           end
           before do
             create(:beneficiary,
@@ -468,7 +468,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
     it 'creates beneficiary for member' do
       expect do
         api_post endpoint, params: beneficiary_data, token: token
-      end.to change{ member.beneficiaries.count }.by(1)
+      end.to change { member.beneficiaries.count }.by(1)
     end
 
     it 'creates beneficiary with pending state' do
@@ -481,7 +481,6 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 end
 
 describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
-
   let(:member) { create(:member, :level_3) }
   let(:token) { jwt_for(member) }
 
@@ -493,7 +492,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     let!(:pending_beneficiary) { create(:beneficiary, member: member) }
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
@@ -544,7 +543,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     end
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
@@ -575,7 +574,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     end
 
     let(:activation_data) do
-      { id:  active_beneficiary.id,
+      { id: active_beneficiary.id,
         pin: active_beneficiary.pin }
     end
 
@@ -605,7 +604,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     end
 
     let(:activation_data) do
-      { id:  archived_beneficiary.id,
+      { id: archived_beneficiary.id,
         pin: archived_beneficiary.pin }
     end
 
@@ -627,7 +626,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     end
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
@@ -643,7 +642,6 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
 end
 
 describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
-
   let(:member) { create(:member, :level_3) }
   let(:token) { jwt_for(member) }
 
@@ -750,7 +748,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
     end
 
     let(:resend_data) do
-      { id:  archived_beneficiary.id }
+      { id: archived_beneficiary.id }
     end
 
     let!(:archived_beneficiary) { create(:beneficiary, state: :archived, member: member) }
@@ -769,7 +767,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
     end
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
@@ -783,7 +781,6 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
 end
 
 describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
-
   let(:member) { create(:member, :level_3) }
   let(:token) { jwt_for(member) }
 
@@ -795,7 +792,7 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
     let!(:pending_beneficiary) { create(:beneficiary, member: member) }
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
@@ -884,5 +881,3 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
     end
   end
 end
-
-

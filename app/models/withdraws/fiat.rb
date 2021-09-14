@@ -5,7 +5,6 @@
 # TODO: Delete this class and update type column
 module Withdraws
   class Fiat < Withdraw
-
   end
 end
 

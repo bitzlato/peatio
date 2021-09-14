@@ -17,8 +17,8 @@ class EthereumGateway
           from_address = normalize_address(tx['from'])
           to_address = normalize_address(tx['to'])
           transactions << build_success_eth_transaction(fetch_receipt(tx.fetch('hash')), tx) if follow_addresses.nil? ||
-            follow_addresses.include?(from_address) || follow_addresses.include?(to_address) ||
-            (follow_txids.present? && follow_txids.include?(normalize_txid(tx.fetch('hash'))))
+                                                                                                follow_addresses.include?(from_address) || follow_addresses.include?(to_address) ||
+                                                                                                (follow_txids.present? && follow_txids.include?(normalize_txid(tx.fetch('hash'))))
         else
           contract_address = normalize_address tx.fetch('to')
           from_address = normalize_address tx.fetch('from')
@@ -49,6 +49,7 @@ class EthereumGateway
 
     def build_invalid_erc20_transaction(txn_receipt, block_tx)
       return unless contract_addresses.include? txn_receipt.fetch('to')
+
       super txn_receipt, block_tx
     end
   end

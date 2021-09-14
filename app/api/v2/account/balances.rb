@@ -5,7 +5,6 @@ module API
   module V2
     module Account
       class Balances < Grape::API
-
         helpers ::API::V2::ParamHelpers
 
         # TODO: Add failures.
@@ -34,9 +33,9 @@ module API
           user_authorize! :read, ::Operations::Account
 
           search_params = params[:search]
-                                .slice(:code, :name)
-                                .transform_keys {|k| "#{k}_cont"}
-                                .merge(m: 'or')
+                          .slice(:code, :name)
+                          .transform_keys { |k| "#{k}_cont" }
+                          .merge(m: 'or')
 
           accounts = ::Currency.visible.ransack(search_params).result.each_with_object([]) do |c, result|
             account = ::Account.find_by(currency: c, member: current_user)
@@ -63,7 +62,7 @@ module API
                    values: { value: -> { Currency.visible.pluck(:id) }, message: 'account.currency.doesnt_exist' },
                    desc: 'The currency code.'
         end
-        get '/balances/:currency', requirements: { currency: /[\w\.\-]+/ }  do
+        get '/balances/:currency', requirements: { currency: /[\w.\-]+/ } do
           user_authorize! :read, ::Operations::Account
 
           present current_user.accounts.visible.find_by!(currency_id: params[:currency]),

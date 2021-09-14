@@ -5,13 +5,13 @@ class AddEncryptedSecretToPaymentAddress < ActiveRecord::Migration[5.2]
     settings = Wallet.pluck(:id, :settings)
 
     remove_column :payment_addresses, :secret
-    add_column :payment_addresses, :secret_encrypted , :string, limit: 255, after: :address
+    add_column :payment_addresses, :secret_encrypted, :string, limit: 255, after: :address
 
     remove_column :payment_addresses, :details
-    add_column :payment_addresses, :details_encrypted , :string, limit: 1024, after: :secret_encrypted
+    add_column :payment_addresses, :details_encrypted, :string, limit: 1024, after: :secret_encrypted
 
     remove_column :wallets, :settings
-    add_column :wallets, :settings_encrypted , :string, limit: 1024, after: :gateway
+    add_column :wallets, :settings_encrypted, :string, limit: 1024, after: :gateway
 
     secrets.each do |s|
       atr = PaymentAddress.__vault_attributes[:secret]
@@ -38,13 +38,13 @@ class AddEncryptedSecretToPaymentAddress < ActiveRecord::Migration[5.2]
     settings = Wallet.pluck(:id, :settings_encrypted)
 
     add_column :payment_addresses, :secret, :string, limit: 128, after: :address
-    remove_column :payment_addresses, :secret_encrypted , :string, after: :address
+    remove_column :payment_addresses, :secret_encrypted, :string, after: :address
 
     add_column :payment_addresses, :details, :string, limit: 1.kilobyte, null: false, default: '{}', after: :secret
-    remove_column :payment_addresses, :details_encrypted , :string, limit: 1024, after: :secret_encrypted
+    remove_column :payment_addresses, :details_encrypted, :string, limit: 1024, after: :secret_encrypted
 
     add_column :wallets, :settings, :string, limit: 1000, default: '{}', null: false, after: :gateway
-    remove_column :wallets, :settings_encrypted , :string, limit: 1024, after: :gateway
+    remove_column :wallets, :settings_encrypted, :string, limit: 1024, after: :gateway
 
     secrets.each do |s|
       atr = PaymentAddress.__vault_attributes[:secret]

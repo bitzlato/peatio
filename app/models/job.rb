@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Job < ApplicationRecord
-
   serialize :data, JSON unless Rails.configuration.database_support_json
 
   before_create { self.finished_at = Time.now }

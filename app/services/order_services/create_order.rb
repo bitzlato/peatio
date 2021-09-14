@@ -79,7 +79,7 @@ module OrderServices
       failure(errors: [error_message])
     end
 
-    def create_order(market: ,side:, ord_type:, price:, volume:, uuid:)
+    def create_order(market:, side:, ord_type:, price:, volume:, uuid:)
       symbolized_side = symbolize_and_check_side!(side)
 
       member_account = get_member_account(side: symbolized_side, market: market)
@@ -119,21 +119,21 @@ module OrderServices
       end
 
       order_subclass.create!(
-        state:         ::Order::PENDING,
-        member:        @member,
-        ask:           market.base_unit,
-        bid:           market.quote_unit,
-        market:        market,
-        market_type:   ::Market::DEFAULT_TYPE,
-        ord_type:      ord_type || 'limit',
-        price:         price,
-        volume:        volume,
+        state: ::Order::PENDING,
+        member: @member,
+        ask: market.base_unit,
+        bid: market.quote_unit,
+        market: market,
+        market_type: ::Market::DEFAULT_TYPE,
+        ord_type: ord_type || 'limit',
+        price: price,
+        volume: volume,
         origin_volume: volume,
-        locked:        locked_value,
+        locked: locked_value,
         origin_locked: locked_value,
-        uuid:          uuid,
-        maker_fee:     maker_fee,
-        taker_fee:     taker_fee
+        uuid: uuid,
+        maker_fee: maker_fee,
+        taker_fee: taker_fee
       )
     end
 
@@ -206,7 +206,7 @@ module OrderServices
       else
         order.trigger_third_party_creation
       end
-      
+
       order
     end
 

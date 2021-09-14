@@ -34,4 +34,3 @@ class EthereumGateway
     end
   end
 end
-

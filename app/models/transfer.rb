@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 class Transfer < ApplicationRecord
-
   # == Constants ============================================================
 
   extend Enumerize
@@ -37,7 +36,7 @@ class Transfer < ApplicationRecord
 
   # == Callbacks ============================================================
 
-  before_create { self.key = self.key.strip.downcase }
+  before_create { self.key = key.strip.downcase }
   before_commit on: :create do
     update_legacy_balances
   end

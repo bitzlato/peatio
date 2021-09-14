@@ -13,9 +13,10 @@ class EthereumGateway
     #
     def collect!(payment_address)
       raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
+
       amounts = load_balances(payment_address.address)
-        .select { |currency, amount| is_amount_collectable?(amount) }
-        .each_with_object({}) { |(key, amount), hash| hash[amount.currency.contract_address] = amount.base_units }
+                .select { |currency, amount| is_amount_collectable?(amount) }
+                .each_with_object({}) { |(key, amount), hash| hash[amount.currency.contract_address] = amount.base_units }
 
       # Remove native currency if there are tokens to transfer
       # We want to collect native currency when there are no collectable tokens in address
@@ -61,9 +62,9 @@ class EthereumGateway
     # Collectable is coin with has enough amount to be collected (amount more than paid gas * COLLECT_FACTOR)
     def collectable_coins(address)
       coins = blockchain
-        .currencies
-        .select { |currency| is_amount_collectable?(load_balance(address, currency)) }
-        .map(&:contract_address)
+              .currencies
+              .select { |currency| is_amount_collectable?(load_balance(address, currency)) }
+              .map(&:contract_address)
 
       # Don't return native currency if where are collectable tokens
       coins.many? ? coins.compact : coins
@@ -72,6 +73,7 @@ class EthereumGateway
     # На адресе есть монеты, которые можно собрать, их ценность выше газа?
     def is_amount_collectable?(amount)
       raise 'amount must be a Money' unless amount.is_a? Money
+
       if amount.currency.token?
         amount.to_d >= [amount.currency.min_collection_amount, amount.currency.min_deposit_amount].max
       else
@@ -83,9 +85,9 @@ class EthereumGateway
 
     def gas_for_collection_in_money(coin_address)
       currency = blockchain
-        .currencies
-        .find { |c| c.contract_address == coin_address } ||
-      raise("No found currency with coin '#{coin_address || :native}' for blockchain #{blockchain.id}")
+                 .currencies
+                 .find { |c| c.contract_address == coin_address } ||
+                 raise("No found currency with coin '#{coin_address || :native}' for blockchain #{blockchain.id}")
 
       gas_factor * fetch_gas_price * (currency.gas_limit || raise("No gas limit specified for currency #{currency.id}"))
     end
@@ -99,11 +101,12 @@ class EthereumGateway
           # другой. Нужно или при сборе брать газ из кэша или тут убрать. Я пока убрал тут.
           # Rails.cache.fetch([blockchain.id, :gas_price].join(':'), expires_in: GAS_PRICE_EXPIRES) do
           AbstractCommand.new(client).fetch_gas_price
-      )
+        )
     end
 
-    def estimate_gas_in_money_to_collect(from_address: , to_address:, contract_addresses: )
+    def estimate_gas_in_money_to_collect(from_address:, to_address:, contract_addresses:)
       raise NoAddressesToEstimate if contract_addresses.empty?
+
       blockchain.native_currency.to_money_from_units(
         GasEstimator
         .new(client)

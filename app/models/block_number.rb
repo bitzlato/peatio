@@ -4,7 +4,7 @@ class BlockNumber < ApplicationRecord
 
   STATUSES = %w(pending processing success error)
   before_validation if: :status? do
-    self.status = self.status.to_s
+    self.status = status.to_s
   end
   validates :status, presence: true, inclusion: { in: STATUSES }
 

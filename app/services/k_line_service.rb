@@ -28,7 +28,6 @@ class KLineService
     end
   end
 
-
   attr_accessor :market_symbol, :period
 
   def initialize(market_symbol, period)

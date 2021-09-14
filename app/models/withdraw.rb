@@ -45,7 +45,7 @@ class Withdraw < ApplicationRecord
   validates :block_number, allow_blank: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validates :sum,
             presence: true,
-            numericality: { greater_than_or_equal_to: ->(withdraw) { withdraw.currency.min_withdraw_amount }}
+            numericality: { greater_than_or_equal_to: ->(withdraw) { withdraw.currency.min_withdraw_amount } }
 
   validate on: :create do
     if beneficiary.present? && !beneficiary.active? && !aasm_state.to_sym.in?(COMPLETED_STATES)
@@ -124,18 +124,18 @@ class Withdraw < ApplicationRecord
     end
 
     # TODO: Move to service
-    #event :load do
-      #transitions from: :accepted, to: :confirming do
-        ## Load event is available only for coin withdrawals.
-        #guard do
-          #currency.coin? && txid?
-        #end
-      #end
-      #after_commit do
-        #tx = currency.blockchain.gateway.fetch_transaction(self)
-        #success! if tx.present? && tx.status.success?
-      #end
-    #end
+    # event :load do
+    # transitions from: :accepted, to: :confirming do
+    ## Load event is available only for coin withdrawals.
+    # guard do
+    # currency.coin? && txid?
+    # end
+    # end
+    # after_commit do
+    # tx = currency.blockchain.gateway.fetch_transaction(self)
+    # success! if tx.present? && tx.status.success?
+    # end
+    # end
 
     event :review do
       transitions from: :processing, to: :under_review
@@ -245,6 +245,7 @@ class Withdraw < ApplicationRecord
   def confirmations
     return 0 if block_number.blank?
     return blockchain.processed_height - block_number if (blockchain.processed_height - block_number) >= 0
+
     nil
   rescue StandardError => e
     report_exception(e)
@@ -260,17 +261,17 @@ class Withdraw < ApplicationRecord
   end
 
   def as_json_for_event_api
-    { tid:             tid,
-      user:            { uid: member.uid, email: member.email },
-      uid:             member.uid,
-      rid:             rid,
-      currency:        currency_id,
-      amount:          amount.to_s('F'),
-      fee:             fee.to_s('F'),
-      state:           aasm_state,
-      created_at:      created_at.iso8601,
-      updated_at:      updated_at.iso8601,
-      completed_at:    completed_at&.iso8601,
+    { tid: tid,
+      user: { uid: member.uid, email: member.email },
+      uid: member.uid,
+      rid: rid,
+      currency: currency_id,
+      amount: amount.to_s('F'),
+      fee: fee.to_s('F'),
+      state: aasm_state,
+      created_at: created_at.iso8601,
+      updated_at: updated_at.iso8601,
+      completed_at: completed_at&.iso8601,
       blockchain_txid: txid }
   end
 
@@ -285,12 +286,12 @@ class Withdraw < ApplicationRecord
       # Debit main fiat/crypto Liability account.
       # Credit locked fiat/crypto Liability account.
       Operations::Liability.transfer!(
-        amount:     sum,
-        currency:   currency,
-        reference:  self,
-        from_kind:  :main,
-        to_kind:    :locked,
-        member_id:  member_id
+        amount: sum,
+        currency: currency,
+        reference: self,
+        from_kind: :main,
+        to_kind: :locked,
+        member_id: member_id
       )
     end
   end
@@ -300,12 +301,12 @@ class Withdraw < ApplicationRecord
       # Debit locked fiat/crypto Liability account.
       # Credit main fiat/crypto Liability account.
       Operations::Liability.transfer!(
-        amount:     sum,
-        currency:   currency,
-        reference:  self,
-        from_kind:  :locked,
-        to_kind:    :main,
-        member_id:  member_id
+        amount: sum,
+        currency: currency,
+        reference: self,
+        from_kind: :locked,
+        to_kind: :main,
+        member_id: member_id
       )
     end
   end
@@ -314,28 +315,28 @@ class Withdraw < ApplicationRecord
     transaction do
       # Debit locked fiat/crypto Liability account.
       Operations::Liability.debit!(
-        amount:     sum,
-        currency:   currency,
-        reference:  self,
-        kind:       :locked,
-        member_id:  member_id
+        amount: sum,
+        currency: currency,
+        reference: self,
+        kind: :locked,
+        member_id: member_id
       )
 
       # Credit main fiat/crypto Revenue account.
       # NOTE: Credit amount = fee.
       Operations::Revenue.credit!(
-        amount:     fee,
-        currency:   currency,
-        reference:  self,
-        member_id:  member_id
+        amount: fee,
+        currency: currency,
+        reference: self,
+        member_id: member_id
       )
 
       # Debit main fiat/crypto Asset account.
       # NOTE: Debit amount = sum - fee.
       Operations::Asset.debit!(
-        amount:     amount,
-        currency:   currency,
-        reference:  self
+        amount: amount,
+        currency: currency,
+        reference: self
       )
     end
   end

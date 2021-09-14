@@ -70,7 +70,7 @@ gem 'addressable', '>= 2.8.0'
 gem 'rexml', '>= 3.2.5'
 
 # Yeah! We use pry in production!
-gem 'pry-byebug',   '~> 3.7'
+gem 'pry-byebug', '~> 3.7'
 
 gem 'money', github: 'bitzlato/money', branch: 'main'
 
@@ -87,7 +87,7 @@ group :development do
   gem 'annotate'
   gem 'bundler-audit'
   gem 'foreman'
-  gem 'listen',     '>= 3.0.5', '< 3.2'
+  gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'rubocop'
   gem 'rubocop-rails'
   gem 'rubocop-rspec', '~> 2.4'
@@ -102,7 +102,7 @@ end
 group :test do
   gem 'database_cleaner-active_record'
   gem 'factory_bot_rails', '~> 5.0', '>= 5.0.2'
-  gem 'mocha',               '~> 1.8', require: false
+  gem 'mocha', '~> 1.8', require: false
   gem 'rspec-rails', '~> 3.8', '>= 3.8.2'
   gem 'rspec-retry',         '~> 0.6'
   gem 'timecop',             '~> 0.9'

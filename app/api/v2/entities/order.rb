@@ -7,7 +7,7 @@ module API
       class Order < Base
         expose(
           :id,
-          documentation:{
+          documentation: {
             type: Integer,
             desc: 'Unique order id.'
           }
@@ -15,7 +15,7 @@ module API
 
         expose(
           :uuid,
-          documentation:{
+          documentation: {
             type: String,
             desc: 'Unique order UUID.'
           }
@@ -42,7 +42,7 @@ module API
           documentation: {
             type: BigDecimal,
             desc: 'Price for each unit. e.g.'\
-                  "If you want to sell/buy 1 btc at 3000 usd, the price is '3000.0'" 
+                  "If you want to sell/buy 1 btc at 3000 usd, the price is '3000.0'"
           }
         )
 
@@ -82,7 +82,6 @@ module API
             desc: 'Market type.'
           }
         )
-
 
         expose(
           :created_at,
@@ -130,8 +129,8 @@ module API
             desc: "The executed volume, see 'volume'."
           }
         ) do |order, _options|
-            order.origin_volume - order.volume
-          end
+          order.origin_volume - order.volume
+        end
 
         expose(
           :maker_fee,
@@ -140,7 +139,7 @@ module API
             desc: 'Fee for maker.'
           }
         )
-  
+
         expose(
           :taker_fee,
           documentation: {
@@ -166,8 +165,8 @@ module API
           },
           if: { type: :full }
         ) do |order, _options|
-            API::V2::Entities::Trade.represent order.trades, side: order.side
-          end
+          API::V2::Entities::Trade.represent order.trades, side: order.side
+        end
       end
     end
   end

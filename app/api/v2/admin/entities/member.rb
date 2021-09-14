@@ -70,10 +70,8 @@ module API
               type: 'API::V2::Admin::Entities::Beneficiary',
               is_array: true,
               desc: 'Member Beneficiary.'
-            }
-          ) do |m|
-            m.beneficiaries
-          end
+            }, &:beneficiaries
+          )
 
           expose(
             :accounts,

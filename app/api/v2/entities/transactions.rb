@@ -97,7 +97,7 @@ module API
             desc: 'Type of transaction'
           }
         ) do |transaction, _options|
-            transaction[:type].constantize.superclass.to_s
+          transaction[:type].constantize.superclass.to_s
         end
       end
     end

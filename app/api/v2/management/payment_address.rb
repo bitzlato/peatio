@@ -50,7 +50,7 @@ module API
               result = wallet.create_address!(member.uid, pa.details.merge(updated_at: pa.updated_at))
               if result.present?
                 pa.update!(address: result[:address],
-                           secret:  result[:secret],
+                           secret: result[:secret],
                            details: result.fetch(:details, {}).merge(pa.details))
               end
             end

@@ -31,10 +31,8 @@ module API
           documentation: {
             desc: 'Payment address state.',
             type: String
-          }
-        ) do |pa|
-          pa.status
-        end
+          }, &:status
+        )
       end
     end
   end

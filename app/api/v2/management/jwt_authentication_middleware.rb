@@ -11,6 +11,7 @@ module API
 
         def before
           return if request.path == '/api/v2/management/swagger'
+
           check_request_method!
           check_query_parameters!
           check_content_type!
@@ -18,7 +19,7 @@ module API
           env['rack.input'] = StringIO.new(payload.fetch(:data, {}).to_json)
         end
 
-      private
+        private
 
         def request
           Grape::Request.new(env)
@@ -29,9 +30,9 @@ module API
           JSON.parse(request.body.read)
         rescue => e
           raise Exceptions::Authentication, \
-                message:       'Couldn\'t parse JWT.',
+                message: 'Couldn\'t parse JWT.',
                 debug_message: e.inspect,
-                status:        400
+                status: 400
         end
         memoize :jwt
 
@@ -39,7 +40,7 @@ module API
           unless request.post? || request.put? || request.delete?
             raise Exceptions::Authentication, \
                   message: 'Only POST, PUT, and DELETE verbs are allowed.',
-                  status:  405
+                  status: 405
           end
         end
 
@@ -47,7 +48,7 @@ module API
           unless request.GET.empty?
             raise Exceptions::Authentication, \
                   message: 'Query parameters are not allowed.',
-                  status:  400
+                  status: 400
           end
         end
 
@@ -55,7 +56,7 @@ module API
           unless request.content_type == 'application/json'
             raise Exceptions::Authentication, \
                   message: 'Only JSON body is accepted.',
-                  status:  400
+                  status: 400
           end
         end
 
@@ -64,21 +65,21 @@ module API
           begin
             scope    = security_configuration.fetch(:scopes).fetch(security_scope)
             keychain = security_configuration
-                        .fetch(:keychain)
-                        .slice(*scope.fetch(:permitted_signers))
-                        .each_with_object({}) { |(k, v), memo| memo[k] = v.fetch(:value) }
+                       .fetch(:keychain)
+                       .slice(*scope.fetch(:permitted_signers))
+                       .each_with_object({}) { |(k, v), memo| memo[k] = v.fetch(:value) }
             result   = JWT::Multisig.verify_jwt(jwt, keychain, security_configuration.fetch(:jwt, {}))
           rescue => e
             raise Exceptions::Authentication, \
-                  message:       'Failed to verify JWT.',
+                  message: 'Failed to verify JWT.',
                   debug_message: e.inspect,
-                  status:        401
+                  status: 401
           end
 
           unless (scope.fetch(:mandatory_signers) - result[:verified]).empty?
             raise Exceptions::Authentication, \
                   message: 'Not enough signatures for the action.',
-                  status:  401
+                  status: 401
           end
 
           result[:payload]
