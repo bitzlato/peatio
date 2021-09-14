@@ -9,9 +9,10 @@ module TIDIdentifiable
     before_validation do
       next if tid.present?
 
-      begin
+      loop do
         self.tid = "TID#{SecureRandom.hex(5).upcase}"
-      end while self.class.where(tid: tid).any?
+        break unless self.class.where(tid: tid).any?
+      end
     end
   end
 end

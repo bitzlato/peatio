@@ -38,6 +38,11 @@ Security/JSONLoad:
   Exclude:
     - 'spec/**/*'
 
+Lint/InterpolationCheck:
+  Exclude:
+    - 'spec/**/*'
+    - 'app/models/concerns/blockchain_exploring.rb'
+
 # Offense count: 52
 # Configuration parameters: IgnoredMethods.
 Lint/AmbiguousBlockAssociation:

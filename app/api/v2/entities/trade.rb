@@ -107,7 +107,7 @@ module API
 
         expose(
           :side,
-          if: ->(trade, options) { options[:side] || options[:current_user] },
+          if: ->(_trade, options) { options[:side] || options[:current_user] },
           documentation: {
             type: String,
             desc: 'Trade side.'

@@ -102,12 +102,12 @@ class Transaction < ApplicationRecord
     end
     Rails.logger.debug { "Transaction #{tx.txid}/#{tx.txout} is saved to database with id=#{t.id}" }
     t
-  rescue ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid => err
-    report_exception err, true, tx: tx, record: err.record.as_json
-    raise err
-  rescue ActiveRecord::RecordNotUnique => err
-    report_exception err, true, tx: tx, record: err.message
-    raise err
+  rescue ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid => e
+    report_exception e, true, tx: tx, record: e.record.as_json
+    raise e
+  rescue ActiveRecord::RecordNotUnique => e
+    report_exception e, true, tx: tx, record: e.message
+    raise e
   end
 
   def refetch!

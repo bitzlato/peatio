@@ -141,7 +141,7 @@ module API
           exactly_one_of :id, :symbol
         end
         put '/markets/update' do
-          symbol = params[:symbol].present? ? params[:symbol] : params[:id]
+          symbol = params[:symbol].presence || params[:id]
           market = ::Market.find_by_symbol_and_type(symbol, params[:type])
           if market.update(declared(params, include_missing: false))
             present market, with: API::V2::Management::Entities::Market

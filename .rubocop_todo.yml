@@ -27,20 +27,6 @@ Lint/EmptyFile:
     - 'spec/factories/currencies_wallets.rb'
 
 # Offense count: 14
-# Cop supports --auto-correct.
-Lint/InterpolationCheck:
-  Exclude:
-    - 'app/models/concerns/blockchain_exploring.rb'
-    - 'spec/api/v2/public/markets_spec.rb'
-    - 'spec/factories/blockchains.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/Loop:
-  Exclude:
-    - 'app/models/concerns/tid_identifiable.rb'
-
-# Offense count: 14
 Lint/MissingSuper:
   Exclude:
     - 'app/services/withdrawer.rb'
@@ -57,41 +43,10 @@ Lint/MissingSuper:
     - 'spec/support/fake_blockchain.rb'
 
 # Offense count: 2
-# Cop supports --auto-correct.
-Lint/NonDeterministicRequireOrder:
-  Exclude:
-    - 'config/environments/shared.rb'
-    - 'spec/spec_helper.rb'
-
-# Offense count: 2
 Lint/NonLocalExitFromIterator:
   Exclude:
     - 'app/gateways/ethereum_gateway/deposit_collector.rb'
     - 'app/workers/amqp/deposit_coin_address.rb'
-
-# Offense count: 9
-# Cop supports --auto-correct.
-Lint/ParenthesesAsGroupedExpression:
-  Exclude:
-    - 'spec/api/v2/account/internal_transfer_spec.rb'
-    - 'spec/api/v2/account/transactions_spec.rb'
-    - 'spec/gateways/ethereum_gateway/gas_estimator_spec.rb'
-    - 'spec/models/amqp_config_spec.rb'
-    - 'spec/models/beneficiary_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/RedundantCopDisableDirective:
-  Exclude:
-    - 'config/initializers/money.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Lint/RedundantStringCoercion:
-  Exclude:
-    - 'app/workers/amqp/deposit_coin_address.rb'
-    - 'config/initializers/money.rb'
-    - 'lib/peatio/app.rb'
 
 # Offense count: 2
 Lint/ReturnInVoidContext:
@@ -119,42 +74,6 @@ Lint/UnreachableCode:
   Exclude:
     - 'app/services/blockchain_service.rb'
     - 'lib/currency_renamer.rb'
-
-# Offense count: 12
-# Cop supports --auto-correct.
-# Configuration parameters: IgnoreEmptyBlocks, AllowUnusedKeywordArguments.
-Lint/UnusedBlockArgument:
-  Exclude:
-    - 'app/api/v2/admin/entities/trade.rb'
-    - 'app/api/v2/entities/trade.rb'
-    - 'app/api/v2/management/entities/trade.rb'
-    - 'app/gateways/ethereum_gateway/collection_concern.rb'
-    - 'app/jobs/cron/collector.rb'
-    - 'app/workers/amqp/matching.rb'
-    - 'lib/tasks/benchmark.rake'
-    - 'spec/support/api_helper.rb'
-
-# Offense count: 18
-# Cop supports --auto-correct.
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods, IgnoreNotImplementedMethods.
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'app/gateways/abstract_gateway.rb'
-    - 'app/gateways/bitzlato_gateway.rb'
-    - 'app/gateways/ethereum_gateway.rb'
-    - 'app/gateways/ethereum_gateway/gas_refueler.rb'
-    - 'app/services/blockchain_service.rb'
-    - 'app/workers/amqp/matching.rb'
-    - 'lib/peatio/amqp/queue.rb'
-    - 'lib/peatio/csv_formatter.rb'
-    - 'spec/support/stub_ethereum.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: ContextCreatingMethods, MethodCreatingMethods.
-Lint/UselessAccessModifier:
-  Exclude:
-    - 'app/gateways/ethereum_gateway/collection_concern.rb'
 
 # Offense count: 10
 Lint/UselessAssignment:
@@ -240,42 +159,6 @@ Naming/MethodParameterName:
     - 'config/initializers/peatio_transaction.rb'
     - 'lib/peatio/upstream/opendax.rb'
     - 'lib/tasks/benchmark.rake'
-
-# Offense count: 17
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredName.
-Naming/RescuedExceptionsVariableName:
-  Exclude:
-    - 'app/api/v2/entities/account.rb'
-    - 'app/gateways/ethereum_gateway.rb'
-    - 'app/gateways/ethereum_gateway/collector.rb'
-    - 'app/gateways/ethereum_gateway/gas_estimator.rb'
-    - 'app/jobs/cron/collector.rb'
-    - 'app/jobs/cron/payment_address_balancer.rb'
-    - 'app/models/payment_address.rb'
-    - 'app/models/transaction.rb'
-    - 'app/models/wallet.rb'
-    - 'app/services/blockchain_service.rb'
-    - 'app/workers/amqp/withdraw_coin.rb'
-    - 'config/initializers/exception_reporting.rb'
-    - 'db/migrate/20210813085546_create_deposit_spreads.rb'
-
-# Offense count: 325
-# Cop supports --auto-correct.
-# Configuration parameters: SkipBlocks, EnforcedStyle.
-# SupportedStyles: described_class, explicit
-RSpec/DescribedClass:
-  Enabled: false
-
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: EnforceForPrefixed.
-Rails/Delegate:
-  Exclude:
-    - 'app/models/blockchain.rb'
-    - 'app/serializers/serializers/event_api/order_event.rb'
-    - 'app/serializers/serializers/event_api/trade_completed.rb'
-    - 'lib/peatio/aml.rb'
 
 # Offense count: 32
 # Cop supports --auto-correct.
@@ -379,48 +262,6 @@ Rails/NotNullColumn:
     - 'db/migrate/20190813121822_update_markets_ask_fee_bid_fee.rb'
     - 'db/migrate/20190905050444_add_category_transfers.rb'
     - 'db/migrate/20200414155144_create_engines.rb'
-
-# Offense count: 27
-# Cop supports --auto-correct.
-# Configuration parameters: Include.
-# Include: app/**/*.rb, config/**/*.rb, db/**/*.rb, lib/**/*.rb
-Rails/Output:
-  Exclude:
-    - 'app/services/accounts_merger.rb'
-    - 'app/workers/amqp/matching.rb'
-    - 'app/workers/daemons/upstream.rb'
-    - 'config/initializers/jwt_rack.rb'
-    - 'db/migrate/20210813085546_create_deposit_spreads.rb'
-    - 'db/migrate/20210816044928_add_base_factor_to_currency.rb'
-    - 'db/migrate/20210825114229_remove_pending_transactions.rb'
-    - 'lib/currencies_merger.rb'
-    - 'lib/currency_renamer.rb'
-    - 'lib/daemons/amqp_daemon.rb'
-    - 'lib/daemons/daemons.rb'
-
-# Offense count: 22
-# Cop supports --auto-correct.
-Rails/PluralizationGrammar:
-  Exclude:
-    - 'app/models/withdraw.rb'
-    - 'app/trading/matching/engine.rb'
-    - 'lib/tasks/job.rake'
-    - 'spec/api/v2/account/deposits_spec.rb'
-    - 'spec/api/v2/account/transactions_spec.rb'
-    - 'spec/api/v2/account/withdraws_spec.rb'
-    - 'spec/api/v2/admin/trades_spec.rb'
-    - 'spec/lib/tasks/job_spec.rb'
-    - 'spec/models/trade_spec.rb'
-    - 'spec/models/withdraw_spec.rb'
-    - 'spec/trading/matching/engine_spec.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-Rails/Presence:
-  Exclude:
-    - 'app/api/v2/admin/markets.rb'
-    - 'app/api/v2/management/markets.rb'
-    - 'app/models/trade.rb'
 
 # Offense count: 95
 # Configuration parameters: Include.

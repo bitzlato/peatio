@@ -35,7 +35,7 @@ class EthereumGateway
                            gas_limits: gas_limits,
                            gas_price: gas_price)
 
-      transcation_gas_limit ||= GasEstimator
+      transaction_gas_limit ||= GasEstimator
                                 .new(client)
                                 .call(from_address: gas_wallet_address,
                                       to_address: target_address,
@@ -44,7 +44,7 @@ class EthereumGateway
                                       gas_limits: gas_limits,
                                       gas_price: gas_price)
 
-      required_amount = (required_gas * gas_price) + (transcation_gas_limit * gas_price)
+      required_amount = (required_gas * gas_price) + (transaction_gas_limit * gas_price)
       if balance_on_target_address >= required_amount
         logger.info("No reason to create gas refueling eth transaction #{gas_wallet_address} -> #{target_address}"\
                     " balance_on_target_address: #{balance_on_target_address}, contract_addresses: #{contract_addresses},"\
@@ -55,7 +55,7 @@ class EthereumGateway
       transaction_amount = required_amount - balance_on_target_address
       logger.info("Create gas refueling eth transaction #{gas_wallet_address} -> #{target_address}"\
                   " balance_on_target_address: #{balance_on_target_address}, contract_addresses: #{contract_addresses},"\
-                  " required_gas: #{required_gas}, gas_price:#{gas_price} transcation_gas_limit:#{transcation_gas_limit}"\
+                  " required_gas: #{required_gas}, gas_price:#{gas_price} transaction_gas_limit:#{transaction_gas_limit}"\
                   " transaction amount: #{transaction_amount} = required_gas * gas_price - balance_on_target_address")
 
       tx = TransactionCreator.new(client).create_eth_transaction!(
@@ -64,7 +64,7 @@ class EthereumGateway
         secret: gas_wallet_secret,
         to_address: target_address,
         subtract_fee: false,
-        gas_limit: transcation_gas_limit,
+        gas_limit: transaction_gas_limit,
         gas_price: gas_price
       )
       tx.options.merge! gas_factor: gas_factor, required_amount: required_amount, required_gas: required_gas

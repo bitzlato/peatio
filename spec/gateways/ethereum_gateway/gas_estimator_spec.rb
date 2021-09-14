@@ -52,7 +52,7 @@ describe ::EthereumGateway::GasEstimator do
     end
 
     it do
-      expect(subject).to eq (estimated_gas1 + estimated_gas2 + estimated_gas3)
+      expect(subject).to eq(estimated_gas1 + estimated_gas2 + estimated_gas3)
     end
   end
 

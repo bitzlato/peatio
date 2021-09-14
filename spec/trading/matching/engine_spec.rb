@@ -695,7 +695,7 @@ describe Matching::Engine do
       before { subject.initializing = false }
 
       it 'publishes snapshot of orderbook and set increment_count to 1' do
-        subject.snapshot_time = Time.now - 80.second
+        subject.snapshot_time = Time.now - 80.seconds
         subject.submit(ask1)
         subject.submit(bid1)
         ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
@@ -709,7 +709,7 @@ describe Matching::Engine do
       end
 
       it 'publishes snapshot of orderbook (snapshot_time >= 1m and increment count < 20)' do
-        subject.snapshot_time = Time.now - 80.second
+        subject.snapshot_time = Time.now - 80.seconds
         subject.submit(ask1)
         subject.submit(bid1)
         ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
@@ -722,7 +722,7 @@ describe Matching::Engine do
       end
 
       it 'publishes snapshot of orderbook (snapshot_time > 10s and increment count => 20)' do
-        subject.snapshot_time = Time.now - 11.second
+        subject.snapshot_time = Time.now - 11.seconds
         subject.increment_count = 20
         subject.submit(ask1)
         subject.submit(bid1)

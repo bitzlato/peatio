@@ -62,7 +62,7 @@ describe Trade, '#trade_from_influx_after_date' do
     end
 
     it 'returns trade' do
-      expect(Trade.trade_from_influx_after_date(trade.market_id, Time.now - 1.minutes).except(:time)).to eq(expected_trade)
+      expect(Trade.trade_from_influx_after_date(trade.market_id, Time.now - 1.minute).except(:time)).to eq(expected_trade)
     end
   end
 
@@ -90,7 +90,7 @@ describe Trade, '#trade_from_influx_after_date' do
     end
 
     it 'returns trade' do
-      expect(Trade.trade_from_influx_after_date(trade1.market_id, Time.now - 1.minutes).except(:time)).to eq(expected_trade)
+      expect(Trade.trade_from_influx_after_date(trade1.market_id, Time.now - 1.minute).except(:time)).to eq(expected_trade)
     end
   end
 end

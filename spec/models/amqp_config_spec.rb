@@ -27,7 +27,7 @@ describe AMQP::Config do
   end
 
   it 'tells client how to connect' do
-    expect(AMQP::Config.connect).to eq ({ 'host' => '127.0.0.1' })
+    expect(AMQP::Config.connect).to eq({ 'host' => '127.0.0.1' })
   end
 
   it 'returns queue settings' do

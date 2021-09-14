@@ -6,8 +6,8 @@ module Matching
   class Engine
     ORDER_SUBMIT_MAX_ATTEMPTS = 3
     MIN_INCREMENT_COUNT_TO_SNAPSHOT = 20
-    MIN_PERIOD_TO_SNAPSHOT = 10.second
-    MAX_PERIOD_TO_SNAPSHOT = 60.second
+    MIN_PERIOD_TO_SNAPSHOT = 10.seconds
+    MAX_PERIOD_TO_SNAPSHOT = 60.seconds
 
     attr :orderbook, :mode, :queue
     attr_accessor :initializing, :snapshot_time, :increment_count, :sequence_number

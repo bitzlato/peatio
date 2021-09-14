@@ -102,7 +102,7 @@ class Trade < ApplicationRecord
 
     def nearest_trade_from_influx(market, date)
       res = trade_from_influx_before_date(market, date)
-      res.blank? ? trade_from_influx_after_date(market, date) : res
+      res.presence || trade_from_influx_after_date(market, date)
     end
   end
 

@@ -184,7 +184,7 @@ describe API::V2::Account::InternalTransfers, type: :request do
       expect(response).to have_http_status(:created)
       record = InternalTransfer.last
 
-      expect(account.balance).to eq (balance - amount)
+      expect(account.balance).to eq(balance - amount)
       expect(member_receiver.get_account(currency.code).balance).to eq amount
     end
 

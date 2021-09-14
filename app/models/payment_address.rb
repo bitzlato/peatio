@@ -65,8 +65,8 @@ class PaymentAddress < ApplicationRecord
 
   def enqueue_address_generation
     AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain_id }, { persistent: true })
-  rescue Bunny::ConnectionClosedError => err
-    report_exception err, true, member_id: member.id, blockchain_id: blockchain_id
+  rescue Bunny::ConnectionClosedError => e
+    report_exception e, true, member_id: member.id, blockchain_id: blockchain_id
   end
 
   def address_url

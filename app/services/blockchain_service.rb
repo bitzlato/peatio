@@ -25,8 +25,8 @@ class BlockchainService
         next
       end
       refetch_and_update_transaction!(txid, txout)
-    rescue StandardError => err
-      report_exception err, true, transaction_id: t.id
+    rescue StandardError => e
+      report_exception e, true, transaction_id: t.id
     end
   end
 
@@ -91,12 +91,12 @@ class BlockchainService
       )
 
       processed_count
-    rescue StandardError => err
+    rescue StandardError => e
       bn.update!(
-        transactions_processed_count: 0, error_message: err.message, status: :error
+        transactions_processed_count: 0, error_message: e.message, status: :error
       )
-      report_exception err, true, blockchain_id: blockchain.id, block_number: block_number
-      raise err
+      report_exception e, true, blockchain_id: blockchain.id, block_number: block_number
+      raise e
       0
     end
   end
@@ -118,7 +118,7 @@ class BlockchainService
 
   attr_reader :withdrawal, :deposit, :fetched_transaction
 
-  def dispatch_deposits!(block_number)
+  def dispatch_deposits!(_block_number)
     blockchain
       .deposits
       .accepted
@@ -205,9 +205,9 @@ class BlockchainService
       elsif transaction.status.success? && latest_block_number - withdrawal.block_number >= blockchain.min_confirmations
         withdrawal.success!
       end
-    rescue StandardError => err
-      logger.error "#{err.message} for #{transaction}"
-      report_exception err, true, tx: transaction
+    rescue StandardError => e
+      logger.error "#{e.message} for #{transaction}"
+      report_exception e, true, tx: transaction
     end
   end
 

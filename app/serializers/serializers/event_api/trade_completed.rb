@@ -14,9 +14,7 @@ module Serializers
       end
 
       class << self
-        def call(trade)
-          new.call(trade)
-        end
+        delegate :call, to: :new
       end
 
       def maker_attributes(trade)

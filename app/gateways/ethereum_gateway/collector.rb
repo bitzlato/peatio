@@ -33,9 +33,9 @@ class EthereumGateway
         logger.info("Collect transaction created #{transaction.as_json}")
         transaction.txid
         # TODO: Save CollectRecord with transaction dump
-      rescue EthereumGateway::TransactionCreator::Error => err
-        report_exception err, true, payment_address_id: payment_address.id, currency: currency
-        logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")
+      rescue EthereumGateway::TransactionCreator::Error => e
+        report_exception e, true, payment_address_id: payment_address.id, currency: currency
+        logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{e}")
         nil
       end.compact
     end

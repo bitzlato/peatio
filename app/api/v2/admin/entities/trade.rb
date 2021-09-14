@@ -33,7 +33,7 @@ module API
               type: BigDecimal,
               desc: 'Trade maker fee percentage.'
             },
-            if: ->(object, options) { options[:extended] }
+            if: ->(_object, options) { options[:extended] }
           ) { |trade| trade.maker_order.maker_fee }
 
           expose(
@@ -55,7 +55,7 @@ module API
           expose(
             :maker_order,
             using: API::V2::Admin::Entities::Order,
-            if: ->(object, options) { options[:extended] }
+            if: ->(_object, options) { options[:extended] }
           )
 
           expose(
@@ -88,7 +88,7 @@ module API
               type: BigDecimal,
               desc: 'Trade taker fee percentage.'
             },
-            if: ->(object, options) { options[:extended] }
+            if: ->(_object, options) { options[:extended] }
           ) { |trade| trade.taker_order.taker_fee }
 
           expose(
@@ -102,7 +102,7 @@ module API
           expose(
             :taker_order,
             using: API::V2::Admin::Entities::Order,
-            if: ->(object, options) { options[:extended] }
+            if: ->(_object, options) { options[:extended] }
           )
         end
       end

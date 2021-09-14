@@ -13,7 +13,7 @@ describe API::V2::Admin::Trades, type: :request do
       [
         create(:trade, :btc_usd, price: 12.0, amount: 2.0, created_at: 3.days.ago),
         create(:trade, :btc_usd, price: 3.0, amount: 13.0, created_at: 5.days.ago),
-        create(:trade, :btc_usd, price: 25.0, amount: 5.0, created_at: 1.days.ago, maker: member),
+        create(:trade, :btc_usd, price: 25.0, amount: 5.0, created_at: 1.day.ago, maker: member),
         create(:trade, :btc_usd, price: 6.0, amount: 5.0, created_at: 5.days.ago, taker: member),
         create(:trade, :btc_usd, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
         create(:trade, :btc_eth, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),

@@ -43,8 +43,8 @@ module API
           }
         ) do |account, options|
           account.payment_address
-        rescue StandardError => err
-          report_exception err, true, account: account, options: options
+        rescue StandardError => e
+          report_exception e, true, account: account, options: options
           nil
         end
 

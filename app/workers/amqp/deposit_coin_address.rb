@@ -22,7 +22,7 @@ module Workers
           pa.with_lock do
             return if pa.address.present?
 
-            result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency.to_s}")
+            result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
 
             pa.update!(address: result[:address],
                        secret: result[:secret],

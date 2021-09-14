@@ -617,7 +617,7 @@ describe Withdraw do
       before { withdraw.save }
 
       it do
-        withdraw.update(created_at: 2.day.ago)
+        withdraw.update(created_at: 2.days.ago)
         withdraw = build(:btc_withdraw, :with_deposit_liability, member: member, sum: 0.6.to_d)
         expect(withdraw.verify_limits).to be_falsey
       end

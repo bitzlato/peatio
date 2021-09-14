@@ -22,9 +22,9 @@ module Workers
 
         # Пока не понимаю что проихсодит с исключениями не указанными тут, поэтому отключил
         # rescue AASM::InvalidTransition => err
-      rescue StandardError => err
-        @logger.error id: payload[:id], message: err.message
-        report_exception err, true, payload
+      rescue StandardError => e
+        @logger.error id: payload[:id], message: e.message
+        report_exception e, true, payload
         nil
       end
     end

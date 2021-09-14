@@ -7,7 +7,7 @@ module Jobs
         return if Rails.env.production?
 
         # TODO: select only payment addresses with enough balance
-        PaymentAddress.collection_required.lock.each do |pa|
+        PaymentAddress.collection_required.lock.each do |_pa|
           next unless payment_address.has_collectable_balances?
 
           process_address payment_address
@@ -23,8 +23,8 @@ module Jobs
         else
           payment_address.refuel_gas!
         end
-      rescue StandardError => err
-        report_exception err, true, payment_address_id: payment_address.id
+      rescue StandardError => e
+        report_exception e, true, payment_address_id: payment_address.id
       end
     end
   end

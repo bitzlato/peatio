@@ -101,9 +101,7 @@ class Blockchain < ApplicationRecord
     @contract_addresses ||= Set.new(currencies.tokens.map(&:contract_address).map { |a| normalize_address a })
   end
 
-  def active?
-    status.active?
-  end
+  delegate :active?, to: :status
 
   # The latest block which blockchain worker has processed
   def processed_height

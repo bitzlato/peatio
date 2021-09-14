@@ -195,12 +195,12 @@ describe Beneficiary, 'Instance Methods' do
           end
 
           it 'masks account number' do
-            expect(fiat_beneficiary.masked_data).to match ({
-              full_name: 'Full name',
-              address: 'Address',
-              country: 'Country',
-              account_number: '03****1557'
-            })
+            expect(fiat_beneficiary.masked_data).to match({
+                                                            full_name: 'Full name',
+                                                            address: 'Address',
+                                                            country: 'Country',
+                                                            account_number: '03****1557'
+                                                          })
           end
         end
 
@@ -208,7 +208,7 @@ describe Beneficiary, 'Instance Methods' do
           let!(:coin_beneficiary) { create(:beneficiary, currency: Currency.find('btc')) }
 
           it 'data shouldnt change' do
-            expect(coin_beneficiary.masked_data).to match (coin_beneficiary.data)
+            expect(coin_beneficiary.masked_data).to match(coin_beneficiary.data)
           end
         end
       end

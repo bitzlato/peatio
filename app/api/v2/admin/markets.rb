@@ -182,7 +182,7 @@ module API
         post '/markets/update' do
           admin_authorize! :update, ::Market
 
-          symbol = params[:symbol].present? ? params[:symbol] : params[:id]
+          symbol = params[:symbol].presence || params[:id]
           market = ::Market.find_by_symbol_and_type(symbol, params[:type])
           update_market_params = declared(params, include_missing: false).except(:id, :symbol)
           if market.update(update_market_params)

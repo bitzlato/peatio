@@ -51,9 +51,9 @@ class EthereumGateway < AbstractGateway
 
     transaction
     # TODO: save GasRefuel record as reference
-  rescue EthereumGateway::GasRefueler::Error => err
-    report_exception err, true, target_address: target_address, blockchain_key: blockchain.key
-    logger.info("Canceled refueling address #{target_address} with #{err}")
+  rescue EthereumGateway::GasRefueler::Error => e
+    report_exception e, true, target_address: target_address, blockchain_key: blockchain.key
+    logger.info("Canceled refueling address #{target_address} with #{e}")
   end
 
   def create_address!(secret = nil)
@@ -70,7 +70,7 @@ class EthereumGateway < AbstractGateway
                           subtract_fee: false, # nil means auto
                           nonce: nil,
                           gas_factor: nil,
-                          meta: {})
+                          meta: {}) # rubocop:disable Lint/UnusedMethodArgument
 
     raise 'amount must be a Money' unless amount.is_a? Money
 

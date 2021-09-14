@@ -103,7 +103,7 @@ module APITestHelpers
   memoize :management_api_v1_keychain
 
   def management_api_v1_algorithms
-    management_api_v1_keychain.transform_values { |v| 'RS256' }
+    management_api_v1_keychain.transform_values { |_v| 'RS256' }
   end
   memoize :management_api_v1_algorithms
 

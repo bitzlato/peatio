@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # Copyright (c) 2019 Danil Pismenny <danil@brandymint.ru>
-# rubocop:disable Style/ClassAndModuleChildren
 class Money
   def base_units
     fractional
@@ -70,7 +69,7 @@ class Money
     def convert_to_base_unit(value)
       x = value.to_d * base_factor
       unless (x % 1).zero?
-        raise "Failed to convert currency (#{to_s}) value to base (smallest) unit because it exceeds the maximum precision: " \
+        raise "Failed to convert currency (#{self}) value to base (smallest) unit because it exceeds the maximum precision: " \
               "#{value.to_d} - #{x.to_d} must be equal to zero."
       end
       x.to_i
@@ -81,8 +80,6 @@ class Money
     end
   end
 end
-# rubocop:enable Style/ClassAndModuleChildren
-
 Money.locale_backend = :i18n
 Money.default_currency = :RUB
 Money.default_bank = nil

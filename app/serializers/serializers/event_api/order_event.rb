@@ -29,9 +29,7 @@ module Serializers
       end
 
       class << self
-        def call(order)
-          new.call(order)
-        end
+        delegate :call, to: :new
       end
 
       private

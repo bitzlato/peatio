@@ -35,8 +35,8 @@ class EthereumGateway
       rescue Ethereum::Client::NoEnoughtAmount
         gas_limits[address] || raise("Unknown gas limit for #{address}")
 
-      rescue Ethereum::Client::ExecutionFailed => err
-        Rails.logger.error err
+      rescue Ethereum::Client::ExecutionFailed => e
+        Rails.logger.error e
         gas_limits[address] || raise("Unknown gas limit for #{address}")
       end.sum
 
@@ -49,8 +49,8 @@ class EthereumGateway
           end
         rescue Ethereum::Client::NoEnoughtAmount
           gas_limits[nil] || raise('Unknown gas limit for native}')
-        rescue Ethereum::Client::ExecutionFailed => err
-          Rails.logger.error err
+        rescue Ethereum::Client::ExecutionFailed => e
+          Rails.logger.error e
           gas_limits[nil] || raise('Unknown gas limit for native}')
         end
       end

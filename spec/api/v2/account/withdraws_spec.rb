@@ -12,7 +12,7 @@ describe API::V2::Account::Withdraws, type: :request do
 
   describe 'GET /api/v2/account/withdraws' do
     let!(:btc_withdraws) { create_list(:btc_withdraw, 20, :with_deposit_liability, member: member, updated_at: 5.days.ago) }
-    let!(:usd_withdraws) { create_list(:usd_withdraw, 20, :with_deposit_liability, member: member, updated_at: 2.hour.ago) }
+    let!(:usd_withdraws) { create_list(:usd_withdraw, 20, :with_deposit_liability, member: member, updated_at: 2.hours.ago) }
 
     context 'unauthorized' do
       before do

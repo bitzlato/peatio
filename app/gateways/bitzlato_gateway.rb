@@ -2,6 +2,7 @@
 
 require 'peatio/bitzlato/wallet'
 
+# rubocop:disable Lint/UnusedMethodArgument
 class BitzlatoGateway < AbstractGateway
   def self.enable_personal_address_balance?
     false
@@ -154,3 +155,4 @@ class BitzlatoGateway < AbstractGateway
     Bitzlato::Wallet.new
   end
 end
+# rubocop:enable Lint/UnusedMethodArgument

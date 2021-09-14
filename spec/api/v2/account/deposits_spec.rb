@@ -36,8 +36,8 @@ describe API::V2::Account::Deposits, type: :request do
     before do
       create(:deposit_btc, member: member, updated_at: 5.days.ago)
       create(:deposit_usd, member: member, updated_at: 5.days.ago)
-      create(:deposit_usd, member: member, txid: 1, amount: 520, updated_at: 5.hour.ago)
-      create(:deposit_btc, member: member, txid: 'test', amount: 111, updated_at: 2.hour.ago)
+      create(:deposit_usd, member: member, txid: 1, amount: 520, updated_at: 5.hours.ago)
+      create(:deposit_btc, member: member, txid: 'test', amount: 111, updated_at: 2.hours.ago)
       create(:deposit_usd, member: other_member, txid: 10)
     end
 

@@ -16,10 +16,10 @@ describe API::V2::Account::Transactions, type: :request do
       before do
         btc_account.plus_funds(balance)
         usd_account.plus_funds(balance)
-        create_list(:deposit_usd, 4, member: member, updated_at: 5.hour.ago)
-        create_list(:usd_withdraw, 4, member: member, updated_at: 5.hour.ago)
-        create_list(:deposit_btc, 3, member: member, updated_at: 10.hour.ago)
-        create_list(:btc_withdraw, 3, member: member, updated_at: 10.hour.ago)
+        create_list(:deposit_usd, 4, member: member, updated_at: 5.hours.ago)
+        create_list(:usd_withdraw, 4, member: member, updated_at: 5.hours.ago)
+        create_list(:deposit_btc, 3, member: member, updated_at: 10.hours.ago)
+        create_list(:btc_withdraw, 3, member: member, updated_at: 10.hours.ago)
         create_list(:deposit_usd, 5, member: member, updated_at: 5.days.ago)
         create_list(:usd_withdraw, 5, member: member, updated_at: 5.days.ago)
       end
@@ -132,8 +132,8 @@ describe API::V2::Account::Transactions, type: :request do
 
       context 'state filters' do
         before do
-          create_list(:deposit_usd, 4, member: member, updated_at: 5.hour.ago, aasm_state: 'accepted')
-          create_list(:deposit_usd, 4, member: member, updated_at: 5.hour.ago, aasm_state: 'rejected')
+          create_list(:deposit_usd, 4, member: member, updated_at: 5.hours.ago, aasm_state: 'accepted')
+          create_list(:deposit_usd, 4, member: member, updated_at: 5.hours.ago, aasm_state: 'rejected')
           create_list(:usd_withdraw, 4, member: member, updated_at: 5.days.ago, aasm_state: 'accepted')
           create_list(:usd_withdraw, 4, member: member, updated_at: 5.days.ago, aasm_state: 'rejected')
         end
@@ -155,7 +155,7 @@ describe API::V2::Account::Transactions, type: :request do
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Deposit' }.count).to eq 12
-          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to eq (['submitted'])
+          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to eq(['submitted'])
         end
 
         it 'returns transactions with more than one withdraw state' do
@@ -174,7 +174,7 @@ describe API::V2::Account::Transactions, type: :request do
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Withdraw' }.count).to eq 12
-          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to eq (['prepared'])
+          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to eq(['prepared'])
         end
 
         it 'returns transactions with one withdraw state and one deposit state' do
@@ -186,8 +186,8 @@ describe API::V2::Account::Transactions, type: :request do
 
           expect(result.select { |t| t['type'] == 'Deposit' }.count).to eq 4
           expect(result.select { |t| t['type'] == 'Withdraw' }.count).to eq 4
-          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to eq (['rejected'])
-          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to eq (['rejected'])
+          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to eq(['rejected'])
+          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to eq(['rejected'])
         end
 
         it 'returns transactions with more than one withdraw state and more that one deposit state' do

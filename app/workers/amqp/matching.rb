@@ -16,7 +16,7 @@ module Workers
         reload 'all'
       end
 
-      def process(payload, metadata, delivery_info)
+      def process(payload, _metadata, _delivery_info)
         payload.symbolize_keys!
 
         case payload[:action]
@@ -52,7 +52,7 @@ module Workers
         end
       rescue DryrunError => e
         # stop started engines
-        engines.each { |id, engine| engine.shift_gears(:dryrun) unless engine == e.engine }
+        engines.each { |_id, engine| engine.shift_gears(:dryrun) unless engine == e.engine }
 
         Rails.logger.fatal { "#{market} engine failed to start. Matched during dryrun:" }
         e.engine.queue.each do |trade|

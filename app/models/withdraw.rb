@@ -56,7 +56,7 @@ class Withdraw < ApplicationRecord
 
   scope :completed, -> { where(aasm_state: COMPLETED_STATES) }
   scope :succeed_processing, -> { where(aasm_state: SUCCEED_PROCESSING_STATES) }
-  scope :last_24_hours, -> { where('created_at > ?', 24.hour.ago) }
+  scope :last_24_hours, -> { where('created_at > ?', 24.hours.ago) }
   scope :last_1_month, -> { where('created_at > ?', 1.month.ago) }
 
   aasm whiny_transitions: true, requires_lock: true do

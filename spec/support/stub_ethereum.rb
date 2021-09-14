@@ -12,7 +12,7 @@ module EthereumHelpers
   end
 
   def stub_balance_fetching(balance:, address:, id:)
-    response = { jsonrpc: '2.0', result: '0x' + (balance.to_s 16), id: 1 }
+    response = { jsonrpc: '2.0', result: '0x' + (balance.to_s 16), id: id }
     stub_request(:post, node_uri)
       .with(body: { jsonrpc: '2.0',
                     id: 1,

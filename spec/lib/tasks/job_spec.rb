@@ -23,7 +23,7 @@ describe 'job.rake' do
     it 'call rake task with default time range', clean_database_with_truncation: true do
       # default values
       min = (Time.now - 1.week).beginning_of_day.to_s(:db)
-      max = (Time.now - 6.day).beginning_of_day.to_s(:db)
+      max = (Time.now - 6.days).beginning_of_day.to_s(:db)
 
       counter = Operations::Liability.where("LOWER(reference_type) = LOWER('Order') AND created_at BETWEEN '#{min}' AND '#{max}'").count
       result = ActiveRecord::Base.connection.query("SELECT NULL, code, currency_id, member_id, SUM(debit), SUM(credit) FROM liabilities WHERE (LOWER(reference_type) = LOWER('Order') AND created_at BETWEEN '#{min}' AND '#{max}') GROUP BY code, member_id, currency_id, DATE(created_at)")
@@ -36,7 +36,7 @@ describe 'job.rake' do
     end
 
     it 'call rake task with time range', clean_database_with_truncation: true do
-      min = (Time.now - 2.day).beginning_of_day.to_s(:db)
+      min = (Time.now - 2.days).beginning_of_day.to_s(:db)
       max = (Time.now - 1.day).beginning_of_day.to_s(:db)
 
       counter = Operations::Liability.where("LOWER(reference_type) = LOWER('Order') AND created_at BETWEEN '#{min}' AND '#{max}'").count

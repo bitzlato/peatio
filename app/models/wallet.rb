@@ -179,8 +179,8 @@ class Wallet < ApplicationRecord
       begin
         currency = currency.money_currency unless currency.is_a? Money::Currency
         gateway.load_balance(address, currency)
-      rescue Peatio::Wallet::ClientError => err
-        report_exception err, true, wallet_id: id
+      rescue Peatio::Wallet::ClientError => e
+        report_exception e, true, wallet_id: id
         nil
       end
     else

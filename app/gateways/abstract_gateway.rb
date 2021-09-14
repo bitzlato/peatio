@@ -15,7 +15,7 @@ class AbstractGateway
     address
   end
 
-  def self.format_address(address)
+  def self.format_address(_address)
     not_implemented!
   end
 
@@ -27,12 +27,12 @@ class AbstractGateway
     not_implemented!
   end
 
-  def self.valid_address?(address)
+  def self.valid_address?(_address)
     # CashAddr::Converter.is_valid?(rid)
     not_implemented!
   end
 
-  def self.valid_txid?(txid)
+  def self.valid_txid?(_txid)
     not_implemented
   end
 
@@ -57,7 +57,7 @@ class AbstractGateway
     false
   end
 
-  def support_wallet_kind?(kind)
+  def support_wallet_kind?(_kind)
     true # TODO
   end
 
@@ -69,7 +69,7 @@ class AbstractGateway
     self.class.name
   end
 
-  def fetch_block_transactions(block_number)
+  def fetch_block_transactions(_block_number)
     raise "not implemented #{self.class}"
   end
 
@@ -91,7 +91,7 @@ class AbstractGateway
     :unknown
   end
 
-  def monefy_transaction(hash, extras = {})
+  def monefy_transaction(hash, _extras = {})
     return if hash.nil?
 
     if hash.is_a? Peatio::Transaction
