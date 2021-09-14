@@ -115,6 +115,8 @@ gem "http_accept_language", "~> 2.1"
 
 gem "semver2", "~> 3.4"
 
+gem 'pry-rails'
+
 group :deploy do
   gem 'capistrano-dotenv'
   gem 'capistrano-dotenv-tasks'
