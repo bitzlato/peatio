@@ -4,6 +4,7 @@ class EthereumGateway
     #
     COLLECT_FACTOR = 2
     GAS_PRICE_EXPIRES = 60
+    DEFAULT_GAS_FACTOR = 1.05
 
     # Collects tokens and native currency to hot wallet address
     #
@@ -29,7 +30,7 @@ class EthereumGateway
                 to_address: hot_wallet.address,
                 amounts: amounts,
                 gas_limits: gas_limits,
-                gas_factor: blockchain.client_options[:gas_factor],
+                gas_factor: gas_factor,
                 secret: payment_address.secret)
       else
         logger.warn("No collectable amount to collect from #{payment_address.address}")
@@ -86,7 +87,7 @@ class EthereumGateway
         .find { |c| c.contract_address == coin_address } ||
       raise("No found currency with coin '#{coin_address || :native}' for blockchain #{blockchain.id}")
 
-      fetch_gas_price * (currency.gas_limit || raise("No gas limit specified for currency #{currency.id}"))
+      gas_factor * fetch_gas_price * (currency.gas_limit || raise("No gas limit specified for currency #{currency.id}"))
     end
 
     # Returns current gas price in money
@@ -114,6 +115,10 @@ class EthereumGateway
         .new(client)
         .fetch_gas_price
       )
+    end
+
+    def gas_factor
+      blockchain.client_options[:gas_factor] || DEFAULT_GAS_FACTOR
     end
   end
 end
