@@ -83,7 +83,7 @@ describe API::V2::Public::Markets, type: :request do
 
       context 'base_code & quote_code' do
         it 'filters by base_code' do
-          get '/api/v2/public/markets', params: { search: { base_code: "bt" } }
+          get '/api/v2/public/markets', params: { search: { base_code: 'bt' } }
           # Since we have next markets list:
           # btc_usd, btc_eth, eth_usd
           # Since 2 of them has 'bt' in base_unit (btc).
@@ -101,7 +101,7 @@ describe API::V2::Public::Markets, type: :request do
           # btc_eur, btc_usd, btc_eth, eth_usd
           # Since 2 of them has 'e' in quote_unit (eur, eth).
           # We expect them to be returned in API response.
-          get '/api/v2/public/markets', params: { search: { quote_code: "e" } }
+          get '/api/v2/public/markets', params: { search: { quote_code: 'e' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
 
@@ -214,19 +214,19 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     it 'validates market param' do
-      get "/api/v2/public/markets/somecoin/order-book", params: { asks_limit: 1, bids_limit: 1 }
+      get '/api/v2/public/markets/somecoin/order-book', params: { asks_limit: 1, bids_limit: 1 }
       expect(response).to have_http_status 422
       expect(response).to include_api_error('public.market.doesnt_exist')
     end
 
     it 'validates asks limit' do
-      get "/api/v2/public/markets/somecoin/order-book", params: { asks_limit: 201, bids_limit: 1 }
+      get '/api/v2/public/markets/somecoin/order-book', params: { asks_limit: 201, bids_limit: 1 }
       expect(response).to have_http_status 422
       expect(response).to include_api_error('public.order_book.invalid_ask_limit')
     end
 
     it 'validates bids limit' do
-      get "/api/v2/public/markets/somecoin/order-book", params: { asks_limit: 1, bids_limit: 201 }
+      get '/api/v2/public/markets/somecoin/order-book', params: { asks_limit: 1, bids_limit: 201 }
       expect(response).to have_http_status 422
       expect(response).to include_api_error('public.order_book.invalid_bid_limit')
     end
@@ -240,8 +240,8 @@ describe API::V2::Public::Markets, type: :request do
       create_list(:order_ask, 5, :btc_usd, price: 3)
     end
 
-    let(:asks) { [["1.0", "5.0"], ["3.0", "5.0"]] }
-    let(:bids) { [["2.0", "5.0"], ["1.0", "5.0"]] }
+    let(:asks) { [['1.0', '5.0'], ['3.0', '5.0']] }
+    let(:bids) { [['2.0', '5.0'], ['1.0', '5.0']] }
 
     let(:market) { :btc_usd }
 
@@ -272,7 +272,7 @@ describe API::V2::Public::Markets, type: :request do
 
     context 'invalid market param' do
       it 'validates market param' do
-        api_get "/api/v2/public/markets/usdusd/depth"
+        api_get '/api/v2/public/markets/usdusd/depth'
         expect(response).to have_http_status 422
         expect(response).to include_api_error('public.market.doesnt_exist')
       end
@@ -322,7 +322,7 @@ describe API::V2::Public::Markets, type: :request do
     let(:first_point) { points.first }
 
     before { write_to_influx(points) }
-    after { delete_measurments("candles_1m") }
+    after { delete_measurments('candles_1m') }
 
     def influx_data(point)
       {
@@ -360,7 +360,7 @@ describe API::V2::Public::Markets, type: :request do
     context 'data exists' do
       it 'without time limits' do
         load_k_line
-        expect(JSON.parse(response.body)).to eq points[-points_default_limit..-1]
+        expect(JSON.parse(response.body)).to eq points[-points_default_limit..]
       end
 
       context 'with time_from' do
@@ -377,13 +377,13 @@ describe API::V2::Public::Markets, type: :request do
         it 'in range of first and last timestamp' do
           time_from = first_point.first + (10 * point_period)
           load_k_line(time_from: time_from)
-          expect(response_body).to eq points[10..-1]
+          expect(response_body).to eq points[10..]
           # First point timestamp should be eq to time_from.
           expect(response_body.first.first).to eq time_from
 
           time_from = first_point.first + (22 * point_period)
           load_k_line(time_from: time_from)
-          expect(response_body).to eq points[22..-1]
+          expect(response_body).to eq points[22..]
           # First point timestamp should be eq to time_from.
           expect(response_body.first.first).to eq time_from
         end
@@ -453,11 +453,11 @@ describe API::V2::Public::Markets, type: :request do
         it 'returns n last points' do
           limit = 5
           load_k_line(limit: limit)
-          expect(response_body).to eq points[-limit..-1]
+          expect(response_body).to eq points[-limit..]
 
           limit = 10
           load_k_line(limit: limit)
-          expect(response_body).to eq points[-limit..-1]
+          expect(response_body).to eq points[-limit..]
         end
 
         it 'returns all points if limit greater than points number' do
@@ -500,7 +500,7 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'data is missing' do
-      before { delete_measurments("candles_1m") }
+      before { delete_measurments('candles_1m') }
 
       it 'without time_from' do
         load_k_line
@@ -520,7 +520,7 @@ describe API::V2::Public::Markets, type: :request do
   end
 
   describe 'GET /api/v2/markets/tickers' do
-    after { delete_measurments("trades") }
+    after { delete_measurments('trades') }
 
     context 'no trades executed yet' do
       let(:expected_ticker) do
@@ -583,7 +583,7 @@ describe API::V2::Public::Markets, type: :request do
   end
 
   describe 'GET /api/v2/public/markets/:market/tickers' do
-    after { delete_measurments("trades") }
+    after { delete_measurments('trades') }
     context 'no trades executed yet' do
       let(:expected_ticker) do
         { 'low' => '0.0', 'high' => '0.0',
@@ -742,7 +742,7 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     it 'validates market param' do
-      api_get "/api/v2/public/markets/usdusd/trades"
+      api_get '/api/v2/public/markets/usdusd/trades'
       expect(response).to have_http_status 422
       expect(response).to include_api_error('public.market.doesnt_exist')
     end

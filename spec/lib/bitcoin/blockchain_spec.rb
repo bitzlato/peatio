@@ -269,17 +269,17 @@ describe Bitcoin::Blockchain do
         .yield_self { |file| JSON.load(file) }
     end
     let(:expected_transactions) do
-      [{:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+      [{:hash=>'1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
         :txout=>0,
-        :to_address=>"mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL",
+        :to_address=>'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
         :amount=>0.325e0,
-        :status=>"success",
+        :status=>'success',
         :currency_id=>currency.id},
-       {:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+       {:hash=>'1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
         :txout=>1,
-        :to_address=>"mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA",
+        :to_address=>'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
         :amount=>0.1964466932e2,
-        :status=>"success",
+        :status=>'success',
         :currency_id=>currency.id}]
     end
 
@@ -297,29 +297,29 @@ describe Bitcoin::Blockchain do
 
     context 'multiple currencies' do
       let(:expected_transactions) do
-        [{:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+        [{:hash=>'1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
           :txout=>0,
-          :to_address=>"mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL",
+          :to_address=>'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
           :amount=>0.325e0,
-          :status=>"success",
+          :status=>'success',
           :currency_id=>currency1.id},
-         {:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+         {:hash=>'1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
           :txout=>1,
-          :to_address=>"mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA",
+          :to_address=>'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
           :amount=>0.1964466932e2,
-          :status=>"success",
+          :status=>'success',
           :currency_id=>currency1.id},
-         {:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+         {:hash=>'1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
           :txout=>0,
-          :to_address=>"mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL",
+          :to_address=>'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
           :amount=>0.325e0,
-          :status=>"success",
+          :status=>'success',
           :currency_id=>currency2.id},
-         {:hash=>"1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22",
+         {:hash=>'1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
           :txout=>1,
-          :to_address=>"mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA",
+          :to_address=>'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
           :amount=>0.1964466932e2,
-          :status=>"success",
+          :status=>'success',
           :currency_id=>currency2.id}]
       end
 
@@ -346,24 +346,24 @@ describe Bitcoin::Blockchain do
       let(:tx_file_name) { '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0.json' }
 
       let(:expected_transactions) do
-        [{:hash=>"1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0",
+        [{:hash=>'1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
           :txout=>0,
-          :to_address=>"2N5WyM3QT1Kb6fvkSZj3Xvcx2at7Ydm5VmL",
+          :to_address=>'2N5WyM3QT1Kb6fvkSZj3Xvcx2at7Ydm5VmL',
           :amount=>0.1e0,
-          :status=>"success",
-          :currency_id=>"btc"},
-         {:hash=>"1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0",
+          :status=>'success',
+          :currency_id=>'btc'},
+         {:hash=>'1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
           :txout=>1,
-          :to_address=>"2MzDFuDK9ZEEiRsuCDFkPdeHQLGvwbC9ufG",
+          :to_address=>'2MzDFuDK9ZEEiRsuCDFkPdeHQLGvwbC9ufG',
           :amount=>0.2e0,
-          :status=>"success",
-          :currency_id=>"btc"},
-         {:hash=>"1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0",
+          :status=>'success',
+          :currency_id=>'btc'},
+         {:hash=>'1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
           :txout=>2,
-          :to_address=>"2MuvCKKi1MzGtvZqvcbqn5twjA2v5XLaTWe",
+          :to_address=>'2MuvCKKi1MzGtvZqvcbqn5twjA2v5XLaTWe',
           :amount=>0.11749604e0,
-          :status=>"success",
-          :currency_id=>"btc"}]
+          :status=>'success',
+          :currency_id=>'btc'}]
       end
 
       it 'builds formatted transactions for each vout' do
@@ -389,21 +389,21 @@ describe Bitcoin::Blockchain do
       [
         [
           [
-            "mh2e7YHio7fTjLXHZ3KRXDfU52RbwQbhtK",
+            'mh2e7YHio7fTjLXHZ3KRXDfU52RbwQbhtK',
             0,
-            ""
+            ''
           ]
         ],
         [
           [
-            "mkuYucVhRQDiSHszbZ9M7d7vygKymyZ549",
+            'mkuYucVhRQDiSHszbZ9M7d7vygKymyZ549',
             0.14458097,
-            "my_imported_address_from_electrum"
+            'my_imported_address_from_electrum'
           ],
           [
-            "mpD544rTPbRNDr9yzK9MTGS4ckfVxUNY42",
+            'mpD544rTPbRNDr9yzK9MTGS4ckfVxUNY42',
             0.24997197,
-            "imported_address_from_bitgo"
+            'imported_address_from_bitgo'
           ]
         ]
       ]

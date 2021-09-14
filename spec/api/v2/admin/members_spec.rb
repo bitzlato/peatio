@@ -12,7 +12,7 @@ describe API::V2::Admin::Members, type: :request do
     [
       create(:member, role: 'admin', state: 'pending'),
       create(:member, role: 'admin', state: 'active'),
-      create(:member, group: 'any'),
+      create(:member, group: 'any')
     ]
   end
 
@@ -109,7 +109,7 @@ describe API::V2::Admin::Members, type: :request do
 
 
       it 'returns user entities' do
-        api_get "/api/v2/admin/members/UID1234", token: token
+        api_get '/api/v2/admin/members/UID1234', token: token
         expect(response.code).to eq '404'
 
         expect(response).to include_api_error('record.not_found')
@@ -181,7 +181,7 @@ describe API::V2::Admin::Members, type: :request do
     end
 
     it 'returns status 404 and error' do
-      api_put "/api/v2/admin/members/U1234", token: token, params: { group: 'vip-2' }
+      api_put '/api/v2/admin/members/U1234', token: token, params: { group: 'vip-2' }
       expect(response).to have_http_status(404)
       expect(response).to include_api_error('record.not_found')
     end

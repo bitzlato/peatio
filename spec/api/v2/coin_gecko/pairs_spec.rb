@@ -11,9 +11,9 @@ describe API::V2::CoinGecko::Pairs, type: :request do
 
     let!(:expected_response) {
       {
-          "ticker_id" => market.underscore_name,
-          "base"      => market[:base_unit].upcase,
-          "target"    => market[:quote_unit].upcase
+          'ticker_id' => market.underscore_name,
+          'base'      => market[:base_unit].upcase,
+          'target'    => market[:quote_unit].upcase
       }
     }
 

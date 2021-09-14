@@ -29,7 +29,7 @@ module Workers
 
               if @blockchain.reload.height + @blockchain.min_confirmations >= bc_service.latest_block_number
                 Rails.logger.info { "Skip synchronization. No new blocks detected, height: #{@blockchain.height}, latest_block: #{bc_service.latest_block_number}." }
-                Rails.logger.info { "Sleeping for 10 seconds" }
+                Rails.logger.info { 'Sleeping for 10 seconds' }
                 sleep(10)
                 next
               end
@@ -92,7 +92,7 @@ module Workers
               end
             end
 
-            logger.info { "Current runners timestamps:" }
+            logger.info { 'Current runners timestamps:' }
             logger.info do
               @runner_pool.transform_values(&:ts)
             end

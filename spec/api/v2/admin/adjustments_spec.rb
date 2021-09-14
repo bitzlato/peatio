@@ -317,7 +317,7 @@ describe API::V2::Admin::Adjustments, type: :request do
     end
 
     context 'adjustment without member' do
-      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-402-") }
+      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-402-') }
 
       it 'should accept adjustment' do
         adjustment.update(amount: -10000000.0)

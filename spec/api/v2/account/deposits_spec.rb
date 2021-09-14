@@ -211,7 +211,7 @@ describe API::V2::Account::Deposits, type: :request do
 
     context 'failed' do
       it 'validates currency' do
-        api_get "/api/v2/account/deposit_address/dildocoin", token: token
+        api_get '/api/v2/account/deposit_address/dildocoin', token: token
         expect(response).to have_http_status 422
         expect(response).to include_api_error('account.currency.doesnt_exist')
       end

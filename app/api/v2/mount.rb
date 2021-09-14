@@ -76,9 +76,9 @@ module API
                                 ],
                                 security_definitions: {
                                   Bearer: {
-                                    type: "apiKey",
-                                    name: "JWT",
-                                    in:   "header"
+                                    type: 'apiKey',
+                                    name: 'JWT',
+                                    in:   'header'
                                   }
                                 }
 

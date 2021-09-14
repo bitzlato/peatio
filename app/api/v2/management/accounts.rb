@@ -32,7 +32,7 @@ module API
         end
 
         post '/accounts/balances' do
-          accounts = ::Account.where("currency_id = ? AND (balance > 0 OR locked > 0)", params[:currency])
+          accounts = ::Account.where('currency_id = ? AND (balance > 0 OR locked > 0)', params[:currency])
           accounts
             .page(params[:page])
             .per(params[:limit])

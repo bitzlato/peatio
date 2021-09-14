@@ -288,7 +288,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
             let(:address) { Faker::Blockchain::Bitcoin.address }
 
             before do
-              beneficiary_data[:data][:address] = " " + address + " "
+              beneficiary_data[:data][:address] = ' ' + address + ' '
             end
             it do
               request

@@ -161,7 +161,10 @@ describe API::V2::Account::Withdraws, type: :request do
   end
 
   describe 'create withdraw' do
-    let(:currency) { Currency.visible.sample; Currency.find(:usd) }
+    let(:currency) {
+      Currency.visible.sample
+      Currency.find(:usd)
+    }
     let(:amount) { 0.15 }
 
     let(:beneficiary) do

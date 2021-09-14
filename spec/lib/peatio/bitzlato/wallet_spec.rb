@@ -13,37 +13,37 @@ describe Bitzlato::Wallet do
       let(:response) do
           [
             {
-              publicName: "dapi",
+              publicName: 'dapi',
               links: nil,
               amount: 0.21,
-              cryptocurrency: "BTC",
-              type: "auto",
-              status: "done",
+              cryptocurrency: 'BTC',
+              type: 'auto',
+              status: 'done',
               date: 1616396531426
             },
             {
-              publicName: "dapi",
+              publicName: 'dapi',
               links: nil,
               amount: 0.2,
-              cryptocurrency: "BTC",
-              type: "auto",
-              status: "done",
+              cryptocurrency: 'BTC',
+              type: 'auto',
+              status: 'done',
               date: 1616396505639
             },
             {
-              publicName: "dapi",
+              publicName: 'dapi',
               links: nil,
               amount: 0.19,
-              cryptocurrency: "BTC",
-              type: "auto",
-              status: "done",
+              cryptocurrency: 'BTC',
+              type: 'auto',
+              status: 'done',
               date: 1616396365270
             }
           ]
       end
 
       it do
-        stub_request(:get, "http://127.0.0.1:8000/api/gate/v1/payments/list/")
+        stub_request(:get, 'http://127.0.0.1:8000/api/gate/v1/payments/list/')
           .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
         payments = wallet.send :poll_payments
         expect(payments.count).to eq 3
@@ -57,58 +57,58 @@ describe Bitzlato::Wallet do
           total: 2,
           data: [
             {
-              deepLinkCode: "c_c8e8f34d2fff9f5dbc222939feeefbe5",
+              deepLinkCode: 'c_c8e8f34d2fff9f5dbc222939feeefbe5',
               currency: {
-                code: "USD",
-                amount: "5385"
+                code: 'USD',
+                amount: '5385'
               },
               cryptocurrency: {
-                code: "BTC",
-                amount: "1"
+                code: 'BTC',
+                amount: '1'
               },
               createdAt: 1616127762606,
               links: [
                 {
-                  type: "telegram bot @BTC_STAGE_BOT",
-                  url: "https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                  type: 'telegram bot @BTC_STAGE_BOT',
+                  url: 'https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5'
                 },
                 {
-                  type: "web exchange",
-                  url: "https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                  type: 'web exchange',
+                  url: 'https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5'
                 }
               ],
-              status: "none",
-              cashedBy: "EasySammieFrey"
+              status: 'none',
+              cashedBy: 'EasySammieFrey'
             },
             {
-              deepLinkCode: "c_c8e8f34d2fff9f5dbc222939feeefbe5",
+              deepLinkCode: 'c_c8e8f34d2fff9f5dbc222939feeefbe5',
               currency: {
-                code: "USD",
-                amount: "5385"
+                code: 'USD',
+                amount: '5385'
               },
               cryptocurrency: {
-                code: "BTC",
-                amount: "0.0931216"
+                code: 'BTC',
+                amount: '0.0931216'
               },
               createdAt: 1616127762606,
               links: [
                 {
-                  type: "telegram bot @BTC_STAGE_BOT",
-                  url: "https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                  type: 'telegram bot @BTC_STAGE_BOT',
+                  url: 'https://telegram.me/BTC_STAGE_BOT?start=c_c8e8f34d2fff9f5dbc222939feeefbe5'
                 },
                 {
-                  type: "web exchange",
-                  url: "https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5"
+                  type: 'web exchange',
+                  url: 'https://s-www.lgk.one/p2p/?start=c_c8e8f34d2fff9f5dbc222939feeefbe5'
                 }
               ],
-              status: "cashed",
-              cashedBy: "EasySammieFrey"
-            },
+              status: 'cashed',
+              cashedBy: 'EasySammieFrey'
+            }
           ] }
       end
 
       it do
-        stub_request(:get, "http://127.0.0.1:8000/api/p2p/vouchers/")
+        stub_request(:get, 'http://127.0.0.1:8000/api/p2p/vouchers/')
           .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
         vouchers = wallet.send :poll_vouchers
         expect(vouchers.count).to eq 2
@@ -157,7 +157,7 @@ describe Bitzlato::Wallet do
         let(:response) { { paymentId: 12 }}
         it 'show create withdrawal transaction' do
           stub_request(:post, uri + '/api/gate/v1/payments/create')
-            .with( body: "{\"clientProvidedId\":12,\"client\":1,\"cryptocurrency\":\"BTC\",\"amount\":123,\"payedBefore\":true}" )
+            .with( body: '{"clientProvidedId":12,"client":1,"cryptocurrency":"BTC","amount":123,"payedBefore":true}' )
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
           transaction = wallet.create_payment!(key: 12, to_address: 1, cryptocurrency: 'BTC', amount: 123)
@@ -170,23 +170,23 @@ describe Bitzlato::Wallet do
       context :create_voucher! do
         let(:response) do
           {
-            "deepLinkCode"=>"someHash",
-            "currency"=>{"code"=>"USD", "amount"=>"6965"},
-            "cryptocurrency"=>{"code"=>"BTC", "amount"=>"0.12"},
-            "createdAt"=>1616075809783,
-            "links"=>[
-              {"type"=>"telegram bot @BTC_STAGE_BOT", "url"=>"https://telegram.me/BTC_STAGE_BOT?start=someHash"},
-              {"type"=>"web exchange", "url"=>"https://s-www.lgk.one/p2p/?start=someHash"}
+            'deepLinkCode'=>'someHash',
+            'currency'=>{'code'=>'USD', 'amount'=>'6965'},
+            'cryptocurrency'=>{'code'=>'BTC', 'amount'=>'0.12'},
+            'createdAt'=>1616075809783,
+            'links'=>[
+              {'type'=>'telegram bot @BTC_STAGE_BOT', 'url'=>'https://telegram.me/BTC_STAGE_BOT?start=someHash'},
+              {'type'=>'web exchange', 'url'=>'https://s-www.lgk.one/p2p/?start=someHash'}
             ],
-            "status"=>"active",
-            "cashedBy"=>nil,
-            "comment"=>nil
+            'status'=>'active',
+            'cashedBy'=>nil,
+            'comment'=>nil
           }
         end
 
         it 'create voucher' do
           stub_request(:post, uri + '/api/p2p/vouchers/')
-            .with(body: {cryptocurrency:"BTC",amount:123,method:"crypto", currency: 'USD'}.to_json)
+            .with(body: {cryptocurrency:'BTC',amount:123,method:'crypto', currency: 'USD'}.to_json)
             .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
 
@@ -205,21 +205,21 @@ describe Bitzlato::Wallet do
     context :create_invoice! do
       let(:response) do
         {
-          "id"=>21,
-          "cryptocurrency"=>"BTC",
-          "amount"=>"1.1",
-          "comment"=>"gift from drew",
-          "link"=>{"telegram"=>"https://t.me/BTC_STAGE_BOT?start=b_9ac6b97e09ecbbfc0d365421f6b98a33", "web"=>"https://s-www.lgk.one/p2p/?start=b_9ac6b97e09ecbbfc0d365421f6b98a33"},
-          "createdAt"=>1615444044115,
-          "expiryAt"=>1615530444115,
-          "completedAt"=>nil,
-          "status"=>"active"
+          'id'=>21,
+          'cryptocurrency'=>'BTC',
+          'amount'=>'1.1',
+          'comment'=>'gift from drew',
+          'link'=>{'telegram'=>'https://t.me/BTC_STAGE_BOT?start=b_9ac6b97e09ecbbfc0d365421f6b98a33', 'web'=>'https://s-www.lgk.one/p2p/?start=b_9ac6b97e09ecbbfc0d365421f6b98a33'},
+          'createdAt'=>1615444044115,
+          'expiryAt'=>1615530444115,
+          'completedAt'=>nil,
+          'status'=>'active'
         }
       end
 
       it 'should create an invoice' do
         stub_request(:post, uri + '/api/gate/v1/invoices/')
-          .with(body: {cryptocurrency:"BTC",amount:123,comment:"Exchange service deposit for account uid12312"}.to_json)
+          .with(body: {cryptocurrency:'BTC',amount:123,comment:'Exchange service deposit for account uid12312'}.to_json)
           .to_return(body: response.to_json, headers: { 'Content-Type': 'application/json' })
 
         result = wallet.create_invoice!(comment: 'Exchange service deposit for account uid12312', amount: 123, currency_id: 'BTC')

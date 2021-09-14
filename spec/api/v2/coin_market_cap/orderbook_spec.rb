@@ -9,12 +9,12 @@ describe API::V2::CoinMarketCap::Orderbook, type: :request do
       create_list(:order_ask, 5, :btc_usd, price: 3)
     end
 
-    let(:asks) { [["1.0", "5.0"], ["3.0", "5.0"]] }
-    let(:bids) { [["2.0", "5.0"], ["1.0", "5.0"]] }
+    let(:asks) { [['1.0', '5.0'], ['3.0', '5.0']] }
+    let(:bids) { [['2.0', '5.0'], ['1.0', '5.0']] }
 
     context 'valid market param' do
       it 'sorts asks and bids from highest to lowest' do
-        get "/api/v2/coinmarketcap/orderbook/BTC_USD"
+        get '/api/v2/coinmarketcap/orderbook/BTC_USD'
         expect(response).to be_successful
         result = JSON.parse(response.body)
         expect(result['asks'].size).to eq 2
@@ -89,7 +89,7 @@ describe API::V2::CoinMarketCap::Orderbook, type: :request do
 
     context 'invalid market param' do
       it 'validates market param' do
-        api_get "/api/v2/coinmarketcap/orderbook/usdusd"
+        api_get '/api/v2/coinmarketcap/orderbook/usdusd'
         expect(response).to have_http_status 404
         expect(response).to include_api_error('record.not_found')
       end

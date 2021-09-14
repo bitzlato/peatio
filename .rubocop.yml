@@ -23,3 +23,6 @@ Rails/AddColumnIndex:
 Rails/SquishedSQLHeredocs:
   Exclude:
     - 'db/migrate/*'
+
+Style/StringConcatenation:
+  Enabled: false

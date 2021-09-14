@@ -98,7 +98,7 @@ class BitzlatoGateway < AbstractGateway
         key: meta.fetch(:withdraw_tid), # It is also posible to use nonce
         to_address: to_address,
         cryptocurrency: amount.currency.id.upcase,
-        amount: amount.to_d,
+        amount: amount.to_d
     ).dup.tap do |tx|
       tx.currency_id = amount.currency.id
       tx.blockchain_id = blockchain.id
@@ -112,7 +112,7 @@ class BitzlatoGateway < AbstractGateway
       invoice = client.create_invoice!(
         amount: deposit.amount,
         comment: I18n.t('deposit_comment', account_id: deposit.member.uid, deposit_id: deposit.id, email: deposit.member.email),
-        currency_id: deposit.currency_id.to_s.upcase,
+        currency_id: deposit.currency_id.to_s.upcase
       )
       deposit.update!(
         data: invoice.slice(:links, :expires_at),

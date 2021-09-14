@@ -807,14 +807,14 @@ describe Jobs::Cron::StatsMemberPnl do
       expect(Jobs::Cron::StatsMemberPnl.parse_conversion_paths(nil)).to eq({})
       expect(Jobs::Cron::StatsMemberPnl.parse_conversion_paths('')).to eq({})
       expect(Jobs::Cron::StatsMemberPnl.parse_conversion_paths('usdt/abc:usdt/usd,usd/abc')).to eq(
-        'usdt/abc' => [['usdt', 'usd', false], ['usd', 'abc', false]],
+        'usdt/abc' => [['usdt', 'usd', false], ['usd', 'abc', false]]
       )
       expect(Jobs::Cron::StatsMemberPnl.parse_conversion_paths('usdt/abc:usdt/usd,usd/abc;usdt/def:usdt/usd,def/abc,abc/usd')).to eq(
         'usdt/abc' => [['usdt', 'usd', false], ['usd', 'abc', false]],
         'usdt/def' => [['usdt', 'usd', false], ['def', 'abc', false], ['abc', 'usd', false]]
       )
       expect(Jobs::Cron::StatsMemberPnl.parse_conversion_paths('usdt/abc:_usd/usdt,usd/abc')).to eq(
-        'usdt/abc' => [['usd', 'usdt', true], ['usd', 'abc', false]],
+        'usdt/abc' => [['usd', 'usdt', true], ['usd', 'abc', false]]
       )
       expect { Jobs::Cron::StatsMemberPnl.parse_conversion_paths('usdt/abc,abc/usd') }.to raise_error(StandardError)
       expect { Jobs::Cron::StatsMemberPnl.parse_conversion_paths(':usdt/abc,abc/usd') }.to raise_error(StandardError)

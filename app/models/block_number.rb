@@ -1,5 +1,5 @@
 class BlockNumber < ApplicationRecord
-  upsert_keys [:blockchain_id, :number]
+  upsert_keys %i[blockchain_id number]
   belongs_to :blockchain
 
   STATUSES = %w(pending processing success error)

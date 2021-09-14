@@ -71,7 +71,7 @@ module API
           return unless params.key?(name)
           return if params[name].to_s.to_i > 0
 
-          fail Grape::Exceptions::Validation,
+          raise Grape::Exceptions::Validation,
               params:  [@scope.full_name(name)],
               message: "#{name} must be greater than zero."
         end
@@ -85,7 +85,7 @@ module API
           currency = Currency.find_by(id: params[:currency])
           return if currency && currency.blockchain.gateway_class.supports_cash_addr_format?
 
-          fail Grape::Exceptions::Validation,
+          raise Grape::Exceptions::Validation,
               params:  [@scope.full_name('currency')],
               message: "#{@option.fetch(:prefix)}.#{REASON}"
         end

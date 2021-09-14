@@ -170,7 +170,7 @@ module API
             present payment_address, with: API::V2::Entities::PaymentAddress, address_format: params[:address_format]
             status 201
           else
-            body errors: ["admin.deposit.deposit_disabled"]
+            body errors: ['admin.deposit.deposit_disabled']
             status 422
           end
         end

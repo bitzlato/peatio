@@ -56,13 +56,13 @@ module API
           optional :time_from,
                    type: { value: Integer, message: 'market.order.non_integer_time_from' },
                    allow_blank: { value: false, message: 'market.order.empty_time_from' },
-                   desc: "An integer represents the seconds elapsed since Unix epoch."\
-                         "If set, only orders created after the time will be returned."
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'\
+                         'If set, only orders created after the time will be returned.'
           optional :time_to,
                    type: { value: Integer, message: 'market.order.non_integer_time_to' },
                    allow_blank: { value: false, message: 'market.order.empty_time_to' },
-                   desc: "An integer represents the seconds elapsed since Unix epoch."\
-                         "If set, only orders created before the time will be returned."
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'\
+                         'If set, only orders created before the time will be returned.'
         end
         get '/orders' do
           user_authorize! :read, ::Order

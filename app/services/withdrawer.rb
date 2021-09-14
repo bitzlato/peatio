@@ -74,7 +74,7 @@ class Withdrawer
       withdraw.
         blockchain.
         withdraw_wallet_for_currency(withdraw.currency) ||
-        raise(NoHotWallet, "No hot withdraw wallet for withdraw", withdraw_id:  withdraw.id)
+        raise(NoHotWallet, 'No hot withdraw wallet for withdraw', withdraw_id:  withdraw.id)
 
     withdraw.blockchain.gateway.
       create_transaction!(

@@ -161,7 +161,7 @@ class Order < ApplicationRecord
 
         all.each do |order|
           data = attributes[0...-2].map { |attr| order.send(attr) }
-          data += attributes[-2..-1].map { |attr| order.send(attr).iso8601 }
+          data += attributes[-2..].map { |attr| order.send(attr).iso8601 }
           csv << data
         end
       end

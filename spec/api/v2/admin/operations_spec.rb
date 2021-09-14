@@ -33,7 +33,7 @@ describe API::V2::Admin::Operations, type: :request do
         [
           create(:asset, currency: Currency.find(:btc), debit: 80.0),
           create(:asset, currency: Currency.find(:btc), debit: 120.0),
-          create(:asset, currency: Currency.find(:usd), debit: 220.0),
+          create(:asset, currency: Currency.find(:usd), debit: 220.0)
         ]
       end
 
@@ -67,7 +67,7 @@ describe API::V2::Admin::Operations, type: :request do
         [
           create(:expense, created_at: 5.days.ago, reference_type: 'Deposit'),
           create(:expense, created_at: 2.days.ago, reference_type: 'Trade'),
-          create(:expense, created_at: 2.days.ago, reference_type: 'Deposit'),
+          create(:expense, created_at: 2.days.ago, reference_type: 'Deposit')
         ]
       end
 
@@ -109,7 +109,7 @@ describe API::V2::Admin::Operations, type: :request do
         [
           create(:revenue, code: 301, currency: Currency.find(:usd), reference_id: 1),
           create(:revenue, code: 302, currency: Currency.find(:btc), reference_id: 1),
-          create(:revenue, code: 302, currency: Currency.find(:btc), reference_id: 2),
+          create(:revenue, code: 302, currency: Currency.find(:btc), reference_id: 2)
         ]
       end
 
@@ -143,7 +143,7 @@ describe API::V2::Admin::Operations, type: :request do
         [
           create(:liability, member: member, credit: 110.0),
           create(:liability, member: member, credit: 190.0),
-          create(:liability, member: admin, credit: 80.0),
+          create(:liability, member: admin, credit: 80.0)
         ]
       end
 

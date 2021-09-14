@@ -41,7 +41,7 @@ module API
                              .with_daterange
                              .merge(g: [
                                { maker_id_eq: member&.id, taker_id_eq: member&.id, m: 'or' },
-                               { maker_order_id_eq: params[:order_id], taker_order_id_eq: params[:order_id], m: 'or' },
+                               { maker_order_id_eq: params[:order_id], taker_order_id_eq: params[:order_id], m: 'or' }
                              ]).build
 
           search = Trade.ransack(ransack_params)

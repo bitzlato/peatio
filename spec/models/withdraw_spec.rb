@@ -433,7 +433,7 @@ describe Withdraw do
     before { Currency.any_instance.expects(:withdraw_fee).once.returns(200) }
     it 'fails validation' do
       expect(withdraw.save).to eq false
-      expect(withdraw.errors[:amount]).to match(["must be greater than 0.0"])
+      expect(withdraw.errors[:amount]).to match(['must be greater than 0.0'])
     end
   end
 
@@ -449,7 +449,7 @@ describe Withdraw do
     record1 = create(:btc_withdraw, :with_deposit_liability)
     record2 = build(:btc_withdraw, tid: record1.tid, member: record1.member)
     record2.save
-    expect(record2.errors[:tid]).to match(["has already been taken"])
+    expect(record2.errors[:tid]).to match(['has already been taken'])
   end
 
   it 'uppercases TID' do
@@ -523,7 +523,7 @@ describe Withdraw do
 
     it do
       subject.save
-      expect(subject.errors[:sum]).to match(["must be greater than or equal to 0.5"])
+      expect(subject.errors[:sum]).to match(['must be greater than or equal to 0.5'])
     end
 
   end

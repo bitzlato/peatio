@@ -108,8 +108,8 @@ module API
             error!({ errors: ['management.beneficiary.invalid_state_for_withdrawal'] }, 422)
           end
 
-          if params[:tid].present?
-            error!({ errors: ['TID already exist'] }, 422) if Withdraw.where(tid: params[:tid]).present?
+          if params[:tid].present? && Withdraw.where(tid: params[:tid]).present?
+            error!({ errors: ['TID already exist'] }, 422)
           end
 
           declared_params = declared(params, include_missing: false).slice(:tid, :rid, :note, :transfer_type).merge(

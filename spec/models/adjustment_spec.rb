@@ -102,7 +102,7 @@ describe Adjustment do
     end
 
     context 'asset and revenue' do
-      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-302", amount: 1) }
+      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-302', amount: 1) }
 
       it do
         expect(subject.first.is_a?(Operations::Asset)).to be_truthy
@@ -112,7 +112,7 @@ describe Adjustment do
       end
 
       context 'negative amount' do
-        let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-302", amount: -1) }
+        let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-302', amount: -1) }
 
         it do
           expect(subject.first.debit).to eq(1)
@@ -122,7 +122,7 @@ describe Adjustment do
     end
 
     context 'asset and expense' do
-      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-402", amount: 1) }
+      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-402', amount: 1) }
 
       it do
         expect(subject.first.is_a?(Operations::Asset)).to be_truthy
@@ -132,7 +132,7 @@ describe Adjustment do
       end
 
       context 'negative amount' do
-        let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-402", amount: -1) }
+        let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-402', amount: -1) }
 
         it do
           expect(subject.first.debit).to eq(1)

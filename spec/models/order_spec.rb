@@ -38,7 +38,7 @@ describe Order, 'validations', type: :model do
   context 'attr_readonly' do
     let!(:order) { create(:order_bid, :btc_usd) }
 
-    it "does not allow updating readonly attributes" do
+    it 'does not allow updating readonly attributes' do
       expect { order.update_attribute(:member_id, 1) }.to \
         raise_error(ActiveRecord::ActiveRecordError, 'member_id is marked as readonly')
 

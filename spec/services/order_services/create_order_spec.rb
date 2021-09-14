@@ -73,7 +73,7 @@ describe OrderServices::CreateOrder do
     context 'wrong side value' do
       let(:wrong_side_params) {
         default_params.merge(
-          side: 'foobar',
+          side: 'foobar'
         )
       }
 
@@ -120,7 +120,7 @@ describe OrderServices::CreateOrder do
         let(:limit_price_params) {
           default_params.merge(
             ord_type: 'limit',
-            price: '10'.to_d,
+            price: '10'.to_d
           )
         }
 
@@ -153,7 +153,7 @@ describe OrderServices::CreateOrder do
         let(:limit_price_params) {
           default_params.merge(
             ord_type: 'limit',
-            price: '15'.to_d,
+            price: '15'.to_d
           )
         }
 

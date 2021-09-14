@@ -173,12 +173,10 @@ module API
             next
           end
 
-          if transaction.options.present? && transaction.options[:remote_id].present?
-            if withdraw.txid.blank? && transaction.hash.present?
-              withdraw.txid = transaction.hash
-              withdraw.save!
-              withdraw.dispatch!
-            end
+          if transaction.options.present? && transaction.options[:remote_id].present? && (withdraw.txid.blank? && transaction.hash.present?)
+            withdraw.txid = transaction.hash
+            withdraw.save!
+            withdraw.dispatch!
           end
 
           Rails.logger.info { "Withdraw transaction detected: #{transaction.inspect}" }

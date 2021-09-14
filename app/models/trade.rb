@@ -53,7 +53,7 @@ class Trade < ApplicationRecord
 
         all.each do |trade|
           data = attributes[0...-2].map { |attr| trade.send(attr) }
-          data += attributes[-2..-1].map { |attr| trade.send(attr).iso8601 }
+          data += attributes[-2..].map { |attr| trade.send(attr).iso8601 }
           csv << data
         end
       end
@@ -138,9 +138,9 @@ class Trade < ApplicationRecord
   end
 
   def trigger_event
-    ::AMQP::Queue.enqueue_event("private", maker.uid, "trade", for_notify(maker))
-    ::AMQP::Queue.enqueue_event("private", taker.uid, "trade", for_notify(taker))
-    ::AMQP::Queue.enqueue_event("public", market.symbol, "trades", {trades: [for_global]})
+    ::AMQP::Queue.enqueue_event('private', maker.uid, 'trade', for_notify(maker))
+    ::AMQP::Queue.enqueue_event('private', taker.uid, 'trade', for_notify(taker))
+    ::AMQP::Queue.enqueue_event('public', market.symbol, 'trades', {trades: [for_global]})
   end
 
   def for_notify(member = nil)
@@ -192,7 +192,7 @@ class Trade < ApplicationRecord
   end
 
   def write_to_influx
-    Peatio::InfluxDB.client(keyshard: market_id).write_point(self.class.table_name, influx_data, "ns")
+    Peatio::InfluxDB.client(keyshard: market_id).write_point(self.class.table_name, influx_data, 'ns')
   end
 
   private
@@ -207,7 +207,7 @@ class Trade < ApplicationRecord
       currency:  sell_order.outcome_currency,
       reference: self,
       kind:      :locked,
-      member_id: sell_order.member_id,
+      member_id: sell_order.member_id
     )
     # Debit locked fiat/crypto Liability account for member who created bid.
     Operations::Liability.debit!(
@@ -215,7 +215,7 @@ class Trade < ApplicationRecord
       currency:  buy_order.outcome_currency,
       reference: self,
       kind:      :locked,
-      member_id: buy_order.member_id,
+      member_id: buy_order.member_id
     )
   end
 

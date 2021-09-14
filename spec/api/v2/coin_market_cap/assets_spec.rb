@@ -8,8 +8,8 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
       context 'with unified id' do
         before do
           Currency.coins.each do |currency|
-            stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                               "listing_status=active&"\
+            stub_request(:get, 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&'\
+                               'listing_status=active&'\
                                "symbol=#{currency.id}")
               .to_return(body:
                 {
@@ -46,8 +46,8 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
       context 'without unified id' do
         before do
           Currency.coins.each do |currency|
-            stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                               "listing_status=active&"\
+            stub_request(:get, 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&'\
+                               'listing_status=active&'\
                                "symbol=#{currency.id}")
               .to_return(status: 400, body:
                 {
@@ -78,8 +78,8 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
         context 'with 500 error from Faraday' do
           before do
             Currency.coins.each do |currency|
-              stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                                 "listing_status=active&"\
+              stub_request(:get, 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&'\
+                                 'listing_status=active&'\
                                  "symbol=#{currency.id}")
                   .to_raise(Faraday::Error)
             end

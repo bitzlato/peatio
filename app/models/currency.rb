@@ -167,7 +167,7 @@ class Currency < ApplicationRecord
   end
 
   def wipe_cache
-    Rails.cache.delete_matched("currencies*")
+    Rails.cache.delete_matched('currencies*')
   end
 
   def initialize_defaults

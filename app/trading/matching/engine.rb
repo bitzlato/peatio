@@ -130,10 +130,10 @@ module Matching
 
     def publish_snapshot
       @snapshot_time = Time.now
-      ::AMQP::Queue.enqueue_event("public", @market.symbol, "ob-snap", {
-        "asks" => ask_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}[0..300],
-        "bids" => bid_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}.reverse[0..300],
-        "sequence" => @sequence_number
+      ::AMQP::Queue.enqueue_event('public', @market.symbol, 'ob-snap', {
+        'asks' => ask_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}[0..300],
+        'bids' => bid_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}.reverse[0..300],
+        'sequence' => @sequence_number
       })
     end
 
@@ -150,9 +150,9 @@ module Matching
       end
       @increment_count += 1
       @sequence_number += 1
-      ::AMQP::Queue.enqueue_event("public", market, "ob-inc", {
+      ::AMQP::Queue.enqueue_event('public', market, 'ob-inc', {
         "#{side}s" => [price.to_s, amount.to_s],
-        "sequence" => @sequence_number
+        'sequence' => @sequence_number
       })
     end
 

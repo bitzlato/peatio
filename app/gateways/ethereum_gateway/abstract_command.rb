@@ -11,7 +11,7 @@ class EthereumGateway
     attr_reader :client
 
     def initialize(client)
-      @client = client || raise("No gateway client")
+      @client = client || raise('No gateway client')
     end
 
     # ex calculate_gas_price
@@ -74,7 +74,7 @@ class EthereumGateway
         contract_address = log.fetch('address')
         next unless contract_addresses.nil? || contract_addresses.include?(contract_address)
 
-        to_address = normalize_address('0x' + log.fetch('topics').last[-40..-1])
+        to_address = normalize_address('0x' + log.fetch('topics').last[-40..])
 
         next unless follow_addresses.nil? || follow_addresses.include?(to_address) || follow_addresses.include?(from_address) ||
           (follow_txids.present? && follow_txids.include?(txid))
@@ -156,9 +156,9 @@ class EthereumGateway
     end
 
     def transaction_status(block_txn)
-      if block_txn.dig('status') == STATUS_SUCCESS
+      if block_txn['status'] == STATUS_SUCCESS
         Transaction::SUCCESS_STATUS
-      elsif block_txn.dig('status') == STATUS_FAILED
+      elsif block_txn['status'] == STATUS_FAILED
         Transaction::FAIL_STATUS
       else
         Transaction::PENDING_STATUS

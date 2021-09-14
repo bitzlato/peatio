@@ -173,7 +173,7 @@ class Market < ApplicationRecord
   end
 
   def wipe_cache
-    Rails.cache.delete_matched("markets*")
+    Rails.cache.delete_matched('markets*')
   end
 
   def name

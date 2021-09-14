@@ -62,7 +62,7 @@ describe Matching::OrderBook do
 
     it 'should remove market order' do
       subject.define_singleton_method(:legacy_add) do |order|
-        raise Matching::InvalidOrderError, "volume is zero" if order.volume <= 0.to_d
+        raise Matching::InvalidOrderError, 'volume is zero' if order.volume <= 0.to_d
 
         case order
         when Matching::LimitOrder
@@ -71,7 +71,7 @@ describe Matching::OrderBook do
         when Matching::MarketOrder
           @market_orders[order.id] = order
         else
-          raise ArgumentError, "Unknown order type"
+          raise ArgumentError, 'Unknown order type'
         end
       end
 

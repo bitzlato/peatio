@@ -156,7 +156,7 @@ class BlockchainService
       d.address=transaction.to_address
       d.money_amount=transaction.amount
       d.member=address.member
-      d.from_addresses=transaction.from_addresses.presence || raise("No transaction from_addresses")
+      d.from_addresses=transaction.from_addresses.presence || raise('No transaction from_addresses')
       d.block_number=transaction.block_number || raise("Transaction #{transaction} has no block_number")
     end
     deposit.with_lock do

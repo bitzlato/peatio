@@ -58,7 +58,7 @@ describe API::V2::Admin::Currencies, type: :request do
     end
 
     it 'returns ordered by position currencies' do
-      api_get "/api/v2/admin/currencies/", token: token
+      api_get '/api/v2/admin/currencies/', token: token
       expect(response).to be_successful
 
       result = JSON.parse(response.body)

@@ -124,8 +124,8 @@ class Wallet < ApplicationRecord
     end
 
     def uniq(array)
-      if ActiveRecord::Base.connection.adapter_name == "PostgreSQL"
-        array.select("DISTINCT ON (wallets.id) wallets.*")
+      if ActiveRecord::Base.connection.adapter_name == 'PostgreSQL'
+        array.select('DISTINCT ON (wallets.id) wallets.*')
       else
         array.distinct
       end

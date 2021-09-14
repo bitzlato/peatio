@@ -10,7 +10,7 @@ module API
           as: :id,
           documentation: {
             type: String,
-            desc: "Id has been renamed to symbol. This field will be deprecated soon."
+            desc: 'Id has been renamed to symbol. This field will be deprecated soon.'
           }
         )
 
@@ -19,9 +19,9 @@ module API
           documentation: {
             type: String,
             desc: "Unique market ticker symbol. It's always in the form of xxxyyy,"\
-                  "where xxx is the base currency code, yyy is the quote"\
+                  'where xxx is the base currency code, yyy is the quote'\
                   "currency code, e.g. 'btcusd'. All available markets can"\
-                  "be found at /api/v2/markets."
+                  'be found at /api/v2/markets.'
           }
         )
 
@@ -45,7 +45,7 @@ module API
           :base_unit,
           documentation: {
             type: String,
-            desc: "Market Base unit."
+            desc: 'Market Base unit.'
           }
         )
 
@@ -53,7 +53,7 @@ module API
           :quote_unit,
           documentation: {
             type: String,
-            desc: "Market Quote unit."
+            desc: 'Market Quote unit.'
           }
         )
 
@@ -61,7 +61,7 @@ module API
           :min_price,
           documentation: {
             type: BigDecimal,
-            desc: "Minimum order price."
+            desc: 'Minimum order price.'
           }
         )
 
@@ -69,7 +69,7 @@ module API
           :max_price,
           documentation: {
             type: BigDecimal,
-            desc: "Maximum order price."
+            desc: 'Maximum order price.'
           }
         )
 
@@ -77,7 +77,7 @@ module API
           :min_amount,
           documentation: {
             type: BigDecimal,
-            desc: "Minimum order amount."
+            desc: 'Minimum order amount.'
           }
         )
 
@@ -85,7 +85,7 @@ module API
           :amount_precision,
           documentation: {
             type: BigDecimal,
-            desc: "Precision for order amount."
+            desc: 'Precision for order amount.'
           }
         )
 
@@ -93,7 +93,7 @@ module API
           :price_precision,
           documentation: {
             type: BigDecimal,
-            desc: "Precision for order price."
+            desc: 'Precision for order price.'
           }
         )
 
@@ -101,7 +101,7 @@ module API
           :state,
           documentation: {
             type: String,
-            desc: "Market state defines if user can see/trade on current market."
+            desc: 'Market state defines if user can see/trade on current market.'
           }
         )
       end

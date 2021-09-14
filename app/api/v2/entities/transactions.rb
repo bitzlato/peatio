@@ -77,7 +77,7 @@ module API
           format_with: :iso8601,
           documentation: {
             type: String,
-            desc: "Transaction created time in iso8601 format."
+            desc: 'Transaction created time in iso8601 format.'
           }
         )
 
@@ -86,7 +86,7 @@ module API
           format_with: :iso8601,
           documentation: {
             type: String,
-            desc: "Transaction updated time in iso8601 format."
+            desc: 'Transaction updated time in iso8601 format.'
           }
         )
 

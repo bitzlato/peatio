@@ -4,7 +4,7 @@ module API
   module V2
     module CoinGecko
       class Orderbook < Grape::API
-        class OrderBook < Struct.new(:market, :asks, :bids); end
+        OrderBook = Struct.new(:market, :asks, :bids)
 
         desc 'Get depth or specified market'
         params do

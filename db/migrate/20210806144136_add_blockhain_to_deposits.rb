@@ -7,6 +7,6 @@ class AddBlockhainToDeposits < ActiveRecord::Migration[5.2]
     end
 
     change_column_null :deposits, :blockchain_id, false
-    add_index :deposits, [:blockchain_id, :txid], unique: true, where: 'txid is not null'
+    add_index :deposits, %i[blockchain_id txid], unique: true, where: 'txid is not null'
   end
 end

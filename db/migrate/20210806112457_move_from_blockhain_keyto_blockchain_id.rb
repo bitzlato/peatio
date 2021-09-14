@@ -15,6 +15,6 @@ class MoveFromBlockhainKeytoBlockchainId < ActiveRecord::Migration[5.2]
       change_column_null model.table_name, :blockchain_id, false
     end
 
-    add_index :whitelisted_smart_contracts, [:blockchain_id, :address], unique: true
+    add_index :whitelisted_smart_contracts, %i[blockchain_id address], unique: true
   end
 end

@@ -49,11 +49,11 @@ describe Currency do
     it 'validate parent_id value' do
       currency.parent_id = fiat_currency.id
       expect(currency.valid?).to be_falsey
-      expect(currency.errors[:parent_id]).to eq ["wrong fiat/crypto nesting"]
+      expect(currency.errors[:parent_id]).to eq ['wrong fiat/crypto nesting']
 
       currency.parent_id = trst_currency.id
       expect(currency.valid?).to be_falsey
-      expect(currency.errors[:parent_id]).to eq ["wrong parent currency"]
+      expect(currency.errors[:parent_id]).to eq ['wrong parent currency']
     end
   end
 
@@ -97,7 +97,7 @@ describe Currency do
   context 'serialization' do
     let!(:currency) { Currency.find(:ring) }
 
-    let(:options) { { "gas_price" => "standard", "erc20_contract_address" => "0x022e292b44b5a146f2e8ee36ff44d3dd863c915c", "gas_limit" => "100000" } }
+    let(:options) { { 'gas_price' => 'standard', 'erc20_contract_address' => '0x022e292b44b5a146f2e8ee36ff44d3dd863c915c', 'gas_limit' => '100000' } }
 
     it 'should serialize/deserialize options' do
       currency.update(options: options)

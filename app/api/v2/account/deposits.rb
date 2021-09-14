@@ -67,14 +67,14 @@ module API
                    type: { value: Integer, message: 'account.deposit.non_integer_limit' },
                    values: { value: 1..100, message: 'account.deposit.invalid_limit' },
                    default: 100,
-                   desc: "Number of deposits per page (defaults to 100, maximum is 100)."
+                   desc: 'Number of deposits per page (defaults to 100, maximum is 100).'
           optional :page,
                    type: { value: Integer, message: 'account.deposit.non_integer_page' },
                    values: { value: -> (p){ p.try(:positive?) }, message: 'account.deposit.non_positive_page'},
                    default: 1,
                    desc: 'Page number (defaults to 1).'
         end
-        get "/deposits" do
+        get '/deposits' do
           user_authorize! :read, ::Deposit
 
           currency = Currency.find(params[:currency]) if params[:currency].present?
@@ -95,9 +95,9 @@ module API
           requires :txid,
                    type: String,
                    allow_blank: false,
-                   desc: "Deposit transaction id"
+                   desc: 'Deposit transaction id'
         end
-        get "/deposits/:txid" do
+        get '/deposits/:txid' do
           user_authorize! :read, ::Deposit
 
           deposit = current_user.deposits.find_by!(txid: params[:txid])

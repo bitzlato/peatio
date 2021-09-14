@@ -51,7 +51,7 @@ module API
             :market_type,
             documentation: {
               type: String,
-              desc: "Market type."
+              desc: 'Market type.'
             }
           )
 

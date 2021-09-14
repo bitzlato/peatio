@@ -18,7 +18,7 @@ describe API::V2::Admin::Trades, type: :request do
         create(:trade, :btc_usd, price: 6.0, amount: 5.0, created_at: 5.days.ago, taker: member),
         create(:trade, :btc_usd, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
         create(:trade, :btc_eth, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
-        create(:trade, :btc_eth_qe, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
+        create(:trade, :btc_eth_qe, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member)
       ]
     end
 
@@ -121,7 +121,7 @@ describe API::V2::Admin::Trades, type: :request do
       context 'with market' do
         it 'validates market param' do
           api_get'/api/v2/admin/trades', token: token, params: { market: 'btcbtc' }
-          expect(response).to include_api_error "admin.market.doesnt_exist"
+          expect(response).to include_api_error 'admin.market.doesnt_exist'
         end
 
         it 'filters by spot market' do

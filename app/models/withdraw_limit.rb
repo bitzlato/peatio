@@ -64,7 +64,7 @@ class WithdrawLimit < ApplicationRecord
   end
 
   def wipe_cache
-    Rails.cache.delete_matched("withdraw_limits_fees*")
+    Rails.cache.delete_matched('withdraw_limits_fees*')
   end
 end
 

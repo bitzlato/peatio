@@ -47,7 +47,7 @@ describe API::V2::Admin::Markets, type: :request do
     end
 
     it 'returns ordered by position currencies' do
-      api_get "/api/v2/admin/markets/", token: token
+      api_get '/api/v2/admin/markets/', token: token
       expect(response).to be_successful
 
       result = JSON.parse(response.body)

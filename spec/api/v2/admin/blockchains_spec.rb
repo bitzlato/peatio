@@ -41,7 +41,7 @@ describe API::V2::Admin::Blockchains, type: :request do
   end
 
   describe 'GET /api/v2/admin/blockchains/:id/latest_block' do
-    let(:blockchain) { Blockchain.find_by(key: "eth-rinkeby") }
+    let(:blockchain) { Blockchain.find_by(key: 'eth-rinkeby') }
 
     it 'returns error in case of invalid id' do
       api_get "/api/v2/admin/blockchains/#{Blockchain.last.id + 42}/latest_block", token: token
@@ -58,7 +58,7 @@ describe API::V2::Admin::Blockchains, type: :request do
     end
 
     context 'get latest_block' do
-      let(:blockchain) { Blockchain.find_by(key: "eth-rinkeby") }
+      let(:blockchain) { Blockchain.find_by(key: 'eth-rinkeby') }
 
       around do |example|
         WebMock.disable_net_connect!
@@ -130,7 +130,7 @@ describe API::V2::Admin::Blockchains, type: :request do
     end
 
     it 'returns blockchains filtered by key' do
-      api_get '/api/v2/admin/blockchains', params: { key: "eth-kovan" }, token: token
+      api_get '/api/v2/admin/blockchains', params: { key: 'eth-kovan' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -140,7 +140,7 @@ describe API::V2::Admin::Blockchains, type: :request do
     end
 
     it 'returns error in case invalid blockchain key' do
-      api_get '/api/v2/admin/blockchains', params: { key: "inv" }, token: token
+      api_get '/api/v2/admin/blockchains', params: { key: 'inv' }, token: token
       expect(response.code).to eq '422'
       expect(response).to include_api_error('admin.blockchain.blockchain_key_doesnt_exist')
     end
@@ -156,29 +156,29 @@ describe API::V2::Admin::Blockchains, type: :request do
     end
 
     it 'returns error in case invalid blockchain client' do
-      api_get '/api/v2/admin/blockchains', params: { client: "inv" }, token: token
+      api_get '/api/v2/admin/blockchains', params: { client: 'inv' }, token: token
       expect(response.code).to eq '422'
       expect(response).to include_api_error('admin.blockchain.blockchain_client_doesnt_exist')
     end
 
     it 'returns blockchains filtered by status' do
-      api_get '/api/v2/admin/blockchains', params: { status: "active" }, token: token
+      api_get '/api/v2/admin/blockchains', params: { status: 'active' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
       expect(response.headers.fetch('Total')).to eq Blockchain.count.to_s
       expect(result.size).to eq Blockchain.count
-      expect(result.map { |r| r["status"]}).to all eq "active"
+      expect(result.map { |r| r['status']}).to all eq 'active'
     end
 
     it 'returns error in case invalid blockchain status' do
-      api_get '/api/v2/admin/blockchains', params: { status: "inv" }, token: token
+      api_get '/api/v2/admin/blockchains', params: { status: 'inv' }, token: token
       expect(response.code).to eq '422'
       expect(response).to include_api_error('admin.blockchain.blockchain_status_doesnt_exist')
     end
 
     it 'returns blockchains filtered by name' do
-      api_get '/api/v2/admin/blockchains', params: { name: "Ethereum Kovan" }, token: token
+      api_get '/api/v2/admin/blockchains', params: { name: 'Ethereum Kovan' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -188,13 +188,13 @@ describe API::V2::Admin::Blockchains, type: :request do
     end
 
     it 'returns error in case invalid blockchain name' do
-      api_get '/api/v2/admin/blockchains', params: { name: "inv" }, token: token
+      api_get '/api/v2/admin/blockchains', params: { name: 'inv' }, token: token
       expect(response.code).to eq '422'
       expect(response).to include_api_error('admin.blockchain.blockchain_name_doesnt_exist')
     end
 
     it 'return error in case of not permitted ability' do
-      api_get "/api/v2/admin/blockchains", token: level_3_member_token
+      api_get '/api/v2/admin/blockchains', token: level_3_member_token
       expect(response.code).to eq '403'
       expect(response).to include_api_error('admin.ability.not_permitted')
     end

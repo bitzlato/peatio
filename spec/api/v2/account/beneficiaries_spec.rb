@@ -388,7 +388,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
           let(:address) { Faker::Blockchain::Bitcoin.address }
 
           before do
-            beneficiary_data[:data][:address] = " " + address + " "
+            beneficiary_data[:data][:address] = ' ' + address + ' '
           end
           it do
             api_post endpoint, params: beneficiary_data, token: token
@@ -515,7 +515,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
 
     context 'id has invalid type' do
       let(:endpoint) do
-        "/api/v2/account/beneficiaries/id/activate"
+        '/api/v2/account/beneficiaries/id/activate'
       end
 
       it do
@@ -660,7 +660,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
 
     context 'id has invalid type' do
       let(:endpoint) do
-        "/api/v2/account/beneficiaries/id/resend_pin"
+        '/api/v2/account/beneficiaries/id/resend_pin'
       end
 
       it do
@@ -711,7 +711,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
         api_patch endpoint, params: resend_data, token: token
         expect(response.status).to eq 422
         expect(response).to include_api_error('account.beneficiary.cant_resend_within_1_minute')
-        expect(response_body.include?("sent_at")).to eq true
+        expect(response_body.include?('sent_at')).to eq true
       end
     end
   end
@@ -801,7 +801,7 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
 
     context 'id has invalid type' do
       let(:endpoint) do
-        "/api/v2/account/beneficiaries/id"
+        '/api/v2/account/beneficiaries/id'
       end
 
       it do

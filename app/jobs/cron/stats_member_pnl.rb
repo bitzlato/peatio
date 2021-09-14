@@ -73,17 +73,17 @@ module Jobs::Cron
       def last_idx(pnl_currency, currency)
         query = "SELECT reference_type, last_id FROM stats_member_pnl_idx WHERE currency_id = '#{currency.id}' AND pnl_currency_id = '#{pnl_currency.id}'"
         h = {
-          "Trade" => 0,
-          "DepositFiat" => "1970-01-01 00:00:00.000",
-          "DepositCoin" => "1970-01-01 00:00:00.000",
-          "Withdraw" => "1970-01-01 00:00:00.000",
-          "Adjustment" => "1970-01-01 00:00:00.000",
-          "Transfer" => 0
+          'Trade' => 0,
+          'DepositFiat' => '1970-01-01 00:00:00.000',
+          'DepositCoin' => '1970-01-01 00:00:00.000',
+          'Withdraw' => '1970-01-01 00:00:00.000',
+          'Adjustment' => '1970-01-01 00:00:00.000',
+          'Transfer' => 0
         }
         ActiveRecord::Base.connection.select_all(query).rows.each do |name, idx|
           case name
           when /^(Deposit|Withdraw|Adjustment)/
-            h[name] = Time.at(idx.to_f / 1000).utc.strftime("%F %T.%3N")
+            h[name] = Time.at(idx.to_f / 1000).utc.strftime('%F %T.%3N')
           else
             h[name] = idx
           end
@@ -123,7 +123,7 @@ module Jobs::Cron
             reverse = false
             if a.start_with?('_')
               reverse = true
-              a = a[1..-1]
+              a = a[1..]
             end
             [a, b, reverse]
           end
@@ -219,7 +219,7 @@ module Jobs::Cron
           total_credit_value = total_credit * price_at(adjustment.currency_id, pnl_currency.id, adjustment.created_at)
         end
         [
-          build_query(member.id, pnl_currency, adjustment.currency_id, total_credit, 0.0, total_credit_value, total_debit, total_debit_value, 0),
+          build_query(member.id, pnl_currency, adjustment.currency_id, total_credit, 0.0, total_credit_value, total_debit, total_debit_value, 0)
         ]
       end
 
@@ -243,7 +243,7 @@ module Jobs::Cron
         total_debit_value = (total_debit + total_debit_fees) * price_at(withdraw.currency_id, pnl_currency.id, withdraw.created_at)
 
         [
-          build_query(withdraw.member_id, pnl_currency, withdraw.currency_id, 0, 0, 0, total_debit, total_debit_value, total_debit_fees),
+          build_query(withdraw.member_id, pnl_currency, withdraw.currency_id, 0, 0, 0, total_debit, total_debit_value, total_debit_fees)
         ]
       end
 
@@ -251,9 +251,9 @@ module Jobs::Cron
         transfer = {}
         queries = []
 
-        q = "SELECT currency_id, member_id, reference_type, reference_id, SUM(credit-debit) as total FROM liabilities " \
+        q = 'SELECT currency_id, member_id, reference_type, reference_id, SUM(credit-debit) as total FROM liabilities ' \
             "WHERE reference_type = 'Transfer' AND reference_id = #{reference_id} " \
-            "GROUP BY currency_id, member_id, reference_type, reference_id"
+            'GROUP BY currency_id, member_id, reference_type, reference_id'
         liabilities = ActiveRecord::Base.connection.select_all(q)
         liabilities.each do |l|
           next if (l['total'] = l['total'].to_d).zero?

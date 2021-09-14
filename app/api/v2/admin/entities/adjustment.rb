@@ -62,7 +62,7 @@ module API
             documentation: {
               type: Integer,
               desc: 'Unique adjustment creator identifier in database.'
-            },
+            }
           ) do |adjustment, _options|
             adjustment.creator.uid
           end

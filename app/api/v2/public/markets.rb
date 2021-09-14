@@ -8,7 +8,7 @@ module API
         helpers ::API::V2::OrderHelpers
         helpers ::API::V2::ParamHelpers
 
-        class OrderBook < Struct.new(:asks, :bids); end
+        OrderBook = Struct.new(:asks, :bids)
 
         resource :markets do
           desc 'Get all available markets.',
@@ -54,7 +54,7 @@ module API
                        desc: 'Search quote currency name using LIKE'
             end
           end
-          get "/" do
+          get '/' do
             search_params = params[:search]
                               .slice(:base_code, :quote_code, :base_name, :quote_name)
                               .transform_keys {|k| "#{k}_cont"}
@@ -66,7 +66,7 @@ module API
                              .ransack(search_params)
 
             # Add default ordering (position asc) for cases markets where unit position is same.
-            search.sorts = ["#{params[:order_by]} #{params[:ordering]}", "position asc"]
+            search.sorts = ["#{params[:order_by]} #{params[:ordering]}", 'position asc']
 
             present paginate(Rails.cache.fetch("markets_#{params}", expires_in: 600) { search.result.load.to_a }),
                     with: API::V2::Entities::Market,
@@ -93,7 +93,7 @@ module API
                      desc: 'Limit the number of returned buy orders. Default to 20.'
           end
 
-          get ":market/order-book", requirements: { market: /[\w\.\-]+/ } do
+          get ':market/order-book', requirements: { market: /[\w\.\-]+/ } do
             asks = OrderAsk.active.with_market(params[:market]).matching_rule.limit(params[:asks_limit])
             bids = OrderBid.active.with_market(params[:market]).matching_rule.limit(params[:bids_limit])
             book = OrderBook.new asks, bids
@@ -115,15 +115,15 @@ module API
                      desc: 'Limit the number of returned trades. Default to 100.'
             optional :timestamp,
                      type: { value: Integer, message: 'public.trade.non_integer_timestamp' },
-                     desc: "An integer represents the seconds elapsed since Unix epoch."\
-                           "If set, only trades executed before the time will be returned."
+                     desc: 'An integer represents the seconds elapsed since Unix epoch.'\
+                           'If set, only trades executed before the time will be returned.'
             optional :order_by,
                      type: String,
                      values: { value: %w(asc desc), message: 'public.trade.invalid_order_by' },
                      default: 'desc',
                      desc: "If set, returned trades will be sorted in specific order, default to 'desc'."
           end
-          get ":market/trades", requirements: { market: /[\w\.\-]+/ } do
+          get ':market/trades', requirements: { market: /[\w\.\-]+/ } do
             present Trade.public_from_influx(params[:market], params[:limit]), with: API::V2::Entities::PublicTrade
           end
 
@@ -139,7 +139,7 @@ module API
                      default: 300,
                      desc: 'Limit the number of returned price levels. Default to 300.'
           end
-          get ":market/depth", requirements: { market: /[\w\.\-]+/ } do
+          get ':market/depth', requirements: { market: /[\w\.\-]+/ } do
             asks = OrderAsk.get_depth(params[:market])[0, params[:limit]]
             bids = OrderBid.get_depth(params[:market])[0, params[:limit]]
             { timestamp: Time.now.to_i, asks: asks, bids: bids }
@@ -159,24 +159,24 @@ module API
             optional :time_from,
                      type: { value: Integer, message: 'public.k_line.non_integer_time_from' },
                      allow_blank: { value: false, c_name: 'k_line' },
-                     desc: "An integer represents the seconds elapsed since Unix epoch. If set, only k-line data after that time will be returned."
+                     desc: 'An integer represents the seconds elapsed since Unix epoch. If set, only k-line data after that time will be returned.'
             optional :time_to,
                      type: { value: Integer, message: 'public.k_line.non_integer_time_to' },
                      allow_blank: { value: false, c_name: 'k_line' },
-                     desc: "An integer represents the seconds elapsed since Unix epoch. If set, only k-line data till that time will be returned."
+                     desc: 'An integer represents the seconds elapsed since Unix epoch. If set, only k-line data till that time will be returned.'
             optional :limit,
                      type: { value: Integer, message: 'public.k_line.non_integer_limit' },
                      values: { value: KLineService::AVAILABLE_POINT_LIMITS, message: 'public.k_line.invalid_limit' },
                      default: 30,
-                     desc: "Limit the number of returned data points default to 30. Ignored if time_from and time_to are given."
+                     desc: 'Limit the number of returned data points default to 30. Ignored if time_from and time_to are given.'
           end
-          get ":market/k-line", requirements: { market: /[\w\.\-]+/ } do
+          get ':market/k-line', requirements: { market: /[\w\.\-]+/ } do
             KLineService[params[:market], params[:period]]
               .get_ohlc(params.slice(:limit, :time_from, :time_to).merge(offset: true))
           end
 
           desc 'Get ticker of all markets (For response doc see /:market/tickers/ response).'
-          get "/tickers" do
+          get '/tickers' do
             Rails.cache.fetch(:markets_tickers, expires_in: 60) do
               ::Market.spot.active.ordered.inject({}) do |h, m|
                 h[m.symbol] = format_ticker TickersService[m].ticker
@@ -193,7 +193,7 @@ module API
                      values: { value: -> { ::Market.spot.active.pluck(:symbol) }, message: 'public.market.doesnt_exist' },
                      desc: -> { V2::Entities::Market.documentation[:symbol] }
           end
-          get "/:market/tickers/", requirements: { market: /[\w\.\-]+/ } do
+          get '/:market/tickers/', requirements: { market: /[\w\.\-]+/ } do
             present format_ticker(TickersService[params[:market]].ticker),
                     with: API::V2::Entities::Ticker
           end

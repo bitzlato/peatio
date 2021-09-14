@@ -42,12 +42,12 @@ describe API::V2::Account::Balances, type: :request do
         expect(response).to have_http_status 200
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
-          {"currency"=>"usd", "balance"=>"0.0", "locked"=>"0.0"},
-          {"currency"=>"btc", "balance"=>"5.0", "locked"=>"5.0"},
-          {"currency"=>"eth", "balance"=>"30.5", "locked"=>"0.0"},
-          {"currency"=>"trst", "balance"=>"0.0", "locked"=>"0.0"},
-          {"currency"=>"ring", "balance"=>"0.0", "locked"=>"0.0"},
-          {"currency"=>"eur", "balance"=>"0.0", "locked"=>"0.0"}
+          {'currency'=>'usd', 'balance'=>'0.0', 'locked'=>'0.0'},
+          {'currency'=>'btc', 'balance'=>'5.0', 'locked'=>'5.0'},
+          {'currency'=>'eth', 'balance'=>'30.5', 'locked'=>'0.0'},
+          {'currency'=>'trst', 'balance'=>'0.0', 'locked'=>'0.0'},
+          {'currency'=>'ring', 'balance'=>'0.0', 'locked'=>'0.0'},
+          {'currency'=>'eur', 'balance'=>'0.0', 'locked'=>'0.0'}
         )
       end
 
@@ -81,7 +81,7 @@ describe API::V2::Account::Balances, type: :request do
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
                             { 'currency' => 'btc',  'balance' => '5.0',  'locked'  => '5.0'},
-                            { 'currency' => 'eth',  'balance' => '30.5', 'locked'  => '0.0'},
+                            { 'currency' => 'eth',  'balance' => '30.5', 'locked'  => '0.0'}
                             )
       end
     end
@@ -98,19 +98,19 @@ describe API::V2::Account::Balances, type: :request do
                               { 'currency' => 'usd',  'balance' => '0.0',  'locked'  => '0.0' },
                               { 'currency' => 'trst',  'balance' => '0.0',  'locked'  => '0.0'},
                               { 'currency' => 'ring',  'balance' => '0.0',  'locked'  => '0.0'},
-                              { 'currency' => 'eur',  'balance' => '0.0',  'locked'  => '0.0' },
+                              { 'currency' => 'eur',  'balance' => '0.0',  'locked'  => '0.0' }
                               )
       end
     end
 
     context 'use nonzero parameter == string' do
-      before { api_get '/api/v2/account/balances', token: token, params: {nonzero: "token"} }
+      before { api_get '/api/v2/account/balances', token: token, params: {nonzero: 'token'} }
 
 
       it 'returns all balances' do
         expect(response).to have_http_status 422
         result = JSON.parse(response.body)
-        expect(result).to contain_exactly(["errors", ["account.balances.invalid_nonzero"]])
+        expect(result).to contain_exactly(['errors', ['account.balances.invalid_nonzero']])
       end
     end
 

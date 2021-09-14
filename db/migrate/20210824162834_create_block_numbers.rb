@@ -10,6 +10,6 @@ class CreateBlockNumbers < ActiveRecord::Migration[5.2]
       t.timestamps
     end
 
-    add_index :block_numbers, [:blockchain_id, :number], unique: true
+    add_index :block_numbers, %i[blockchain_id number], unique: true
   end
 end

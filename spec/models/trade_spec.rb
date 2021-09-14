@@ -36,7 +36,7 @@ describe Trade, '#for_notify' do
 end
 
 describe Trade, '#trade_from_influx_after_date' do
-  after { delete_measurments("trades") }
+  after { delete_measurments('trades') }
 
   context 'no trades executed yet' do
     it 'returns trade' do
@@ -97,7 +97,7 @@ describe Trade, '#trade_from_influx_after_date' do
 end
 
 describe Trade, '#trade_from_influx_before_date' do
-  after { delete_measurments("trades") }
+  after { delete_measurments('trades') }
 
   context 'no trades executed yet' do
     it 'returns trade' do
@@ -157,7 +157,7 @@ describe Trade, '#trade_from_influx_before_date' do
 end
 
 describe Trade, '#nearest_trade_from_influx' do
-  after { delete_measurments("trades") }
+  after { delete_measurments('trades') }
 
   context 'no trades executed yet' do
     it 'returns trade' do
@@ -213,7 +213,7 @@ describe Trade, '#nearest_trade_from_influx' do
 end
 
 describe Trade, '#market_ticker_from_influx' do
-  after { delete_measurments("trades") }
+  after { delete_measurments('trades') }
 
   context 'no trades executed yet' do
     it 'returns ticker' do

@@ -39,7 +39,7 @@ class Member < ApplicationRecord
   end
 
   def admin?
-    role == "admin"
+    role == 'admin'
   end
 
   def get_account(model_or_id_or_code)
@@ -90,7 +90,7 @@ class Member < ApplicationRecord
   end
 
   def payment_address(blockchain, remote = false)
-    raise "no blockchain" if blockchain.nil?
+    raise 'no blockchain' if blockchain.nil?
     raise "We must not build payment address for invoicing blockchains (#{blockchain.key}) member_id=#{id}" if blockchain.enable_invoice?
     pa = PaymentAddress.find_by(member: self, blockchain: blockchain, remote: remote)
 
@@ -187,8 +187,8 @@ class Member < ApplicationRecord
 
     def fetch_email(payload)
       payload[:email].to_s.tap do |email|
-        if email.present?
-         raise(Peatio::Auth::Error, 'E-Mail is invalid.') unless EmailValidator.valid?(email)
+        if email.present? && !EmailValidator.valid?(email)
+         raise(Peatio::Auth::Error, 'E-Mail is invalid.')
         end
       end
     end
@@ -197,7 +197,7 @@ class Member < ApplicationRecord
       term = "%#{term}%"
       case field
       when 'email'
-        where("email LIKE ?", term)
+        where('email LIKE ?', term)
       when 'uid'
         where('uid LIKE ?', term)
       when 'wallet_address'

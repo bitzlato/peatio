@@ -119,7 +119,7 @@ class TradingFee < ApplicationRecord
   end
 
   def wipe_cache
-    Rails.cache.delete_matched("trading_fees*")
+    Rails.cache.delete_matched('trading_fees*')
   end
 end
 

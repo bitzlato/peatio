@@ -31,7 +31,7 @@ describe API::V2::Management::Members, type: :request do
 
           request
           expect(response).to have_http_status(422)
-          expect(JSON.parse(response.body)['errors']).to eq("Validation failed: Email is invalid")
+          expect(JSON.parse(response.body)['errors']).to eq('Validation failed: Email is invalid')
         end
       end
 
@@ -41,7 +41,7 @@ describe API::V2::Management::Members, type: :request do
 
           request
           expect(response).to have_http_status(422)
-          expect(JSON.parse(response.body)['error']).to eq("level is invalid")
+          expect(JSON.parse(response.body)['error']).to eq('level is invalid')
         end
       end
 
@@ -51,7 +51,7 @@ describe API::V2::Management::Members, type: :request do
 
           request
           expect(response).to have_http_status(422)
-          expect(JSON.parse(response.body)['errors']).to eq("Validation failed: Role is not included in the list")
+          expect(JSON.parse(response.body)['errors']).to eq('Validation failed: Role is not included in the list')
         end
       end
     end
@@ -86,7 +86,7 @@ describe API::V2::Management::Members, type: :request do
       it 'returns status 422 and error' do
         request
         expect(response).to have_http_status(422)
-        expect(JSON.parse(response.body)['errors']).to eq("Validation failed: Group is too long (maximum is 32 characters)")
+        expect(JSON.parse(response.body)['errors']).to eq('Validation failed: Group is too long (maximum is 32 characters)')
       end
     end
   end

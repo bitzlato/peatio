@@ -12,7 +12,7 @@ describe API::V2::Management::Engines, type: :request do
 
   describe 'POST /engines/get' do
     def request
-      post_json "/api/v2/management/engines/get", multisig_jwt_management_api_v1({ data: data }, *signers)
+      post_json '/api/v2/management/engines/get', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
     let(:signers) { %i[alex jeff] }
@@ -96,7 +96,7 @@ describe API::V2::Management::Engines, type: :request do
 
   describe 'POST /engines/new' do
     def request
-      post_json "/api/v2/management/engines/new", multisig_jwt_management_api_v1({ data: data }, *signers)
+      post_json '/api/v2/management/engines/new', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
     let(:signers) { %i[alex jeff] }
@@ -151,7 +151,7 @@ describe API::V2::Management::Engines, type: :request do
 
   describe 'POST /engines/update' do
     def request
-      post_json "/api/v2/management/engines/update", multisig_jwt_management_api_v1({ data: data }, *signers)
+      post_json '/api/v2/management/engines/update', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
     let(:signers) { %i[alex jeff] }

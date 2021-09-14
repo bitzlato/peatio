@@ -9,7 +9,7 @@ module API
           :id,
           documentation:{
             type: Integer,
-            desc: "Unique order id."
+            desc: 'Unique order id.'
           }
         )
 
@@ -17,7 +17,7 @@ module API
           :uuid,
           documentation:{
             type: String,
-            desc: "Unique order UUID."
+            desc: 'Unique order UUID.'
           }
         )
 
@@ -41,7 +41,7 @@ module API
           :price,
           documentation: {
             type: BigDecimal,
-            desc: "Price for each unit. e.g."\
+            desc: 'Price for each unit. e.g.'\
                   "If you want to sell/buy 1 btc at 3000 usd, the price is '3000.0'" 
           }
         )
@@ -50,7 +50,7 @@ module API
           :avg_price,
           documentation: {
             type: BigDecimal,
-            desc: "Average execution price, average of price in trades."
+            desc: 'Average execution price, average of price in trades.'
           }
         )
 
@@ -71,7 +71,7 @@ module API
           documentation: {
             type: String,
             desc: "The market in which the order is placed, e.g. 'btcusd'."\
-                  "All available markets can be found at /api/v2/markets."
+                  'All available markets can be found at /api/v2/markets.'
           }
         )
 
@@ -79,7 +79,7 @@ module API
           :market_type,
           documentation: {
             type: String,
-            desc: "Market type."
+            desc: 'Market type.'
           }
         )
 
@@ -89,7 +89,7 @@ module API
           format_with: :iso8601,
           documentation: {
             type: String,
-            desc: "Order create time in iso8601 format."
+            desc: 'Order create time in iso8601 format.'
           }
         )
 
@@ -98,7 +98,7 @@ module API
           format_with: :iso8601,
           documentation: {
             type: String,
-            desc: "Order updated time in iso8601 format."
+            desc: 'Order updated time in iso8601 format.'
           }
         )
 
@@ -106,9 +106,9 @@ module API
           :origin_volume,
           documentation: {
             type: BigDecimal,
-            desc: "The amount user want to sell/buy."\
-                  "An order could be partially executed,"\
-                  "e.g. an order sell 5 btc can be matched with a buy 3 btc order,"\
+            desc: 'The amount user want to sell/buy.'\
+                  'An order could be partially executed,'\
+                  'e.g. an order sell 5 btc can be matched with a buy 3 btc order,'\
                   "left 2 btc to be sold; in this case the order's volume would be '5.0',"\
                   "its remaining_volume would be '2.0', its executed volume is '3.0'."
           }
@@ -137,7 +137,7 @@ module API
           :maker_fee,
           documentation: {
             type: BigDecimal,
-            desc: "Fee for maker."
+            desc: 'Fee for maker.'
           }
         )
   
@@ -145,7 +145,7 @@ module API
           :taker_fee,
           documentation: {
             type: BigDecimal,
-            desc: "Fee for taker."
+            desc: 'Fee for taker.'
           }
         )
 
@@ -153,7 +153,7 @@ module API
           :trades_count,
           documentation: {
             type: Integer,
-            desc: "Count of trades."
+            desc: 'Count of trades.'
           }
         )
 
@@ -162,7 +162,7 @@ module API
           documentation: {
             type: 'API::V2::Entities::Trade',
             is_array: true,
-            desc: "Trades wiht this order."
+            desc: 'Trades wiht this order.'
           },
           if: { type: :full }
         ) do |order, _options|

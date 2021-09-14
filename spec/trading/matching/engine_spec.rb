@@ -53,9 +53,9 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => "execute",
+              :action => 'execute',
               :trade => {
-                :market_id=>"btc_usd",
+                :market_id=>'btc_usd',
                 :maker_order_id=>bid1_in_db.id,
                 :taker_order_id=>ask1_in_db.id,
                 :strike_price=>0.86.to_d,
@@ -105,9 +105,9 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => "execute",
+              :action => 'execute',
               :trade => {
-                :market_id=>"btc_usd",
+                :market_id=>'btc_usd',
                 :taker_order_id=>ask1_in_db.id,
                 :maker_order_id=>bid1_in_db.id,
                 :strike_price=>8.6.to_d,
@@ -157,15 +157,15 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action=>"cancel",
+              :action=>'cancel',
               :order=>
                 {:id=>bid1_in_db.id,
                  :timestamp=>bid1_in_db.created_at.to_i,
                  :type=>:bid,
                  :locked=>67.16.to_d,
                  :volume=>0.8395.to_d,
-                 :market=>"btc_usd",
-                 :ord_type=>"market"}
+                 :market=>'btc_usd',
+                 :ord_type=>'market'}
             },
             {:persistent=>false}
           ]
@@ -218,9 +218,9 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => "execute",
+              :action => 'execute',
               :trade => {
-                :market_id=>"btc_usd",
+                :market_id=>'btc_usd',
                 :maker_order_id=>ask1_in_db.id,
                 :taker_order_id=>bid1_in_db.id,
                 :strike_price=>80.06.to_d,
@@ -233,15 +233,15 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action=>"cancel",
+              :action=>'cancel',
               :order=>
                 {:id=>bid1_in_db.id,
                  :timestamp=>bid1_in_db.created_at.to_i,
                  :type=>:bid,
                  :locked=>46.348533.to_d,
                  :volume=>0.8284.to_d,
-                 :market=>"btc_usd",
-                 :ord_type=>"market"}
+                 :market=>'btc_usd',
+                 :ord_type=>'market'}
             },
            {:persistent=>false}
           ]
@@ -303,9 +303,9 @@ describe Matching::Engine do
         [
           [
             :trade_executor,
-            { :action => "execute",
+            { :action => 'execute',
               :trade => {
-                :market_id=>"btc_usd",
+                :market_id=>'btc_usd',
                 :maker_order_id=>ask1_in_db.id,
                 :taker_order_id=>bid1_in_db.id,
                 :strike_price=>0.3e4,
@@ -316,9 +316,9 @@ describe Matching::Engine do
           ],
           [
             :trade_executor,
-            { :action => "execute",
+            { :action => 'execute',
               :trade => {
-                :market_id=>"btc_usd",
+                :market_id=>'btc_usd',
                 :maker_order_id=>ask2_in_db.id,
                 :taker_order_id=>bid1_in_db.id,
                 :strike_price=>0.3001e4,
@@ -329,15 +329,15 @@ describe Matching::Engine do
           ],
           [
             :trade_executor,
-            { :action=>"cancel",
+            { :action=>'cancel',
               :order=> {
                 :id=>bid1_in_db.id,
                 :timestamp=>bid1_in_db.created_at.to_i,
                 :type=>:bid,
                 :locked=>0.240289e2,
                 :volume=>0.8e-2,
-                :market=>"btc_usd",
-                :ord_type=>"market"
+                :market=>'btc_usd',
+                :ord_type=>'market'
             }},
             { :persistent=>false }
           ]
@@ -381,9 +381,9 @@ describe Matching::Engine do
         [
           [
             :trade_executor,
-            { :action => "execute",
+            { :action => 'execute',
               :trade => {
-                :market_id=>"btc_usd",
+                :market_id=>'btc_usd',
                 :maker_order_id=>ask1_in_db.id,
                 :taker_order_id=>bid1_in_db.id,
                 :strike_price=>0.3e4,
@@ -395,15 +395,15 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action=>"cancel",
+              :action=>'cancel',
               :order=> {
                 :id=>bid1_in_db.id,
                 :timestamp=>bid1_in_db.created_at.to_i,
                 :type=>:bid,
                 :locked=>0.2733e2,
                 :volume=>0.91e-2,
-                :market=>"btc_usd",
-                :ord_type=>"market"
+                :market=>'btc_usd',
+                :ord_type=>'market'
               }
             },
           { :persistent=>false }
@@ -456,9 +456,9 @@ describe Matching::Engine do
         [
           [
             :trade_executor,
-            { :action => "execute",
+            { :action => 'execute',
               :trade => {
-                :market_id => "btc_usd",
+                :market_id => 'btc_usd',
                 :maker_order_id => ask1_in_db.id,
                 :taker_order_id => bid1_in_db.id,
                 :strike_price => 0.3e4.to_d,
@@ -470,9 +470,9 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => "execute",
+              :action => 'execute',
               :trade => {
-                :market_id => "btc_usd",
+                :market_id => 'btc_usd',
                 :maker_order_id => ask1_in_db.id,
                 :taker_order_id => bid2_in_db.id,
                 :strike_price => 0.3e4.to_d,
@@ -485,15 +485,15 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => "cancel",
+              :action => 'cancel',
               :order => {
                 :id => bid2_in_db.id,
                 :timestamp => bid2_in_db.created_at.to_i,
                 :type => :bid,
                 :locked => 0.135e1.to_d,
                 :volume => 0.45e-3.to_d,
-                :market => "btc_usd",
-                :ord_type => "market"
+                :market => 'btc_usd',
+                :ord_type => 'market'
               }
             },
             { :persistent => false }
@@ -518,9 +518,9 @@ describe Matching::Engine do
     it 'should fill the market order completely' do
       mo = Matching.mock_market_order(type: :bid, locked: '6.0'.to_d, volume: '2.4'.to_d)
 
-      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: "execute", trade: { market_id: market.symbol, maker_order_id: ask1.id, taker_order_id: mo.id, strike_price: ask1.price, amount: ask1.volume, total: '1.0'.to_d } }, anything)
-      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: "execute", trade: { market_id: market.symbol, maker_order_id: ask2.id, taker_order_id: mo.id, strike_price: ask2.price, amount: ask2.volume, total: '2.0'.to_d } }, anything)
-      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: "execute", trade: { market_id: market.symbol, maker_order_id: ask3.id, taker_order_id: mo.id, strike_price: ask3.price, amount: '0.4'.to_d, total: '1.2'.to_d } }, anything)
+      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask1.id, taker_order_id: mo.id, strike_price: ask1.price, amount: ask1.volume, total: '1.0'.to_d } }, anything)
+      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask2.id, taker_order_id: mo.id, strike_price: ask2.price, amount: ask2.volume, total: '2.0'.to_d } }, anything)
+      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask3.id, taker_order_id: mo.id, strike_price: ask3.price, amount: '0.4'.to_d, total: '1.2'.to_d } }, anything)
 
       subject.submit bid
       subject.submit ask1
@@ -538,8 +538,8 @@ describe Matching::Engine do
     it 'should fill the market order partially and cancel it' do
       mo = Matching.mock_market_order(type: :bid, locked: '6.0'.to_d, volume: '2.4'.to_d)
 
-      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: "execute", trade: { market_id: market.symbol, maker_order_id: ask1.id, taker_order_id: mo.id, strike_price: ask1.price, amount: ask1.volume, total: '1.0'.to_d } }, anything)
-      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: "execute", trade: { market_id: market.symbol, maker_order_id: ask2.id, taker_order_id: mo.id, strike_price: ask2.price, amount: ask2.volume, total: '2.0'.to_d } }, anything)
+      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask1.id, taker_order_id: mo.id, strike_price: ask1.price, amount: ask1.volume, total: '1.0'.to_d } }, anything)
+      AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask2.id, taker_order_id: mo.id, strike_price: ask2.price, amount: ask2.volume, total: '2.0'.to_d } }, anything)
       AMQP::Queue.expects(:enqueue).with(:trade_executor, has_entries(action: 'cancel', order: has_entry(id: mo.id)), anything)
 
       subject.submit bid
@@ -556,7 +556,7 @@ describe Matching::Engine do
     context 'fully match incoming order' do
       it 'should execute trade' do
         AMQP::Queue.expects(:enqueue)
-                 .with(:trade_executor, { action: "execute", trade: { market_id: market.symbol, maker_order_id: ask.id, taker_order_id: bid.id, strike_price: price, amount: volume, total: '50.0'.to_d } }, anything)
+                 .with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask.id, taker_order_id: bid.id, strike_price: price, amount: volume, total: '50.0'.to_d } }, anything)
 
         subject.submit(ask)
         subject.submit(bid)
@@ -571,7 +571,7 @@ describe Matching::Engine do
 
       it 'should execute trade' do
         AMQP::Queue.expects(:enqueue)
-                 .with(:trade_executor, { action: "execute", trade: { market_id: market.symbol, maker_order_id: ask.id, taker_order_id: bid.id, strike_price: price, amount: 3.to_d, total: '30.0'.to_d } }, anything)
+                 .with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask.id, taker_order_id: bid.id, strike_price: price, amount: 3.to_d, total: '30.0'.to_d } }, anything)
 
         subject.submit(ask)
         subject.submit(bid)
@@ -617,7 +617,7 @@ describe Matching::Engine do
         subject.cancel(low_ask) # but it's canceled
 
         AMQP::Queue.expects(:enqueue)
-                 .with(:trade_executor, { action: "execute", trade: { market_id: market.symbol, maker_order_id: high_ask.id, taker_order_id: bid.id, strike_price: high_ask.price, amount: high_ask.volume, total: '30.0'.to_d } }, anything)
+                 .with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: high_ask.id, taker_order_id: bid.id, strike_price: high_ask.price, amount: high_ask.volume, total: '30.0'.to_d } }, anything)
         subject.submit(bid)
 
         expect(subject.ask_orders.limit_orders).to be_empty
@@ -651,7 +651,7 @@ describe Matching::Engine do
       expect(subject.bid_orders.limit_orders).to be_empty
 
       expect(subject.queue.size).to eq 1
-      expect(subject.queue.first).to eq [:trade_executor, { action: "execute", trade: { market_id: market.symbol, maker_order_id: ask.id, taker_order_id: bid.id, strike_price: price, amount: volume, total: '50.0'.to_d } }, { persistent: false }]
+      expect(subject.queue.first).to eq [:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask.id, taker_order_id: bid.id, strike_price: price, amount: volume, total: '50.0'.to_d } }, { persistent: false }]
     end
   end
 
@@ -659,8 +659,8 @@ describe Matching::Engine do
     before(:each) { subject.initializing = false }
 
     it 'should publish increment of orderbook' do
-      ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["10.0", "5.0"], "sequence" => 2 })
-      ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "bids" => ["10.0", "5.0"], "sequence" => 3 })
+      ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['10.0', '5.0'], 'sequence' => 2 })
+      ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'bids' => ['10.0', '5.0'], 'sequence' => 3 })
 
       subject.publish_increment(market.symbol, :ask, ask.price, ask.volume)
       subject.publish_increment(market.symbol, :bid, bid.price, bid.volume)
@@ -668,10 +668,10 @@ describe Matching::Engine do
   end
 
   context 'publish_snapshot' do
-    let(:ask1)    { Matching.mock_limit_order(type: :ask, price: "14".to_d, volume: "1.0".to_d) }
-    let(:ask2)    { Matching.mock_limit_order(type: :ask, price: "12".to_d, volume: "1.0".to_d) }
-    let(:bid1)    { Matching.mock_limit_order(type: :bid, price: "11".to_d, volume: "2.0".to_d) }
-    let(:bid2)    { Matching.mock_limit_order(type: :bid, price: "10".to_d, volume: "2.0".to_d) }
+    let(:ask1)    { Matching.mock_limit_order(type: :ask, price: '14'.to_d, volume: '1.0'.to_d) }
+    let(:ask2)    { Matching.mock_limit_order(type: :ask, price: '12'.to_d, volume: '1.0'.to_d) }
+    let(:bid1)    { Matching.mock_limit_order(type: :bid, price: '11'.to_d, volume: '2.0'.to_d) }
+    let(:bid2)    { Matching.mock_limit_order(type: :bid, price: '10'.to_d, volume: '2.0'.to_d) }
 
     it 'should publish snapshot of orderbook' do
       subject.submit(ask1)
@@ -679,10 +679,10 @@ describe Matching::Engine do
       subject.submit(bid1)
       subject.submit(bid2)
 
-      ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
-        "asks" => [["12.0", "1.0"], ["14.0", "1.0"]],
-        "bids" => [["11.0", "2.0"], ["10.0", "2.0"]],
-        "sequence" => 1
+      ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+        'asks' => [['12.0', '1.0'], ['14.0', '1.0']],
+        'bids' => [['11.0', '2.0'], ['10.0', '2.0']],
+        'sequence' => 1
       })
       subject.publish_snapshot
     end
@@ -694,12 +694,12 @@ describe Matching::Engine do
         subject.snapshot_time = Time.now - 80.second
         subject.submit(ask1)
         subject.submit(bid1)
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
-          "asks" => [["14.0", "1.0"]],
-          "bids" => [["11.0", "2.0"]],
-          "sequence" => 1
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+          'asks' => [['14.0', '1.0']],
+          'bids' => [['11.0', '2.0']],
+          'sequence' => 1
         })
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["11.0", "2.0"], "sequence" => 2 })
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
         subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
         expect(subject.increment_count).to eq(1)
       end
@@ -708,12 +708,12 @@ describe Matching::Engine do
         subject.snapshot_time = Time.now - 80.second
         subject.submit(ask1)
         subject.submit(bid1)
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
-          "asks" => [["14.0", "1.0"]],
-          "bids" => [["11.0", "2.0"]],
-          "sequence" => 1
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+          'asks' => [['14.0', '1.0']],
+          'bids' => [['11.0', '2.0']],
+          'sequence' => 1
         })
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["11.0", "2.0"], "sequence" => 2 })
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
         subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
       end
 
@@ -722,12 +722,12 @@ describe Matching::Engine do
         subject.increment_count = 20
         subject.submit(ask1)
         subject.submit(bid1)
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
-          "asks" => [["14.0", "1.0"]],
-          "bids" => [["11.0", "2.0"]],
-          "sequence" => 1
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+          'asks' => [['14.0', '1.0']],
+          'bids' => [['11.0', '2.0']],
+          'sequence' => 1
         })
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["11.0", "2.0"], "sequence" => 2 })
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
         subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
       end
 
@@ -735,12 +735,12 @@ describe Matching::Engine do
         subject.snapshot_time = Time.now
         subject.submit(ask1)
         subject.submit(bid1)
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
-          "asks" => [["14.0", "1.0"]],
-          "bids" => [["11.0", "2.0"]],
-          "sequence" => 1
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+          'asks' => [['14.0', '1.0']],
+          'bids' => [['11.0', '2.0']],
+          'sequence' => 1
         }).never
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["11.0", "2.0"], "sequence" => 2 })
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
         subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
       end
 
@@ -749,11 +749,11 @@ describe Matching::Engine do
         subject.increment_count = 20
         subject.submit(ask1)
         subject.submit(bid1)
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-snap", {
-          "asks" => [["14.0", "1.0"]],
-          "bids" => [["11.0", "2.0"]]
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+          'asks' => [['14.0', '1.0']],
+          'bids' => [['11.0', '2.0']]
         }).never
-        ::AMQP::Queue.expects(:enqueue_event).with("public", market.symbol, "ob-inc", { "asks" => ["11.0", "2.0"], "sequence" => 2 })
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
         subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
       end
     end

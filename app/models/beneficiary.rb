@@ -185,6 +185,6 @@ class Beneficiary < ApplicationRecord
 
   def fiat_rid
     return unless currency.fiat?
-    "%s-%s-%08d" % [data.symbolize_keys[:full_name].downcase.split.join('-'), currency_id.downcase, id]
+    '%s-%s-%08d' % [data.symbolize_keys[:full_name].downcase.split.join('-'), currency_id.downcase, id]
   end
 end

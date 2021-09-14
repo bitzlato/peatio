@@ -67,8 +67,11 @@ describe API::V2::Account::InternalTransfers, type: :request do
     end
   end
 
-  describe "create internal transfer" do
-    let(:currency) { Currency.visible.sample; Currency.find(:eth) }
+  describe 'create internal transfer' do
+    let(:currency) {
+      Currency.visible.sample
+      Currency.find(:eth)
+    }
     let(:amount) { 0.15 }
 
     let :data do

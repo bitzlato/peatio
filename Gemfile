@@ -31,7 +31,7 @@ gem 'faraday_middleware'
 gem 'faye', '~> 1.4'
 gem 'eventmachine', '~> 1.2'
 gem 'em-synchrony', '~> 1.0'
-gem "strip_attributes"
+gem 'strip_attributes'
 gem 'amazing_print'
 
 # We use 2.3.0.dev for bitzlato client
@@ -66,8 +66,8 @@ gem 'dotenv'
 gem 'adequate_crypto_address'
 
 # Security versions of deep dependencies
-gem "addressable", ">= 2.8.0"
-gem "rexml", ">= 3.2.5"
+gem 'addressable', '>= 2.8.0'
+gem 'rexml', '>= 3.2.5'
 
 # Yeah! We use pry in production!
 gem 'pry-byebug',   '~> 3.7'
@@ -86,7 +86,7 @@ end
 group :development do
   gem 'bundler-audit'
   gem 'rubocop'
-  gem "rubocop-rspec", "~> 2.4"
+  gem 'rubocop-rspec', '~> 2.4'
   gem 'rubocop-rails'
   gem 'foreman'
   gem 'annotate'
@@ -114,11 +114,11 @@ Dir.glob File.expand_path('../Gemfile.plugin', __FILE__) do |file|
   eval_gemfile file
 end
 
-gem "pg", "~> 1.2"
+gem 'pg', '~> 1.2'
 
-gem "http_accept_language", "~> 2.1"
+gem 'http_accept_language', '~> 2.1'
 
-gem "semver2", "~> 3.4"
+gem 'semver2', '~> 3.4'
 
 gem 'pry-rails'
 
@@ -141,15 +141,15 @@ group :deploy do
   gem 'slackistrano', require: false
 end
 
-gem "sd_notify", "~> 0.1.1"
+gem 'sd_notify', '~> 0.1.1'
 
-gem "active_record_upsert"
+gem 'active_record_upsert'
 
 # Fixes:   [DEPRECATION] :after_commit AASM callback is not safe in terms of race conditions and redundant calls.
 #           Please add `gem 'after_commit_everywhere', '~> 1.0'` to your Gemfile in order to fix that.
-gem "after_commit_everywhere", "~> 1.1"
+gem 'after_commit_everywhere', '~> 1.1'
 
-gem "request_store", "~> 1.5"
+gem 'request_store', '~> 1.5'
 
-gem "faraday-detailed_logger", "~> 2.3"
-gem "faraday_curl", "~> 0.0.2"
+gem 'faraday-detailed_logger', '~> 2.3'
+gem 'faraday_curl', '~> 0.0.2'

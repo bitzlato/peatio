@@ -43,7 +43,7 @@ module Matching
 
     def fill_top(trade_price, trade_volume, trade_funds)
       order = top
-      raise "No top order in empty book." unless order
+      raise 'No top order in empty book.' unless order
 
       order.fill trade_price, trade_volume, trade_funds
       if order.filled?
@@ -73,7 +73,7 @@ module Matching
       when MarketOrder
         raise MarketOrderbookError.new(order, 'market order adding to orderbook detected')
       else
-        raise ArgumentError, "Unknown order type"
+        raise ArgumentError, 'Unknown order type'
       end
     end
 
@@ -86,7 +86,7 @@ module Matching
       when MarketOrder
         remove_market_order(order)
       else
-        raise ArgumentError, "Unknown order type"
+        raise ArgumentError, 'Unknown order type'
       end
     end
 

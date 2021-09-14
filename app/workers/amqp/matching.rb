@@ -47,7 +47,7 @@ module Workers
         if market == 'all'
           # NOTE: Run matching engine for disabled markets.
           Market.find_each(&method(:initialize_engine))
-          Rails.logger.info { "All engines reloaded." }
+          Rails.logger.info { 'All engines reloaded.' }
         else
           initialize_engine Market.find_spot_by_symbol(market)
           Rails.logger.info { "#{market} engine reloaded." }
@@ -121,17 +121,17 @@ module Workers
           limit_orders = eng.limit_orders
 
           File.open(dump_file, 'w') do |f|
-            f.puts "ASK"
+            f.puts 'ASK'
             limit_orders[:ask].keys.reverse.each do |k|
               f.puts k.to_s('F')
               limit_orders[:ask][k].each {|o| f.puts "\t#{o.label}" }
             end
-            f.puts "-"*40
+            f.puts '-'*40
             limit_orders[:bid].keys.reverse.each do |k|
               f.puts k.to_s('F')
               limit_orders[:bid][k].each {|o| f.puts "\t#{o.label}" }
             end
-            f.puts "BID"
+            f.puts 'BID'
           end
 
           puts "#{id} limit orderbook dumped to #{dump_file}."
@@ -145,11 +145,11 @@ module Workers
           market_orders = eng.market_orders
 
           File.open(dump_file, 'w') do |f|
-            f.puts "ASK"
+            f.puts 'ASK'
             market_orders[:ask].each {|o| f.puts "\t#{o.label}" }
-            f.puts "-"*40
+            f.puts '-'*40
             market_orders[:bid].each {|o| f.puts "\t#{o.label}" }
-            f.puts "BID"
+            f.puts 'BID'
           end
 
           puts "#{id} market orderbook dumped to #{dump_file}."

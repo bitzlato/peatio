@@ -23,7 +23,7 @@ describe WhitelistedSmartContract, 'Validations' do
     it 'validates whitelisted address presence of blockchain_id' do
       subject.blockchain_id = nil
       expect(subject).to_not be_valid
-      expect(subject.errors.full_messages).to eq ["Blockchain must exist"]
+      expect(subject.errors.full_messages).to eq ['Blockchain must exist']
     end
 
     it 'validates whitelisted address inclusion of state' do

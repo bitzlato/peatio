@@ -324,7 +324,7 @@ describe API::V2::Market::Orders, type: :request do
 
     it 'submit a sell order on third party engine' do
       member.get_account(:btc).update_attributes(balance: 100)
-      Market.find_spot_by_symbol('btc_usd').engine.update(driver: "finex-spot")
+      Market.find_spot_by_symbol('btc_usd').engine.update(driver: 'finex-spot')
       AMQP::Queue.expects(:publish)
 
       api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: '2014' }
@@ -473,7 +473,7 @@ describe API::V2::Market::Orders, type: :request do
 
           member.get_account(:btc).update_attributes(balance: 1)
 
-          Market.find_spot_by_symbol('btc_usd').engine.update(driver: "finex-spot")
+          Market.find_spot_by_symbol('btc_usd').engine.update(driver: 'finex-spot')
 
           AMQP::Queue.expects(:publish)
 
@@ -551,7 +551,7 @@ describe API::V2::Market::Orders, type: :request do
 
     context 'third party order' do
       before do
-        order.market.engine.update(driver: "finex-spot")
+        order.market.engine.update(driver: 'finex-spot')
       end
 
       it 'should cancel specified order by uuid' do
@@ -622,8 +622,8 @@ describe API::V2::Market::Orders, type: :request do
     context 'third party order' do
 
       before do
-        Market.find_spot_by_symbol('btc_usd').engine.update(driver: "finex-spot")
-        Market.find_spot_by_symbol('btc_eth').engine.update(driver: "finex-spot")
+        Market.find_spot_by_symbol('btc_usd').engine.update(driver: 'finex-spot')
+        Market.find_spot_by_symbol('btc_eth').engine.update(driver: 'finex-spot')
       end
 
       it 'should cancel all my orders on market with third party engine' do

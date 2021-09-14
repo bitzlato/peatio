@@ -53,7 +53,7 @@ describe API::V2::Admin::Orders, type: :request do
     end
 
     it 'validates page param' do
-      api_get '/api/v2/admin/orders', params: { market: 'btc_usd', limit: 2, page: "page 2" }, token: token
+      api_get '/api/v2/admin/orders', params: { market: 'btc_usd', limit: 2, page: 'page 2' }, token: token
       expect(response.code).to eq '422'
       expect(response).to include_api_error('admin.pagination.non_integer_page')
     end

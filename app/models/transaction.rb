@@ -2,7 +2,7 @@ class Transaction < ApplicationRecord
   include TransactionKindDefiner
   include TransactionReferences
 
-  upsert_keys [:blockchain_id, :txid, :txout]
+  upsert_keys %i[blockchain_id txid txout]
 
   # == Constants ============================================================
 
