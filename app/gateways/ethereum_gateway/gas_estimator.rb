@@ -15,6 +15,10 @@ class EthereumGateway
              gas_limits: {},
              gas_price: nil,
              gas_factor: 1)
+
+      # На боевом откидываем газ по настройкам чтобы гарантировать транзакции
+      gas_limits[address] || raise("Unknown gas limit for #{address}") if Rails..env.production?
+
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
       contract_addresses = contract_addresses.compact
