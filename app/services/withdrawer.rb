@@ -22,7 +22,7 @@ class Withdrawer
     @logger = logger || TaggedLogger.new(Rails.logger, worker: __FILE__)
   end
 
-  def call(withdraw)
+  def call(withdraw, nonce: nil, gas_factor: nil)
     withdraw.lock!.transfer!
 
     withdraw.with_lock do
@@ -36,7 +36,7 @@ class Withdrawer
         rid: withdraw.rid,
         message: 'Sending withdraw.'
 
-      transaction = push_transaction_to_gateway! withdraw
+      transaction = push_transaction_to_gateway! withdraw, nonce: nonce, gas_factor: gas_factor
 
       logger.warn id: withdraw.id,
         txid: transaction.id,
@@ -72,7 +72,7 @@ class Withdrawer
 
   private
 
-  def push_transaction_to_gateway!(withdraw)
+  def push_transaction_to_gateway!(withdraw, nonce: nil, gas_factor: nil)
     withdraw_wallet =
       withdraw.
         blockchain.
@@ -86,6 +86,8 @@ class Withdrawer
         amount:           withdraw.money_amount,
         contract_address: withdraw.currency.contract_address,
         secret:           withdraw_wallet.secret,
+        nonce:            nonce,
+        gas_factor:       gas_factor,
         meta:             { withdraw_tid: withdraw.tid }
     ) || raise("No transaction returned for withdraw (#{withdraw.id})")
   end
