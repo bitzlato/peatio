@@ -3,23 +3,23 @@
 describe Bitcoin::Blockchain do
   context :features do
     it 'defaults' do
-      blockchain1 = described_class.new
+      blockchain1 = Bitcoin::Blockchain.new
       expect(blockchain1.features).to eq Bitcoin::Blockchain::DEFAULT_FEATURES
     end
 
     it 'override defaults' do
-      blockchain2 = described_class.new(cash_addr_format: true)
+      blockchain2 = Bitcoin::Blockchain.new(cash_addr_format: true)
       expect(blockchain2.features[:cash_addr_format]).to be_truthy
     end
 
     it 'custom feautures' do
-      blockchain3 = described_class.new(custom_feature: :custom)
+      blockchain3 = Bitcoin::Blockchain.new(custom_feature: :custom)
       expect(blockchain3.features.keys).to contain_exactly(*Bitcoin::Blockchain::SUPPORTED_FEATURES)
     end
   end
 
   context :configure do
-    let(:blockchain) { described_class.new }
+    let(:blockchain) { Bitcoin::Blockchain.new }
 
     it 'default settings' do
       expect(blockchain.settings).to eq({})
@@ -39,7 +39,7 @@ describe Bitcoin::Blockchain do
     let(:server) { 'http://user:password@127.0.0.1:18332' }
     let(:endpoint) { '127.0.0.1:18332' }
     let(:blockchain) do
-      described_class.new.tap { |b| b.configure(server: server) }
+      Bitcoin::Blockchain.new.tap { |b| b.configure(server: server) }
     end
 
     def request_raw_transaction(transaction)
@@ -140,7 +140,7 @@ describe Bitcoin::Blockchain do
     let(:server) { 'http://user:password@127.0.0.1:18332' }
     let(:endpoint) { '127.0.0.1:18332' }
     let(:blockchain) do
-      described_class.new.tap { |b| b.configure(server: server) }
+      Bitcoin::Blockchain.new.tap { |b| b.configure(server: server) }
     end
 
     it 'returns latest block number' do
@@ -195,7 +195,7 @@ describe Bitcoin::Blockchain do
     let(:server) { 'http://user:password@127.0.0.1:18332' }
     let(:endpoint) { 'http://127.0.0.1:18332' }
     let(:blockchain) do
-      described_class.new.tap { |b| b.configure(server: server, currencies: [currency]) }
+      Bitcoin::Blockchain.new.tap { |b| b.configure(server: server, currencies: [currency]) }
     end
     let(:block_data) do
       Rails.root.join('spec', 'resources', 'bitcoin-data', block_file_name)
@@ -285,7 +285,7 @@ describe Bitcoin::Blockchain do
     end
 
     let(:blockchain) do
-      described_class.new.tap { |b| b.configure(currencies: [currency.to_blockchain_api_settings]) }
+      Bitcoin::Blockchain.new.tap { |b| b.configure(currencies: [currency.to_blockchain_api_settings]) }
     end
 
     it 'builds formatted transactions for passed transaction' do
@@ -329,7 +329,7 @@ describe Bitcoin::Blockchain do
       end
 
       let(:blockchain) do
-        described_class.new.tap do |b|
+        Bitcoin::Blockchain.new.tap do |b|
           b.configure(currencies: [currency1.to_blockchain_api_settings, currency2.to_blockchain_api_settings])
         end
       end
@@ -378,7 +378,7 @@ describe Bitcoin::Blockchain do
 
     let(:server) { 'http://user:password@127.0.0.1:18332' }
     let(:blockchain) do
-      described_class.new.tap { |b| b.configure(server: server) }
+      Bitcoin::Blockchain.new.tap { |b| b.configure(server: server) }
     end
 
     let(:response) do
