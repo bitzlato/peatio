@@ -30,3 +30,6 @@ Style/StringConcatenation:
 
 Style/ClassAndModuleChildren:
   Enabled: false
+
+Style/FormatString:
+  Enabled: false
