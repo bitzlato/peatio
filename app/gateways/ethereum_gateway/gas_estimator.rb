@@ -4,6 +4,8 @@ class EthereumGateway
 
     DEFAULT_AMOUNT = 1
 
+    # TODO returns gas_limit and gas_price
+
     # contract_addresses is array of coins including nil for native currency
     #
     def call(from_address:,

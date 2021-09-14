@@ -71,8 +71,9 @@ class EthereumGateway < AbstractGateway
                           meta: {})
 
     raise 'amount must be a Money' unless amount.is_a? Money
-    gas_factor = blockchain.client_options[:gas_factor] || 1
-    gas_price = (fetch_gas_price * gas_factor).to_i
+    gas_factor = blockchain.client_options[:gas_factor].to_d || 1
+    gas_factor = 1.01 if gas_factor.to_d < 1
+    gas_price = (AbstractCommand.new(client).fetch_gas_price * gas_factor).to_i
     gas_limit ||= GasEstimator
       .new(client)
       .call(from_address: from_address,
