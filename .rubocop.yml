@@ -16,3 +16,10 @@ AllCops:
      - 'lib/**/*'
      - db/schema.rb
      - Guardfile
+
+Rails/AddColumnIndex:
+  Enabled: false
+
+Rails/SquishedSQLHeredocs:
+  Exclude:
+    - 'db/migrate/*'
