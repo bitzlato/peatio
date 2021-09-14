@@ -10,7 +10,7 @@ describe Rack::Cors, type: :request do
 
   let(:app) do
     Rack::Builder.new do
-      use described_class do
+      use Rack::Cors do
         allow do
           origins CORS::Validations.validate_origins(ENV['API_CORS_ORIGINS'])
           resource '/api/*',
