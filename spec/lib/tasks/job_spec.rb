@@ -2,19 +2,20 @@
 
 describe 'job.rake' do
   context "Rake::Task['job:liabilities:compact_orders']" do
+    subject { Rake::Task['job:liabilities:compact_orders'] }
+
     let(:member1) { create(:member) }
     let(:member2) { create(:member) }
     let(:job) { Job.last }
     let!(:liabilities) do
       (0..9).to_a.reverse.each do |day|
-        100.times { create(:liability, member_id: [member1.id, member2.id].sample, created_at: Time.now - day.day, updated_at: Time.now - day.day) }
+        create_list(:liability, 100, member_id: [member1.id, member2.id].sample, created_at: Time.now - day.day, updated_at: Time.now - day.day)
       end
     end
 
-    subject { Rake::Task['job:liabilities:compact_orders'] }
+    before { DatabaseCleaner.clean }
 
-    before(:each) { DatabaseCleaner.clean }
-    after(:each) do
+    after do
       DatabaseCleaner.strategy = :truncation
       subject.reenable
     end

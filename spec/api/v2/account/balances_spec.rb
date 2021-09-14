@@ -37,7 +37,7 @@ describe API::V2::Account::Balances, type: :request do
       before { api_get '/api/v2/account/balances', token: token }
 
       it 'returns current user balances' do
-        expect(response).to have_http_status 200
+        expect(response).to have_http_status :ok
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
           { 'currency' => 'usd', 'balance' => '0.0', 'locked' => '0.0' },
@@ -58,7 +58,7 @@ describe API::V2::Account::Balances, type: :request do
 
         it 'returns current user balances' do
           api_get '/api/v2/account/balances', token: token
-          expect(response).to have_http_status 200
+          expect(response).to have_http_status :ok
           result = JSON.parse(response.body)
           expect(result).to contain_exactly(
             { 'currency' => 'btc', 'balance' => '5.0', 'locked' => '5.0' },
@@ -76,7 +76,7 @@ describe API::V2::Account::Balances, type: :request do
       before { api_get '/api/v2/account/balances', token: token, params: { nonzero: true } }
 
       it 'returns nonzero balances' do
-        expect(response).to have_http_status 200
+        expect(response).to have_http_status :ok
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
           { 'currency' => 'btc', 'balance' => '5.0', 'locked' => '5.0' },
@@ -89,7 +89,7 @@ describe API::V2::Account::Balances, type: :request do
       before { api_get '/api/v2/account/balances', token: token, params: { nonzero: false } }
 
       it 'returns all balances' do
-        expect(response).to have_http_status 200
+        expect(response).to have_http_status :ok
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
           { 'currency' => 'btc',  'balance' => '5.0',  'locked'  => '5.0' },
@@ -106,7 +106,7 @@ describe API::V2::Account::Balances, type: :request do
       before { api_get '/api/v2/account/balances', token: token, params: { nonzero: 'token' } }
 
       it 'returns all balances' do
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(['errors', ['account.balances.invalid_nonzero']])
       end
@@ -216,7 +216,7 @@ describe API::V2::Account::Balances, type: :request do
       before { api_get '/api/v2/account/balances', { token: token, params: { limit: 2 } } }
 
       it 'renders unauthorized error' do
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -232,7 +232,7 @@ describe API::V2::Account::Balances, type: :request do
 
         member.reload
         expect(member.email).to eq new_member_email
-        expect(member.email).to_not eq old_member_email
+        expect(member.email).not_to eq old_member_email
       end
     end
   end
@@ -241,7 +241,7 @@ describe API::V2::Account::Balances, type: :request do
     before { api_get '/api/v2/account/balances/eth', token: token }
 
     it 'returns current user balance by currency' do
-      expect(response).to have_http_status 200
+      expect(response).to have_http_status :ok
       result = JSON.parse(response.body)
       expect(result).to match response_body
     end
@@ -253,7 +253,7 @@ describe API::V2::Account::Balances, type: :request do
       it 'returns current user balance by currency' do
         api_get "/api/v2/account/balances/#{currency.code}", token: token
 
-        expect(response).to have_http_status 200
+        expect(response).to have_http_status :ok
         result = JSON.parse(response.body)
         expect(result['currency']).to eq currency.code
       end
@@ -263,7 +263,7 @@ describe API::V2::Account::Balances, type: :request do
       before { api_get '/api/v2/account/balances/somecoin', token: token }
 
       it do
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.currency.doesnt_exist')
       end
     end
@@ -275,7 +275,7 @@ describe API::V2::Account::Balances, type: :request do
       end
 
       it do
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
       end
     end
 
@@ -287,7 +287,7 @@ describe API::V2::Account::Balances, type: :request do
       before { api_get '/api/v2/account/balances/eth', token: token }
 
       it 'renders unauthorized error' do
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end

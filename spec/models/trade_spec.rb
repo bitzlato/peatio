@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 describe Trade, '#for_notify' do
+  subject(:notify) { trade.for_notify(order_ask.member) }
+
   let(:order_ask) { create(:order_ask, :btc_usd) }
   let(:order_bid) { create(:order_bid, :btc_usd) }
   let(:trade) { create(:trade, :btc_usd, maker_order: order_ask, taker_order: order_bid) }
-
-  subject(:notify) { trade.for_notify(order_ask.member) }
 
   it do
     expect(notify).not_to be_blank
@@ -16,7 +16,7 @@ describe Trade, '#for_notify' do
     expect(notify[:order_id]).to eq(order_ask.id)
   end
 
-  it 'should use side as kind' do
+  it 'uses side as kind' do
     expect(trade.for_notify(Member.find(trade.maker_id))[:side]).to eq 'sell'
   end
 
@@ -273,6 +273,8 @@ end
 
 describe Trade, '#record_complete_operations!' do
   # Persist orders and trades in database.
+  subject { trade }
+
   let!(:trade) { create(:trade, :btc_usd, :with_deposit_liability) }
 
   let(:ask) { trade.maker_order }
@@ -287,14 +289,12 @@ describe Trade, '#record_complete_operations!' do
   let(:ask_currency_income) { ask_currency_outcome - ask_currency_fee }
   let(:bid_currency_income) { bid_currency_outcome - bid_currency_fee }
 
-  subject { trade }
-
   it 'creates four liability operations' do
     expect { subject.record_complete_operations! }.to change { Operations::Liability.count }.by(4)
   end
 
   it 'doesn\'t create asset operations' do
-    expect { subject.record_complete_operations! }.to_not change { Operations::Asset.count }
+    expect { subject.record_complete_operations! }.not_to change { Operations::Asset.count }
   end
 
   it 'debits locked ask liabilities for ask creator' do

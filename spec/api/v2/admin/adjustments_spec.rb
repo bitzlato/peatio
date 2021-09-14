@@ -155,7 +155,7 @@ describe API::V2::Admin::Adjustments, type: :request do
     it 'creates new adjustment' do
       expect do
         api_post '/api/v2/admin/adjustments/new', token: token, params: params
-      end.to change { Adjustment.count }.by 1
+      end.to change(Adjustment, :count).by 1
 
       expect(response).to be_successful
     end
@@ -317,7 +317,7 @@ describe API::V2::Admin::Adjustments, type: :request do
     context 'adjustment without member' do
       let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-402-') }
 
-      it 'should accept adjustment' do
+      it 'accepts adjustment' do
         adjustment.update(amount: -10_000_000.0)
 
         expect do
@@ -343,7 +343,7 @@ describe API::V2::Admin::Adjustments, type: :request do
       it 'does not udpate member\'s balance' do
         expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-        end.not_to change { member.accounts }
+        end.not_to change(member, :accounts)
       end
 
       it 'does not create operations' do
@@ -366,7 +366,7 @@ describe API::V2::Admin::Adjustments, type: :request do
       it 'does not udpate member\'s balance' do
         expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-        end.not_to change { member.accounts }
+        end.not_to change(member, :accounts)
       end
 
       it 'does not create operations' do
@@ -412,7 +412,7 @@ describe API::V2::Admin::Adjustments, type: :request do
       it 'does not udpate member\'s balance' do
         expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
-        end.not_to change { member.accounts }
+        end.not_to change(member, :accounts)
       end
 
       it 'does not create operations' do
@@ -435,7 +435,7 @@ describe API::V2::Admin::Adjustments, type: :request do
       it 'does not udpate member\'s balance' do
         expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
-        end.not_to change { member.accounts }
+        end.not_to change(member, :accounts)
       end
 
       it 'does not create operations' do

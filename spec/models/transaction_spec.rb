@@ -26,16 +26,19 @@ describe Transaction do
 
     context 'creates first time' do
       subject { described_class.upsert_transaction! peatio_transaction }
+
       it { expect(subject).to be_a Transaction }
       it { expect(subject.kind).to eq 'deposit' }
     end
 
     context 'upsert second time' do
+      subject { described_class.upsert_transaction! peatio_transaction }
+
       before do
         tx = described_class.upsert_transaction! peatio_transaction
         tx.update_columns kind: nil
       end
-      subject { described_class.upsert_transaction! peatio_transaction }
+
       it { expect(subject.kind).to eq 'deposit' }
       it { expect(subject.txout).to eq 2 }
     end

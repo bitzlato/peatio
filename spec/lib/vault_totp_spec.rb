@@ -30,22 +30,26 @@ describe Vault::TOTP do
   end
 
   describe '.validate?' do
+    subject { described_class.validate?(uid, 'code') }
+
     before do
       described_class.stubs(:write_data).returns(OpenStruct.new({ data: data }))
       described_class.stubs(:read_data).returns(OpenStruct.new({ data: data }))
     end
-    let(:data) { { valid: true } }
 
-    subject { described_class.validate?(uid, 'code') }
+    let(:data) { { valid: true } }
 
     context 'when valid' do
       before { described_class.stubs(:exist?).returns(true) }
+
       it { is_expected.to eq true }
     end
 
     context 'when invalid' do
       before { described_class.stubs(:exist?).returns(true) }
+
       let(:data) { { valid: false } }
+
       it { is_expected.to eq false }
     end
   end

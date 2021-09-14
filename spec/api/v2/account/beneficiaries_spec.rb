@@ -50,7 +50,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     end
 
     context 'pagination' do
-      it 'should return paginated result' do
+      it 'returns paginated result' do
         api_get endpoint, token: token, params: { page: 1, limit: 1 }
         expect(response.status).to eq 200
         result = JSON.parse(response.body)
@@ -123,7 +123,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
 
     it 'renders unauthorized error' do
       api_get endpoint, params: { currency: :btc, state: :active }, token: token
-      expect(response).to have_http_status 403
+      expect(response).to have_http_status :forbidden
       expect(response).to include_api_error('user.ability.not_permitted')
     end
   end
@@ -213,7 +213,7 @@ describe API::V2::Account::Beneficiaries, 'GET /:id', type: :request do
     it 'renders unauthorized error' do
       api_get endpoint, token: token
 
-      expect(response).to have_http_status 403
+      expect(response).to have_http_status :forbidden
       expect(response).to include_api_error('user.ability.not_permitted')
     end
   end
@@ -255,7 +255,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
       it 'renders unauthorized error' do
         api_post endpoint, params: beneficiary_data.merge(description: Faker::String.random(120)), token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -327,9 +327,11 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
       context 'disabled withdrawal for currency' do
         let(:currency) { Currency.find(:btc) }
+
         before do
           currency.update(withdrawal_enabled: false)
         end
+
         it do
           api_post endpoint, params: beneficiary_data, token: token
           expect(response.status).to eq 422
@@ -341,6 +343,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         before do
           beneficiary_data[:data][:address] = "'" + Faker::Blockchain::Bitcoin.address
         end
+
         it do
           api_post endpoint, params: beneficiary_data, token: token
           expect(response.status).to eq 422
@@ -370,6 +373,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
                                      data: { address: Faker::Blockchain::Ethereum.address }
                                    })
           end
+
           before do
             create(:beneficiary,
                    member: member,
@@ -389,6 +393,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
           before do
             beneficiary_data[:data][:address] = ' ' + address + ' '
           end
+
           it do
             api_post endpoint, params: beneficiary_data, token: token
             expect(response.status).to eq 201
@@ -506,7 +511,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
 
       it 'renders unauthorized error' do
         api_patch endpoint, params: activation_data, token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -678,7 +683,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
 
       it 'renders unauthorized error' do
         api_patch endpoint, params: resend_data, token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -818,7 +823,7 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
 
       it 'renders unauthorized error' do
         api_delete endpoint, token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end

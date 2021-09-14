@@ -40,7 +40,7 @@ class Currency < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain, required: true
+  belongs_to :blockchain, optional: false
   has_and_belongs_to_many :wallets
 
   belongs_to :parent, class_name: 'Currency'

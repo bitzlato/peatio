@@ -67,7 +67,7 @@ describe API::V2::Admin::Currencies, type: :request do
     it 'returns error in case of invalid code' do
       api_get '/api/v2/admin/currencies/invalid', token: token
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.currency.doesnt_exist')
     end
 
@@ -122,7 +122,7 @@ describe API::V2::Admin::Currencies, type: :request do
 
     it 'returns error in case of invalid deposit_enabled type' do
       api_get '/api/v2/admin/currencies', params: { deposit_enabled: 'invalid' }, token: token
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.currency.non_boolean_deposit_enabled')
     end
 
@@ -144,7 +144,7 @@ describe API::V2::Admin::Currencies, type: :request do
 
     it 'returns error in case of invalid withdrawal_enabled type' do
       api_get '/api/v2/admin/currencies', params: { withdrawal_enabled: 'invalid' }, token: token
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.currency.non_boolean_withdrawal_enabled')
     end
 
@@ -166,7 +166,7 @@ describe API::V2::Admin::Currencies, type: :request do
 
     it 'returns error in case of invalid visible type' do
       api_get '/api/v2/admin/currencies', params: { visible: 'invalid' }, token: token
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.currency.non_boolean_visible')
     end
 
@@ -188,7 +188,7 @@ describe API::V2::Admin::Currencies, type: :request do
 
     it 'returns error in case of invalid type' do
       api_get '/api/v2/admin/currencies', params: { type: 'invalid' }, token: token
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
     end
 
     it 'returns currencies by ascending order' do

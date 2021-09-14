@@ -29,7 +29,7 @@ describe API::V2::Admin::Orders, type: :request do
 
     it 'validates market param' do
       api_get '/api/v2/admin/orders', params: { market: 'usdusd' }, token: token
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.doesnt_exist')
     end
 
@@ -198,7 +198,7 @@ describe API::V2::Admin::Orders, type: :request do
       level_3_member.get_account(:usd).update_attributes(locked: order.price * order.volume)
     end
 
-    it 'should cancel specified order' do
+    it 'cancels specified order' do
       AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes)
       expect do
         api_post "/api/v2/admin/orders/#{order.id}/cancel", token: token
@@ -232,7 +232,7 @@ describe API::V2::Admin::Orders, type: :request do
       level_3_member.get_account(:usd).update_attributes(locked: '50')
     end
 
-    it 'should cancel all my orders for specific market' do
+    it 'cancels all my orders for specific market' do
       level_3_member.orders.where(market: 'btc_eth').each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
       end
@@ -246,7 +246,7 @@ describe API::V2::Admin::Orders, type: :request do
       end.not_to change(Order, :count)
     end
 
-    it 'should cancel all asks for specific market' do
+    it 'cancels all asks for specific market' do
       level_3_member.orders.where(type: 'OrderAsk', market_id: 'btc_usd').each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
       end

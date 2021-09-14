@@ -7,6 +7,8 @@ describe API::V2::Management::Trades, type: :request do
       m.get_account(:usd).update_attributes(balance: 2014.47, locked: 0)
     end
   end
+  let(:data) { {} }
+  let(:signers) { %i[alex jeff] }
 
   let(:second_member) do
     create(:member, :level_3).tap do |m|
@@ -72,9 +74,6 @@ describe API::V2::Management::Trades, type: :request do
   def request
     post_json '/api/v2/management/trades', multisig_jwt_management_api_v1({ data: data }, *signers)
   end
-
-  let(:data) { {} }
-  let(:signers) { %i[alex jeff] }
 
   it 'returns all recent spot trades' do
     request

@@ -3,6 +3,7 @@
 describe Currency do
   context 'fiat' do
     let(:currency) { Currency.find(:usd) }
+
     it 'allows to change deposit fee' do
       currency.update!(deposit_fee: 0.25)
       expect(currency.deposit_fee).to eq 0.25
@@ -11,6 +12,7 @@ describe Currency do
 
   context 'coin' do
     let(:currency) { Currency.find(:btc) }
+
     it 'doesn\'t allow to change deposit fee' do
       currency.update!(deposit_fee: 0.25)
       expect(currency.deposit_fee).to eq 0
@@ -87,7 +89,7 @@ describe Currency do
   context 'read only attributes' do
     let!(:fake_currency) { create(:currency, :btc, id: 'fake') }
 
-    it 'should not update the type' do
+    it 'does not update the type' do
       fake_currency.update_attributes type: 'fiat'
       expect(fake_currency.reload.type).to eq(fake_currency.type)
     end
@@ -98,7 +100,7 @@ describe Currency do
 
     let(:options) { { 'gas_price' => 'standard', 'erc20_contract_address' => '0x022e292b44b5a146f2e8ee36ff44d3dd863c915c', 'gas_limit' => '100000' } }
 
-    it 'should serialize/deserialize options' do
+    it 'serialize/deserializes options' do
       currency.update(options: options)
       expect(Currency.find(:ring).options).to eq options
     end
@@ -106,9 +108,10 @@ describe Currency do
 
   context 'validate max currency' do
     before { ENV['MAX_CURRENCIES'] = '6' }
+
     after  { ENV['MAX_CURRENCIES'] = nil }
 
-    it 'should raise validation error for max currency' do
+    it 'raises validation error for max currency' do
       record = build(:currency, :fake, id: 'fake2', type: 'fiat')
       record.save
       expect(record.errors.full_messages).to include(/Max Currency limit has been reached/i)
@@ -182,14 +185,14 @@ describe Currency do
         let!(:wallet) { Wallet.deposit_wallets(:eth)[0] }
 
         context 'without parent id' do
-          it 'should not create currency wallet' do
+          it 'does not create currency wallet' do
             currency = Currency.create(code: 'test', blockchain: Blockchain.last)
             expect(CurrencyWallet.find_by(currency_id: currency.id, wallet_id: wallet.id)).to eq nil
           end
         end
 
         context 'with parent id' do
-          it 'should create currency wallet' do
+          it 'creates currency wallet' do
             currency = Currency.create(code: 'test', parent_id: coin.id)
             c_w = CurrencyWallet.find_by(currency_id: currency.id, wallet_id: wallet.id)
 

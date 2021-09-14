@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 describe ::EthereumGateway::AddressCreator do
+  subject { described_class.new(client) }
+
   let(:address) { 'address' }
   let(:base_factor) { currency.base_factor }
 
   let(:uri) { 'http://127.0.0.1:8545' }
   let(:client) { ::Ethereum::Client.new(uri) }
-  subject { described_class.new(client) }
 
   around do |example|
     WebMock.disable_net_connect!

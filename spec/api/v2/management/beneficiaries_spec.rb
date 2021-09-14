@@ -226,9 +226,11 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
         context 'disabled withdrawal for currency' do
           let(:currency) { Currency.find(:btc) }
+
           before do
             currency.update(withdrawal_enabled: false)
           end
+
           it do
             request
             expect(response.status).to eq 422
@@ -240,6 +242,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
           before do
             beneficiary_data[:data][:address] = "'" + Faker::Blockchain::Bitcoin.address
           end
+
           it do
             request
             expect(response.status).to eq 422
@@ -269,6 +272,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
                                        data: { address: Faker::Blockchain::Ethereum.address }
                                      })
             end
+
             before do
               create(:beneficiary,
                      member: member,
@@ -288,6 +292,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
             before do
               beneficiary_data[:data][:address] = ' ' + address + ' '
             end
+
             it do
               request
               expect(response.status).to eq 201

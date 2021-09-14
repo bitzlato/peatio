@@ -20,6 +20,7 @@ describe Bitcoin::Blockchain do
 
   context :configure do
     let(:blockchain) { Bitcoin::Blockchain.new }
+
     it 'default settings' do
       expect(blockchain.settings).to eq({})
     end
@@ -188,6 +189,14 @@ describe Bitcoin::Blockchain do
     end
 
     let(:block_file_name) { '1354419-1354420.json' }
+    let(:currency) do
+      Currency.find_by(id: :btc)
+    end
+    let(:server) { 'http://user:password@127.0.0.1:18332' }
+    let(:endpoint) { 'http://127.0.0.1:18332' }
+    let(:blockchain) do
+      Bitcoin::Blockchain.new.tap { |b| b.configure(server: server, currencies: [currency]) }
+    end
     let(:block_data) do
       Rails.root.join('spec', 'resources', 'bitcoin-data', block_file_name)
            .yield_self { |file_path| File.open(file_path) }
@@ -221,16 +230,6 @@ describe Bitcoin::Blockchain do
           .with(body: request_block_body(blk['result']['hash']))
           .to_return(body: blk.to_json)
       end
-    end
-
-    let(:currency) do
-      Currency.find_by(id: :btc)
-    end
-
-    let(:server) { 'http://user:password@127.0.0.1:18332' }
-    let(:endpoint) { 'http://127.0.0.1:18332' }
-    let(:blockchain) do
-      Bitcoin::Blockchain.new.tap { |b| b.configure(server: server, currencies: [currency]) }
     end
 
     context 'first block' do

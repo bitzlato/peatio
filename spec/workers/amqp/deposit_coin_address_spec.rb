@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 describe Workers::AMQP::DepositCoinAddress do
+  subject { member.payment_address(blockchain).address }
+
   let(:member) { create(:member, :barong) }
   let(:address) { Faker::Blockchain::Bitcoin.address }
   let(:secret) { PasswordGenerator.generate(64) }
@@ -11,8 +13,6 @@ describe Workers::AMQP::DepositCoinAddress do
       secret: secret,
       details: { label: 'new-label' } }
   end
-
-  subject { member.payment_address(blockchain).address }
 
   it 'raise error on databse connection error' do
     if defined? Mysql2
@@ -32,6 +32,7 @@ describe Workers::AMQP::DepositCoinAddress do
 
   context 'blockchain service' do
     let(:address) { Faker::Blockchain::Ethereum.address }
+
     before do
       EthereumGateway::AddressCreator
         .any_instance

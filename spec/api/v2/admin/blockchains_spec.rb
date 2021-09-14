@@ -58,15 +58,14 @@ describe API::V2::Admin::Blockchains, type: :request do
 
     context 'get latest_block' do
       let(:blockchain) { Blockchain.find_by(key: 'eth-rinkeby') }
+      let(:eth_blockchain) do
+        Ethereum::Blockchain.new.tap { |b| b.configure(server: 'http://127.0.0.1:8545') }
+      end
 
       around do |example|
         WebMock.disable_net_connect!
         example.run
         WebMock.allow_net_connect!
-      end
-
-      let(:eth_blockchain) do
-        Ethereum::Blockchain.new.tap { |b| b.configure(server: 'http://127.0.0.1:8545') }
       end
 
       it 'returns node latest block' do

@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 describe Workers::AMQP::Matching do
+  subject { Workers::AMQP::Matching.new }
+
   let(:alice)  { who_is_billionaire }
   let(:bob)    { who_is_billionaire }
   let(:market) { Market.find_spot_by_symbol(:btc_usd) }
 
-  subject { Workers::AMQP::Matching.new }
-
   context 'engines' do
-    it 'should get all engines' do
+    it 'gets all engines' do
       expect(subject.engines.keys.sort).to eq Market.spot.pluck(:symbol).sort
     end
 
-    it 'should started all engines' do
+    it 'starteds all engines' do
       expect(subject.engines.values.map(&:mode)).to eq Array.new(Market.spot.count, :run)
     end
   end
@@ -24,11 +24,11 @@ describe Workers::AMQP::Matching do
       subject.process({ action: 'submit', order: existing.to_matching_attributes }, {}, {})
     end
 
-    it 'should started engine' do
+    it 'starteds engine' do
       expect(subject.engines['btc_usd'].mode).to eq :run
     end
 
-    it 'should match part of existing order' do
+    it 'matches part of existing order' do
       order = create(:order_bid, :btc_usd, price: '4001', volume: '8.0', member: bob)
 
       AMQP::Queue.expects(:enqueue)
@@ -36,7 +36,7 @@ describe Workers::AMQP::Matching do
       subject.process({ action: 'submit', order: order.to_matching_attributes }, {}, {})
     end
 
-    it 'should match part of new order' do
+    it 'matches part of new order' do
       order = create(:order_bid, :btc_usd, price: '4001', volume: '12.0', member: bob)
 
       AMQP::Queue.expects(:enqueue)
@@ -75,7 +75,7 @@ describe Workers::AMQP::Matching do
       ::Matching::Engine.stubs(:new).returns(engine)
     end
 
-    it 'should create many trades' do
+    it 'creates many trades' do
       AMQP::Queue.expects(:enqueue)
                  .with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask1.id, taker_order_id: bid3.id, strike_price: ask1.price, amount: ask1.volume, total: '12009'.to_d } }, anything).once
       AMQP::Queue.expects(:enqueue)
@@ -96,21 +96,21 @@ describe Workers::AMQP::Matching do
       subject.process({ action: 'submit', order: existing.to_matching_attributes }, {}, {})
     end
 
-    it 'should cancel existing order' do
+    it 'cancels existing order' do
       subject.process({ action: 'cancel', order: existing.to_matching_attributes }, {}, {})
       expect(subject.engines[market.symbol].ask_orders.limit_orders).to be_empty
     end
   end
 
   context 'dryrun' do
-    let!(:bid) { create(:order_bid, :btc_usd, price: '4001', volume: '8.0', member: bob) }
-
     subject { Workers::AMQP::Matching.new(mode: :dryrun) }
+
+    let!(:bid) { create(:order_bid, :btc_usd, price: '4001', volume: '8.0', member: bob) }
 
     context 'very old orders matched' do
       let!(:ask) { create(:order_ask, :btc_usd, price: '4000', volume: '3.0', member: alice, created_at: 1.day.ago) }
 
-      it 'should not start engine' do
+      it 'does not start engine' do
         expect(subject.engines['btc_usd'].mode).to eq :dryrun
         expect(subject.engines['btc_usd'].queue.size).to eq 1
       end
@@ -119,7 +119,7 @@ describe Workers::AMQP::Matching do
     context 'buffered orders matched' do
       let!(:ask) { create(:order_ask, :btc_usd, price: '4000', volume: '3.0', member: alice) }
 
-      it 'should start engine' do
+      it 'starts engine' do
         expect(subject.engines['btc_usd'].mode).to eq :run
       end
     end

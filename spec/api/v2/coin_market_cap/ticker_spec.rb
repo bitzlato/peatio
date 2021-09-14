@@ -7,11 +7,12 @@ describe API::V2::CoinMarketCap::Ticker, type: :request do
       create_list(:order_ask, 5, :btc_usd)
     end
 
-    before(:each) { clear_redis }
+    before { clear_redis }
 
     context 'with unified id' do
-      before(:each) { delete_measurments('trades') }
-      after(:each) { delete_measurments('trades') }
+      before { delete_measurments('trades') }
+
+      after { delete_measurments('trades') }
 
       before do
         Currency.ordered.coins.each.with_index(1) do |currency, index|

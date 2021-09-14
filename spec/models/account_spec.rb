@@ -49,12 +49,12 @@ describe Account do
       expect do
         account.plus_funds(strike_volume)
         account.sub_funds(strike_volume)
-      end.to_not(change { account.balance })
+      end.not_to(change(account, :balance))
     end
   end
 
   describe 'concurrent lock_funds' do
-    it 'should raise error on the second lock_funds' do
+    it 'raises error on the second lock_funds' do
       account1 = Account.find subject.id
       account2 = Account.find subject.id
 

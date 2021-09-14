@@ -74,13 +74,13 @@ describe API::V2::CoinGecko::Orderbook, type: :request do
         context 'invalid depth params' do
           it 'shoud return error' do
             get '/api/v2/coingecko/orderbook', params: { ticker_id: 'BTC_USD', depth: 'test' }
-            expect(response).to have_http_status 422
+            expect(response).to have_http_status :unprocessable_entity
             expect(response).to include_api_error('coingecko.market_depth.non_integer_depth')
           end
 
           it 'shoud return error' do
             get '/api/v2/coingecko/orderbook', params: { ticker_id: 'BTC_USD', depth: 2000 }
-            expect(response).to have_http_status 422
+            expect(response).to have_http_status :unprocessable_entity
             expect(response).to include_api_error('coingecko.market_depth.invalid_depth')
           end
         end
@@ -90,7 +90,7 @@ describe API::V2::CoinGecko::Orderbook, type: :request do
     context 'invalid market param' do
       it 'validates market param' do
         get '/api/v2/coingecko/orderbook', params: { ticker_id: 'usdusd' }
-        expect(response).to have_http_status 404
+        expect(response).to have_http_status :not_found
         expect(response).to include_api_error('record.not_found')
       end
     end

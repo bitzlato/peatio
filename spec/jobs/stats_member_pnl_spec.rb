@@ -37,7 +37,7 @@ describe Jobs::Cron::StatsMemberPnl do
     end
   end
 
-  before(:each) do
+  before do
     Jobs::Cron::StatsMemberPnl.stubs(:exclude_roles).returns(['maker'])
   end
 
@@ -87,7 +87,7 @@ describe Jobs::Cron::StatsMemberPnl do
   end
 
   context 'process currency' do
-    before(:each) do
+    before do
       StatsMemberPnl.delete_all
     end
 
@@ -110,7 +110,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(1)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(1)
 
           expect(StatsMemberPnl.last.member_id).to eq coin_withdraw.member_id
           expect(StatsMemberPnl.last.currency_id).to eq coin_withdraw.currency_id
@@ -144,7 +144,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(0)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(0)
 
           expect(StatsMemberPnl.last.member_id).to eq coin_withdraw.member_id
           expect(StatsMemberPnl.last.currency_id).to eq coin_withdraw.currency_id
@@ -176,7 +176,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(1)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(1)
           expect(StatsMemberPnl.last.member_id).to eq member.id
           expect(StatsMemberPnl.last.currency_id).to eq adjustment.currency_id
           expect(StatsMemberPnl.last.pnl_currency_id).to eq 'eth'
@@ -203,7 +203,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(1)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(1)
           expect(StatsMemberPnl.last.member_id).to eq member.id
           expect(StatsMemberPnl.last.currency_id).to eq adjustment.currency_id
           expect(StatsMemberPnl.last.pnl_currency_id).to eq 'eth'
@@ -220,7 +220,7 @@ describe Jobs::Cron::StatsMemberPnl do
           adjustment2 = create(:adjustment, currency_id: 'btc', amount: -half, receiving_account_number: "btc-202-#{member.uid}")
           adjustment2.accept!(validator: member)
 
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(0)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(0)
 
           expect(StatsMemberPnl.last.member_id).to eq member.id
           expect(StatsMemberPnl.last.currency_id).to eq adjustment.currency_id
@@ -253,7 +253,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(1)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(1)
           expect(StatsMemberPnl.last.member_id).to eq coin_deposit.member_id
           expect(StatsMemberPnl.last.currency_id).to eq coin_deposit.currency_id
           expect(StatsMemberPnl.last.pnl_currency_id).to eq 'eth'
@@ -282,7 +282,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(2)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(2)
 
           stats_member_pnl_btc = StatsMemberPnl.find_by(currency_id: coin_deposit.currency_id, member: coin_deposit.member)
           stats_member_pnl_usd = StatsMemberPnl.find_by(currency_id: fiat_deposit.currency_id, member: fiat_deposit.member)
@@ -327,7 +327,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(0)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(0)
           expect(StatsMemberPnl.last.member_id).to eq coin_deposit.member_id
           expect(StatsMemberPnl.last.pnl_currency_id).to eq 'eth'
           expect(StatsMemberPnl.last.currency_id).to eq coin_deposit.currency_id
@@ -380,7 +380,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(0)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(0)
 
           total_fees = trade.total * trade.order_fee(trade.maker_order)
           expect(StatsMemberPnl.all[0].member_id).to eq trade.maker_order.member.id
@@ -436,7 +436,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(4)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(4)
           total_fees = trade.total * trade.order_fee(trade.maker_order)
 
           pnl1 = StatsMemberPnl.find_by(member_id: trade.maker_order.member.id, currency_id: trade.maker_order.income_currency.id, pnl_currency_id: 'eth')
@@ -492,7 +492,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(0)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(0)
         end
       end
     end
@@ -522,7 +522,7 @@ describe Jobs::Cron::StatsMemberPnl do
       end
 
       it do
-        expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(2)
+        expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(2)
 
         expect(StatsMemberPnl.second.member_id).to eq coin_deposit.member_id
         expect(StatsMemberPnl.second.currency_id).to eq coin_deposit.currency_id
@@ -557,7 +557,7 @@ describe Jobs::Cron::StatsMemberPnl do
       end
 
       it do
-        expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(2)
+        expect { Jobs::Cron::StatsMemberPnl.process }.to change(StatsMemberPnl, :count).by(2)
       end
     end
   end
@@ -823,7 +823,7 @@ describe Jobs::Cron::StatsMemberPnl do
   end
 
   context 'conversion path' do
-    before(:each) do
+    before do
       Trade.stubs(:nearest_trade_from_influx).with('btc_eth', anything).returns(price: 0.95)
       Trade.stubs(:nearest_trade_from_influx).with('btc_usd', anything).returns(price: 10_000)
     end

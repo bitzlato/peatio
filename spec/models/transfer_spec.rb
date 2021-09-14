@@ -131,6 +131,7 @@ describe Transfer do
                 revenues: revenues,
                 expenses: expenses)
         end
+
         context 'with single currency' do
           # assets - liabilities = revenues - expenses
           #
@@ -177,6 +178,7 @@ describe Transfer do
                                       revenues: revenues,
                                       expenses: expenses))
     end
+
     let(:asset1) { build(:asset, credit: 9, currency: currency_btc) }
     let(:asset2) { build(:asset, :debit, debit: 6, currency: currency_btc) }
     let(:revenue1) { build(:revenue, credit: 12, currency: currency_btc) }
@@ -191,7 +193,7 @@ describe Transfer do
     it 'creates transfer' do
       expect do
         subject
-      end.to change { Transfer.count }.by 1
+      end.to change(Transfer, :count).by 1
     end
 
     context 'update_legacy_balances' do
@@ -244,7 +246,7 @@ describe Transfer do
                 Account::AccountError
               end
               nil
-            end.to_not change { Transfer.count }
+            end.not_to change(Transfer, :count)
           end
         end
       end

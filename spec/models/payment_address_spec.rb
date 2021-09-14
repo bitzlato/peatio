@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe PaymentAddress do
-  context '.create' do
+  describe '.create' do
     let(:member) { create(:member, :level_3) }
     let!(:account) { member.get_account(:btc) }
     let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet' }

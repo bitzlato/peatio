@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 describe Workers::AMQP::CancelMemberOrders do
+  subject { Workers::AMQP::CancelMemberOrders.new }
+
   let!(:member) { create(:member, :level_3) }
   let!(:account) do
     create(:account, :usd, balance: 100.to_d, locked: 2.to_d, member: member)
@@ -33,8 +35,6 @@ describe Workers::AMQP::CancelMemberOrders do
       member: member
     )
   end
-
-  subject { Workers::AMQP::CancelMemberOrders.new }
 
   describe '#perform' do
     it 'cancels all active member orders' do

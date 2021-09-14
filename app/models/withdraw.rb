@@ -17,9 +17,9 @@ class Withdraw < ApplicationRecord
 
   TRANSFER_TYPES = { fiat: 100, crypto: 200 }.freeze
 
-  belongs_to :blockchain, required: true, touch: false
-  belongs_to :currency, required: true, touch: false
-  belongs_to :member, required: true, touch: false
+  belongs_to :blockchain, optional: false, touch: false
+  belongs_to :currency, optional: false, touch: false
+  belongs_to :member, optional: false, touch: false
 
   # Optional beneficiary association gives ability to support both in-peatio
   # beneficiaries and managed by third party application.

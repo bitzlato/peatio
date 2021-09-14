@@ -84,7 +84,7 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.before(:each) do
+  config.before do
     DatabaseCleaner.strategy = :transaction
   end
 
@@ -92,11 +92,11 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :truncation, { only: %w[orders trades] }
   end
 
-  config.append_after(:each) do
+  config.append_after do
     DatabaseCleaner.clean
   end
 
-  config.before(:each) do
+  config.before do
     DatabaseCleaner.start
     AMQP::Queue.stubs(:publish)
     KlineDB.stubs(:kline).returns([])
@@ -129,7 +129,7 @@ RSpec.configure do |config|
     FactoryBot.create(:withdraw_limit)
   end
 
-  config.after(:each) do
+  config.after do
     DatabaseCleaner.clean
   end
 
@@ -139,8 +139,8 @@ RSpec.configure do |config|
   config.exceptions_to_retry = [Net::ReadTimeout]
 
   if Bullet.enable?
-    config.before(:each) { Bullet.start_request }
-    config.after :each do
+    config.before { Bullet.start_request }
+    config.after do
       Bullet.perform_out_of_channel_notifications if Bullet.notification?
       Bullet.end_request
     end

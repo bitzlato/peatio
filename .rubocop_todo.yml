@@ -333,30 +333,6 @@ RSpec/AnyInstance:
     - 'spec/spec_helper.rb'
     - 'spec/workers/amqp/deposit_coin_address_spec.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-RSpec/BeEql:
-  Exclude:
-    - 'spec/models/deposit_spec.rb'
-
-# Offense count: 19
-# Cop supports --auto-correct.
-RSpec/ContextMethod:
-  Exclude:
-    - 'spec/api/v2/helpers_spec.rb'
-    - 'spec/api/v2/market/orders_spec.rb'
-    - 'spec/gateways/abstract_gateway_spec.rb'
-    - 'spec/gateways/ethereum_gateway/collection_concern_spec.rb'
-    - 'spec/gateways/ethereum_gateway_spec.rb'
-    - 'spec/models/adjustment_spec.rb'
-    - 'spec/models/payment_address_spec.rb'
-    - 'spec/models/tradinng_fee_spec.rb'
-    - 'spec/models/withdraw_limit_spec.rb'
-    - 'spec/trading/matching/engine_spec.rb'
-    - 'spec/trading/matching/market_order_spec.rb'
-    - 'spec/trading/matching/order_book_manager_spec.rb'
-    - 'spec/trading/matching/order_book_spec.rb'
-
 # Offense count: 697
 # Configuration parameters: Prefixes.
 # Prefixes: when, with, without
@@ -399,82 +375,8 @@ RSpec/EmptyExampleGroup:
     - 'spec/models/beneficiary_spec.rb'
     - 'spec/models/order_spec.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-RSpec/EmptyHook:
-  Exclude:
-    - 'spec/services/withdrawer_spec.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-RSpec/EmptyLineAfterExampleGroup:
-  Exclude:
-    - 'spec/gateways/abstract_gateway_spec.rb'
-    - 'spec/gateways/ethereum_gateway/gas_refueler_spec.rb'
-    - 'spec/services/withdrawer_spec.rb'
-
-# Offense count: 111
-# Cop supports --auto-correct.
-RSpec/EmptyLineAfterFinalLet:
-  Enabled: false
-
-# Offense count: 72
-# Cop supports --auto-correct.
-RSpec/EmptyLineAfterHook:
-  Enabled: false
-
-# Offense count: 58
-# Cop supports --auto-correct.
-RSpec/EmptyLineAfterSubject:
-  Enabled: false
-
-# Offense count: 300
-# Configuration parameters: CountAsOne.
 RSpec/ExampleLength:
   Max: 47
-
-# Offense count: 160
-# Cop supports --auto-correct.
-# Configuration parameters: CustomTransform, IgnoredWords.
-RSpec/ExampleWording:
-  Enabled: false
-
-# Offense count: 41
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: method_call, block
-RSpec/ExpectChange:
-  Exclude:
-    - 'spec/api/v2/admin/adjustments_spec.rb'
-    - 'spec/api/v2/admin/trading_fees_spec.rb'
-    - 'spec/api/v2/admin/withdraw_limts_spec.rb'
-    - 'spec/jobs/stats_member_pnl_spec.rb'
-    - 'spec/models/account_spec.rb'
-    - 'spec/models/adjustment_spec.rb'
-    - 'spec/models/blockchain_spec.rb'
-    - 'spec/models/transfer_spec.rb'
-    - 'spec/models/wallet_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: Include, EnforcedStyle.
-# Include: **/*_spec.rb, **/spec/**/*, spec/factories.rb, spec/factories/**/*.rb, features/support/factories/**/*.rb
-# SupportedStyles: create_list, n_times
-RSpec/FactoryBot/CreateList:
-  Exclude:
-    - 'spec/lib/tasks/job_spec.rb'
-
-# Offense count: 12
-# Cop supports --auto-correct.
-# Configuration parameters: Include.
-# Include: spec/factories.rb, spec/factories/**/*.rb, features/support/factories/**/*.rb
-RSpec/FactoryBot/FactoryClassName:
-  Exclude:
-    - 'spec/factories/deposits.rb'
-    - 'spec/factories/internal_transfer.rb'
-    - 'spec/factories/operations.rb'
-    - 'spec/factories/operations_account.rb'
-    - 'spec/factories/withdraw.rb'
 
 # Offense count: 15
 # Configuration parameters: Include, CustomTransform, IgnoreMethods, SpecSuffixOnly.
@@ -497,38 +399,11 @@ RSpec/FilePath:
     - 'spec/models/whitelisted_smart_contract_spec.rb'
     - 'spec/services/tickers_service_spec.rb'
 
-# Offense count: 34
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: implicit, each, example
-RSpec/HookArgument:
-  Enabled: false
-
-# Offense count: 6
-# Cop supports --auto-correct.
-RSpec/HooksBeforeExamples:
-  Exclude:
-    - 'spec/api/v2/cors/validations_spec.rb'
-
-# Offense count: 168
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: single_line_only, single_statement_only, disallow
-RSpec/ImplicitSubject:
-  Exclude:
-    - 'spec/models/admin_ability_spec.rb'
-    - 'spec/models/order_spec.rb'
-
 # Offense count: 3
 # Configuration parameters: AssignmentOnly.
 RSpec/InstanceVariable:
   Exclude:
     - 'spec/trading/matching/order_book_spec.rb'
-
-# Offense count: 82
-# Cop supports --auto-correct.
-RSpec/LeadingSubject:
-  Enabled: false
 
 # Offense count: 2
 RSpec/LeakyConstantDeclaration:
@@ -575,46 +450,10 @@ RSpec/NamedSubject:
 RSpec/NestedGroups:
   Max: 7
 
-# Offense count: 46
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: not_to, to_not
-RSpec/NotToNot:
-  Exclude:
-    - 'spec/api/v2/account/balances_spec.rb'
-    - 'spec/api/v2/management/transfers_spec.rb'
-    - 'spec/lib/bitcoin/wallet_spec.rb'
-    - 'spec/models/account_spec.rb'
-    - 'spec/models/adjustment_spec.rb'
-    - 'spec/models/beneficiary_spec.rb'
-    - 'spec/models/blockchain_spec.rb'
-    - 'spec/models/deposit_spec.rb'
-    - 'spec/models/member_spec.rb'
-    - 'spec/models/order_spec.rb'
-    - 'spec/models/trade_spec.rb'
-    - 'spec/models/transfer_spec.rb'
-    - 'spec/models/wallet_spec.rb'
-    - 'spec/models/whitelisted_smart_contract_spec.rb'
-    - 'spec/models/withdraw_spec.rb'
-
 # Offense count: 1
 RSpec/OverwritingSetup:
   Exclude:
     - 'spec/api/v2/account/internal_transfer_spec.rb'
-
-# Offense count: 107
-# Cop supports --auto-correct.
-# Configuration parameters: Strict, EnforcedStyle, AllowedExplicitMatchers.
-# SupportedStyles: inflected, explicit
-RSpec/PredicateMatcher:
-  Enabled: false
-
-# Offense count: 263
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: numeric, symbolic
-RSpec/Rails/HttpStatus:
-  Enabled: false
 
 # Offense count: 29
 RSpec/RepeatedDescription:
@@ -644,22 +483,6 @@ RSpec/RepeatedExampleGroupDescription:
   Exclude:
     - 'spec/api/v2/admin/abilities_spec.rb'
 
-# Offense count: 35
-# Cop supports --auto-correct.
-RSpec/ScatteredLet:
-  Exclude:
-    - 'spec/api/v2/admin/blockchains_spec.rb'
-    - 'spec/api/v2/management/orders_spec.rb'
-    - 'spec/api/v2/management/trades_spec.rb'
-    - 'spec/api/v2/market/trades_spec.rb'
-    - 'spec/gateways/ethereum_gateway/gas_estimator_spec.rb'
-    - 'spec/gateways/ethereum_gateway/gas_refueler_spec.rb'
-    - 'spec/gateways/ethereum_gateway/transaction_creator_spec.rb'
-    - 'spec/lib/bitcoin/blockchain_spec.rb'
-    - 'spec/models/order_spec.rb'
-    - 'spec/models/withdraw_limit_spec.rb'
-    - 'spec/models/withdraw_spec.rb'
-
 # Offense count: 28
 RSpec/ScatteredSetup:
   Exclude:
@@ -670,71 +493,6 @@ RSpec/ScatteredSetup:
     - 'spec/api/v2/coin_market_cap/ticker_spec.rb'
     - 'spec/api/v2/management/jwt_authentication_middleware_spec.rb'
     - 'spec/api/v2/management/transfers_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-RSpec/SharedContext:
-  Exclude:
-    - 'spec/models/order_spec.rb'
-
-# Offense count: 33
-# Cop supports --auto-correct.
-Rails/ActiveRecordAliases:
-  Exclude:
-    - 'spec/api/v2/admin/orders_spec.rb'
-    - 'spec/api/v2/management/trades_spec.rb'
-    - 'spec/api/v2/market/orders_spec.rb'
-    - 'spec/api/v2/market/trades_spec.rb'
-    - 'spec/api/v2/public/markets_spec.rb'
-    - 'spec/models/currency_spec.rb'
-    - 'spec/support/matching_helper.rb'
-    - 'spec/trading/matching/executor_spec.rb'
-
-# Offense count: 7
-# Cop supports --auto-correct.
-Rails/ApplicationRecord:
-  Exclude:
-    - 'db/migrate/20180406080444_drop_withdraw_destinations.rb'
-    - 'db/migrate/20180501082703_normalize_addresses_and_transactions.rb'
-    - 'db/migrate/20180522105709_add_field_supports_cash_addr_format_to_currencies.rb'
-    - 'db/migrate/20180613140856_multiple_deposit_addresses.rb'
-    - 'db/migrate/20180718113111_replace_deposit_confirmations_with_min_confirmations.rb'
-    - 'db/migrate/20180905112301_remove_fields_from_currenices.rb'
-    - 'db/migrate/20210225123519_add_market_type.rb'
-
-# Offense count: 26
-# Cop supports --auto-correct.
-Rails/BelongsTo:
-  Exclude:
-    - 'app/models/account.rb'
-    - 'app/models/adjustment.rb'
-    - 'app/models/beneficiary.rb'
-    - 'app/models/currency.rb'
-    - 'app/models/deposit.rb'
-    - 'app/models/internal_transfer.rb'
-    - 'app/models/market.rb'
-    - 'app/models/order.rb'
-    - 'app/models/refund.rb'
-    - 'app/models/stats_member_pnl.rb'
-    - 'app/models/trade.rb'
-    - 'app/models/whitelisted_smart_contract.rb'
-    - 'app/models/withdraw.rb'
-
-# Offense count: 15
-# Cop supports --auto-correct.
-# Configuration parameters: NilOrEmpty, NotPresent, UnlessPresent.
-Rails/Blank:
-  Exclude:
-    - 'app/api/v2/admin/deposits.rb'
-    - 'app/api/v2/management/payment_address.rb'
-    - 'app/api/v2/webhooks_helpers.rb'
-    - 'app/gateways/bitzlato_gateway.rb'
-    - 'app/jobs/cron/stats_member_pnl.rb'
-    - 'app/models/currency.rb'
-    - 'app/models/market.rb'
-    - 'app/trading/matching/order_book_manager.rb'
-    - 'config/initializers/presence.rb'
-    - 'lib/tasks/fetch.rake'
 
 # Offense count: 3
 # Configuration parameters: Include.

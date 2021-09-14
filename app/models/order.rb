@@ -3,8 +3,8 @@
 require 'csv'
 
 class Order < ApplicationRecord
-  belongs_to :market, ->(order) { where(type: order.market_type) }, foreign_key: :market_id, primary_key: :symbol, required: true
-  belongs_to :member, required: true
+  belongs_to :market, ->(order) { where(type: order.market_type) }, foreign_key: :market_id, primary_key: :symbol, optional: false
+  belongs_to :member, optional: false
   attribute :uuid, :uuid if Rails.configuration.database_adapter.downcase != 'PostgreSQL'.downcase
 
   # Error is raised in case market doesn't have enough volume to fulfill the Order.

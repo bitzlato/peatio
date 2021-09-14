@@ -2,14 +2,15 @@
 
 describe API::V2::CoinGecko::HistoricalTrades, type: :request do
   describe 'GET /api/v2/coingecko/historical_trades' do
-    before(:each) { delete_measurments('trades') }
-    after(:each) { delete_measurments('trades') }
+    before { delete_measurments('trades') }
+
+    after { delete_measurments('trades') }
 
     context 'there is no market pair' do
-      it 'should return error' do
+      it 'returns error' do
         get '/api/v2/coingecko/historical_trades', params: { ticker_id: 'TEST_TEST' }
 
-        expect(response).to have_http_status 404
+        expect(response).to have_http_status :not_found
         expect(response).to include_api_error('record.not_found')
       end
     end
@@ -22,7 +23,7 @@ describe API::V2::CoinGecko::HistoricalTrades, type: :request do
         }
       end
 
-      it 'should return recent trades' do
+      it 'returns recent trades' do
         get '/api/v2/coingecko/historical_trades', params: { ticker_id: 'BTC_USD' }
 
         expect(response).to be_successful

@@ -7,16 +7,9 @@ describe API::V2::Market::Trades, type: :request do
       m.get_account(:usd).update_attributes(balance: 2014.47, locked: 0)
     end
   end
-
-  before do
-    Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['Trade'] } })
-  end
-
   let(:token) { jwt_for(member) }
-
   let(:level_0_member) { create(:member, :level_0) }
   let(:level_0_member_token) { jwt_for(level_0_member) }
-
   let(:btc_usd_ask) do
     create(
       :order_ask,
@@ -26,7 +19,6 @@ describe API::V2::Market::Trades, type: :request do
       member: member
     )
   end
-
   let(:btc_eth_ask) do
     create(
       :order_ask,
@@ -36,7 +28,6 @@ describe API::V2::Market::Trades, type: :request do
       member: member
     )
   end
-
   let(:btc_eth_qe_ask) do
     create(
       :order_ask,
@@ -46,7 +37,6 @@ describe API::V2::Market::Trades, type: :request do
       member: member
     )
   end
-
   let(:btc_usd_bid) do
     create(
       :order_bid,
@@ -56,7 +46,6 @@ describe API::V2::Market::Trades, type: :request do
       member: member
     )
   end
-
   let(:btc_eth_bid) do
     create(
       :order_bid,
@@ -66,7 +55,6 @@ describe API::V2::Market::Trades, type: :request do
       member: member
     )
   end
-
   let(:btc_usd_bid_maker) do
     create(
       :order_bid,
@@ -76,7 +64,6 @@ describe API::V2::Market::Trades, type: :request do
       member: member
     )
   end
-
   let(:btc_eth_ask_taker) do
     create(
       :order_ask,
@@ -86,7 +73,6 @@ describe API::V2::Market::Trades, type: :request do
       member: member
     )
   end
-
   let(:btc_eth_bid_taker) do
     create(
       :order_bid,
@@ -96,7 +82,6 @@ describe API::V2::Market::Trades, type: :request do
       member: member
     )
   end
-
   let(:btc_eth_qe_bid) do
     create(
       :order_bid,
@@ -106,13 +91,16 @@ describe API::V2::Market::Trades, type: :request do
       member: member
     )
   end
-
   let!(:btc_usd_ask_trade) { create(:trade, :btc_usd, maker_order: btc_usd_ask, created_at: 2.days.ago) }
   let!(:btc_eth_ask_trade) { create(:trade, :btc_eth, maker_order: btc_eth_ask, created_at: 2.days.ago) }
   let!(:btc_eth_qe_ask_trade) { create(:trade, :btc_eth_qe, maker_order: btc_eth_qe_ask, created_at: 2.days.ago) }
   let!(:btc_usd_bid_trade) { create(:trade, :btc_usd, taker_order: btc_usd_bid, created_at: 23.hours.ago) }
   let!(:btc_eth_bid_trade) { create(:trade, :btc_eth, taker_order: btc_eth_bid, taker: member, created_at: 23.hours.ago) }
   let!(:btc_eth_qe_bid_trade) { create(:trade, :btc_eth_qe, taker_order: btc_eth_qe_bid, taker: member, created_at: 23.hours.ago) }
+
+  before do
+    Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['Trade'] } })
+  end
 
   describe 'GET /api/v2/market/trades' do
     it 'requires authentication' do
@@ -329,7 +317,7 @@ describe API::V2::Market::Trades, type: :request do
 
       it 'renders unauthorized error' do
         api_get '/api/v2/market/trades', params: { market: 'btc_usd' }, token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end

@@ -5,7 +5,7 @@ FactoryBot.define do
     member { create(:member, :level_3) }
     amount { Kernel.rand(100..10_000).to_d }
 
-    factory :deposit_btc, class: Deposits::Coin do
+    factory :deposit_btc, class: 'Deposits::Coin' do
       currency { find_or_create :currency, :btc, id: :btc }
       address { create(:payment_address, :btc_address).address }
       txid { Faker::Lorem.characters(64) }
@@ -13,7 +13,7 @@ FactoryBot.define do
       block_number { rand(1..1_349_999) }
     end
 
-    factory :deposit_usd, class: Deposits::Fiat do
+    factory :deposit_usd, class: 'Deposits::Fiat' do
       currency { find_or_create :currency, :usd, id: :usd }
     end
 

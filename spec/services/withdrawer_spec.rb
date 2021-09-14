@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 describe Withdrawer do
+  subject { described_class.new }
+
   let(:member) { create(:member, :barong) }
   let(:withdraw) { create(:btc_withdraw, :with_deposit_liability).tap(&:accept!).tap(&:process!) }
   let(:wallet) { find_or_create :wallet, :btc_hot, name: 'Bitcoin Hot Wallet' }
   let(:gateway) { wallet.blockchain.gateway }
   let(:blockchain) { wallet.blockchain }
-
-  subject { described_class.new }
 
   context do
     before do
@@ -16,11 +16,13 @@ describe Withdrawer do
 
     context 'errored' do
       let(:transaction) { nil }
+
       it do
         subject.call(withdraw)
         expect(withdraw.aasm_state).to eq 'errored'
       end
     end
+
     context 'succesful withdraw' do
       let(:transaction) do
         Peatio::Transaction.new(amount: withdraw.money_amount,
@@ -31,6 +33,7 @@ describe Withdrawer do
                                 to: 'deposit',
                                 hash: SecureRandom.hex(5))
       end
+
       it do
         subject.call(withdraw)
         expect(withdraw.aasm_state).to eq 'confirming'
@@ -38,20 +41,7 @@ describe Withdrawer do
     end
   end
 
-  context 'withdrawal with empty rid' do
-    before do
-      # withdrawal.submit!
-      # withdrawal.accept!
-      # withdrawal.process!
-      #
-      # Withdraws::Coin.any_instance
-      #                .expects(:rid)
-      #                .with(anything)
-      #                .twice
-      #                .returns('')
-    end
-
-    # TODO: Finalize me.
+  context 'withdrawal with empty rid' do # TODO: Finalize me.
     it 'returns nil and fail withdrawal' do
       # expect(Workers::AMQP::WithdrawCoin.new.process(processing_withdrawal.as_json)).to be(nil)
       # expect(processing_withdrawal.reload.failed?).to be_truthy

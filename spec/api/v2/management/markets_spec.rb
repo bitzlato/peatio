@@ -20,74 +20,74 @@ describe API::V2::Management::Markets, type: :request do
     let(:market) { Market.find_spot_by_symbol(:btc_usd) }
     let!(:engine) { create(:engine) }
 
-    it 'should validate min_price param' do
+    it 'validates min_price param' do
       data.merge!(id: market.symbol, min_price: -10.0)
       request
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response.body).to match(/min_price does not have a valid value/i)
     end
 
-    it 'should validate min_amount param' do
+    it 'validates min_amount param' do
       data.merge!(id: market.symbol, min_amount: -123.0)
       request
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response.body).to match(/min_amount does not have a valid value/i)
     end
 
-    it 'should validate amount_precision param' do
+    it 'validates amount_precision param' do
       data.merge!(id: market.symbol, amount_precision: -100.0)
       request
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response.body).to match(/amount_precision does not have a valid value/i)
     end
 
-    it 'should validate price_precision param' do
+    it 'validates price_precision param' do
       data.merge!(id: market.symbol, price_precision: -100.0)
       request
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response.body).to match(/price_precision does not have a valid value/i)
     end
 
-    it 'should validate max_price param' do
+    it 'validates max_price param' do
       data.merge!(id: market.symbol, max_price: -1)
       request
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response.body).to match(/max_price does not have a valid value/i)
     end
 
-    it 'should validate position param' do
+    it 'validates position param' do
       data.merge!(id: market.symbol, position: -100.0)
       request
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response.body).to match(/position does not have a valid value/i)
     end
 
-    it 'should validate state param' do
+    it 'validates state param' do
       data.merge!(id: market.symbol, state: 'blah-blah')
       request
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response.body).to match(/state does not have a valid value/i)
     end
 
-    it 'should check required params' do
+    it 'checks required params' do
       request
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response.body).to match(/id is missing/i)
     end
 
-    it 'should update market' do
+    it 'updates market' do
       data.merge!(id: market.symbol, state: 'disabled', min_amount: '0.1')
       request
 
-      expect(response).to have_http_status 200
+      expect(response).to have_http_status :ok
 
       result = JSON.parse(response.body)
       expect(result.fetch('id')).to eq market.symbol
@@ -95,12 +95,12 @@ describe API::V2::Management::Markets, type: :request do
       expect(result.fetch('min_amount')).to eq '0.1'
     end
 
-    it 'should update engine_id of spot' do
+    it 'updates engine_id of spot' do
       prev_engine_id = market.engine_id
       data.merge!(id: market.symbol, engine_id: engine.id)
       request
 
-      expect(response).to have_http_status 200
+      expect(response).to have_http_status :ok
 
       result = JSON.parse(response.body)
       expect(result.fetch('id')).to eq market.symbol
@@ -108,13 +108,13 @@ describe API::V2::Management::Markets, type: :request do
       expect(result.fetch('engine_id')).to eq engine.id
     end
 
-    it 'should update engine_id' do
+    it 'updates engine_id' do
       market = Market.find_qe_by_symbol('btc_eth')
       prev_engine_id = market.engine_id
       data.merge!(id: market.symbol, type: 'qe', engine_id: engine.id)
       request
 
-      expect(response).to have_http_status 200
+      expect(response).to have_http_status :ok
 
       result = JSON.parse(response.body)
       expect(result.fetch('id')).to eq market.symbol
@@ -138,7 +138,7 @@ describe API::V2::Management::Markets, type: :request do
 
     it 'lists enabled spot markets' do
       request
-      expect(response).to have_http_status 200
+      expect(response).to have_http_status :ok
       result = JSON.parse(response.body)
 
       expect(result.size).to eq Market.spot.count
@@ -150,7 +150,7 @@ describe API::V2::Management::Markets, type: :request do
     it 'lists enabled qe markets' do
       data[:type] = 'qe'
       request
-      expect(response).to have_http_status 200
+      expect(response).to have_http_status :ok
       result = JSON.parse(response.body)
 
       expect(result.size).to eq Market.qe.count
@@ -182,6 +182,7 @@ describe API::V2::Management::Markets, type: :request do
 
     context 'invalid symbol' do
       let(:market) { OpenStruct.new(symbol: 0) }
+
       it 'returns error in case of invalid id' do
         request
 
@@ -244,7 +245,7 @@ describe API::V2::Management::Markets, type: :request do
         data.merge!(valid_params.merge(base_currency: 'test'))
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/management.market.currency_doesnt_exist./i)
       end
     end
@@ -254,7 +255,7 @@ describe API::V2::Management::Markets, type: :request do
         data.merge!(valid_params.merge(quote_currency: 'test'))
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/management.market.currency_doesnt_exist./i)
       end
     end
@@ -264,7 +265,7 @@ describe API::V2::Management::Markets, type: :request do
         data.merge!(valid_params.merge(state: '123'))
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/management.market.invalid_state./i)
       end
     end
@@ -274,7 +275,7 @@ describe API::V2::Management::Markets, type: :request do
         data.merge!(valid_params.except(:engine_id).merge(engine_name: 'test'))
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/management.market.engine_doesnt_exist./i)
       end
     end
@@ -284,7 +285,7 @@ describe API::V2::Management::Markets, type: :request do
         data.merge!(valid_params.merge(engine_name: 'test'))
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/management.market.one_of_engine_id_engine_name_fields./i)
       end
     end
@@ -293,7 +294,7 @@ describe API::V2::Management::Markets, type: :request do
       it 'checked required params' do
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/base_currency is missing, base_currency management.market.currency_doesnt_exist, quote_currency is missing, quote_currency management.market.currency_doesnt_exist, min_price is missing, min_price management.market.invalid_min_price, min_amount is missing, min_amount management.market.invalid_min_amount, engine_id, engine_name management.market.one_of_engine_id_engine_name_fields./i)
       end
     end

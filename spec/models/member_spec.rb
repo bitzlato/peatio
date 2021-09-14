@@ -1,31 +1,34 @@
 # frozen_string_literal: true
 
 describe Member do
-  let(:member) { build(:member, :level_3) }
   subject { member }
+
+  let(:member) { build(:member, :level_3) }
 
   describe 'uid' do
     subject(:member) { create(:member, :level_3) }
+
     it do
-      expect(member.uid).to_not be_nil
-      expect(member.uid).to_not be_empty
+      expect(member.uid).not_to be_nil
+      expect(member.uid).not_to be_empty
       expect(member.uid).to match(/\AID[A-Z0-9]{10}$/)
     end
   end
 
   describe 'username' do
     subject(:member) { create(:member, username: 'foobar') }
+
     it do
-      expect(member.username).to_not be_nil
-      expect(member.username).to_not be_empty
+      expect(member.username).not_to be_nil
+      expect(member.username).not_to be_empty
       expect(member.username).to eq 'foobar'
     end
   end
 
   describe 'before_create' do
-    it 'should unify email' do
+    it 'unifies email' do
       create(:member, email: 'foo@example.com')
-      expect(build(:member, email: 'Foo@example.com')).to_not be_valid
+      expect(build(:member, email: 'Foo@example.com')).not_to be_valid
     end
 
     it 'doesnt creates accounts for the member' do
@@ -38,7 +41,7 @@ describe Member do
   describe '#trades' do
     subject { create(:member, :level_3) }
 
-    it 'should find all trades belong to user' do
+    it 'finds all trades belong to user' do
       ask = create(:order_ask, :btc_usd, member: member)
       bid = create(:order_bid, :btc_usd, member: member)
       t1 = create(:trade, :btc_usd, maker_order: ask)

@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 describe API::V2::Public::TradingFees, type: :request do
-  before(:each) { clear_redis }
+  before { clear_redis }
+
   describe 'GET /trading_fees' do
     before do
       create(:trading_fee, maker: 0.0005, taker: 0.001, market_id: :btc_usd, group: 'vip-0')

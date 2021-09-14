@@ -5,8 +5,8 @@ class Account < ApplicationRecord
 
   self.primary_keys = :currency_id, :member_id
 
-  belongs_to :currency, required: true
-  belongs_to :member, required: true
+  belongs_to :currency, optional: false
+  belongs_to :member, optional: false
   has_one :blockchain, through: :currency
 
   acts_as_eventable prefix: 'account', on: %i[create update]

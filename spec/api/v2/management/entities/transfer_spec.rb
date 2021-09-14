@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 describe API::V2::Management::Entities::Transfer do
-  let(:record) { create(:transfer) }
   subject { OpenStruct.new API::V2::Management::Entities::Transfer.represent(record.reload).serializable_hash }
+
+  let(:record) { create(:transfer) }
 
   it do
     expect(subject.key).to eq record.key
@@ -12,6 +13,7 @@ describe API::V2::Management::Entities::Transfer do
 
   context 'with operations' do
     let(:record) { create(:transfer_with_operations) }
+
     it do
       ::Operations::Account::TYPES.map(&:pluralize).each do |op_t|
         expect(subject.respond_to?(op_t)).to be_truthy

@@ -7,7 +7,7 @@ class WhitelistedSmartContract < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain, touch: true, required: true
+  belongs_to :blockchain, touch: true, optional: false
 
   # == Validations ==========================================================
 

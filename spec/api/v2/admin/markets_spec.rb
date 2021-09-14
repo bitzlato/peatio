@@ -193,49 +193,49 @@ describe API::V2::Admin::Markets, type: :request do
     it 'validate type param' do
       api_post '/api/v2/admin/markets/new', token: token, params: valid_params.merge(type: 'invalid')
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.invalid_market_type')
     end
 
     it 'validate base_currency param' do
       api_post '/api/v2/admin/markets/new', token: token, params: valid_params.merge(base_currency: 'test')
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.currency_doesnt_exist')
     end
 
     it 'validate quote_currency param' do
       api_post '/api/v2/admin/markets/new', token: token, params: valid_params.merge(quote_currency: 'test')
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.currency_doesnt_exist')
     end
 
     it 'validate enabled param' do
       api_post '/api/v2/admin/markets/new', token: token, params: valid_params.merge(state: '123')
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.invalid_state')
     end
 
     it 'validate engine name param' do
       api_post '/api/v2/admin/markets/new', token: token, params: valid_params.except(:engine_id).merge(engine_name: 'test')
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.engine_doesnt_exist')
     end
 
     it 'checked exactly_one_ofr params' do
       api_post '/api/v2/admin/markets/new', token: token, params: valid_params.merge(engine_name: 'test')
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.one_of_engine_id_engine_name_fields')
     end
 
     it 'checked required params' do
       api_post '/api/v2/admin/markets/new', params: {}, token: token
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.missing_base_currency')
       expect(response).to include_api_error('admin.market.missing_quote_currency')
       expect(response).to include_api_error('admin.market.one_of_engine_id_engine_name_fields')
@@ -305,21 +305,21 @@ describe API::V2::Admin::Markets, type: :request do
     it 'validates data field' do
       api_post '/api/v2/admin/markets/update', params: { id: Market.first.symbol, data: 'data' }, token: token
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.invalid_data')
     end
 
     it 'validates position' do
       api_post '/api/v2/admin/markets/update', params: { id: Market.first.symbol, position: 0 }, token: token
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.invalid_position')
     end
 
     it 'checkes id or symbol presence' do
       api_post '/api/v2/admin/markets/update', params: { id: Market.first.symbol, symbol: Market.first.symbol }, token: token
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('exclusive')
     end
 

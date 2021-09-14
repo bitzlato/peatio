@@ -3,9 +3,9 @@
 describe API::V2::Management::Entities::Operation do
   Operations::Account::PLATFORM_TYPES.each do |op_type|
     context op_type do
-      let(:record) { create(op_type) }
-
       subject { OpenStruct.new API::V2::Management::Entities::Operation.represent(record).serializable_hash }
+
+      let(:record) { create(op_type) }
 
       it do
         expect(subject.code).to eq record.code
@@ -16,15 +16,16 @@ describe API::V2::Management::Entities::Operation do
       context 'credit' do
         it do
           expect(subject.credit).to eq record.credit
-          expect(subject.respond_to?(:debit)).to be_falsey
+          expect(subject).not_to respond_to(:debit)
         end
       end
 
       context 'debit' do
         let(:record) { create(:asset, :debit) }
+
         it do
           expect(subject.debit).to eq record.debit
-          expect(subject.respond_to?(:credit)).to be_falsey
+          expect(subject).not_to respond_to(:credit)
         end
       end
     end
@@ -32,9 +33,9 @@ describe API::V2::Management::Entities::Operation do
 
   Operations::Account::MEMBER_TYPES.each do |op_type|
     context op_type do
-      let(:record) { create(op_type, :with_member) }
-
       subject { OpenStruct.new API::V2::Management::Entities::Operation.represent(record).serializable_hash }
+
+      let(:record) { create(op_type, :with_member) }
 
       it do
         expect(subject.code).to eq record.code
@@ -46,7 +47,7 @@ describe API::V2::Management::Entities::Operation do
       context 'credit' do
         it do
           expect(subject.credit).to eq record.credit
-          expect(subject.respond_to?(:debit)).to be_falsey
+          expect(subject).not_to respond_to(:debit)
         end
       end
 
@@ -55,7 +56,7 @@ describe API::V2::Management::Entities::Operation do
 
         it do
           expect(subject.debit).to eq record.debit
-          expect(subject.respond_to?(:credit)).to be_falsey
+          expect(subject).not_to respond_to(:credit)
         end
       end
     end

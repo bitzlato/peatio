@@ -30,7 +30,7 @@ describe API::V2::Management::Deposits, type: :request do
 
     it 'returns deposits' do
       request
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).map { |x| x.fetch('tid') }).to eq Deposit.order(id: :desc).pluck(:tid)
     end
 
@@ -38,11 +38,11 @@ describe API::V2::Management::Deposits, type: :request do
       ids = Deposit.order(id: :desc).pluck(:tid)
       data.merge!(page: 1, limit: 4)
       request
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).map { |x| x.fetch('tid') }).to eq ids[0...4]
       data.merge!(page: 3, limit: 4)
       request
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).map { |x| x.fetch('tid') }).to eq ids[8...12]
     end
 
@@ -50,7 +50,7 @@ describe API::V2::Management::Deposits, type: :request do
       Deposit.aasm(:default).states.map(&:name).each do |state|
         data.merge!(state: state)
         request
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body).count).to eq Deposit.where(aasm_state: state).count
       end
     end
@@ -59,14 +59,14 @@ describe API::V2::Management::Deposits, type: :request do
       member = members.last
       data.merge!(uid: member.uid)
       request
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).count).to eq member.deposits.count
     end
 
     it 'filters by currency' do
       data.merge!(currency: :usd)
       request
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).count).to eq Deposit.where(currency_id: :usd).count
     end
 
@@ -74,7 +74,7 @@ describe API::V2::Management::Deposits, type: :request do
       from_id = Deposit.count / 2
       data.merge!(from_id: from_id)
       request
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).count).to eq Deposit.where('id > ?', from_id).count
     end
   end
@@ -152,6 +152,7 @@ describe API::V2::Management::Deposits, type: :request do
 
     context 'when coin instead of fiat is supplied' do
       let(:currency) { Currency.find(:btc) }
+
       it 'doesn\'t work' do
         request
         expect(response.body).to match(/currency does not have a valid value/i)
@@ -162,7 +163,7 @@ describe API::V2::Management::Deposits, type: :request do
       it 'keeps precision for amount' do
         data.merge!(amount: '0.0000000123456789')
         request
-        expect(response).to have_http_status(201)
+        expect(response).to have_http_status(:created)
         expect(Deposit.last.amount.to_s).to eq data[:amount]
       end
     end
@@ -174,7 +175,7 @@ describe API::V2::Management::Deposits, type: :request do
 
       it 'returns error for enabled disabled deposit' do
         request
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('management.currency.deposit_disabled')
       end
     end
@@ -215,14 +216,14 @@ describe API::V2::Management::Deposits, type: :request do
       it 'works only with fiat deposits' do
         data.merge!(state: :accepted)
         request
-        expect(response).to have_http_status(404)
+        expect(response).to have_http_status(:not_found)
       end
     end
 
     it 'cancels deposit' do
       data.merge!(state: :canceled)
       request
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       expect(Deposit.find_by_tid!(JSON.parse(response.body).fetch('tid')).aasm_state).to eq 'canceled'
       account.reload
       expect(account.balance).to eq 0
@@ -232,7 +233,7 @@ describe API::V2::Management::Deposits, type: :request do
     it 'accepts deposit' do
       data.merge!(state: :accepted)
       request
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       expect(Deposit.find_by_tid!(JSON.parse(response.body).fetch('tid')).aasm_state).to eq 'accepted'
       account.reload
       expect(account.balance).to eq amount.to_d
@@ -244,7 +245,7 @@ describe API::V2::Management::Deposits, type: :request do
       expect(record.aasm_state).to eq 'canceled'
       data.merge!(state: :canceled)
       expect { request }.not_to(change { record.reload.aasm_state })
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(record.account.balance).to eq 0
       expect(record.account.locked).to eq 0
     end
@@ -254,7 +255,7 @@ describe API::V2::Management::Deposits, type: :request do
       expect(record.aasm_state).to eq 'accepted'
       data.merge!(state: :accepted)
       expect { request }.not_to(change { record.reload.aasm_state })
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(record.account.balance).to eq amount.to_d
       expect(record.account.locked).to eq 0
     end
@@ -262,7 +263,7 @@ describe API::V2::Management::Deposits, type: :request do
     it 'validates state' do
       data.merge!(state: :rejected)
       request
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response.body).to match(/state does not have a valid value/i)
     end
 

@@ -1,7 +1,18 @@
 # frozen_string_literal: true
 
 describe ::EthereumGateway::GasRefueler do
+  subject { described_class.new(ethereum_client) }
+
   let(:eth) { Currency.find_by(id: :eth) }
+  let(:result) do
+    subject.call(
+      gas_factor: refuel_gas_factor,
+      gas_wallet_address: from_address,
+      gas_wallet_secret: secret,
+      target_address: to_address,
+      contract_addresses: contract_addresses
+    )
+  end
   let(:trst) { Currency.find_by(id: :trst) }
   let(:ring) { Currency.find_by(id: :ring) }
   let(:secret) { SecureRandom.hex(5) }
@@ -14,8 +25,6 @@ describe ::EthereumGateway::GasRefueler do
   let(:estimated_gas) { 1_231_230 }
   let(:gas_limit) { estimated_gas }
 
-  subject { described_class.new(ethereum_client) }
-
   before do
     stub_balance_fetching balance: balance_on_target_address, address: to_address, id: 1
     stub_gas_fetching gas_price: gas_price, id: 2
@@ -27,28 +36,24 @@ describe ::EthereumGateway::GasRefueler do
     WebMock.allow_net_connect!
   end
 
-  let(:result) do
-    subject.call(
-      gas_factor: refuel_gas_factor,
-      gas_wallet_address: from_address,
-      gas_wallet_secret: secret,
-      target_address: to_address,
-      contract_addresses: contract_addresses
-    )
-  end
-
   context 'address has no tokens' do
     let(:contract_addresses) { [] }
+
     context 'it has zero ethereum balance' do
       let(:balance_on_target_address) { 0 }
+
       it { expect { result }.to raise_error described_class::NoTokens }
     end
+
     context 'it has small ethereum balance' do
       let(:balance_on_target_address) { 10_000 }
+
       it { expect { result }.to raise_error described_class::NoTokens }
     end
+
     context 'it has big ethereum balance' do
       let(:balance_on_target_address) { 10**18 }
+
       it { expect { result }.to raise_error described_class::NoTokens }
     end
   end
@@ -56,6 +61,7 @@ describe ::EthereumGateway::GasRefueler do
   context 'address has tokens' do
     let(:balance_on_target_address) { 0 }
     let(:contract_addresses) { [Faker::Blockchain::Ethereum.address] }
+
     before do
       stub_estimate_gas(
         id: 3,
@@ -86,6 +92,7 @@ describe ::EthereumGateway::GasRefueler do
           id: 5
         )
       end
+
       let(:balance_on_target_address) { 10_000 }
       let(:value) { (gas_price * estimated_gas * 2 * refuel_gas_factor).to_i - balance_on_target_address }
       let(:transaction_gas_price) { (gas_price * refuel_gas_factor).to_i }
@@ -106,10 +113,13 @@ describe ::EthereumGateway::GasRefueler do
           }
         }
       end
+
       it { expect(result.as_json.symbolize_keys).to eq(result_transaction_hash) }
     end
+
     context 'and it has enough ethereum balance' do
       let(:balance_on_target_address) { 10**18 }
+
       it { expect { result }.to raise_error described_class::Balanced }
     end
   end

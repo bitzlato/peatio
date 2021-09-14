@@ -2,7 +2,7 @@
 
 describe API::V2::CoinGecko::Pairs, type: :request do
   describe 'GET /api/v2/coingecko/pairs' do
-    before(:each) { clear_redis }
+    before { clear_redis }
 
     let!(:market) do
       ::Market.enabled.ordered.sample
@@ -30,7 +30,7 @@ describe API::V2::CoinGecko::Pairs, type: :request do
   context 'There is no markets' do
     before { DatabaseCleaner.clean }
 
-    it 'should return summary' do
+    it 'returns summary' do
       get '/api/v2/coingecko/pairs'
 
       expect(response).to be_successful

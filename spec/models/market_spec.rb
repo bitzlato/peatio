@@ -181,6 +181,7 @@ describe Market do
 
   context 'relationships' do
     subject { Market.find_spot_by_symbol(:btc_usd) }
+
     before do
       create(:trading_fee, market_id: :btc_usd)
       create(:trading_fee, market_id: :btc_eth)
@@ -194,9 +195,10 @@ describe Market do
 
   context 'validate max market' do
     before { ENV['MAX_MARKETS'] = '2' }
+
     after  { ENV['MAX_MARKETS'] = nil }
 
-    it 'should raise validation error for max market' do
+    it 'raises validation error for max market' do
       record = build(:market, :btc_trst)
       record.save
       expect(record.errors.full_messages).to include(/Max Market limit has been reached/i)

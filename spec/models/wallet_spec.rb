@@ -10,31 +10,31 @@ describe Wallet do
 
     it 'validates presence of address' do
       subject.address = nil
-      expect(subject).to_not be_valid
+      expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Address can\'t be blank']
     end
 
     it 'validates presence of name' do
       subject.name = nil
-      expect(subject).to_not be_valid
+      expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Name can\'t be blank']
     end
 
     it 'validates inclusion of status' do
       subject.status = 'abc'
-      expect(subject).to_not be_valid
+      expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Status is not included in the list']
     end
 
     it 'validates inclusion of kind' do
       subject.kind = 'abc'
-      expect(subject).to_not be_valid
+      expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Kind is not included in the list']
     end
 
     it 'validates name uniqueness' do
       subject.name = Wallet.first.name
-      expect(subject).to_not be_valid
+      expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Name has already been taken']
     end
 
@@ -43,14 +43,14 @@ describe Wallet do
       expect do
         subject.uri = 'http://geth:8545/'
         subject.save
-      end.to change { subject.settings_encrypted }
+      end.to change(subject, :settings_encrypted)
     end
 
     it 'does not update settings_encrypted before model is saved' do
       subject.save
       expect do
         subject.uri = 'http://geth:8545/'
-      end.not_to change { subject.settings_encrypted }
+      end.not_to change(subject, :settings_encrypted)
     end
 
     it 'updates setting fields' do
@@ -78,7 +78,7 @@ describe Wallet do
       it 'does not allow to create hot wallet' do
         AbstractGateway.any_instance.stubs(:support_wallet_kind?).returns false
         subject.kind = 'deposit'
-        expect(subject).to_not be_valid
+        expect(subject).not_to be_valid
         expect(subject.errors.full_messages).to eq ["Gateway 'EthereumGateway' can\'t be used as a 'deposit' wallet"]
       end
     end

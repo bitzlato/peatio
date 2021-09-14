@@ -66,8 +66,8 @@ class Beneficiary < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :currency, required: true
-  belongs_to :member, required: true
+  belongs_to :currency, optional: false
+  belongs_to :member, optional: false
 
   # == Validations ==========================================================
 

@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 describe API::V2::Public::Markets, type: :request do
-  before(:each) { clear_redis }
+  before { clear_redis }
+
   describe 'GET /api/v2/markets' do
     before { create(:market, :eth_usd) }
 
@@ -24,6 +25,7 @@ describe API::V2::Public::Markets, type: :request do
 
     context 'api will return hidden markets' do
       before { create(:market, :btc_eur, state: :hidden) }
+
       it 'returns hidden market' do
         get '/api/v2/public/markets'
         expect(response).to be_successful
@@ -213,19 +215,19 @@ describe API::V2::Public::Markets, type: :request do
 
     it 'validates market param' do
       get '/api/v2/public/markets/somecoin/order-book', params: { asks_limit: 1, bids_limit: 1 }
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.market.doesnt_exist')
     end
 
     it 'validates asks limit' do
       get '/api/v2/public/markets/somecoin/order-book', params: { asks_limit: 201, bids_limit: 1 }
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.order_book.invalid_ask_limit')
     end
 
     it 'validates bids limit' do
       get '/api/v2/public/markets/somecoin/order-book', params: { asks_limit: 1, bids_limit: 201 }
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.order_book.invalid_bid_limit')
     end
   end
@@ -271,7 +273,7 @@ describe API::V2::Public::Markets, type: :request do
     context 'invalid market param' do
       it 'validates market param' do
         api_get '/api/v2/public/markets/usdusd/depth'
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('public.market.doesnt_exist')
       end
     end
@@ -320,6 +322,7 @@ describe API::V2::Public::Markets, type: :request do
     let(:first_point) { points.first }
 
     before { write_to_influx(points) }
+
     after { delete_measurments('candles_1m') }
 
     def influx_data(point)
@@ -348,7 +351,7 @@ describe API::V2::Public::Markets, type: :request do
 
     def load_k_line(query = {})
       api_get '/api/v2/public/markets/btc_usd/k-line?' + query.to_query
-      expect(response).to have_http_status 200
+      expect(response).to have_http_status :ok
     end
 
     def response_body
@@ -543,6 +546,7 @@ describe API::V2::Public::Markets, type: :request do
           'volume' => '5.5', 'vol' => '5.5', 'amount' => '1.1',
           'avg_price' => '5.0', 'price_change_percent' => '+0.00%' }
       end
+
       before do
         trade.write_to_influx
       end
@@ -565,6 +569,7 @@ describe API::V2::Public::Markets, type: :request do
           'vol' => '10.9', 'volume' => '10.9', 'amount' => '2.0',
           'avg_price' => '5.45', 'price_change_percent' => '+20.00%' }
       end
+
       before do
         trade1.write_to_influx
         trade2.write_to_influx
@@ -581,6 +586,7 @@ describe API::V2::Public::Markets, type: :request do
 
   describe 'GET /api/v2/public/markets/:market/tickers' do
     after { delete_measurments('trades') }
+
     context 'no trades executed yet' do
       let(:expected_ticker) do
         { 'low' => '0.0', 'high' => '0.0',
@@ -615,6 +621,7 @@ describe API::V2::Public::Markets, type: :request do
           'volume' => '5.5', 'vol' => '5.5', 'amount' => '1.1',
           'avg_price' => '5.0', 'price_change_percent' => '+0.00%' }
       end
+
       before do
         trade.write_to_influx
       end
@@ -638,6 +645,7 @@ describe API::V2::Public::Markets, type: :request do
           'vol' => '10.9', 'volume' => '10.9', 'amount' => '2.0',
           'avg_price' => '5.45', 'price_change_percent' => '+20.00%' }
       end
+
       before do
         trade1.write_to_influx
         trade2.write_to_influx
@@ -739,13 +747,13 @@ describe API::V2::Public::Markets, type: :request do
 
     it 'validates market param' do
       api_get '/api/v2/public/markets/usdusd/trades'
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.market.doesnt_exist')
     end
 
     it 'validates limit param' do
       get "/api/v2/public/markets/#{market}/trades", params: { limit: 1001 }
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.trade.invalid_limit')
     end
   end

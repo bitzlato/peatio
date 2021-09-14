@@ -24,19 +24,19 @@ describe AMQP::Queue do
     AMQP::Queue.stubs(:channel).returns(channel)
   end
 
-  it 'should instantiate exchange use exchange config' do
+  it 'instantiates exchange use exchange config' do
     channel.expects(:fanout).with('testx')
     AMQP::Queue.exchange(:testx)
   end
 
-  it 'should publish message on selected exchange' do
+  it 'publishes message on selected exchange' do
     exchange = mock('test exchange')
     channel.expects(:fanout).with('testx').returns(exchange)
     exchange.expects(:publish).with(JSON.dump(data: 'hello'), {})
     AMQP::Queue.publish(:testx, data: 'hello')
   end
 
-  it 'should publish message on default exchange' do
+  it 'publishes message on default exchange' do
     default_exchange.expects(:publish).with(JSON.dump(data: 'hello'), routing_key: 'testd')
     AMQP::Queue.enqueue(:testd, data: 'hello')
   end

@@ -17,7 +17,7 @@ class Adjustment < ApplicationRecord
   # == Relationships ========================================================
 
   belongs_to :currency
-  belongs_to :creator, class_name: :Member, required: true
+  belongs_to :creator, class_name: :Member, optional: false
   belongs_to :validator, class_name: :Member
 
   # Define has_one relation with Operations::{Asset,Expense,Liability,Revenue}.

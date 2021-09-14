@@ -68,6 +68,7 @@ describe API::V2::Admin::Members, type: :request do
 
     context 'accounts' do
       before { admin.touch_accounts }
+
       it 'returns accounts for all currencies' do
         api_get '/api/v2/admin/members', token: token, params: { uid: uid }
         result = JSON.parse(response.body)
@@ -172,25 +173,25 @@ describe API::V2::Admin::Members, type: :request do
   describe 'POST /api/v2/admin/members/groups' do
     it 'returns user with updated role' do
       api_put "/api/v2/admin/members/#{member.uid}", token: token, params: { group: 'vip-2' }
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)['group']).to eq('vip-2')
     end
 
     it 'returns user with updated group' do
       api_put "/api/v2/admin/members/#{member.uid}", token: token, params: { group: ' Vip-2 ' }
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)['group']).to eq('vip-2')
     end
 
     it 'returns status 404 and error' do
       api_put '/api/v2/admin/members/U1234', token: token, params: { group: 'vip-2' }
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
       expect(response).to include_api_error('record.not_found')
     end
 
     it 'validate params' do
       api_put "/api/v2/admin/members/#{member.uid}", token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('admin.member.missing_group')
     end
   end

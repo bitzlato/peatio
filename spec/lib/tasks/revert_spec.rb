@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 describe 'revert.rake' do
+  subject { Rake::Task['revert:trading_activity'] }
+
   let(:bob) { create(:member, :level_3, email: 'bob@gmail.com') }
   let(:alice) { create(:member, :level_3, email: 'alice@gmail.com') }
   let(:bob_accounting_balance) { Operations::Liability.where(member_id: bob.id).sum(:credit) - Operations::Liability.where(member_id: bob.id).sum(:debit) }
   let(:alice_accounting_balance) { Operations::Liability.where(member_id: alice.id).sum(:credit) - Operations::Liability.where(member_id: alice.id).sum(:debit) }
   let(:bob_legacy_balance) { bob.get_account(:usd).balance }
   let(:alice_legacy_balance) { alice.get_account(:btc).balance }
-  subject { Rake::Task['revert:trading_activity'] }
 
-  after(:each) { subject.reenable }
+  after { subject.reenable }
 
   context 'simple case' do
     let(:price)  { 10.to_d }

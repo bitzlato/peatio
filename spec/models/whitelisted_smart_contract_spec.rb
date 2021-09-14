@@ -15,25 +15,25 @@ describe WhitelistedSmartContract, 'Validations' do
 
     it 'validates whitelisted address presence of address' do
       subject.address = nil
-      expect(subject).to_not be_valid
+      expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Address can\'t be blank']
     end
 
     it 'validates whitelisted address presence of blockchain_id' do
       subject.blockchain_id = nil
-      expect(subject).to_not be_valid
+      expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Blockchain must exist']
     end
 
     it 'validates whitelisted address inclusion of state' do
       subject.state = 'abc'
-      expect(subject).to_not be_valid
+      expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['State is not included in the list']
     end
 
     it 'validates whitelisted address address uniqueness' do
       subject.address = WhitelistedSmartContract.first.address
-      expect(subject).to_not be_valid
+      expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Address has already been taken']
     end
   end

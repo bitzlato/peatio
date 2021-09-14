@@ -67,7 +67,7 @@ describe API::V2::Management::Transfers, type: :request do
         expect(receiver_member.accounts.count).to eq(0)
 
         request
-        expect(response).to have_http_status(201)
+        expect(response).to have_http_status(:created)
         expect(receiver_member.accounts.count).to eq(1)
       end
     end
@@ -81,7 +81,7 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/key is missing/i)
       end
     end
@@ -95,7 +95,7 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/category is missing/i)
       end
     end
@@ -108,7 +108,7 @@ describe API::V2::Management::Transfers, type: :request do
         request
       end
 
-      it { expect(response).to have_http_status(201) }
+      it { expect(response).to have_http_status(:created) }
     end
 
     context 'empty operations' do
@@ -117,7 +117,7 @@ describe API::V2::Management::Transfers, type: :request do
       before { request }
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/operations is empty/i)
       end
     end
@@ -127,10 +127,11 @@ describe API::V2::Management::Transfers, type: :request do
         valid_operation[:account_src][:code] = 999
         [valid_operation]
       end
+
       before { request }
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/does not have a valid value/i)
       end
     end
@@ -140,10 +141,11 @@ describe API::V2::Management::Transfers, type: :request do
         valid_operation[:currency] = :neo
         [valid_operation]
       end
+
       before { request }
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/does not have a valid value/i)
       end
     end
@@ -153,16 +155,18 @@ describe API::V2::Management::Transfers, type: :request do
         valid_operation[:amount] = -1
         [valid_operation]
       end
+
       before { request }
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/does not have a valid value/i)
       end
     end
 
     context 'existing transfer key' do
       let(:operations) { [valid_operation] }
+
       before do
         t = create(:transfer)
         data[:key] = t.key
@@ -170,7 +174,7 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it do
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/key has already been taken/i)
       end
     end
@@ -199,7 +203,7 @@ describe API::V2::Management::Transfers, type: :request do
       before { request }
 
       it do
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/account balance is insufficient/i)
       end
     end
@@ -308,7 +312,7 @@ describe API::V2::Management::Transfers, type: :request do
 
       it do
         request
-        expect(response).to have_http_status 201
+        expect(response).to have_http_status :created
       end
 
       it 'returns transfer with operations' do
@@ -365,19 +369,19 @@ describe API::V2::Management::Transfers, type: :request do
 
         it do
           request
-          expect(response).to have_http_status 422
+          expect(response).to have_http_status :unprocessable_entity
         end
 
         it 'doesn\'t save transfer' do
-          expect { request }.to_not change(Transfer, :count)
+          expect { request }.not_to change(Transfer, :count)
         end
 
         it 'doesn\'t save liabilities' do
-          expect { request }.to_not change(::Operations::Liability, :count)
+          expect { request }.not_to change(::Operations::Liability, :count)
         end
 
         it 'doesn\'t save revenues' do
-          expect { request }.to_not change(::Operations::Revenue, :count)
+          expect { request }.not_to change(::Operations::Revenue, :count)
         end
       end
     end
@@ -458,7 +462,7 @@ describe API::V2::Management::Transfers, type: :request do
 
       it do
         request
-        expect(response).to have_http_status 201
+        expect(response).to have_http_status :created
       end
 
       it 'returns transfer with liabilities' do

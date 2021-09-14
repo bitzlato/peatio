@@ -286,7 +286,7 @@ describe API::V2::Account::Transactions, type: :request do
         it 'renders unauthorized error' do
           api_get '/api/v2/account/transactions', params: { limit: 1000 }, token: token
 
-          expect(response).to have_http_status 403
+          expect(response).to have_http_status :forbidden
           expect(response).to include_api_error('user.ability.not_permitted')
         end
       end

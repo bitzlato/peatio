@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 describe Adjustment do
-  let!(:member) { create(:member) }
   subject { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-202-#{member.uid}") }
+
+  let!(:member) { create(:member) }
 
   context 'on create' do
     it 'does not insert liability' do
@@ -77,7 +78,7 @@ describe Adjustment do
     end
   end
 
-  context '#prebuild_operations' do
+  describe '#prebuild_operations' do
     subject { adjustment.prebuild_operations }
 
     context 'asset and liability' do
@@ -144,7 +145,7 @@ describe Adjustment do
   context 'on accept' do
     it { expect { subject.accept!(validator: member) }.to change { Operations::Asset.count }.by(1) }
     it { expect { subject.accept!(validator: member) }.to change { Operations::Liability.count }.by(1) }
-    it { expect { subject.accept!(validator: member) }.to change { subject.state }.to('accepted') }
+    it { expect { subject.accept!(validator: member) }.to change(subject, :state).to('accepted') }
 
     it 'operaions have correct reference' do
       subject.accept!(validator: member)
@@ -178,7 +179,7 @@ describe Adjustment do
 
       expect do
         subject.accept!(validator: member)
-      end.to_not change { subject.state }
+      end.not_to change(subject, :state)
     end
 
     it 'does not accept without validator' do
@@ -186,7 +187,7 @@ describe Adjustment do
 
       expect do
         subject.accept!(validator: nil)
-      end.to_not change { subject.state }
+      end.not_to change(subject, :state)
     end
 
     it 'does not create operations with invalid attributes' do
@@ -203,9 +204,9 @@ describe Adjustment do
     context 'accepted' do
       before { subject.accept!(validator: member) }
 
-      it { expect { subject.accept!(validator: member) }.not_to change { subject.state } }
-      it { expect { subject.accept!(validator: member) }.not_to change { member.accounts } }
-      it { expect { subject.reject!(validator: member) }.not_to change { subject.state } }
+      it { expect { subject.accept!(validator: member) }.not_to change(subject, :state) }
+      it { expect { subject.accept!(validator: member) }.not_to change(member, :accounts) }
+      it { expect { subject.reject!(validator: member) }.not_to change(subject, :state) }
     end
 
     context 'accept without validator_id (presence validation)' do
@@ -232,14 +233,14 @@ describe Adjustment do
   end
 
   context 'on reject' do
-    it { expect { subject.reject!(validator: member) }.to change { subject.state }.to('rejected') }
+    it { expect { subject.reject!(validator: member) }.to change(subject, :state).to('rejected') }
 
     it 'does not reject without validator' do
       subject.update(asset_account_code: 101)
 
       expect do
         subject.reject!(validator: nil)
-      end.to_not change { subject.state }
+      end.not_to change(subject, :state)
     end
 
     context 'rejected' do
@@ -247,9 +248,9 @@ describe Adjustment do
         subject.reject!(validator: member)
       end
 
-      it { expect { subject.accept!(validator: member) }.not_to change { subject.state } }
-      it { expect { subject.accept!(validator: member) }.not_to change { member.accounts } }
-      it { expect { subject.reject!(validator: member) }.not_to change { subject.state } }
+      it { expect { subject.accept!(validator: member) }.not_to change(subject, :state) }
+      it { expect { subject.accept!(validator: member) }.not_to change(member, :accounts) }
+      it { expect { subject.reject!(validator: member) }.not_to change(subject, :state) }
     end
   end
 end

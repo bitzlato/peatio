@@ -2,7 +2,7 @@
 
 describe API::V2::CoinMarketCap::Assets, type: :request do
   describe 'GET /api/v2/coinmarketcap/assets' do
-    before(:each) { clear_redis }
+    before { clear_redis }
 
     context 'There are currencies' do
       context 'with unified id' do
@@ -31,7 +31,7 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
           end
         end
 
-        it 'should return crypto assets' do
+        it 'returns crypto assets' do
           get '/api/v2/coinmarketcap/assets'
           expect(response).to be_successful
           expect(response_body['BTC'].keys).to match_array %w[name unified_cryptoasset_id can_withdraw can_deposit min_withdraw]
@@ -64,7 +64,7 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
           end
         end
 
-        it 'should return crypto assets' do
+        it 'returns crypto assets' do
           get '/api/v2/coinmarketcap/assets'
 
           expect(response).to be_successful
@@ -85,7 +85,7 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
             end
           end
 
-          it 'should return crypto assets' do
+          it 'returns crypto assets' do
             get '/api/v2/coinmarketcap/assets'
 
             expect(response).to be_successful
@@ -102,7 +102,7 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
     context 'There is no currencies' do
       before { DatabaseCleaner.clean }
 
-      it 'should return assets' do
+      it 'returns assets' do
         get '/api/v2/coinmarketcap/assets'
 
         expect(response).to be_successful

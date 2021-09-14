@@ -61,7 +61,7 @@ class Market < ApplicationRecord
 
   has_one :base, class_name: 'Currency', foreign_key: :id, primary_key: :base_unit
   has_one :quote, class_name: 'Currency', foreign_key: :id, primary_key: :quote_unit
-  belongs_to :engine, required: true
+  belongs_to :engine, optional: false
 
   has_many :trading_fees, foreign_key: :market_id, primary_key: :symbol, dependent: :delete_all
   has_many :trades, foreign_key: :market_id, primary_key: :symbol

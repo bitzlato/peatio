@@ -9,6 +9,8 @@ describe Matching::Engine do
     end
   end
 
+  subject { Matching::Engine.new(market, mode: :run) }
+
   let(:market) { Market.find_spot_by_symbol('btc_usd') }
   let(:price)  { 10.to_d }
   let(:volume) { 5.to_d }
@@ -16,7 +18,7 @@ describe Matching::Engine do
   let(:bid)    { Matching.mock_limit_order(type: :bid, price: price, volume: volume) }
 
   let(:orderbook) { Matching::OrderBookManager.new('btc_usd', broadcast: false) }
-  subject         { Matching::Engine.new(market, mode: :run) }
+
   before          { subject.stubs(:orderbook).returns(orderbook) }
 
   context 'submit market order 2' do
@@ -169,6 +171,7 @@ describe Matching::Engine do
           ]
         ]
       end
+
       it 'publish cancel order' do
         subject.submit ask1_in_db.to_matching_mock
         subject.submit bid1_in_db.to_matching_mock
@@ -244,6 +247,7 @@ describe Matching::Engine do
           ]
         ]
       end
+
       it 'publish single trade and cancel order' do
         subject.submit ask1_in_db.to_matching_mock
         subject.submit ask2_in_db.to_matching_mock
@@ -340,6 +344,7 @@ describe Matching::Engine do
           ]
         ]
       end
+
       it 'publish single two trades and cancel order' do
         subject.submit ask1_in_db.to_matching_mock
         subject.submit ask2_in_db.to_matching_mock
@@ -407,6 +412,7 @@ describe Matching::Engine do
           ]
         ]
       end
+
       it 'publish single trade and cancel order' do
         subject.submit ask1_in_db.to_matching_mock
         subject.submit bid1_in_db.to_matching_mock
@@ -497,6 +503,7 @@ describe Matching::Engine do
           ]
         ]
       end
+
       it 'publish single two trades and cancel order' do
         subject.submit ask1_in_db.to_matching_mock
         subject.submit bid1_in_db.to_matching_mock
@@ -512,7 +519,7 @@ describe Matching::Engine do
     let!(:ask2) { Matching.mock_limit_order(type: :ask, price: '2.0'.to_d, volume: '1.0'.to_d) }
     let!(:ask3) { Matching.mock_limit_order(type: :ask, price: '3.0'.to_d, volume: '1.0'.to_d) }
 
-    it 'should fill the market order completely' do
+    it 'fills the market order completely' do
       mo = Matching.mock_market_order(type: :bid, locked: '6.0'.to_d, volume: '2.4'.to_d)
 
       AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask1.id, taker_order_id: mo.id, strike_price: ask1.price, amount: ask1.volume, total: '1.0'.to_d } }, anything)
@@ -532,7 +539,7 @@ describe Matching::Engine do
       expect(subject.bid_orders.market_orders).to be_empty
     end
 
-    it 'should fill the market order partially and cancel it' do
+    it 'fills the market order partially and cancel it' do
       mo = Matching.mock_market_order(type: :bid, locked: '6.0'.to_d, volume: '2.4'.to_d)
 
       AMQP::Queue.expects(:enqueue).with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask1.id, taker_order_id: mo.id, strike_price: ask1.price, amount: ask1.volume, total: '1.0'.to_d } }, anything)
@@ -551,7 +558,7 @@ describe Matching::Engine do
 
   context 'submit limit order' do
     context 'fully match incoming order' do
-      it 'should execute trade' do
+      it 'executes trade' do
         AMQP::Queue.expects(:enqueue)
                    .with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask.id, taker_order_id: bid.id, strike_price: price, amount: volume, total: '50.0'.to_d } }, anything)
 
@@ -566,7 +573,7 @@ describe Matching::Engine do
     context 'partial match incoming order' do
       let(:ask) { Matching.mock_limit_order(type: :ask, price: price, volume: 3.to_d) }
 
-      it 'should execute trade' do
+      it 'executes trade' do
         AMQP::Queue.expects(:enqueue)
                    .with(:trade_executor, { action: 'execute', trade: { market_id: market.symbol, maker_order_id: ask.id, taker_order_id: bid.id, strike_price: price, amount: 3.to_d, total: '30.0'.to_d } }, anything)
 
@@ -592,7 +599,7 @@ describe Matching::Engine do
         end
       end
 
-      it 'should execute trade' do
+      it 'executes trade' do
         AMQP::Queue.expects(:enqueue).times(asks.size)
 
         asks.each { |ask| subject.submit(ask) }
@@ -608,7 +615,7 @@ describe Matching::Engine do
       let(:low_ask)  { Matching.mock_limit_order(type: :ask, price: price - 1, volume: 3.to_d) }
       let(:high_ask) { Matching.mock_limit_order(type: :ask, price: price, volume: 3.to_d) }
 
-      it 'should match bid with high ask' do
+      it 'matches bid with high ask' do
         subject.submit(low_ask) # low ask enters first
         subject.submit(high_ask)
         subject.cancel(low_ask) # but it's canceled
@@ -623,8 +630,8 @@ describe Matching::Engine do
     end
   end
 
-  context '#cancel' do
-    it 'should cancel order' do
+  describe '#cancel' do
+    it 'cancels order' do
       subject.submit(ask)
       subject.cancel(ask)
       expect(subject.ask_orders.limit_orders).to be_empty
@@ -638,7 +645,7 @@ describe Matching::Engine do
   context 'dryrun' do
     subject { Matching::Engine.new(market, mode: :dryrun) }
 
-    it 'should not publish matched trades' do
+    it 'does not publish matched trades' do
       AMQP::Queue.expects(:enqueue).never
 
       subject.submit(ask)
@@ -653,9 +660,9 @@ describe Matching::Engine do
   end
 
   context 'publish_increment' do
-    before(:each) { subject.initializing = false }
+    before { subject.initializing = false }
 
-    it 'should publish increment of orderbook' do
+    it 'publishes increment of orderbook' do
       ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['10.0', '5.0'], 'sequence' => 2 })
       ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'bids' => ['10.0', '5.0'], 'sequence' => 3 })
 
@@ -670,7 +677,7 @@ describe Matching::Engine do
     let(:bid1)    { Matching.mock_limit_order(type: :bid, price: '11'.to_d, volume: '2.0'.to_d) }
     let(:bid2)    { Matching.mock_limit_order(type: :bid, price: '10'.to_d, volume: '2.0'.to_d) }
 
-    it 'should publish snapshot of orderbook' do
+    it 'publishes snapshot of orderbook' do
       subject.submit(ask1)
       subject.submit(ask2)
       subject.submit(bid1)
@@ -685,9 +692,9 @@ describe Matching::Engine do
     end
 
     context 'periodic publish snapshot time' do
-      before(:each) { subject.initializing = false }
+      before { subject.initializing = false }
 
-      it 'should publish snapshot of orderbook and set increment_count to 1' do
+      it 'publishes snapshot of orderbook and set increment_count to 1' do
         subject.snapshot_time = Time.now - 80.second
         subject.submit(ask1)
         subject.submit(bid1)
@@ -701,7 +708,7 @@ describe Matching::Engine do
         expect(subject.increment_count).to eq(1)
       end
 
-      it 'should publish snapshot of orderbook (snapshot_time >= 1m and increment count < 20)' do
+      it 'publishes snapshot of orderbook (snapshot_time >= 1m and increment count < 20)' do
         subject.snapshot_time = Time.now - 80.second
         subject.submit(ask1)
         subject.submit(bid1)
@@ -714,7 +721,7 @@ describe Matching::Engine do
         subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
       end
 
-      it 'should publish snapshot of orderbook (snapshot_time > 10s and increment count => 20)' do
+      it 'publishes snapshot of orderbook (snapshot_time > 10s and increment count => 20)' do
         subject.snapshot_time = Time.now - 11.second
         subject.increment_count = 20
         subject.submit(ask1)

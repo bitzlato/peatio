@@ -5,6 +5,7 @@ describe API::V2::Admin::Abilities, type: :request do
     context 'member role' do
       let(:admin) { create(:member, :admin, :level_3, email: 'example@gmail.com', uid: 'ID73BF61C8H0') }
       let(:token) { jwt_for(admin) }
+
       it 'get all roles and permissions' do
         api_get '/api/v2/admin/abilities', token: token
         result = JSON.parse(response.body)
@@ -22,6 +23,7 @@ describe API::V2::Admin::Abilities, type: :request do
     context 'member role' do
       let(:member) { create(:member, :level_3, email: 'example@gmail.com', uid: 'ID73BF61C8H0') }
       let(:token) { jwt_for(member) }
+
       it 'get all roles and permissions' do
         api_get '/api/v2/admin/abilities', token: token
         result = JSON.parse(response.body)

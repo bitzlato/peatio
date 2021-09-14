@@ -40,7 +40,7 @@ describe API::V2::Entities::Order do
   end
 
   context 'full exposure' do
-    it 'should expose related trades' do
+    it 'exposes related trades' do
       create(:trade, :btc_usd, maker_order: order, amount: '8.0', price: '12')
       create(:trade, :btc_usd, maker_order: order, amount: '0.99', price: '12.56')
 

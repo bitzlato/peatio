@@ -2,8 +2,9 @@
 
 describe API::V2::CoinGecko::Tickers, type: :request do
   describe 'GET /api/v2/coingecko/tickers' do
-    before(:each) { delete_measurments('trades') }
-    after(:each) { delete_measurments('trades') }
+    before { delete_measurments('trades') }
+
+    after { delete_measurments('trades') }
 
     before do
       create_list(:order_bid, 5, :btc_usd)
@@ -89,6 +90,7 @@ describe API::V2::CoinGecko::Tickers, type: :request do
           'high' => '6.0', 'low' => '5.0'
         }
       end
+
       before do
         trade1.write_to_influx
         trade2.write_to_influx

@@ -16,6 +16,7 @@ describe API::V2::Account::Deposits, type: :request do
   describe 'POST /api/v2/account/deposits/intention' do
     let(:amount) { 12.1231 }
     let(:currency) { find_or_create :currency, :btc, id: :btc }
+
     it 'requires authentication' do
       api_post '/api/v2/account/deposits/intention', params: { amount: 123 }
       expect(response.code).to eq '401'
@@ -199,7 +200,7 @@ describe API::V2::Account::Deposits, type: :request do
       it 'renders unauthorized error' do
         api_get '/api/v2/account/deposits/test', token: token
 
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -211,31 +212,32 @@ describe API::V2::Account::Deposits, type: :request do
     context 'failed' do
       it 'validates currency' do
         api_get '/api/v2/account/deposit_address/dildocoin', token: token
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.currency.doesnt_exist')
       end
 
       it 'validates currency address format' do
         api_get '/api/v2/account/deposit_address/btc', params: { address_format: 'cash' }, token: token
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.deposit_address.doesnt_support_cash_address_format')
       end
 
       it 'validates currency with address_format param' do
         api_get '/api/v2/account/deposit_address/abc', params: { address_format: 'cash' }, token: token
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.currency.doesnt_exist')
       end
 
       context 'unauthorized' do
         let(:currency) { find_or_create :currency, :btc, id: :btc }
+
         before do
           Ability.stubs(:user_permissions).returns([])
         end
 
         it 'renders unauthorized error' do
           api_get '/api/v2/account/deposit_address/' + currency.id, token: token
-          expect(response).to have_http_status 403
+          expect(response).to have_http_status :forbidden
           expect(response).to include_api_error('user.ability.not_permitted')
         end
       end
@@ -246,6 +248,7 @@ describe API::V2::Account::Deposits, type: :request do
         let(:currency) { eth }
         let(:blockchain) { find_or_create :blockchain, 'eth-rinkeby', key: 'eth-rinkeby' }
         let(:address) { Faker::Blockchain::Ethereum.address }
+
         before { member.payment_address(blockchain).update!(address: address) }
 
         it 'expose data about eth address' do
@@ -264,7 +267,7 @@ describe API::V2::Account::Deposits, type: :request do
 
           it 'returns information about specified deposit address' do
             api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
-            expect(response).to have_http_status 200
+            expect(response).to have_http_status :ok
             expect(response.body).to eq '{"currencies":["eth","trst","ring","xagm.cx"],"address":"' + address.downcase + '","state":"active"}'
           end
         end
@@ -286,7 +289,7 @@ describe API::V2::Account::Deposits, type: :request do
 
       it 'returns error' do
         api_get "/api/v2/account/deposit_address/#{currency.id}", token: token
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.currency.deposit_disabled')
       end
     end

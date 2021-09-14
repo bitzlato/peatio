@@ -26,15 +26,16 @@ describe API::V2::Management::TradingFees, type: :request do
 
     it 'returns all trading fees tables' do
       request
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       expect(response.headers.fetch('Total')).to eq('4')
     end
 
     context 'group: vip-0, market: btc_usd' do
       let(:data) { { group: 'vip-0', market_id: 'btc_usd' } }
+
       it 'returns trading fee with btc_usd market_id and vip-0 group' do
         request
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body).first['maker']).to eq('0.0005')
         expect(JSON.parse(response.body).first['taker']).to eq('0.001')
         expect(JSON.parse(response.body).first['group']).to eq('vip-0')
@@ -46,9 +47,10 @@ describe API::V2::Management::TradingFees, type: :request do
 
     context 'market_type' do
       let(:data) { {} }
+
       it 'returns trading fee with spot market_type' do
         request
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body).first['maker']).to eq('0.001')
         expect(JSON.parse(response.body).first['taker']).to eq('0.0012')
         expect(JSON.parse(response.body).first['group']).to eq('any')
@@ -60,7 +62,7 @@ describe API::V2::Management::TradingFees, type: :request do
       it 'returns trading fee with qe market_type' do
         data[:market_type] = 'qe'
         request
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body).first['maker']).to eq('0.001')
         expect(JSON.parse(response.body).first['taker']).to eq('0.0012')
         expect(JSON.parse(response.body).first['group']).to eq('any')
@@ -72,9 +74,10 @@ describe API::V2::Management::TradingFees, type: :request do
 
     context 'group: any, market: btc_usd' do
       let(:data) { { group: 'any', market_id: 'btc_usd' } }
+
       it 'returns trading fee with btc_usd market_id and `any` group' do
         request
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body).first['maker']).to eq('0.001')
         expect(JSON.parse(response.body).first['taker']).to eq('0.0012')
         expect(JSON.parse(response.body).first['group']).to eq('any')
@@ -85,9 +88,10 @@ describe API::V2::Management::TradingFees, type: :request do
 
     context 'group: vip-0, market: any' do
       let(:data) { { group: 'vip-0', market_id: 'any' } }
+
       it 'returns trading fee with btc_usd market_id and `any` group' do
         request
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body).first['maker']).to eq('0.0008')
         expect(JSON.parse(response.body).first['taker']).to eq('0.001')
         expect(JSON.parse(response.body).first['group']).to eq('vip-0')

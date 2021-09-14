@@ -118,13 +118,13 @@ describe Rack::Cors, type: :request do
 
     it 'sends CORS headers ever when user is not authenticated' do
       api_get '/api/v2/account/balances', headers: { 'Origin' => local_url }
-      expect(response).to have_http_status 401
+      expect(response).to have_http_status :unauthorized
       check_cors(response, local_url, allow_crendentails)
     end
 
     it 'sends CORS headers when invalid parameter supplied' do
       api_get '/api/v2/account/balances/somecoin', token: token, headers: { 'Origin' => local_url }
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       check_cors(response, local_url, allow_crendentails)
     end
   end

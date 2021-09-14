@@ -98,14 +98,14 @@ describe API::V2::Admin::Engines, type: :request do
       expect(result['state']).to eq 'online'
 
       api_post '/api/v2/admin/engines/new', token: token, params: valid_params
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.engine.duplicate_name')
     end
 
     it 'checked required params' do
       api_post '/api/v2/admin/engines/new', params: {}, token: token
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.engine.missing_name')
       expect(response).to include_api_error('admin.engine.missing_driver')
     end
@@ -145,7 +145,7 @@ describe API::V2::Admin::Engines, type: :request do
     it 'checkes required params' do
       api_post '/api/v2/admin/engines/update', params: {}, token: token
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.engine.missing_id')
     end
 

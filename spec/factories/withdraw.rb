@@ -8,7 +8,7 @@
 #
 # TODO: Add new factories for all currencies.
 FactoryBot.define do
-  factory :btc_withdraw, class: Withdraws::Coin do
+  factory :btc_withdraw, class: 'Withdraws::Coin' do
     # We need to have valid Liability-based balance to spend funds.
     trait :with_deposit_liability do
       before(:create) do |withdraw|
@@ -36,7 +36,7 @@ FactoryBot.define do
     type { 'Withdraws::Coin' }
   end
 
-  factory :eth_withdraw, class: Withdraws::Coin do
+  factory :eth_withdraw, class: 'Withdraws::Coin' do
     currency { Currency.find(:eth) }
     member { create(:member, :level_3) }
     rid { Faker::Blockchain::Bitcoin.address }
@@ -54,7 +54,7 @@ FactoryBot.define do
     end
   end
 
-  factory :usd_withdraw, class: Withdraws::Fiat do
+  factory :usd_withdraw, class: 'Withdraws::Fiat' do
     # We need to have valid Liability-based balance to spend funds.
     trait :with_deposit_liability do
       before(:create) do |withdraw|

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 describe ::EthereumGateway::CollectionConcern do
+  subject { EthereumGateway.new(blockchain) }
+
   let!(:hot_wallet) { find_or_create :wallet, :eth_hot, name: 'Ethereum Hot Wallet' }
   let(:blockchain) { hot_wallet.blockchain }
 
-  subject { EthereumGateway.new(blockchain) }
   before do
     EthereumGateway.any_instance.expects(:build_client).returns(ethereum_client)
     Blockchain.any_instance.stubs(:hot_wallet).returns(hot_wallet)
@@ -16,7 +17,7 @@ describe ::EthereumGateway::CollectionConcern do
     WebMock.allow_net_connect!
   end
 
-  context '#collect!' do
+  describe '#collect!' do
     let(:eth_money_amount) { 2.to_money('eth') }
     let(:balances) { { Money::Currency.find('eth') => eth_money_amount } }
     let(:payment_address) { create :payment_address, blockchain: blockchain }

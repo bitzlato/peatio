@@ -14,8 +14,8 @@ class Deposit < ApplicationRecord
   extend Enumerize
   TRANSFER_TYPES = { fiat: 100, crypto: 200 }.freeze
 
-  belongs_to :currency, required: true, touch: false
-  belongs_to :member, required: true
+  belongs_to :currency, optional: false, touch: false
+  belongs_to :member, optional: false
   belongs_to :blockchain, touch: false
   has_many :deposit_spreads
 

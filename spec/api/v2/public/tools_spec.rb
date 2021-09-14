@@ -20,7 +20,7 @@ describe API::V2::Public::Tools, type: :request do
       Market.stubs(:connected?).returns(false)
 
       get '/api/v2/public/health/alive'
-      expect(response).to have_http_status(503)
+      expect(response).to have_http_status(:service_unavailable)
     end
 
     it 'returns successful readiness probe' do
@@ -32,7 +32,7 @@ describe API::V2::Public::Tools, type: :request do
       Bunny.stubs(:run).returns(false)
 
       get '/api/v2/public/health/alive'
-      expect(response).to have_http_status(503)
+      expect(response).to have_http_status(:service_unavailable)
     end
   end
 end

@@ -131,7 +131,7 @@ describe API::V2::Management::Engines, type: :request do
         expect(result['url']).to eq 'your_url'
 
         request
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         result = JSON.parse(response.body)
         expect(result['error']).to include('management.engine.duplicate_name')
       end
@@ -139,10 +139,11 @@ describe API::V2::Management::Engines, type: :request do
 
     context do
       let(:engines_params) { {} }
+
       it 'checked required params' do
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         result = JSON.parse(response.body)
         expect(result['error']).to include('name is missing, driver is missing')
       end
@@ -201,10 +202,11 @@ describe API::V2::Management::Engines, type: :request do
 
     context do
       let(:engines_params) { {} }
+
       it 'checkes required params' do
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         result = JSON.parse(response.body)
         expect(result['error']).to include('id is missing')
       end

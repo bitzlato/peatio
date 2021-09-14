@@ -10,16 +10,16 @@ describe Order, 'validations', type: :model do
     end
 
     it do
-      is_expected.to include :ord_type
-      is_expected.to include :volume
-      is_expected.to include :origin_volume
-      is_expected.to include :locked
-      is_expected.to include :origin_locked
+      expect(subject).to include :ord_type
+      expect(subject).to include :volume
+      expect(subject).to include :origin_volume
+      expect(subject).to include :locked
+      expect(subject).to include :origin_locked
     end
   end
 
   context 'limit order' do
-    it 'should make sure price is present' do
+    it 'makes sure price is present' do
       order = OrderAsk.new(market_id: 'btc_usd', price: nil, ord_type: 'limit')
       expect(order).not_to be_valid
       expect(order.errors[:price]).to include 'is not a number'
@@ -27,7 +27,7 @@ describe Order, 'validations', type: :model do
   end
 
   context 'market order' do
-    it 'should make sure price is not present' do
+    it 'makes sure price is not present' do
       order = OrderAsk.new(market_id: 'btc_usd', price: '0.0'.to_d, ord_type: 'market')
       expect(order).not_to be_valid
       expect(order.errors[:price]).to include 'must not be present'
@@ -189,7 +189,7 @@ describe Order, '#done', type: :model do
     build(:trade, volume: volume, price: price, id: rand(10))
   end
 
-  shared_examples 'trade done' do
+  shared_context 'trade done' do
     before do
       hold_account.reload
       expect_account.reload
@@ -198,11 +198,11 @@ describe Order, '#done', type: :model do
 end
 
 describe Order, '#kind' do
-  it 'should be ask for ask order' do
+  it 'is ask for ask order' do
     expect(OrderAsk.new.kind).to eq 'ask'
   end
 
-  it 'should be bid for bid order' do
+  it 'is bid for bid order' do
     expect(OrderBid.new.kind).to eq 'bid'
   end
 end
@@ -212,7 +212,7 @@ describe Order, 'related accounts' do
   let(:bob)   { who_is_billionaire }
 
   context OrderAsk do
-    it 'should hold btc and expect usd' do
+    it 'holds btc and expect usd' do
       ask = create(:order_ask, :btc_usd, member: alice)
       expect(ask.hold_account).to eq alice.get_account(:btc)
       expect(ask.expect_account).to eq alice.get_account(:usd)
@@ -220,7 +220,7 @@ describe Order, 'related accounts' do
   end
 
   context OrderBid do
-    it 'should hold usd and expect btc' do
+    it 'holds usd and expect btc' do
       bid = create(:order_bid, :btc_usd, member: bob)
       expect(bid.hold_account).to eq bob.get_account(:usd)
       expect(bid.expect_account).to eq bob.get_account(:btc)
@@ -229,7 +229,7 @@ describe Order, 'related accounts' do
 end
 
 describe Order, '#avg_price' do
-  it 'should be zero if not filled yet' do
+  it 'is zero if not filled yet' do
     expect(
       OrderAsk.new(
         locked: '1.0',
@@ -251,7 +251,7 @@ describe Order, '#avg_price' do
     ).to eq '0'.to_d
   end
 
-  it 'should calculate average price of bid order' do
+  it 'calculates average price of bid order' do
     expect(
       OrderBid.new(
         market_id: 'btc_usd',
@@ -264,7 +264,7 @@ describe Order, '#avg_price' do
     ).to eq '5'.to_d
   end
 
-  it 'should calculate average price of ask order' do
+  it 'calculates average price of ask order' do
     expect(
       OrderAsk.new(
         market_id: 'btc_usd',
@@ -280,16 +280,16 @@ end
 
 describe Order, '#record_submit_operations!' do
   # Persist Order in database.
-  let!(:order) { create(:order_ask, :btc_usd, :with_deposit_liability) }
-
   subject { order }
+
+  let!(:order) { create(:order_ask, :btc_usd, :with_deposit_liability) }
 
   it 'creates two liability operations' do
     expect { subject.record_submit_operations! }.to change { Operations::Liability.count }.by(2)
   end
 
   it 'doesn\'t create asset operations' do
-    expect { subject.record_submit_operations! }.to_not change { Operations::Asset.count }
+    expect { subject.record_submit_operations! }.not_to change { Operations::Asset.count }
   end
 
   it 'debits main liabilities for member' do
@@ -307,9 +307,10 @@ end
 
 describe Order, '#record_cancel_operations!' do
   # Persist Order in database.
+  subject { order }
+
   let!(:order) { create(:order_ask, :with_deposit_liability) }
 
-  subject { order }
   before { subject.record_submit_operations! }
 
   it 'creates two liability operations' do
@@ -317,7 +318,7 @@ describe Order, '#record_cancel_operations!' do
   end
 
   it 'doesn\'t create asset operations' do
-    expect { subject.record_cancel_operations! }.to_not change { Operations::Asset.count }
+    expect { subject.record_cancel_operations! }.not_to change { Operations::Asset.count }
   end
 
   it 'credits main liabilities for member' do
@@ -335,10 +336,9 @@ end
 
 describe Order, '#trigger_private_event' do
   context 'trigger pusher event for limit order' do
-    let!(:order) { create(:order_ask, :with_deposit_liability) }
-
     subject { order }
 
+    let!(:order) { create(:order_ask, :with_deposit_liability) }
     let(:data) do
       {
         id: subject.id,
@@ -365,10 +365,9 @@ describe Order, '#trigger_private_event' do
   end
 
   context 'trigger pusher event for market order' do
-    let!(:order) { create(:order_ask, :with_deposit_liability, ord_type: 'market', price: nil) }
-
     subject { order }
 
+    let!(:order) { create(:order_ask, :with_deposit_liability, ord_type: 'market', price: nil) }
     let(:data) do
       {
         id: subject.id,
