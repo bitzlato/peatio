@@ -19,6 +19,7 @@ class EthereumGateway
       raise Error, 'zero amount transction' if amount.zero?
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
+      raise 'gas price zero' if gas_price.zero?
       peatio_transaction = contract_address.present? ?
         create_erc20_transaction!(amount: amount,
                                   from_address: from_address,
