@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -69,7 +68,7 @@ module API
             admin_authorize! :read, ::Blockchain
 
             Blockchain.find(params[:id])&.gateway.latest_block_number
-          rescue
+          rescue StandardError
             error!({ errors: ['admin.blockchain.latest_block'] }, 422)
           end
 

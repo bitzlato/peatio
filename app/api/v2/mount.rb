@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_dependency 'v2/validations'
@@ -22,11 +21,11 @@ module API
       do_not_route_options!
 
       logger Rails.logger.dup
-      if Rails.env.production?
-        logger.formatter = GrapeLogging::Formatters::Json.new
-      else
-        logger.formatter = GrapeLogging::Formatters::Rails.new
-      end
+      logger.formatter = if Rails.env.production?
+                           GrapeLogging::Formatters::Json.new
+                         else
+                           GrapeLogging::Formatters::Rails.new
+                         end
       use GrapeLogging::Middleware::RequestLogger,
           logger: logger,
           log_level: :info,

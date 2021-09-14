@@ -21,7 +21,7 @@ module Jobs
         else
           payment_address.refuel_gas!
         end
-      rescue => err
+      rescue StandardError => err
         report_exception err, true, payment_address_id: payment_address.id
       end
     end

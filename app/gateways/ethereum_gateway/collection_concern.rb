@@ -41,19 +41,19 @@ class EthereumGateway
     #
     # coin_address = is contract address for token or nil for native currency
     #
-    def has_enough_gas_to_collect? address
+    def has_enough_gas_to_collect?(address)
       required_gas_balance_to_collect(address) <= fetch_balance(address)
     end
 
     # На адресе есть монеты, которые можно собрать (их ценность выше газа)
     #
-    def has_collectable_balances? address
+    def has_collectable_balances?(address)
       collectable_coins(address).present?
     end
 
     private
 
-    def required_gas_balance_to_collect address
+    def required_gas_balance_to_collect(address)
       collectable_coins(address)
         .sum { |coin| gas_for_collection_in_money coin }
     end

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -64,9 +63,7 @@ module API
           member   = Member.find_by(uid: params[:uid])
           currency = Currency.find(params[:currency])
 
-          unless currency.deposit_enabled?
-            error!({ errors: ['management.currency.deposit_disabled'] }, 422)
-          end
+          error!({ errors: ['management.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
 
           data     = { member: member, currency: currency }.merge!(params.slice(:amount, :tid, :transfer_type))
           deposit  = ::Deposits::Fiat.new(data)

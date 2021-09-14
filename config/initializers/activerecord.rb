@@ -4,9 +4,7 @@ module ActiveRecord
   class Base
     def self.inherited(child)
       super
-      unless child == ActiveRecord::SchemaMigration
-        validates_lengths_from_database
-      end
+      validates_lengths_from_database unless child == ActiveRecord::SchemaMigration
     end
   end
 end

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class Wallet < ApplicationRecord
@@ -78,28 +77,26 @@ class Wallet < ApplicationRecord
     end
 
     def self.ransackable_attributes(_auth_object = nil)
-      super + %w(blockchain_key_eq)
+      super + %w[blockchain_key_eq]
     end
 
     def kinds(options = {})
       ENUMERIZED_KINDS
         .yield_self do |kinds|
-          case
-          when options.fetch(:deposit, false)
+          if options.fetch(:deposit, false)
             kinds.select { |_k, v| [1, 4].include? v / 100 }
-          when options.fetch(:fee, false)
+          elsif options.fetch(:fee, false)
             kinds.select { |_k, v| v / 100 == 2 }
-          when options.fetch(:withdraw, false)
+          elsif options.fetch(:withdraw, false)
             kinds.select { |_k, v| [3, 4].include? v / 100 }
           else
             kinds
           end
         end
         .yield_self do |kinds|
-          case
-          when options.fetch(:keys, false)
+          if options.fetch(:keys, false)
             kinds.keys
-          when options.fetch(:values, false)
+          elsif options.fetch(:values, false)
             kinds.values
           else
             kinds

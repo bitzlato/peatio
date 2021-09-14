@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -136,9 +135,7 @@ module API
               if member.present?
                 balance = member.get_account(account_number_hash[:currency_id]).balance
 
-                if adjustment.amount.abs() > balance && params[:action] != 'reject'
-                  error!({ errors: ['admin.adjustment.user_insufficient_balance'] }, 422)
-                end
+                error!({ errors: ['admin.adjustment.user_insufficient_balance'] }, 422) if adjustment.amount.abs > balance && params[:action] != 'reject'
               end
             end
 

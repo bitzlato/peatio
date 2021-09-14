@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'csv'
@@ -93,10 +92,12 @@ class Order < ApplicationRecord
   end
 
   before_create unless: -> { Rails.env.test? } do
-    raise(
-      ::Account::AccountError,
-      "member_balance > locked = #{member_balance} > #{locked}"
-    ) if member_balance < locked
+    if member_balance < locked
+      raise(
+        ::Account::AccountError,
+        "member_balance > locked = #{member_balance} > #{locked}"
+      )
+    end
   end
 
   after_commit on: :update do
@@ -125,7 +126,7 @@ class Order < ApplicationRecord
 
         AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
       end
-    rescue => e
+    rescue StandardError => e
       order = find(id)
       order&.update!(state: ::Order::REJECT)
 

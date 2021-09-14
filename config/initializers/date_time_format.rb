@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 Date::DATE_FORMATS[:short] = '%m-%d'

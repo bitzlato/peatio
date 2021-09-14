@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Trade, '#for_notify' do
@@ -48,13 +47,13 @@ describe Trade, '#trade_from_influx_after_date' do
     let(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
     let(:expected_trade) do
       {
-        :id => trade.id,
-        :price => 5,
-        :amount => 1.1,
-        :total => 5.5,
-        :taker_type => trade.taker_type,
-        :market => 'btc_usd',
-        :created_at => trade.created_at.to_i
+        id: trade.id,
+        price: 5,
+        amount: 1.1,
+        total: 5.5,
+        taker_type: trade.taker_type,
+        market: 'btc_usd',
+        created_at: trade.created_at.to_i
       }
     end
 
@@ -74,13 +73,13 @@ describe Trade, '#trade_from_influx_after_date' do
 
     let(:expected_trade) do
       {
-        :id => trade1.id,
-        :price => 5.0,
-        :amount => 1.1,
-        :total => 5.5,
-        :taker_type => trade1.taker_type,
-        :market => 'btc_usd',
-        :created_at => trade1.created_at.to_i
+        id: trade1.id,
+        price: 5.0,
+        amount: 1.1,
+        total: 5.5,
+        taker_type: trade1.taker_type,
+        market: 'btc_usd',
+        created_at: trade1.created_at.to_i
       }
     end
 
@@ -109,13 +108,13 @@ describe Trade, '#trade_from_influx_before_date' do
     let(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
     let(:expected_trade) do
       {
-        :id => trade.id,
-        :price => 5,
-        :amount => 1.1,
-        :total => 5.5,
-        :taker_type => trade.taker_type,
-        :market => 'btc_usd',
-        :created_at => trade.created_at.to_i
+        id: trade.id,
+        price: 5,
+        amount: 1.1,
+        total: 5.5,
+        taker_type: trade.taker_type,
+        market: 'btc_usd',
+        created_at: trade.created_at.to_i
       }
     end
 
@@ -134,13 +133,13 @@ describe Trade, '#trade_from_influx_before_date' do
     let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d, created_at: 3.days.ago) }
     let(:expected_trade) do
       {
-        :id => trade3.id,
-        :price => 7,
-        :amount => 0.9,
-        :total => 5.4,
-        :taker_type => trade3.taker_type,
-        :market => 'btc_usd',
-        :created_at => trade3.created_at.to_i
+        id: trade3.id,
+        price: 7,
+        amount: 0.9,
+        total: 5.4,
+        taker_type: trade3.taker_type,
+        market: 'btc_usd',
+        created_at: trade3.created_at.to_i
       }
     end
 
@@ -169,13 +168,13 @@ describe Trade, '#nearest_trade_from_influx' do
     let(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
     let(:expected_trade) do
       {
-        :id => trade.id,
-        :price => 5,
-        :amount => 1.1,
-        :total => 5.5,
-        :taker_type => trade.taker_type,
-        :market => 'btc_usd',
-        :created_at => trade.created_at.to_i
+        id: trade.id,
+        price: 5,
+        amount: 1.1,
+        total: 5.5,
+        taker_type: trade.taker_type,
+        market: 'btc_usd',
+        created_at: trade.created_at.to_i
       }
     end
 
@@ -192,13 +191,13 @@ describe Trade, '#nearest_trade_from_influx' do
     let(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
     let(:expected_trade) do
       {
-        :id => trade.id,
-        :price => 5,
-        :amount => 1.1,
-        :total => 5.5,
-        :taker_type => trade.taker_type,
-        :market => 'btc_usd',
-        :created_at => trade.created_at.to_i
+        id: trade.id,
+        price: 5,
+        amount: 1.1,
+        total: 5.5,
+        taker_type: trade.taker_type,
+        market: 'btc_usd',
+        created_at: trade.created_at.to_i
       }
     end
 
@@ -225,13 +224,13 @@ describe Trade, '#market_ticker_from_influx' do
     let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
     let(:expected_ticker) do
       {
-        :min => 5,
-        :max => 5,
-        :first => 5,
-        :last => 5,
-        :volume => 5.5,
-        :amount => 1.1,
-        :vwap => 5
+        min: 5,
+        max: 5,
+        first: 5,
+        last: 5,
+        volume: 5.5,
+        amount: 1.1,
+        vwap: 5
       }
     end
 
@@ -250,13 +249,13 @@ describe Trade, '#market_ticker_from_influx' do
     let!(:trade3) { create(:trade, :btc_usd, price: '7.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d) }
     let(:expected_ticker) do
       {
-        :amount => 2.9,
-        :first => 5,
-        :last => 7,
-        :max => 7,
-        :min => 5,
-        :volume => 16.3,
-        :vwap => 5.620689655172415
+        amount: 2.9,
+        first: 5,
+        last: 7,
+        max: 7,
+        min: 5,
+        volume: 16.3,
+        vwap: 5.620689655172415
       }
     end
 

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -161,9 +160,7 @@ module API
           currency = Currency.find(params[:currency_id])
           wallet   = Wallet.active_deposit_wallet(currency.id)
 
-          unless wallet.present?
-            error!({ errors: ['admin.deposit.wallet_not_found'] }, 422)
-          end
+          error!({ errors: ['admin.deposit.wallet_not_found'] }, 422) unless wallet.present?
 
           if currency.deposit_enabled
             payment_address = member.payment_address(wallet.blockchain)

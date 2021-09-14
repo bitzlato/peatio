@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 FactoryBot.define do
@@ -10,7 +9,7 @@ FactoryBot.define do
       key                     { 'bitzlato' }
       name                    { 'bitzlato' }
       server                  { 'http://127.0.0.1:1' }
-      height                  { 2500000 }
+      height                  { 2_500_000 }
       min_confirmations       { 6 }
       status                  { 'active' }
       initialize_with         { Blockchain.find_or_create_by(key: key) }
@@ -21,7 +20,7 @@ FactoryBot.define do
       key                     { 'dummy' }
       name                    { 'dummy' }
       server                  { 'http://127.0.0.1:1' }
-      height                  { 2500000 }
+      height                  { 2_500_000 }
       min_confirmations       { 6 }
       explorer_address        { 'https://etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
@@ -35,7 +34,7 @@ FactoryBot.define do
       name                    { 'Ethereum Rinkeby' }
       gateway_klass { EthereumGateway.name }
       server                  { 'http://127.0.0.1:8545' }
-      height                  { 2500000 }
+      height                  { 2_500_000 }
       min_confirmations       { 6 }
       explorer_address        { 'https://etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
@@ -48,7 +47,7 @@ FactoryBot.define do
       gateway_klass { EthereumGateway.name }
       name                    { 'Ethereum Kovan' }
       server                  { 'http://127.0.0.1:8545' }
-      height                  { 2500000 }
+      height                  { 2_500_000 }
       min_confirmations       { 6 }
       explorer_address        { 'https://kovan.etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://kovan.etherscan.io/tx/#{txid}' }
@@ -74,7 +73,7 @@ FactoryBot.define do
       gateway_klass           { BinanceGateway.name }
       name                    { 'Binance Testnet' }
       server                  { 'http://127.0.0.1:18332' }
-      height                  { 1350000 }
+      height                  { 1_350_000 }
       min_confirmations       { 1 }
       explorer_address        { 'https://blockchain.info/address/#{address}' }
       explorer_transaction    { 'https://blockchain.info/tx/#{txid}' }
@@ -87,7 +86,7 @@ FactoryBot.define do
       gateway_klass           { BitcoinGateway.name }
       name                    { 'Bitcoin Testnet' }
       server                  { 'http://127.0.0.1:18332' }
-      height                  { 1350000 }
+      height                  { 1_350_000 }
       min_confirmations       { 1 }
       explorer_address        { 'https://blockchain.info/address/#{address}' }
       explorer_transaction    { 'https://blockchain.info/tx/#{txid}' }

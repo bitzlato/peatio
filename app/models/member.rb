@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'securerandom'
@@ -190,9 +189,7 @@ class Member < ApplicationRecord
 
     def fetch_email(payload)
       payload[:email].to_s.tap do |email|
-        if email.present? && !EmailValidator.valid?(email)
-          raise(Peatio::Auth::Error, 'E-Mail is invalid.')
-        end
+        raise(Peatio::Auth::Error, 'E-Mail is invalid.') if email.present? && !EmailValidator.valid?(email)
       end
     end
 

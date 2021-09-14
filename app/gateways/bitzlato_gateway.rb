@@ -67,9 +67,11 @@ class BitzlatoGateway < AbstractGateway
       next unless withdraw_info.is_done
       next if withdraw_info.withdraw_id.nil?
 
-      withdraw = withdraw_info.withdraw_id.start_with?('TID') ?
-        Withdraw.find_by(tid: withdraw_info.withdraw_id) :
-        Withdraw.find_by(id: withdraw_info.withdraw_id)
+      withdraw = if withdraw_info.withdraw_id.start_with?('TID')
+                   Withdraw.find_by(tid: withdraw_info.withdraw_id)
+                 else
+                   Withdraw.find_by(id: withdraw_info.withdraw_id)
+                 end
       if withdraw.nil?
         Rails.logger.warn("No such withdraw withdraw_info ##{withdraw_info.withdraw_id} in blockchain #{blockchain.name}")
         next
@@ -88,9 +90,7 @@ class BitzlatoGateway < AbstractGateway
     end
   end
 
-  def create_transaction!(from_address: nil,
-                          to_address:,
-                          amount:,
+  def create_transaction!(to_address:, amount:, from_address: nil,
                           contract_address: nil,
                           nonce: nil,
                           secret: nil,

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Admin::Blockchains, type: :request do
@@ -85,7 +84,7 @@ describe API::V2::Admin::Blockchains, type: :request do
         api_get "/api/v2/admin/blockchains/#{blockchain.id}/latest_block", token: token
 
         expect(response.code).to eq '200'
-        expect(response_body).to eq 1489174
+        expect(response_body).to eq 1_489_174
       end
     end
   end

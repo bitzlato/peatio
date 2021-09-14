@@ -141,7 +141,7 @@ describe Bitcoin::Blockchain do
     end
 
     it 'returns latest block number' do
-      block_number = 1489174
+      block_number = 1_489_174
 
       stub_request(:post, endpoint)
         .with(body: { jsonrpc: '1.0',
@@ -160,7 +160,7 @@ describe Bitcoin::Blockchain do
                       method: :getblockcount,
                       params: [] }.to_json)
         .to_return(body: { result: nil,
-                           error: { code: -32601, message: 'Method not found' },
+                           error: { code: -32_601, message: 'Method not found' },
                            id: nil }.to_json)
 
       expect { blockchain.latest_block_number }.to raise_error(Peatio::Blockchain::ClientError)
@@ -168,7 +168,7 @@ describe Bitcoin::Blockchain do
 
     it 'keeps alive' do
       stub_request(:post, endpoint)
-        .to_return(body: { result: 1489174,
+        .to_return(body: { result: 1_489_174,
                            error: nil,
                            id: nil }.to_json)
         .with(headers: { Connection: 'keep-alive',
@@ -265,18 +265,18 @@ describe Bitcoin::Blockchain do
            .yield_self { |file| JSON.load(file) }
     end
     let(:expected_transactions) do
-      [{ :hash => '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-         :txout => 0,
-         :to_address => 'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
-         :amount => 0.325e0,
-         :status => 'success',
-         :currency_id => currency.id },
-       { :hash => '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-         :txout => 1,
-         :to_address => 'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
-         :amount => 0.1964466932e2,
-         :status => 'success',
-         :currency_id => currency.id }]
+      [{ hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
+         txout: 0,
+         to_address: 'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
+         amount: 0.325e0,
+         status: 'success',
+         currency_id: currency.id },
+       { hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
+         txout: 1,
+         to_address: 'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
+         amount: 0.1964466932e2,
+         status: 'success',
+         currency_id: currency.id }]
     end
 
     let(:currency) do
@@ -293,30 +293,30 @@ describe Bitcoin::Blockchain do
 
     context 'multiple currencies' do
       let(:expected_transactions) do
-        [{ :hash => '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-           :txout => 0,
-           :to_address => 'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
-           :amount => 0.325e0,
-           :status => 'success',
-           :currency_id => currency1.id },
-         { :hash => '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-           :txout => 1,
-           :to_address => 'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
-           :amount => 0.1964466932e2,
-           :status => 'success',
-           :currency_id => currency1.id },
-         { :hash => '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-           :txout => 0,
-           :to_address => 'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
-           :amount => 0.325e0,
-           :status => 'success',
-           :currency_id => currency2.id },
-         { :hash => '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-           :txout => 1,
-           :to_address => 'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
-           :amount => 0.1964466932e2,
-           :status => 'success',
-           :currency_id => currency2.id }]
+        [{ hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
+           txout: 0,
+           to_address: 'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
+           amount: 0.325e0,
+           status: 'success',
+           currency_id: currency1.id },
+         { hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
+           txout: 1,
+           to_address: 'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
+           amount: 0.1964466932e2,
+           status: 'success',
+           currency_id: currency1.id },
+         { hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
+           txout: 0,
+           to_address: 'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
+           amount: 0.325e0,
+           status: 'success',
+           currency_id: currency2.id },
+         { hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
+           txout: 1,
+           to_address: 'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
+           amount: 0.1964466932e2,
+           status: 'success',
+           currency_id: currency2.id }]
       end
 
       let(:currency1) do
@@ -342,24 +342,24 @@ describe Bitcoin::Blockchain do
       let(:tx_file_name) { '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0.json' }
 
       let(:expected_transactions) do
-        [{ :hash => '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
-           :txout => 0,
-           :to_address => '2N5WyM3QT1Kb6fvkSZj3Xvcx2at7Ydm5VmL',
-           :amount => 0.1e0,
-           :status => 'success',
-           :currency_id => 'btc' },
-         { :hash => '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
-           :txout => 1,
-           :to_address => '2MzDFuDK9ZEEiRsuCDFkPdeHQLGvwbC9ufG',
-           :amount => 0.2e0,
-           :status => 'success',
-           :currency_id => 'btc' },
-         { :hash => '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
-           :txout => 2,
-           :to_address => '2MuvCKKi1MzGtvZqvcbqn5twjA2v5XLaTWe',
-           :amount => 0.11749604e0,
-           :status => 'success',
-           :currency_id => 'btc' }]
+        [{ hash: '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
+           txout: 0,
+           to_address: '2N5WyM3QT1Kb6fvkSZj3Xvcx2at7Ydm5VmL',
+           amount: 0.1e0,
+           status: 'success',
+           currency_id: 'btc' },
+         { hash: '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
+           txout: 1,
+           to_address: '2MzDFuDK9ZEEiRsuCDFkPdeHQLGvwbC9ufG',
+           amount: 0.2e0,
+           status: 'success',
+           currency_id: 'btc' },
+         { hash: '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
+           txout: 2,
+           to_address: '2MuvCKKi1MzGtvZqvcbqn5twjA2v5XLaTWe',
+           amount: 0.11749604e0,
+           status: 'success',
+           currency_id: 'btc' }]
       end
 
       it 'builds formatted transactions for each vout' do
@@ -446,7 +446,7 @@ describe Bitcoin::Blockchain do
                         method: :listaddressgroupings,
                         params: [] }.to_json)
           .to_return(body: { result: nil,
-                             error: { code: -32601, message: 'Method not found' },
+                             error: { code: -32_601, message: 'Method not found' },
                              id: nil }.to_json)
       end
 

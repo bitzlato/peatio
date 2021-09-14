@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -36,7 +35,7 @@ module API
                    values: { value: ->(p) { p.try(:positive?) }, message: 'admin.order.non_positive_origin_volume' },
                    desc: -> { API::V2::Admin::Entities::Order.documentation[:origin_volume][:desc] }
           optional :type,
-                   values: { value: %w(sell buy), message: 'admin.order.invalid_type' },
+                   values: { value: %w[sell buy], message: 'admin.order.invalid_type' },
                    desc: 'Filter order by type.'
           optional :email,
                    desc: -> { API::V2::Entities::Member.documentation[:email][:desc] }
@@ -58,7 +57,9 @@ module API
                                                   .translate(market: :market_id)
                                                   .with_daterange
                                                   .merge({
-                                                           type_eq: params[:type].present? ? params[:type] == 'buy' ? 'OrderBid' : 'OrderAsk' : nil
+                                                           type_eq: if params[:type].present?
+                                                                      params[:type] == 'buy' ? 'OrderBid' : 'OrderAsk'
+                                                                    end
                                                          }).build
 
           search = Order.ransack(ransack_params)
@@ -100,7 +101,7 @@ module API
                    values: { value: -> { ::Market.spot.active.pluck(:symbol) }, message: 'admin.order.market_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Market.documentation[:id][:desc] }
           optional :side,
-                   values: { value: %w(sell buy), message: 'admin.order.invalid_side' },
+                   values: { value: %w[sell buy], message: 'admin.order.invalid_side' },
                    desc: 'If present, only sell orders (asks) or buy orders (bids) will be cancelled.'
         end
         post '/orders/cancel' do
@@ -111,13 +112,15 @@ module API
                                                     .eq(state: 'wait', market_type: 'spot')
                                                     .translate(market: :market_id)
                                                     .merge({
-                                                             type_eq: params[:side].present? ? params[:side] == 'buy' ? 'OrderBid' : 'OrderAsk' : nil
+                                                             type_eq: if params[:side].present?
+                                                                        params[:side] == 'buy' ? 'OrderBid' : 'OrderAsk'
+                                                                      end
                                                            }).build
 
             orders = Order.ransack(ransack_params)
             orders.result.map(&:trigger_cancellation)
             present orders.result, with: API::V2::Entities::Order
-          rescue
+          rescue StandardError
             error!({ errors: ['admin.order.cancel_error'] }, 422)
           end
         end

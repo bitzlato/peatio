@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module Workers
@@ -23,7 +22,7 @@ module Workers
 
         # Пока не понимаю что проихсодит с исключениями не указанными тут, поэтому отключил
         # rescue AASM::InvalidTransition => err
-      rescue => err
+      rescue StandardError => err
         @logger.error id: payload[:id], message: err.message
         report_exception err, true, payload
         nil

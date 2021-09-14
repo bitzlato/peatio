@@ -17,15 +17,11 @@ class Operation < ApplicationRecord
   end
 
   validate do
-    unless account&.currency_type == currency&.type
-      errors.add(:currency, 'type and account currency type don\'t match')
-    end
+    errors.add(:currency, 'type and account currency type don\'t match') unless account&.currency_type == currency&.type
   end
 
   validate do
-    unless account&.type == self.class.operation_type
-      errors.add(:base, 'Account type and operation type don\'t match')
-    end
+    errors.add(:base, 'Account type and operation type don\'t match') unless account&.type == self.class.operation_type
   end
 
   self.abstract_class = true

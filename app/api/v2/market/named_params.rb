@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -17,7 +16,7 @@ module API
         params :order do
           requires :side,
                    type: String,
-                   values: { value: %w(sell buy), message: 'market.order.invalid_side' },
+                   values: { value: %w[sell buy], message: 'market.order.invalid_side' },
                    desc: -> { V2::Entities::Order.documentation[:side] }
           requires :volume,
                    type: { value: BigDecimal, message: 'market.order.non_decimal_volume' },
@@ -56,7 +55,7 @@ module API
                    desc: 'Specify the page of paginated results.'
           optional :type,
                    type: String,
-                   values: { value: %w(buy sell), message: 'market.trade.invalid_type' },
+                   values: { value: %w[buy sell], message: 'market.trade.invalid_type' },
                    desc: 'To indicate nature of trade - buy/sell'
           optional :time_from,
                    type: { value: Integer, message: 'market.trade.non_integer_time_from' },
@@ -70,7 +69,7 @@ module API
                          'If set, only trades executed before the time will be returned.'
           optional :order_by,
                    type: String,
-                   values: { value: %w(asc desc), message: 'market.trade.invalid_order_by' },
+                   values: { value: %w[asc desc], message: 'market.trade.invalid_order_by' },
                    default: 'desc',
                    desc: "If set, returned trades will be sorted in specific order, default to 'desc'."
         end

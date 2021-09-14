@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Account::Transactions, type: :request do
@@ -7,7 +6,7 @@ describe API::V2::Account::Transactions, type: :request do
     let(:token) { jwt_for(member) }
     let(:btc_account) { member.get_account('btc') }
     let(:usd_account) { member.get_account('usd') }
-    let(:balance) { 100000 }
+    let(:balance) { 100_000 }
 
     before do
       Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => %w[Deposit Withdraw] } })

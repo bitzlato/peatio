@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_relative 'constants'
@@ -19,7 +18,7 @@ module Matching
       when 'cancel'
         publish_cancel
       else
-        raise ExecutorError.new("Unknown action: #{@payload[:action]}")
+        raise ExecutorError, "Unknown action: #{@payload[:action]}"
       end
     end
 
@@ -65,9 +64,7 @@ module Matching
       raise_error(3002, 'Bid price is less than strike price.') if bid.ord_type == 'limit' && bid.price < @price
       raise_error(3003, "Maker order state isn\'t equal to «wait» (#{@maker_order.state}).") unless @maker_order.state == Order::WAIT
       raise_error(3004, "Taker order state isn\'t equal to «wait» (#{@taker_order.state}).") unless @taker_order.state == Order::WAIT
-      unless @total > ZERO && [@maker_order.volume, @taker_order.volume].min >= @amount
-        raise_error(3005, 'Not enough funds.')
-      end
+      raise_error(3005, 'Not enough funds.') unless @total > ZERO && [@maker_order.volume, @taker_order.volume].min >= @amount
     end
 
     def create_trade_and_strike_orders
@@ -211,9 +208,7 @@ module Matching
         order.state = Order::DONE
 
         # Unlock not used funds.
-        unless order.locked.zero?
-          outcome_account.assign_attributes outcome_account.attributes_after_unlock_funds!(order.locked)
-        end
+        outcome_account.assign_attributes outcome_account.attributes_after_unlock_funds!(order.locked) unless order.locked.zero?
       elsif order.ord_type == 'market' && order.locked.zero?
         # Partially filled market order has run out it's locked funds.
         order.state = Order::CANCEL

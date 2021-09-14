@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -17,11 +16,11 @@ module API
           params do
             use :pagination
             optional :ordering,
-                     values: { value: %w(asc desc), message: 'public.markets.invalid_ordering' },
+                     values: { value: %w[asc desc], message: 'public.markets.invalid_ordering' },
                      default: 'asc',
                      desc: 'If set, returned values will be sorted in specific order, defaults to \'asc\'.'
             optional :order_by,
-                     values: { value: %w(id position), message: 'public.markets.invalid_order_by' },
+                     values: { value: %w[id position], message: 'public.markets.invalid_order_by' },
                      default: 'position',
                      desc: 'Name of the field, which result will be ordered by.'
             optional :base_unit,
@@ -119,7 +118,7 @@ module API
                            'If set, only trades executed before the time will be returned.'
             optional :order_by,
                      type: String,
-                     values: { value: %w(asc desc), message: 'public.trade.invalid_order_by' },
+                     values: { value: %w[asc desc], message: 'public.trade.invalid_order_by' },
                      default: 'desc',
                      desc: "If set, returned trades will be sorted in specific order, default to 'desc'."
           end
@@ -178,9 +177,8 @@ module API
           desc 'Get ticker of all markets (For response doc see /:market/tickers/ response).'
           get '/tickers' do
             Rails.cache.fetch(:markets_tickers, expires_in: 60) do
-              ::Market.spot.active.ordered.inject({}) do |h, m|
+              ::Market.spot.active.ordered.each_with_object({}) do |m, h|
                 h[m.symbol] = format_ticker TickersService[m].ticker
-                h
               end
             end
           end

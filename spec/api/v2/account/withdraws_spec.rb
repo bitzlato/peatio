@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Account::Withdraws, type: :request do
@@ -174,7 +173,7 @@ describe API::V2::Account::Withdraws, type: :request do
         currency: currency.code,
         amount: amount,
         beneficiary_id: beneficiary.id,
-        otp: 123456 }
+        otp: 123_456 }
     end
 
     let(:account) { member.get_account(currency) }

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -15,7 +14,7 @@ module API
             desc: -> { API::V2::Management::Entities::Wallet.documentation[:max_balance][:desc] }
           },
           status: {
-            values: { value: %w(active disabled), message: 'management.wallet.invalid_status' },
+            values: { value: %w[active disabled], message: 'management.wallet.invalid_status' },
             default: 'active',
             desc: -> { API::V2::Management::Entities::Wallet.documentation[:status][:desc] }
           }

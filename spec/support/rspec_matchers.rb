@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 RSpec::Matchers.define :be_d do |expected|

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class Currency < ApplicationRecord
@@ -60,9 +59,7 @@ class Currency < ApplicationRecord
   end
 
   validate on: :create do
-    if ENV['MAX_CURRENCIES'].present? && Currency.count >= ENV['MAX_CURRENCIES'].to_i
-      errors.add(:max, 'Currency limit has been reached')
-    end
+    errors.add(:max, 'Currency limit has been reached') if ENV['MAX_CURRENCIES'].present? && Currency.count >= ENV['MAX_CURRENCIES'].to_i
   end
 
   validates :code, presence: true, uniqueness: { case_sensitive: false }
@@ -138,10 +135,9 @@ class Currency < ApplicationRecord
   class << self
     def codes(options = {})
       pluck(:id).yield_self do |downcase_codes|
-        case
-        when options.fetch(:bothcase, false)
+        if options.fetch(:bothcase, false)
           downcase_codes + downcase_codes.map(&:upcase)
-        when options.fetch(:upcase, false)
+        elsif options.fetch(:upcase, false)
           downcase_codes.map(&:upcase)
         else
           downcase_codes

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -134,13 +133,9 @@ module API
                           .available_to_member
                           .find(params[:id])
 
-            unless beneficiary.pending?
-              error!({ errors: ['account.beneficiary.cant_resend'] }, 422)
-            end
+            error!({ errors: ['account.beneficiary.cant_resend'] }, 422) unless beneficiary.pending?
 
-            if Time.now - beneficiary.sent_at < 60
-              error!({ errors: ['account.beneficiary.cant_resend_within_1_minute'], sent_at: beneficiary.sent_at.iso8601 }, 422)
-            end
+            error!({ errors: ['account.beneficiary.cant_resend_within_1_minute'], sent_at: beneficiary.sent_at.iso8601 }, 422) if Time.now - beneficiary.sent_at < 60
 
             beneficiary.regenerate_pin!
             status 204
@@ -166,9 +161,7 @@ module API
                           .available_to_member
                           .find(params[:id])
 
-            unless beneficiary.pending?
-              error!({ errors: ['account.beneficiary.cant_activate'] }, 422)
-            end
+            error!({ errors: ['account.beneficiary.cant_activate'] }, 422) unless beneficiary.pending?
 
             if beneficiary.activate!(params[:pin])
               present beneficiary, with: API::V2::Entities::Beneficiary

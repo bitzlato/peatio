@@ -110,7 +110,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { Jobs::Cron::StatsMemberPnl.process() }.to change { StatsMemberPnl.count }.by(1)
+          expect { Jobs::Cron::StatsMemberPnl.process }.to change { StatsMemberPnl.count }.by(1)
 
           expect(StatsMemberPnl.last.member_id).to eq coin_withdraw.member_id
           expect(StatsMemberPnl.last.currency_id).to eq coin_withdraw.currency_id
@@ -844,7 +844,7 @@ describe Jobs::Cron::StatsMemberPnl do
       Jobs::Cron::StatsMemberPnl.stubs(:conversion_paths).returns(
         'btc/abc' => [['btc', 'eth', true], ['btc', 'usd', false]]
       )
-      expect(Jobs::Cron::StatsMemberPnl.price_at('btc', 'abc', 0)).to be_within(0.0001).of(10526.3157)
+      expect(Jobs::Cron::StatsMemberPnl.price_at('btc', 'abc', 0)).to be_within(0.0001).of(10_526.3157)
     end
   end
 end

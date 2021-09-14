@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_relative 'constants'
@@ -113,7 +112,7 @@ module Matching
       book, _counter_book = orderbook.get_books(order.type)
       book.remove(order)
       publish_cancel(order)
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error { "Failed to cancel order #{order.label}." }
       report_exception(e)
     end

@@ -98,9 +98,7 @@ module API
 
           withdraw = Withdraw.find(declared_params[:id])
 
-          if withdraw.currency.fiat? && declared_params[:txid].present?
-            error!({ errors: ['admin.withdraw.redundant_txid'] }, 422)
-          end
+          error!({ errors: ['admin.withdraw.redundant_txid'] }, 422) if withdraw.currency.fiat? && declared_params[:txid].present?
 
           transited = withdraw.transaction do
             withdraw.update!(txid: declared_params[:txid]) if declared_params[:txid].present?

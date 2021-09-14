@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 # A trading fee schedule is a complete listing of maker and taker fees.

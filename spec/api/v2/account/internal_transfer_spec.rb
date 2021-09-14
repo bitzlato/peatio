@@ -78,7 +78,7 @@ describe API::V2::Account::InternalTransfers, type: :request do
       { username_or_uid: member_receiver.uid,
         currency: currency.code,
         amount: amount,
-        otp: 123456 }
+        otp: 123_456 }
     end
 
     let(:account) { member.get_account(currency) }

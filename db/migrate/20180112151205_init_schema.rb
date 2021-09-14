@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class InitSchema < ActiveRecord::Migration[4.2]
@@ -116,7 +115,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.datetime 'created_at'
       t.datetime 'updated_at'
       t.date     'birth_date'
-      t.text     'address',            limit: 65535
+      t.text     'address',            limit: 65_535
       t.string   'city',               limit: 255
       t.string   'country',            limit: 255
       t.string   'zipcode',            limit: 255
@@ -160,7 +159,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
     create_table 'partial_trees', force: :cascade do |t|
       t.integer  'proof_id',   limit: 4,     null: false
       t.integer  'account_id', limit: 4,     null: false
-      t.text     'json',       limit: 65535, null: false
+      t.text     'json',       limit: 65_535, null: false
       t.datetime 'created_at'
       t.datetime 'updated_at'
       t.string   'sum',        limit: 255
@@ -197,7 +196,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.datetime 'created_at'
       t.datetime 'updated_at'
       t.string   'sum',        limit: 255
-      t.text     'addresses',  limit: 65535
+      t.text     'addresses',  limit: 65_535
       t.string   'balance',    limit: 30
     end
     create_table 'trades', force: :cascade do |t|
@@ -224,7 +223,7 @@ class InitSchema < ActiveRecord::Migration[4.2]
       t.integer  'item_id',    limit: 4,     null: false
       t.string   'event',      limit: 255,   null: false
       t.string   'whodunnit',  limit: 255
-      t.text     'object',     limit: 65535
+      t.text     'object',     limit: 65_535
       t.datetime 'created_at'
     end
     add_index 'versions', %w[item_type item_id], name: 'index_versions_on_item_type_and_item_id', using: :btree

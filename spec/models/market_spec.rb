@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Market do
@@ -110,7 +109,7 @@ describe Market do
     end
 
     it 'validates fields to be greater than or equal to top position' do
-      record = Market.new(valid_attributes.merge(:position => 0))
+      record = Market.new(valid_attributes.merge(position: 0))
       record.save
       expect(record.errors.full_messages).to include(/position must be greater than or equal to 1/i)
     end

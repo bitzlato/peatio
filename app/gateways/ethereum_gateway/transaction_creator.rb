@@ -7,11 +7,10 @@ class EthereumGateway
              from_address:,
              to_address:,
              secret:,
-             nonce: nil,
+             gas_limit:, nonce: nil,
              contract_address: nil,
              subtract_fee: false,
              gas_price: nil,
-             gas_limit:,
              gas_factor: 1)
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
@@ -22,23 +21,25 @@ class EthereumGateway
 
       raise 'gas price zero' if gas_price.zero?
 
-      peatio_transaction = contract_address.present? ?
-        create_erc20_transaction!(amount: amount,
-                                  from_address: from_address,
-                                  to_address: to_address,
-                                  contract_address: contract_address,
-                                  secret: secret,
-                                  nonce: nonce,
-                                  gas_limit: gas_limit,
-                                  gas_price: gas_price)
-      : create_eth_transaction!(amount: amount,
-                                from_address: from_address,
-                                to_address: to_address,
-                                subtract_fee: subtract_fee,
-                                secret: secret,
-                                nonce: nonce,
-                                gas_limit: gas_limit,
-                                gas_price: gas_price)
+      peatio_transaction = if contract_address.present?
+                             create_erc20_transaction!(amount: amount,
+                                                       from_address: from_address,
+                                                       to_address: to_address,
+                                                       contract_address: contract_address,
+                                                       secret: secret,
+                                                       nonce: nonce,
+                                                       gas_limit: gas_limit,
+                                                       gas_price: gas_price)
+                           else
+                             create_eth_transaction!(amount: amount,
+                                                     from_address: from_address,
+                                                     to_address: to_address,
+                                                     subtract_fee: subtract_fee,
+                                                     secret: secret,
+                                                     nonce: nonce,
+                                                     gas_limit: gas_limit,
+                                                     gas_price: gas_price)
+                           end
       peatio_transaction.options.merge! gas_factor: gas_factor
       peatio_transaction
     end
@@ -47,9 +48,7 @@ class EthereumGateway
                                 to_address:,
                                 amount:,
                                 secret:,
-                                nonce: nil,
-                                gas_limit:,
-                                gas_price:,
+                                gas_limit:, gas_price:, nonce: nil,
                                 subtract_fee: false)
 
       raise 'amount must be an integer' unless amount.is_a? Integer
@@ -61,7 +60,7 @@ class EthereumGateway
         logger.info("Create eth transaction #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       else
         logger.warn("Skip eth transaction (amount is not positive) #{from_address} -> #{to_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
-        raise Error.new("Amount is not positive (#{amount}) for #{from_address} to #{to_address}")
+        raise Error, "Amount is not positive (#{amount}) for #{from_address} to #{to_address}"
       end
       txid = validate_txid!(
         client
@@ -93,10 +92,7 @@ class EthereumGateway
                                   to_address:,
                                   amount:,
                                   contract_address:,
-                                  nonce: nil,
-                                  secret:,
-                                  gas_limit:,
-                                  gas_price:)
+                                  secret:, gas_limit:, gas_price:, nonce: nil)
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
       logger.info("Create erc20 transaction #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")

@@ -11,11 +11,8 @@ class EthereumGateway
     # Если Не достаточно, то пополняет ровно столько, сколько нужно
     def call(gas_wallet_address:,
              gas_wallet_secret:,
-             transaction_gas_limit: nil,
+             gas_factor:, target_address:, contract_addresses:, transaction_gas_limit: nil,
              gas_price: nil,
-             gas_factor:,
-             target_address:,
-             contract_addresses:,
              gas_limits: {})
       balance_on_target_address = load_basic_balance target_address
       raise "balance_on_target_address #{balance_on_target_address} must be an Integer" unless balance_on_target_address.is_a? Integer

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -29,11 +28,7 @@ module API
                   .camelize
                   .constantize
 
-          if klass == ::Operations::Revenue && attrs[:uid]
-            member_id = Member.find_by!(uid: attrs.fetch(:uid)).id
-          else
-            member_id = nil
-          end
+          member_id = (Member.find_by!(uid: attrs.fetch(:uid)).id if klass == ::Operations::Revenue && attrs[:uid])
 
           if attrs[:credit].present?
             klass.credit!({

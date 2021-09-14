@@ -47,7 +47,7 @@ class Transaction < ApplicationRecord
     update_reference
   end
 
-  KINDS = %w(refill internal gas_refuel withdraw unauthorized_withdraw deposit collection unknown)
+  KINDS = %w[refill internal gas_refuel withdraw unauthorized_withdraw deposit collection unknown]
   enum kind: KINDS, _prefix: true
   validates :kind, presence: true, inclusion: { in: kinds.keys }
 

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe ::EthereumGateway::GasRefueler do
@@ -12,7 +11,7 @@ describe ::EthereumGateway::GasRefueler do
   let(:from_address) { Faker::Blockchain::Ethereum.address }
   let(:to_address) { Faker::Blockchain::Ethereum.address }
   let(:refuel_gas_factor) { 1 }
-  let(:estimated_gas) { 1231230 }
+  let(:estimated_gas) { 1_231_230 }
   let(:gas_limit) { estimated_gas }
 
   subject { described_class.new(ethereum_client) }
@@ -45,7 +44,7 @@ describe ::EthereumGateway::GasRefueler do
       it { expect { result }.to raise_error described_class::NoTokens }
     end
     context 'it has small ethereum balance' do
-      let(:balance_on_target_address) { 10000 }
+      let(:balance_on_target_address) { 10_000 }
       it { expect { result }.to raise_error described_class::NoTokens }
     end
     context 'it has big ethereum balance' do
@@ -87,7 +86,7 @@ describe ::EthereumGateway::GasRefueler do
           id: 5
         )
       end
-      let(:balance_on_target_address) { 10000 }
+      let(:balance_on_target_address) { 10_000 }
       let(:value) { (gas_price * estimated_gas * 2 * refuel_gas_factor).to_i - balance_on_target_address }
       let(:transaction_gas_price) { (gas_price * refuel_gas_factor).to_i }
       let(:result_transaction_hash) do
@@ -102,7 +101,7 @@ describe ::EthereumGateway::GasRefueler do
             'gas_limit' => gas_limit,
             'gas_price' => transaction_gas_price,
             'subtract_fee' => false,
-            'required_amount' => 2462460000000000,
+            'required_amount' => 2_462_460_000_000_000,
             'required_gas' => estimated_gas
           }
         }

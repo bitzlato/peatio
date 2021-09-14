@@ -12,7 +12,7 @@ module API
                    coerce_with: ->(name) { name.strip.downcase }
           optional :type,
                    type: String,
-                   values: { value: %w(buy sell), message: 'coingecko.historical_trades.invalid_type' },
+                   values: { value: %w[buy sell], message: 'coingecko.historical_trades.invalid_type' },
                    desc: 'To indicate nature of trade - buy/sell'
           optional :limit,
                    type: Integer,

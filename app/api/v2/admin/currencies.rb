@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -107,7 +106,7 @@ module API
           use :currency_type
           use :pagination
           optional :ordering,
-                   values: { value: %w(asc desc), message: 'admin.pagination.invalid_ordering' },
+                   values: { value: %w[asc desc], message: 'admin.pagination.invalid_ordering' },
                    default: 'asc',
                    desc: 'If set, returned values will be sorted in specific order, defaults to \'asc\'.'
           optional :order_by,

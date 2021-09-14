@@ -19,7 +19,7 @@ describe Bitzlato::Wallet do
             cryptocurrency: 'BTC',
             type: 'auto',
             status: 'done',
-            date: 1616396531426
+            date: 1_616_396_531_426
           },
           {
             publicName: 'dapi',
@@ -28,7 +28,7 @@ describe Bitzlato::Wallet do
             cryptocurrency: 'BTC',
             type: 'auto',
             status: 'done',
-            date: 1616396505639
+            date: 1_616_396_505_639
           },
           {
             publicName: 'dapi',
@@ -37,7 +37,7 @@ describe Bitzlato::Wallet do
             cryptocurrency: 'BTC',
             type: 'auto',
             status: 'done',
-            date: 1616396365270
+            date: 1_616_396_365_270
           }
         ]
       end
@@ -66,7 +66,7 @@ describe Bitzlato::Wallet do
                 code: 'BTC',
                 amount: '1'
               },
-              createdAt: 1616127762606,
+              createdAt: 1_616_127_762_606,
               links: [
                 {
                   type: 'telegram bot @BTC_STAGE_BOT',
@@ -90,7 +90,7 @@ describe Bitzlato::Wallet do
                 code: 'BTC',
                 amount: '0.0931216'
               },
-              createdAt: 1616127762606,
+              createdAt: 1_616_127_762_606,
               links: [
                 {
                   type: 'telegram bot @BTC_STAGE_BOT',
@@ -173,7 +173,7 @@ describe Bitzlato::Wallet do
             'deepLinkCode' => 'someHash',
             'currency' => { 'code' => 'USD', 'amount' => '6965' },
             'cryptocurrency' => { 'code' => 'BTC', 'amount' => '0.12' },
-            'createdAt' => 1616075809783,
+            'createdAt' => 1_616_075_809_783,
             'links' => [
               { 'type' => 'telegram bot @BTC_STAGE_BOT', 'url' => 'https://telegram.me/BTC_STAGE_BOT?start=someHash' },
               { 'type' => 'web exchange', 'url' => 'https://s-www.lgk.one/p2p/?start=someHash' }
@@ -209,8 +209,8 @@ describe Bitzlato::Wallet do
           'amount' => '1.1',
           'comment' => 'gift from drew',
           'link' => { 'telegram' => 'https://t.me/BTC_STAGE_BOT?start=b_9ac6b97e09ecbbfc0d365421f6b98a33', 'web' => 'https://s-www.lgk.one/p2p/?start=b_9ac6b97e09ecbbfc0d365421f6b98a33' },
-          'createdAt' => 1615444044115,
-          'expiryAt' => 1615530444115,
+          'createdAt' => 1_615_444_044_115,
+          'expiryAt' => 1_615_530_444_115,
           'completedAt' => nil,
           'status' => 'active'
         }

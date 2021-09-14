@@ -185,20 +185,24 @@ module OrderServices
         expected_volume -= actual_volume
       end
 
-      raise(
-        ::Order::InsufficientMarketLiquidity,
-        "Insufficient market liquidity for volume = #{volume}"
-      ) if expected_volume.nonzero?
+      if expected_volume.nonzero?
+        raise(
+          ::Order::InsufficientMarketLiquidity,
+          "Insufficient market liquidity for volume = #{volume}"
+        )
+      end
 
       required_funds
     end
 
     def submit_and_return_order(order)
       if order.market.engine.peatio_engine?
-        EventAPI.notify(
-          ['market', order.market_id, 'order_created'].join('.'),
-          Serializers::EventAPI::OrderCreated.call(order)
-        ) if order.is_limit_order?
+        if order.is_limit_order?
+          EventAPI.notify(
+            ['market', order.market_id, 'order_created'].join('.'),
+            Serializers::EventAPI::OrderCreated.call(order)
+          )
+        end
 
         AMQP::Queue.enqueue(:order_processor,
                             { action: 'submit', order: order.attributes },
@@ -213,10 +217,12 @@ module OrderServices
     def symbolize_and_check_side!(side)
       symbol = side.to_sym
 
-      raise(
-        IncorrectSideValue,
-        "side = #{symbol}. Possible side values: #{POSSIBLE_SIDE_VALUES.join(' or ')}"
-      ) unless POSSIBLE_SIDE_VALUES.include?(symbol)
+      unless POSSIBLE_SIDE_VALUES.include?(symbol)
+        raise(
+          IncorrectSideValue,
+          "side = #{symbol}. Possible side values: #{POSSIBLE_SIDE_VALUES.join(' or ')}"
+        )
+      end
 
       symbol
     end

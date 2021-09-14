@@ -23,7 +23,7 @@ class BlockchainService
         next
       end
       refetch_and_update_transaction!(txid, txout)
-    rescue => err
+    rescue StandardError => err
       report_exception err, true, transaction_id: t.id
     end
   end
@@ -65,12 +65,12 @@ class BlockchainService
       transactions = gateway.fetch_block_transactions(block_number)
 
       withdraw_scope = blockchain.withdraws.where.not(txid: nil).where(block_number: [nil, block_number])
-      if Rails.env.production?
-        withdraw_txids = withdraw_scope.confirming.pluck(:txid)
-      else
-        # Check it all, we want debug in development
-        withdraw_txids = withdraw_scope.pluck(:txid)
-      end
+      withdraw_txids = if Rails.env.production?
+                         withdraw_scope.confirming.pluck(:txid)
+                       else
+                         # Check it all, we want debug in development
+                         withdraw_scope.pluck(:txid)
+                       end
 
       processed_count = transactions.each do |tx|
         @withdrawal = @deposit = @fetched_transaction = nil
@@ -116,7 +116,7 @@ class BlockchainService
 
   attr_reader :withdrawal, :deposit, :fetched_transaction
 
-  def dispatch_deposits! block_number
+  def dispatch_deposits!(block_number)
     blockchain
       .deposits
       .accepted
@@ -203,7 +203,7 @@ class BlockchainService
       elsif transaction.status.success? && latest_block_number - withdrawal.block_number >= blockchain.min_confirmations
         withdrawal.success!
       end
-    rescue => err
+    rescue StandardError => err
       logger.error "#{err.message} for #{transaction}"
       report_exception err, true, tx: transaction
     end

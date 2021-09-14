@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
@@ -110,7 +109,7 @@ group :test do
 end
 
 # Load gems from Gemfile.plugin.
-Dir.glob File.expand_path('../Gemfile.plugin', __FILE__) do |file|
+Dir.glob File.expand_path('Gemfile.plugin', __dir__) do |file|
   eval_gemfile file
 end
 

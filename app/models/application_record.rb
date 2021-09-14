@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 # We use the next convention for organizing Ruby on Rails Models.

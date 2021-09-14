@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class NormalizeAddressesAndTransactions < ActiveRecord::Migration[4.2]

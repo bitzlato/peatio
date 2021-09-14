@@ -27,20 +27,16 @@ module API
           member = Member.find_by(uid: params[:uid]) if params[:uid].present?
 
           currency = Currency.find(params[:currency])
-          unless currency.deposit_enabled?
-            error!({ errors: ['account.currency.deposit_disabled'] }, 422)
-          end
+          error!({ errors: ['account.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
 
           wallet = Wallet.active_deposit_wallet(currency.id)
-          unless wallet.present?
-            error!({ errors: ['account.wallet.not_found'] }, 422)
-          end
+          error!({ errors: ['account.wallet.not_found'] }, 422) unless wallet.present?
 
-          if params[:remote].nil?
-            pa = member.payment_address!(wallet.id)
-          else
-            pa = member.payment_address!(wallet.id, params[:remote])
-          end
+          pa = if params[:remote].nil?
+                 member.payment_address!(wallet.id)
+               else
+                 member.payment_address!(wallet.id, params[:remote])
+               end
 
           begin
             pa.with_lock do

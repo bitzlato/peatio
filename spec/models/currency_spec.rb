@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Currency do
@@ -89,7 +88,7 @@ describe Currency do
     let!(:fake_currency) { create(:currency, :btc, id: 'fake') }
 
     it 'should not update the type' do
-      fake_currency.update_attributes :type => 'fiat'
+      fake_currency.update_attributes type: 'fiat'
       expect(fake_currency.reload.type).to eq(fake_currency.type)
     end
   end

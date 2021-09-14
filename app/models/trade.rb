@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'peatio/influxdb'
@@ -244,16 +243,16 @@ class Trade < ApplicationRecord
   def record_liability_transfer!
     # Unlock unused funds.
     [maker_order, taker_order].each do |order|
-      if order.volume.zero? && !order.locked.zero?
-        Operations::Liability.transfer!(
-          amount: order.locked,
-          currency: order.outcome_currency,
-          reference: self,
-          from_kind: :locked,
-          to_kind: :main,
-          member_id: order.member_id
-        )
-      end
+      next unless order.volume.zero? && !order.locked.zero?
+
+      Operations::Liability.transfer!(
+        amount: order.locked,
+        currency: order.outcome_currency,
+        reference: self,
+        from_kind: :locked,
+        to_kind: :main,
+        member_id: order.member_id
+      )
     end
   end
 

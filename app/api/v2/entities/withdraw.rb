@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -124,7 +123,7 @@ module API
           documentation: {
             type: JSON,
             desc: 'Links to confirm withdraw on external resource',
-            example: -> {
+            example: lambda {
               [
                 { title: 'telegram', url: 'https://t.me/BTC_STAGE_BOT?start=b_0f8c3db61f223ea9df072fd37e0b6315' },
                 { title: 'web', url: 'https://s-www.lgk.one/p2p/?start=b_0f8c3db61f223ea9df072fd37e0b6315' }

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module Matching
@@ -19,9 +18,7 @@ module Matching
     end
 
     def add(order)
-      unless find(order.id)
-        @orders << order
-      end
+      @orders << order unless find(order.id)
     end
 
     def total

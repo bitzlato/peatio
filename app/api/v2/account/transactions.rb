@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_relative '../validations'
@@ -21,7 +20,7 @@ module API
 
           optional :order_by,
                    type: String,
-                   values: { value: %w(asc desc), message: 'account.transactions.order_by_invalid' },
+                   values: { value: %w[asc desc], message: 'account.transactions.order_by_invalid' },
                    default: 'desc',
                    desc: 'Sorting order'
 

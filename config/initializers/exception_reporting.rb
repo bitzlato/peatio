@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 def catch_and_report_exception(options = {})
@@ -34,10 +33,12 @@ end
 def report_exception_to_ets(exception, meta = {})
   return if Rails.env.test? || Rails.env.development?
 
-  Bugsnag.notify exception do |b|
-    b.meta_data = meta
-  end if defined?(Bugsnag)
+  if defined?(Bugsnag)
+    Bugsnag.notify exception do |b|
+      b.meta_data = meta
+    end
+  end
   Sentry.capture_exception(exception) if defined?(Sentry)
-rescue => ets_exception
+rescue StandardError => ets_exception
   report_exception(ets_exception, false)
 end

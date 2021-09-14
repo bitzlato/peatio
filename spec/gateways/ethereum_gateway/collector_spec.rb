@@ -12,8 +12,8 @@ describe ::EthereumGateway::Collector do
     )
   end
   let(:gas_factor) { 1 }
-  let(:native_amount) { 1000000 }
-  let(:contract_amount) { 1000000000000000000 }
+  let(:native_amount) { 1_000_000 }
+  let(:contract_amount) { 1_000_000_000_000_000_000 }
   let(:contract_address) { Faker::Blockchain::Ethereum.address }
   let(:from_address) { Faker::Blockchain::Ethereum.address }
   let(:to_address) { Faker::Blockchain::Ethereum.address }

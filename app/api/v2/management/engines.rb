@@ -25,7 +25,7 @@ module API
                      coerce_with: ->(c) { c.strip.downcase },
                      desc: -> { API::V2::Management::Entities::Engine.documentation[:name][:desc] }
             optional :ordering,
-                     values: { value: %w(asc desc), message: 'management.pagination.invalid_ordering' },
+                     values: { value: %w[asc desc], message: 'management.pagination.invalid_ordering' },
                      default: 'asc',
                      desc: 'If set, returned values will be sorted in specific order, defaults to \'asc\'.'
             optional :order_by,

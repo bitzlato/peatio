@@ -23,8 +23,10 @@ class EthereumGateway
     end
 
     def validate_txid!(txid)
-      raise Ethereum::Client::Error, \
-            "Transaction failed (invalid txid #{txid})." unless valid_txid? txid
+      unless valid_txid? txid
+        raise Ethereum::Client::Error, \
+              "Transaction failed (invalid txid #{txid})."
+      end
       txid
     end
   end

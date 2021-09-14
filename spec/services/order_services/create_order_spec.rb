@@ -40,7 +40,7 @@ describe OrderServices::CreateOrder do
   describe '#perform' do
     context 'insufficient liquidity' do
       context 'buy btc' do
-        let(:account) { create(:account, :usd, balance: 10000000.to_d) }
+        let(:account) { create(:account, :usd, balance: 10_000_000.to_d) }
         let(:uuid) { UUID.generate }
         let(:ton_of_btc_params) do
           {

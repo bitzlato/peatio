@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 # Specifications are available in docs/specs/event_api.md.

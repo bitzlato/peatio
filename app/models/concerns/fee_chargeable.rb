@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module FeeChargeable
@@ -42,9 +41,7 @@ module FeeChargeable
 
       validate on: :create do
         next if !account || [sum, amount, fee].any?(&:blank?)
-        if sum > account.balance || (amount + fee) > sum
-          raise ::Account::AccountError, 'Account balance is insufficient'
-        end
+        raise ::Account::AccountError, 'Account balance is insufficient' if sum > account.balance || (amount + fee) > sum
       end
     end
   end

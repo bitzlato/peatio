@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'base64'
@@ -20,7 +19,7 @@ ENV['VAULT_ENABLED'] = 'false'
 # https://relishapp.com/rspec/rspec-core/v/2-6/docs/command-line
 $LOAD_PATH.delete_if { |p| File.expand_path(p) == File.expand_path('./lib') }
 
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 require 'rspec/rails'
 require 'rspec/retry'
 require 'webmock/rspec'

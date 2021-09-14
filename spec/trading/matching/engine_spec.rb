@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Matching::Engine do
@@ -53,14 +52,14 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => 'execute',
-              :trade => {
-                :market_id => 'btc_usd',
-                :maker_order_id => bid1_in_db.id,
-                :taker_order_id => ask1_in_db.id,
-                :strike_price => 0.86.to_d,
-                :amount => 0.918.to_d,
-                :total => 0.78948.to_d
+              action: 'execute',
+              trade: {
+                market_id: 'btc_usd',
+                maker_order_id: bid1_in_db.id,
+                taker_order_id: ask1_in_db.id,
+                strike_price: 0.86.to_d,
+                amount: 0.918.to_d,
+                total: 0.78948.to_d
               }
             },
             { persistent: false }
@@ -105,14 +104,14 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => 'execute',
-              :trade => {
-                :market_id => 'btc_usd',
-                :taker_order_id => ask1_in_db.id,
-                :maker_order_id => bid1_in_db.id,
-                :strike_price => 8.6.to_d,
-                :amount => 0.918.to_d,
-                :total => 7.8948.to_d
+              action: 'execute',
+              trade: {
+                market_id: 'btc_usd',
+                taker_order_id: ask1_in_db.id,
+                maker_order_id: bid1_in_db.id,
+                strike_price: 8.6.to_d,
+                amount: 0.918.to_d,
+                total: 7.8948.to_d
               }
             },
             { persistent: false }
@@ -157,17 +156,16 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => 'cancel',
-              :order =>
-                { :id => bid1_in_db.id,
-                  :timestamp => bid1_in_db.created_at.to_i,
-                  :type => :bid,
-                  :locked => 67.16.to_d,
-                  :volume => 0.8395.to_d,
-                  :market => 'btc_usd',
-                  :ord_type => 'market' }
+              action: 'cancel',
+              order: { id: bid1_in_db.id,
+                       timestamp: bid1_in_db.created_at.to_i,
+                       type: :bid,
+                       locked: 67.16.to_d,
+                       volume: 0.8395.to_d,
+                       market: 'btc_usd',
+                       ord_type: 'market' }
             },
-            { :persistent => false }
+            { persistent: false }
           ]
         ]
       end
@@ -218,14 +216,14 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => 'execute',
-              :trade => {
-                :market_id => 'btc_usd',
-                :maker_order_id => ask1_in_db.id,
-                :taker_order_id => bid1_in_db.id,
-                :strike_price => 80.06.to_d,
-                :amount => 0.0111.to_d,
-                :total => 0.888666.to_d
+              action: 'execute',
+              trade: {
+                market_id: 'btc_usd',
+                maker_order_id: ask1_in_db.id,
+                taker_order_id: bid1_in_db.id,
+                strike_price: 80.06.to_d,
+                amount: 0.0111.to_d,
+                total: 0.888666.to_d
               }
             },
             { persistent: false }
@@ -233,17 +231,16 @@ describe Matching::Engine do
           [
             :trade_executor,
             {
-              :action => 'cancel',
-              :order =>
-                { :id => bid1_in_db.id,
-                  :timestamp => bid1_in_db.created_at.to_i,
-                  :type => :bid,
-                  :locked => 46.348533.to_d,
-                  :volume => 0.8284.to_d,
-                  :market => 'btc_usd',
-                  :ord_type => 'market' }
+              action: 'cancel',
+              order: { id: bid1_in_db.id,
+                       timestamp: bid1_in_db.created_at.to_i,
+                       type: :bid,
+                       locked: 46.348533.to_d,
+                       volume: 0.8284.to_d,
+                       market: 'btc_usd',
+                       ord_type: 'market' }
             },
-            { :persistent => false }
+            { persistent: false }
           ]
         ]
       end
@@ -303,43 +300,43 @@ describe Matching::Engine do
         [
           [
             :trade_executor,
-            { :action => 'execute',
-              :trade => {
-                :market_id => 'btc_usd',
-                :maker_order_id => ask1_in_db.id,
-                :taker_order_id => bid1_in_db.id,
-                :strike_price => 0.3e4,
-                :amount => 0.9e-3,
-                :total => 0.27e1
+            { action: 'execute',
+              trade: {
+                market_id: 'btc_usd',
+                maker_order_id: ask1_in_db.id,
+                taker_order_id: bid1_in_db.id,
+                strike_price: 0.3e4,
+                amount: 0.9e-3,
+                total: 0.27e1
               } },
-            { :persistent => false }
+            { persistent: false }
           ],
           [
             :trade_executor,
-            { :action => 'execute',
-              :trade => {
-                :market_id => 'btc_usd',
-                :maker_order_id => ask2_in_db.id,
-                :taker_order_id => bid1_in_db.id,
-                :strike_price => 0.3001e4,
-                :amount => 0.11e-2,
-                :total => 0.33011e1
+            { action: 'execute',
+              trade: {
+                market_id: 'btc_usd',
+                maker_order_id: ask2_in_db.id,
+                taker_order_id: bid1_in_db.id,
+                strike_price: 0.3001e4,
+                amount: 0.11e-2,
+                total: 0.33011e1
               } },
-            { :persistent => false }
+            { persistent: false }
           ],
           [
             :trade_executor,
-            { :action => 'cancel',
-              :order => {
-                :id => bid1_in_db.id,
-                :timestamp => bid1_in_db.created_at.to_i,
-                :type => :bid,
-                :locked => 0.240289e2,
-                :volume => 0.8e-2,
-                :market => 'btc_usd',
-                :ord_type => 'market'
+            { action: 'cancel',
+              order: {
+                id: bid1_in_db.id,
+                timestamp: bid1_in_db.created_at.to_i,
+                type: :bid,
+                locked: 0.240289e2,
+                volume: 0.8e-2,
+                market: 'btc_usd',
+                ord_type: 'market'
               } },
-            { :persistent => false }
+            { persistent: false }
           ]
         ]
       end
@@ -381,32 +378,32 @@ describe Matching::Engine do
         [
           [
             :trade_executor,
-            { :action => 'execute',
-              :trade => {
-                :market_id => 'btc_usd',
-                :maker_order_id => ask1_in_db.id,
-                :taker_order_id => bid1_in_db.id,
-                :strike_price => 0.3e4,
-                :amount => 0.9e-3,
-                :total => 0.27e1
+            { action: 'execute',
+              trade: {
+                market_id: 'btc_usd',
+                maker_order_id: ask1_in_db.id,
+                taker_order_id: bid1_in_db.id,
+                strike_price: 0.3e4,
+                amount: 0.9e-3,
+                total: 0.27e1
               } },
-            { :persistent => false }
+            { persistent: false }
           ],
           [
             :trade_executor,
             {
-              :action => 'cancel',
-              :order => {
-                :id => bid1_in_db.id,
-                :timestamp => bid1_in_db.created_at.to_i,
-                :type => :bid,
-                :locked => 0.2733e2,
-                :volume => 0.91e-2,
-                :market => 'btc_usd',
-                :ord_type => 'market'
+              action: 'cancel',
+              order: {
+                id: bid1_in_db.id,
+                timestamp: bid1_in_db.created_at.to_i,
+                type: :bid,
+                locked: 0.2733e2,
+                volume: 0.91e-2,
+                market: 'btc_usd',
+                ord_type: 'market'
               }
             },
-            { :persistent => false }
+            { persistent: false }
           ]
         ]
       end
@@ -456,47 +453,47 @@ describe Matching::Engine do
         [
           [
             :trade_executor,
-            { :action => 'execute',
-              :trade => {
-                :market_id => 'btc_usd',
-                :maker_order_id => ask1_in_db.id,
-                :taker_order_id => bid1_in_db.id,
-                :strike_price => 0.3e4.to_d,
-                :amount => 0.45e-3.to_d,
-                :total => 0.135e1.to_d
+            { action: 'execute',
+              trade: {
+                market_id: 'btc_usd',
+                maker_order_id: ask1_in_db.id,
+                taker_order_id: bid1_in_db.id,
+                strike_price: 0.3e4.to_d,
+                amount: 0.45e-3.to_d,
+                total: 0.135e1.to_d
               } },
-            { :persistent => false }
+            { persistent: false }
           ],
           [
             :trade_executor,
             {
-              :action => 'execute',
-              :trade => {
-                :market_id => 'btc_usd',
-                :maker_order_id => ask1_in_db.id,
-                :taker_order_id => bid2_in_db.id,
-                :strike_price => 0.3e4.to_d,
-                :amount => 0.45e-3.to_d,
-                :total => 0.135e1.to_d
+              action: 'execute',
+              trade: {
+                market_id: 'btc_usd',
+                maker_order_id: ask1_in_db.id,
+                taker_order_id: bid2_in_db.id,
+                strike_price: 0.3e4.to_d,
+                amount: 0.45e-3.to_d,
+                total: 0.135e1.to_d
               }
             },
-            { :persistent => false }
+            { persistent: false }
           ],
           [
             :trade_executor,
             {
-              :action => 'cancel',
-              :order => {
-                :id => bid2_in_db.id,
-                :timestamp => bid2_in_db.created_at.to_i,
-                :type => :bid,
-                :locked => 0.135e1.to_d,
-                :volume => 0.45e-3.to_d,
-                :market => 'btc_usd',
-                :ord_type => 'market'
+              action: 'cancel',
+              order: {
+                id: bid2_in_db.id,
+                timestamp: bid2_in_db.created_at.to_i,
+                type: :bid,
+                locked: 0.135e1.to_d,
+                volume: 0.45e-3.to_d,
+                market: 'btc_usd',
+                ord_type: 'market'
               }
             },
-            { :persistent => false }
+            { persistent: false }
           ]
         ]
       end

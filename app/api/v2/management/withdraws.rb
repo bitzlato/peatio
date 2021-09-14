@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -96,9 +95,7 @@ module API
           member = Member.find_by(uid: params[:uid])
 
           currency = Currency.find(params[:currency])
-          unless currency.withdrawal_enabled?
-            error!({ errors: ['management.currency.withdrawal_disabled'] }, 422)
-          end
+          error!({ errors: ['management.currency.withdrawal_disabled'] }, 422) unless currency.withdrawal_enabled?
 
           beneficiary = Beneficiary.find_by(id: params[:beneficiary_id]) if params[:beneficiary_id].present?
           if params[:rid].blank? && beneficiary.blank?
@@ -107,9 +104,7 @@ module API
             error!({ errors: ['management.beneficiary.invalid_state_for_withdrawal'] }, 422)
           end
 
-          if params[:tid].present? && Withdraw.where(tid: params[:tid]).present?
-            error!({ errors: ['TID already exist'] }, 422)
-          end
+          error!({ errors: ['TID already exist'] }, 422) if params[:tid].present? && Withdraw.where(tid: params[:tid]).present?
 
           declared_params = declared(params, include_missing: false).slice(:tid, :rid, :note, :transfer_type).merge(
             sum: params[:amount],
@@ -128,7 +123,7 @@ module API
         rescue ::Account::AccountError => e
           report_api_error(e, request)
           error!({ errors: [e.to_s] }, 422)
-        rescue => e
+        rescue StandardError => e
           report_exception(e)
           error!({ errors: ['Failed to create withdraw!'] }, 422)
         end

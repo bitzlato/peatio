@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -101,15 +100,11 @@ module API
             error!({ errors: ['account.beneficiary.invalid_state_for_withdrawal'] }, 422)
           end
 
-          unless Vault::TOTP.validate?(current_user.uid, params[:otp])
-            error!({ errors: ['account.withdraw.invalid_otp'] }, 422)
-          end
+          error!({ errors: ['account.withdraw.invalid_otp'] }, 422) unless Vault::TOTP.validate?(current_user.uid, params[:otp])
 
           currency = Currency.find(params[:currency])
 
-          unless currency.withdrawal_enabled?
-            error!({ errors: ['account.currency.withdrawal_disabled'] }, 422)
-          end
+          error!({ errors: ['account.currency.withdrawal_disabled'] }, 422) unless currency.withdrawal_enabled?
 
           # TODO: Delete subclasses from Deposit and Withdraw
           withdraw = "withdraws/#{currency.type}".camelize.constantize.new \
@@ -131,7 +126,7 @@ module API
           # For now single error which is not handled by params validations is
           # sum precision validation error (PrecisionValidator).
           error!({ errors: ['account.withdraw.invalid_amount'] }, 422)
-        rescue => e
+        rescue StandardError => e
           report_exception(e)
           error!({ errors: ['account.withdraw.create_error'] }, 422)
         end

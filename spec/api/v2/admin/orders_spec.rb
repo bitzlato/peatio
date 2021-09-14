@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Admin::Orders, type: :request do
@@ -10,12 +9,12 @@ describe API::V2::Admin::Orders, type: :request do
   describe 'GET /api/v2/admin/orders' do
     before do
       # NOTE: We specify updated_at attribute for testing order of Order.
-      create(:order_bid, :btc_usd, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1548224524), created_at: Time.at(1548234524))
-      create(:order_bid, :btc_eth, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1548234524), created_at: Time.at(1548254524))
-      create(:order_bid, :btc_eth_qe, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1548234524), created_at: Time.at(1548254524))
-      create(:order_bid, :btc_usd, price: '12'.to_d, origin_volume: '123.12', member: admin, state: Order::CANCEL, updated_at: Time.at(1548244524), created_at: Time.at(1548254524))
-      create(:order_ask, :btc_usd, price: '13'.to_d, origin_volume: '123.12', member: admin, state: Order::WAIT, updated_at: Time.at(1548254524), created_at: Time.at(1548254524))
-      create(:order_ask, :btc_usd, price: '14'.to_d, origin_volume: '123.12', member: admin, state: Order::DONE, created_at: Time.at(1548254524))
+      create(:order_bid, :btc_usd, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1_548_224_524), created_at: Time.at(1_548_234_524))
+      create(:order_bid, :btc_eth, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1_548_234_524), created_at: Time.at(1_548_254_524))
+      create(:order_bid, :btc_eth_qe, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1_548_234_524), created_at: Time.at(1_548_254_524))
+      create(:order_bid, :btc_usd, price: '12'.to_d, origin_volume: '123.12', member: admin, state: Order::CANCEL, updated_at: Time.at(1_548_244_524), created_at: Time.at(1_548_254_524))
+      create(:order_ask, :btc_usd, price: '13'.to_d, origin_volume: '123.12', member: admin, state: Order::WAIT, updated_at: Time.at(1_548_254_524), created_at: Time.at(1_548_254_524))
+      create(:order_ask, :btc_usd, price: '14'.to_d, origin_volume: '123.12', member: admin, state: Order::DONE, created_at: Time.at(1_548_254_524))
     end
 
     it 'csv export' do
@@ -178,7 +177,7 @@ describe API::V2::Admin::Orders, type: :request do
     end
 
     it 'returns orders for updated time range' do
-      api_get '/api/v2/admin/orders', params: { range: 'updated', from: Time.at(1548224524).iso8601, to: Time.at(1548244524).iso8601 }, token: token
+      api_get '/api/v2/admin/orders', params: { range: 'updated', from: Time.at(1_548_224_524).iso8601, to: Time.at(1_548_244_524).iso8601 }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful

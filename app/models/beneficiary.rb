@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class Beneficiary < ApplicationRecord
@@ -46,13 +45,17 @@ class Beneficiary < ApplicationRecord
       end
     end
 
-    event :enable do
-      transitions from: :aml_processing, to: :active
-    end if Peatio::AML.adapter.present?
+    if Peatio::AML.adapter.present?
+      event :enable do
+        transitions from: :aml_processing, to: :active
+      end
+    end
 
-    event :aml_suspicious do
-      transitions from: :aml_processing, to: :aml_suspicious
-    end if Peatio::AML.adapter.present?
+    if Peatio::AML.adapter.present?
+      event :aml_suspicious do
+        transitions from: :aml_processing, to: :aml_suspicious
+      end
+    end
 
     event :archive do
       transitions from: %i[pending aml_processing aml_suspicious active], to: :archived
@@ -79,9 +82,7 @@ class Beneficiary < ApplicationRecord
 
   # Validates address field which is required for coin.
   validate if: ->(b) { b.currency.present? && b.currency.coin? } do
-    if data.blank? || !currency.blockchain.valid_address?(data.symbolize_keys[:address])
-      errors.add(:data, 'invlalid address')
-    end
+    errors.add(:data, 'invlalid address') if data.blank? || !currency.blockchain.valid_address?(data.symbolize_keys[:address])
   end
 
   # Validates that data contains full_name field which is required for fiat.
@@ -166,9 +167,7 @@ class Beneficiary < ApplicationRecord
   def masked_account_number
     account_number = data.symbolize_keys[:account_number]
 
-    if data.present? && account_number.present?
-      account_number.sub(/(?<=\A.{2})(.*)(?=.{4}\z)/) { |match| '*' * match.length }
-    end
+    account_number.sub(/(?<=\A.{2})(.*)(?=.{4}\z)/) { |match| '*' * match.length } if data.present? && account_number.present?
   end
 
   def masked_data
@@ -186,6 +185,6 @@ class Beneficiary < ApplicationRecord
   def fiat_rid
     return unless currency.fiat?
 
-    '%s-%s-%08d' % [data.symbolize_keys[:full_name].downcase.split.join('-'), currency_id.downcase, id]
+    format('%s-%s-%08d', data.symbolize_keys[:full_name].downcase.split.join('-'), currency_id.downcase, id)
   end
 end

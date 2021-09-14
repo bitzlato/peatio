@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 def who_is_billionaire
@@ -38,7 +37,7 @@ module Matching
         id: @@mock_order_id,
         timestamp: Time.now.to_i,
         volume: rand(1..10),
-        locked: rand(15000..29999),
+        locked: rand(15_000..29_999),
         market: 'btc_usd'
       }.merge(attrs))
     end

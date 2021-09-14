@@ -33,7 +33,7 @@ class EthereumGateway
       client.json_rpc(:web3_clientVersion)
     end
 
-    def estimate_gas(gas_price: nil, from:, to:, value: nil, data: nil)
+    def estimate_gas(from:, to:, gas_price: nil, value: nil, data: nil)
       gas_price ||= fetch_gas_price
       logger.info("estimate_gas from #{from} to #{to} value #{value} data #{data} gas_price #{gas_price}")
       raise 'dont send value and data in same time' if value.present? && data.present?

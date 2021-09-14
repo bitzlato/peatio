@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -135,7 +134,7 @@ module API
             optional :limit,
                      type: Integer,
                      default: 100,
-                     range: 1..10000,
+                     range: 1..10_000,
                      desc: 'The number of objects per page (defaults to 100, maximum is 10000).'
           end
           post op_type_plural do

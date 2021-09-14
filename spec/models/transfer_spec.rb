@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Transfer do
@@ -239,7 +238,11 @@ describe Transfer do
 
           it 'does not create transfer' do
             expect do
-              subject rescue Account::AccountError
+              begin
+                subject
+              rescue StandardError
+                Account::AccountError
+              end
               nil
             end.to_not change { Transfer.count }
           end

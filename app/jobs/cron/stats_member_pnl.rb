@@ -7,11 +7,11 @@ module Jobs::Cron
         queries = []
         idx = last_idx(pnl_currency, currency)
 
-        if exclude_user_ids.empty?
-          filter_trades = ''
-        else
-          filter_trades = "AND (trades.taker_id != trades.maker_id OR trades.taker_id NOT IN (#{exclude_user_ids.join(',')}))"
-        end
+        filter_trades = if exclude_user_ids.empty?
+                          ''
+                        else
+                          "AND (trades.taker_id != trades.maker_id OR trades.taker_id NOT IN (#{exclude_user_ids.join(',')}))"
+                        end
 
         query = "
         (SELECT 'Trade', id, updated_at as ts FROM trades WHERE id > #{idx['Trade']} #{filter_trades} ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
@@ -81,12 +81,12 @@ module Jobs::Cron
           'Transfer' => 0
         }
         ActiveRecord::Base.connection.select_all(query).rows.each do |name, idx|
-          case name
-          when /^(Deposit|Withdraw|Adjustment)/
-            h[name] = Time.at(idx.to_f / 1000).utc.strftime('%F %T.%3N')
-          else
-            h[name] = idx
-          end
+          h[name] = case name
+                    when /^(Deposit|Withdraw|Adjustment)/
+                      Time.at(idx.to_f / 1000).utc.strftime('%F %T.%3N')
+                    else
+                      idx
+                    end
         end
         h
       end
@@ -181,12 +181,12 @@ module Jobs::Cron
         if market.quote_unit == pnl_currency.id
           # Using trade price (direct conversion)
           if order.income_currency.id == currency.id
-            order.side == 'buy' ? total_credit_value = total_credit * trade.price : total_credit_value = total_credit
+            total_credit_value = order.side == 'buy' ? total_credit * trade.price : total_credit
             queries << build_query(order.member_id, pnl_currency, order.income_currency.id, total_credit, total_credit_fees, total_credit_value, 0, 0, 0)
           end
 
           if order.outcome_currency.id == currency.id
-            order.side == 'buy' ? total_debit_value = total_debit : total_debit_value = total_debit * trade.price
+            total_debit_value = order.side == 'buy' ? total_debit : total_debit * trade.price
             queries << build_query(order.member_id, pnl_currency, order.outcome_currency.id, 0, 0, 0, total_debit, total_debit_value, 0)
           end
         else
@@ -333,12 +333,8 @@ module Jobs::Cron
             a_total_debit_value = stats[a][:total_debit] * price
             b_total_debit_value = stats[b][:total_debit]
 
-            if a == currency.id
-              queries << build_query(member_id, pnl_currency, a, stats[a][:total_credit], stats[a][:total_credit_fees], a_total_credit_value, stats[a][:total_debit], a_total_debit_value, stats[a][:total_debit_fees])
-            end
-            if b == currency.id
-              queries << build_query(member_id, pnl_currency, b, stats[b][:total_credit], stats[b][:total_credit_fees], b_total_credit_value, stats[b][:total_debit], b_total_debit_value, stats[b][:total_debit_fees])
-            end
+            queries << build_query(member_id, pnl_currency, a, stats[a][:total_credit], stats[a][:total_credit_fees], a_total_credit_value, stats[a][:total_debit], a_total_debit_value, stats[a][:total_debit_fees]) if a == currency.id
+            queries << build_query(member_id, pnl_currency, b, stats[b][:total_credit], stats[b][:total_credit_fees], b_total_credit_value, stats[b][:total_debit], b_total_debit_value, stats[b][:total_debit_fees]) if b == currency.id
           end
 
         else
@@ -353,9 +349,7 @@ module Jobs::Cron
         pnl_currencies.each do |pnl_currency|
           Currency.visible.each do |currency|
             ts = @sleep_until[[pnl_currency.id, currency.id]]
-            if ts.nil? || ts < Time.now.to_i
-              l_count += process_currency(pnl_currency, currency)
-            end
+            l_count += process_currency(pnl_currency, currency) if ts.nil? || ts < Time.now.to_i
           rescue StandardError => e
             Rails.logger.error("Failed to process currency #{pnl_currency.id}/#{currency.id}: #{e}: #{e.backtrace.join("\n")}")
             @sleep_until[[pnl_currency.id, currency.id]] = Time.now.to_i + 300

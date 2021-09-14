@@ -1,10 +1,7 @@
 class RemoveIdSequenceFromCurrencies < ActiveRecord::Migration[5.2]
   def up
-    if defined? PG
-      execute 'drop sequence currencies_id_seq cascade'
-    end
+    execute 'drop sequence currencies_id_seq cascade' if defined? PG
   end
 
-  def down
-  end
+  def down; end
 end

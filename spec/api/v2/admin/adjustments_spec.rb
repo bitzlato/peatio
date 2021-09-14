@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Admin::Adjustments, type: :request do
@@ -298,7 +297,7 @@ describe API::V2::Admin::Adjustments, type: :request do
     end
 
     it 'does not accept negative adjustment for sum bigger than member\'s balance' do
-      adjustment.update(amount: -10000000.0)
+      adjustment.update(amount: -10_000_000.0)
 
       api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
 
@@ -308,7 +307,7 @@ describe API::V2::Admin::Adjustments, type: :request do
     end
 
     it 'does not update member\'s balance if it is lower than negative adjustment' do
-      adjustment.update(amount: -10000000.0)
+      adjustment.update(amount: -10_000_000.0)
 
       expect do
         api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
@@ -319,7 +318,7 @@ describe API::V2::Admin::Adjustments, type: :request do
       let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-402-') }
 
       it 'should accept adjustment' do
-        adjustment.update(amount: -10000000.0)
+        adjustment.update(amount: -10_000_000.0)
 
         expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
@@ -394,7 +393,7 @@ describe API::V2::Admin::Adjustments, type: :request do
     end
 
     it 'does reject of negative amount' do
-      adjustment.update(amount: -10000000.0)
+      adjustment.update(amount: -10_000_000.0)
       api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
 
       expect(response.code).to eq '201'

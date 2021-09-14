@@ -30,7 +30,7 @@ class CreateDepositSpreads < ActiveRecord::Migration[5.2]
           txid: spread.fetch(:hash),
           meta: { spread: spread }
         )
-      rescue => err
+      rescue StandardError => err
         puts "#{err} for #{spread}"
       end
     end

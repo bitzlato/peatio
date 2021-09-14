@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_relative '../validations'
@@ -24,9 +23,7 @@ module API
         post '/deposits/intention' do
           currency = Currency.find(params[:currency])
 
-          unless currency.deposit_enabled?
-            error!({ errors: ['management.currency.deposit_disabled'] }, 422)
-          end
+          error!({ errors: ['management.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
 
           deposit = Deposit.create!(
             type: Deposit.name,
@@ -126,13 +123,9 @@ module API
 
           currency = Currency.find(params[:currency])
 
-          unless currency.deposit_enabled?
-            error!({ errors: ['account.currency.deposit_disabled'] }, 422)
-          end
+          error!({ errors: ['account.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
 
-          if currency.enable_invoice?
-            error!({ errors: ['account.currency.no_deposit_address_invoices_only'] }, 422)
-          end
+          error!({ errors: ['account.currency.no_deposit_address_invoices_only'] }, 422) if currency.enable_invoice?
 
           payment_address = current_user.payment_address(currency.blockchain)
           present payment_address, with: API::V2::Entities::PaymentAddress, address_format: params[:address_format]

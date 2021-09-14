@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe ::AbstractGateway do
@@ -17,7 +16,7 @@ describe ::AbstractGateway do
       let(:hash_transaction) do
         {
           currency_id: 'eth',
-          amount: 1000000000002,
+          amount: 1_000_000_000_002,
           from_address: '123',
           to_address: '145',
           block_number: 1,
@@ -37,7 +36,7 @@ describe ::AbstractGateway do
       let(:peatio_transaction) do
         Peatio::Transaction.new(
           currency_id: 'eth',
-          amount: 100000000002,
+          amount: 100_000_000_002,
           from_address: '123',
           to_address: '145',
           block_number: 1,

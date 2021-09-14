@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'stringio'
@@ -28,7 +27,7 @@ module API
 
         def jwt
           JSON.parse(request.body.read)
-        rescue => e
+        rescue StandardError => e
           raise Exceptions::Authentication, \
                 message: 'Couldn\'t parse JWT.',
                 debug_message: e.inspect,
@@ -69,7 +68,7 @@ module API
                        .slice(*scope.fetch(:permitted_signers))
                        .each_with_object({}) { |(k, v), memo| memo[k] = v.fetch(:value) }
             result   = JWT::Multisig.verify_jwt(jwt, keychain, security_configuration.fetch(:jwt, {}))
-          rescue => e
+          rescue StandardError => e
             raise Exceptions::Authentication, \
                   message: 'Failed to verify JWT.',
                   debug_message: e.inspect,

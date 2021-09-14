@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 FactoryBot.define do
@@ -11,7 +10,7 @@ FactoryBot.define do
       address { create(:payment_address, :btc_address).address }
       txid { Faker::Lorem.characters(64) }
       txout { 0 }
-      block_number { rand(1..1349999) }
+      block_number { rand(1..1_349_999) }
     end
 
     factory :deposit_usd, class: Deposits::Fiat do

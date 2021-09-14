@@ -64,7 +64,7 @@ module API
         rescue ActiveRecord::RecordNotFound => e
           # RecordNotFound in rescued by ExceptionsHandler.
           raise(e)
-        rescue
+        rescue StandardError
           error!({ errors: ['management.order.cancel_error'] }, 422)
         end
 

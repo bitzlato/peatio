@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 # People exchange commodities in markets. Each market focuses on certain
@@ -70,15 +69,11 @@ class Market < ApplicationRecord
   # == Validations ==========================================================
 
   validate do
-    if quote_currency == base_currency
-      errors.add(:quote_currency, 'duplicates base currency')
-    end
+    errors.add(:quote_currency, 'duplicates base currency') if quote_currency == base_currency
   end
 
   validate on: :create do
-    if ENV['MAX_MARKETS'].present? && Market.count >= ENV['MAX_MARKETS'].to_i
-      errors.add(:max, 'Market limit has been reached')
-    end
+    errors.add(:max, 'Market limit has been reached') if ENV['MAX_MARKETS'].present? && Market.count >= ENV['MAX_MARKETS'].to_i
 
     if Market.where(base_currency: quote_currency, quote_currency: base_currency, type: type).present? ||
        Market.where(base_currency: base_currency, quote_currency: quote_currency, type: type).present?
