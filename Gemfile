@@ -84,6 +84,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'bundler-audit'
   gem 'rubocop'
   gem "rubocop-rspec", "~> 2.4"
   gem 'rubocop-rails'

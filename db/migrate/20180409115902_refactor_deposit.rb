@@ -12,7 +12,7 @@ class RefactorDeposit < ActiveRecord::Migration[4.2]
     change_column_null :deposits, :created_at, false
     change_column_null :deposits, :updated_at, false
     add_column :deposits, :new_confirmations, :integer, null: false, default: 0, after: :confirmations
-    Deposit.where.not(confirmations: nil).update_all(new_confirmations: 'confirmations')
+    Deposit.where('confirmations IS NOT NULL').update_all(new_confirmations: 'confirmations')
     remove_column :deposits, :confirmations
     rename_column :deposits, :new_confirmations, :confirmations
     change_column :deposits, :type, :string, null: false, limit: 30
@@ -24,8 +24,7 @@ class RefactorDeposit < ActiveRecord::Migration[4.2]
     remove_column :deposits, :account_id
     change_column :deposits, :txout, :integer, after: :txid
     remove_index :deposits, column: %i[txid txout]
-    add_column :deposits, :address, :string, after: :fee, limit: 64
-    add_index :deposits, :address
+    add_column :deposits, :address, :string, after: :fee, index: true, limit: 64
     add_index :deposits, %i[currency_id txid txout], unique: true
     remove_column :deposits, :payment_transaction_id
     rename_column :deposits, :done_at, :completed_at

@@ -12,8 +12,7 @@ class MakeUUIDNotNil < ActiveRecord::Migration[5.2]
       enable_extension 'pgcrypto'
 
       remove_column :orders, :uuid
-      add_column :orders, :uuid, :uuid, after: :id, null: false, default: 'gen_random_uuid()'
-      add_index :orders, :uuid, unique: true
+      add_column :orders, :uuid, :uuid, index: { unique: true }, after: :id, null: false, default: 'gen_random_uuid()'
 
     else
       raise "Unsupported adapter: #{ActiveRecord::Base.connection.adapter_name}"
