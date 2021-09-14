@@ -5,13 +5,14 @@ module Jobs
         return if Rails.env.production?
         # TODO select only payment addresses with enough balance
         PaymentAddress.collection_required.lock.each do |pa|
+          next unless payment_address.has_collectable_balances?
           process_address payment_address
         end
         sleep 300
       end
 
       def self.process_address(payment_address)
-        next unless payment_address.has_collectable_balances?
+        return unless payment_address.has_collectable_balances?
         if payment_address.has_enough_gas_to_collect?
           payment_address.collect!
         else
