@@ -8,8 +8,8 @@ module API
         helpers ::API::V2::Admin::Helpers
 
         desc 'Returns trading_fees table as paginated collection',
-          is_array: true,
-          success: API::V2::Entities::TradingFee
+             is_array: true,
+             success: API::V2::Entities::TradingFee
         params do
           optional :group,
                    type: String,

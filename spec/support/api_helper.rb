@@ -48,7 +48,7 @@ module APITestHelpers
   #
   def jwt_for(member, payload = { x: 'x', y: 'y', z: 'z' })
     jwt_build(payload.merge(email: member.email, uid: member.uid, \
-              role: member.role, state: member.state, level: member.level))
+                            role: member.role, state: member.state, level: member.level))
   end
 
   #

@@ -10,21 +10,21 @@ describe Rack::Cors, type: :request do
   let(:local_url) { 'http://localhost:3000' }
   let(:token) { jwt_for(member) }
 
-  let(:app) {
+  let(:app) do
     Rack::Builder.new do
       use Rack::Cors do
         allow do
           origins CORS::Validations.validate_origins(ENV['API_CORS_ORIGINS'])
           resource '/api/*',
-            methods: %i[get post delete put patch options head],
-            headers: :any,
-            credentials: ENV.true?('API_CORS_ALLOW_CREDENTIALS'),
-            max_age: CORS::Validations.validate_max_age(ENV['API_CORS_MAX_AGE'])
+                   methods: %i[get post delete put patch options head],
+                   headers: :any,
+                   credentials: ENV.true?('API_CORS_ALLOW_CREDENTIALS'),
+                   max_age: CORS::Validations.validate_max_age(ENV['API_CORS_MAX_AGE'])
         end
       end
       run Peatio::Application
     end
-  }
+  end
 
   def check_cors(response, origin, allow_crendentails, max_age = '3600')
     expect(response.headers['Access-Control-Allow-Origin']).to eq(origin)

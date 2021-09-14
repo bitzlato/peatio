@@ -47,7 +47,7 @@ class BlockchainService
       report_exception("Unknown transaction #{txid}/#{txout} for #{blockchain.key}", true) if t.present?
       nil
     else
-      # TODO lookup for reference if there are no transaction
+      # TODO: lookup for reference if there are no transaction
       Transaction.upsert_transaction! monyfied_blockchain_transaction
     end
   end
@@ -78,7 +78,7 @@ class BlockchainService
         elsif tx.hash.in?(withdraw_txids)
           update_or_create_withdraw tx
         end
-        # TODO fetch_transaction if status is pending
+        # TODO: fetch_transaction if status is pending
         tx = fetch_transaction(tx)
         Transaction.upsert_transaction! tx, reference: (deposit || withdrawal)
       end.count

@@ -30,18 +30,18 @@ class Withdrawer
       raise Fail, 'The destination address doesn\'t exist.' if withdraw.rid.blank?
 
       logger.warn id: withdraw.id,
-        amount: withdraw.amount.to_s('F'),
-        fee: withdraw.fee.to_s('F'),
-        currency: withdraw.currency.code.upcase,
-        rid: withdraw.rid,
-        message: 'Sending withdraw.'
+                  amount: withdraw.amount.to_s('F'),
+                  fee: withdraw.fee.to_s('F'),
+                  currency: withdraw.currency.code.upcase,
+                  rid: withdraw.rid,
+                  message: 'Sending withdraw.'
 
       transaction = push_transaction_to_gateway! withdraw, nonce: nonce, gas_factor: gas_factor
 
       logger.warn id: withdraw.id,
-        txid: transaction.id,
-        transcation: transaction.as_json,
-        message: 'Blockchain transcation created'
+                  txid: transaction.id,
+                  transcation: transaction.as_json,
+                  message: 'Blockchain transcation created'
 
       withdraw.update!(
         metadata: (withdraw.metadata.presence || {}).merge(transaction.options || {}), # Saves links and etc
@@ -50,12 +50,12 @@ class Withdrawer
       )
 
       logger.warn id: withdraw.id,
-        txid: transaction.hash,
-        message: 'The currency API accepted withdraw and assigned transaction ID.'
+                  txid: transaction.hash,
+                  message: 'The currency API accepted withdraw and assigned transaction ID.'
       withdraw.dispatch!
 
     rescue Busy, Fail => e
-      # TODO repeat withdraw for Busy
+      # TODO: repeat withdraw for Busy
       withdraw.fail!
       logger.warn e.as_json.merge( id: withdraw.id )
     rescue StandardError => e

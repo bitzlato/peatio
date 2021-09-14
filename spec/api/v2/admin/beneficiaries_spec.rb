@@ -23,9 +23,9 @@ describe API::V2::Admin::Beneficiaries, type: :request do
     create_list(:beneficiary, 5)
   end
 
-  let!(:fiat_beneficiary) {
+  let!(:fiat_beneficiary) do
     create(:beneficiary, state: :active, currency: Currency.find('usd'))
-  }
+  end
 
   describe 'GET /api/v2/admin/beneficiaries' do
     let(:url) { '/api/v2/admin/beneficiaries' }

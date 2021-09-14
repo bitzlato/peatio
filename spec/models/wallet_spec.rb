@@ -42,39 +42,39 @@ describe Wallet do
 
     it 'saves settings in encrypted column' do
       subject.save
-      expect {
+      expect do
         subject.uri = 'http://geth:8545/'
         subject.save
-      }.to change { subject.settings_encrypted }
+      end.to change { subject.settings_encrypted }
     end
 
     it 'does not update settings_encrypted before model is saved' do
       subject.save
-      expect {
+      expect do
         subject.uri = 'http://geth:8545/'
-      }.not_to change { subject.settings_encrypted }
+      end.not_to change { subject.settings_encrypted }
     end
 
     it 'updates setting fields' do
-      expect {
+      expect do
         subject.uri = 'http://geth:8545/'
-      }.to change { subject.settings['uri'] }.to 'http://geth:8545/'
+      end.to change { subject.settings['uri'] }.to 'http://geth:8545/'
     end
 
     it 'long encrypted secret' do
-      expect {
+      expect do
         subject.secret = Faker::String.random(1024)
         subject.save!
-      }.to raise_error ActiveRecord::ValueTooLong
+      end.to raise_error ActiveRecord::ValueTooLong
     end
 
     context 'gateway_wallet_kind_support' do
       it 'allows to create hot wallet' do
         AbstractGateway.stubs(:support_wallet_kind?).returns true
-        expect {
+        expect do
           subject.kind = 'hot'
           subject.save!
-        }.not_to raise_error
+        end.not_to raise_error
       end
 
       it 'does not allow to create hot wallet' do

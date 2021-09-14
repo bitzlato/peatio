@@ -123,7 +123,7 @@ module API
             next if address.blank? || blockchain_id.blank? || ::Blockchain.pluck(:id).exclude?(blockchain_id)
 
             ::WhitelistedSmartContract.create!(description: description, address: address,
-                                           blockchain_id: blockchain_id, state: 'active')
+                                               blockchain_id: blockchain_id, state: 'active')
             count += 1
           end
 

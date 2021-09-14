@@ -148,11 +148,11 @@ class Beneficiary < ApplicationRecord
   def valid_pin?(user_pin)
     case user_pin
     when Integer
-      return pin == user_pin
+      pin == user_pin
     when String
-      return pin == user_pin.to_i
+      pin == user_pin.to_i
     else
-      return false
+      false
     end
   end
 

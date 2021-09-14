@@ -25,8 +25,8 @@ module Matching
 
     def publish_cancel
       AMQP::Queue.enqueue(:order_processor,
-                        { action: 'cancel', order: @payload[:order] },
-                        { persistent: false })
+                          { action: 'cancel', order: @payload[:order] },
+                          { persistent: false })
     end
 
     def execute
@@ -177,7 +177,7 @@ module Matching
         next unless order.ord_type == 'limit' # Skip market orders.
 
         EventAPI.notify ['market', order.market_id, event].join('.'), \
-          Serializers::EventAPI.const_get(event.camelize).call(order)
+                        Serializers::EventAPI.const_get(event.camelize).call(order)
       end
     end
 

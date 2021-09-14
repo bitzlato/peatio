@@ -224,9 +224,9 @@ describe API::V2::Admin::WithdrawLimits, type: :request do
     end
 
     it 'deletes withdraw limit table' do
-      expect {
+      expect do
         api_delete "/api/v2/admin/withdraw_limits/#{withdraw_limit.id}", token: token
-      }.to change { WithdrawLimit.count }.by(-1)
+      end.to change { WithdrawLimit.count }.by(-1)
 
       expect(response).to have_http_status(200)
     end
@@ -238,9 +238,9 @@ describe API::V2::Admin::WithdrawLimits, type: :request do
     end
 
     it 'retuns 404 if record does not exist' do
-      expect {
+      expect do
         api_delete "/api/v2/admin/withdraw_limits/#{WithdrawLimit.last.id + 42}", token: token
-      }.not_to change { WithdrawLimit.count }
+      end.not_to change { WithdrawLimit.count }
 
       expect(response.status).to eq 404
     end

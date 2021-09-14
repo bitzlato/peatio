@@ -4,7 +4,7 @@ class EthereumGateway
 
     DEFAULT_AMOUNT = 1
 
-    # TODO returns gas_limit and gas_price
+    # TODO: returns gas_limit and gas_price
 
     # contract_addresses is array of coins including nil for native currency
     #
@@ -48,7 +48,7 @@ class EthereumGateway
                        rescue Ethereum::Client::ExecutionFailed => err
                          Rails.logger.error err
                          gas_limits[nil] || raise('Unknown gas limit for native}')
-                       end if account_native
+      end if account_native
 
       logger.info("Estimated gas for transaction from #{from_address} to contract addresses #{contract_addresses.join(', ') || :empty} and to_address:#{to_address} with gas_price: #{gas_price} (account_native: #{account_native}) is '#{estimated_gas}' ")
 

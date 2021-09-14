@@ -174,10 +174,10 @@ describe Transfer do
   context 'do_transfer!' do
     subject do
       Transfer.create!(attributes_for(:transfer,
-                                           liabilities: liabilities,
-                                           assets: assets,
-                                           revenues: revenues,
-                                           expenses: expenses))
+                                      liabilities: liabilities,
+                                      assets: assets,
+                                      revenues: revenues,
+                                      expenses: expenses))
     end
     let(:asset1) { build(:asset, credit: 9, currency: currency_btc) }
     let(:asset2) { build(:asset, :debit, debit: 6, currency: currency_btc) }
@@ -191,17 +191,17 @@ describe Transfer do
     let(:liabilities) { [] }
 
     it 'creates transfer' do
-      expect {
+      expect do
         subject
-      }.to change { Transfer.count }.by 1
+      end.to change { Transfer.count }.by 1
     end
 
     context 'update_legacy_balances' do
       context 'without liabilities' do
         it 'does not change legacy balances' do
-          expect {
+          expect do
             subject
-          }.not_to change { Member.all.map(&:accounts) }
+          end.not_to change { Member.all.map(&:accounts) }
         end
       end
 
@@ -216,21 +216,21 @@ describe Transfer do
         let(:liabilities) { [credit, debit1, debit2] }
 
         it 'increases balance for member1' do
-          expect {
+          expect do
             subject
-          }.to change { member1.accounts.find_by(currency: currency_btc).balance }.by(9)
+          end.to change { member1.accounts.find_by(currency: currency_btc).balance }.by(9)
         end
 
         it 'decreases balance for member2' do
-          expect {
+          expect do
             subject
-          }.to change { member2.accounts.find_by(currency: currency_btc).balance }.by(-5)
+          end.to change { member2.accounts.find_by(currency: currency_btc).balance }.by(-5)
         end
 
         it 'decreases balance for member3' do
-          expect {
+          expect do
             subject
-          }.to change { member3.accounts.find_by(currency: currency_btc).balance }.by(-4)
+          end.to change { member3.accounts.find_by(currency: currency_btc).balance }.by(-4)
         end
 
         context 'legacy balance update raise error' do
@@ -239,10 +239,10 @@ describe Transfer do
           end
 
           it 'does not create transfer' do
-            expect {
+            expect do
               subject rescue Account::AccountError
               nil
-            }.to_not change{ Transfer.count }
+            end.to_not change{ Transfer.count }
           end
         end
       end

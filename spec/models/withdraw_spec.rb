@@ -384,11 +384,11 @@ describe Withdraw do
 
         subject { create(:btc_withdraw, :with_deposit_liability, member: member, rid: address, beneficiary: beneficiary) }
 
-        let!(:beneficiary) { create(:beneficiary,
-                                    member: member,
-                                    currency: coin,
-                                    state: :active,
-                                    data: generate(:btc_beneficiary_data).merge(address: address)) }
+        let!(:beneficiary) do create(:beneficiary,
+                                     member: member,
+                                     currency: coin,
+                                     state: :active,
+                                     data: generate(:btc_beneficiary_data).merge(address: address)) end
 
         before do
           subject.update!(aasm_state: :processing)
@@ -497,10 +497,10 @@ describe Withdraw do
 
       let(:withdraw) do
         build(:usd_withdraw,
-               :with_deposit_liability,
-               beneficiary: beneficiary,
-               sum: 10,
-               member: beneficiary.member)
+              :with_deposit_liability,
+              beneficiary: beneficiary,
+              sum: 10,
+              member: beneficiary.member)
       end
 
       it 'automatically sets rid from beneficiary' do

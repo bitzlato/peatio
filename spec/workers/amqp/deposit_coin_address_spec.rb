@@ -18,16 +18,16 @@ describe Workers::AMQP::DepositCoinAddress do
   it 'raise error on databse connection error' do
     if defined? Mysql2
       Member.stubs(:find).raises(Mysql2::Error::ConnectionError.new(''))
-      expect {
+      expect do
         Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
-      }.to raise_error Mysql2::Error::ConnectionError
+      end.to raise_error Mysql2::Error::ConnectionError
     end
 
     if defined? PG
       Member.stubs(:find).raises(PG::Error.new(''))
-      expect {
+      expect do
         Workers::AMQP::DepositCoinAddress.new.process(member_id: member.id, blockchain_id: blockchain.id)
-      }.to raise_error PG::Error
+      end.to raise_error PG::Error
     end
   end
 

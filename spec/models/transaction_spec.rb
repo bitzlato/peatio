@@ -7,7 +7,7 @@ describe Transaction do
   let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'eth-rinkeby', key: 'eth-rinkeby' }
 
   context 'upsert_transaction' do
-    let(:peatio_transaction) { Peatio::Transaction.new(
+    let(:peatio_transaction) do Peatio::Transaction.new(
       txid: '1',
       txout: '2',
       currency_id: 'eth',
@@ -20,7 +20,7 @@ describe Transaction do
       status: 'success',
       from: 'unknown',
       to: 'deposit'
-    )}
+    ) end
     let(:reference) { create :deposit, :deposit_eth }
 
     context 'creates first time' do

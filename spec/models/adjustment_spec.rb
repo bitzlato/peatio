@@ -7,15 +7,15 @@ describe Adjustment do
 
   context 'on create' do
     it 'does not insert liability' do
-      expect {
+      expect do
         subject
-      }.not_to change { Operations::Liability.count }
+      end.not_to change { Operations::Liability.count }
     end
 
     it 'does not insert asset' do
-      expect {
+      expect do
         subject
-      }.not_to change { Operations::Asset.count }
+      end.not_to change { Operations::Asset.count }
     end
 
     it 'builds operations' do
@@ -155,9 +155,9 @@ describe Adjustment do
     end
 
     it 'updates legacy balances (credit for main account)' do
-      expect {
+      expect do
         subject.accept!(validator: member)
-      }.to change { member.get_account(subject.currency).balance }.by(subject.amount)
+      end.to change { member.get_account(subject.currency).balance }.by(subject.amount)
     end
 
     context 'updates legacy balances (debit for locked account)' do
@@ -168,37 +168,37 @@ describe Adjustment do
       end
 
       it 'updates legacy balances (credit for main account)' do
-        expect {
+        expect do
           subject.accept!(validator: member)
-        }.to change { member.accounts.find_by(currency: subject.currency).locked }.by(subject.amount)
+        end.to change { member.accounts.find_by(currency: subject.currency).locked }.by(subject.amount)
       end
     end
 
     it 'does not accept with invalid attributes' do
       subject.update(asset_account_code: 101)
 
-      expect {
+      expect do
         subject.accept!(validator: member)
-      }.to_not change { subject.state }
+      end.to_not change { subject.state }
     end
 
     it 'does not accept without validator' do
       subject.update(asset_account_code: 101)
 
-      expect {
+      expect do
         subject.accept!(validator: nil)
-      }.to_not change { subject.state }
+      end.to_not change { subject.state }
     end
 
     it 'does not create operations with invalid attributes' do
       subject.update(asset_account_code: 101)
-      expect {
+      expect do
         subject.accept!(validator: member)
-      }.not_to change { Operations::Asset.count }
+      end.not_to change { Operations::Asset.count }
 
-      expect {
+      expect do
         subject.accept!(validator: member)
-      }.not_to change { Operations::Liability.count }
+      end.not_to change { Operations::Liability.count }
     end
 
     context 'accepted' do
@@ -238,9 +238,9 @@ describe Adjustment do
     it 'does not reject without validator' do
       subject.update(asset_account_code: 101)
 
-      expect {
+      expect do
         subject.reject!(validator: nil)
-      }.to_not change { subject.state }
+      end.to_not change { subject.state }
     end
 
     context 'rejected' do

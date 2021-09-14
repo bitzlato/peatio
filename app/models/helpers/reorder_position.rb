@@ -17,7 +17,7 @@ module Helpers
         model.update_column(:position, count)
       elsif model.position == count
         # System shouldn't reorder objects if new object has last position in the list
-        return
+        nil
       else
         # As soon as create doesnt have old position value
         # System will move the list up to the highest position(count)

@@ -11,8 +11,8 @@ module API
         content_type :csv, 'text/csv'
 
         desc 'Get all orders, result is paginated.',
-          is_array: true,
-          success: API::V2::Admin::Entities::Order
+             is_array: true,
+             success: API::V2::Admin::Entities::Order
         params do
           optional :market,
                    values: { value: -> { ::Market.pluck(:symbol) }, message: 'admin.market.doesnt_exist' },

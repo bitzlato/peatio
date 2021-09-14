@@ -11,11 +11,11 @@ module API
              success: API::V2::Admin::Entities::InternalTransfer
         params do
           optional :sender,
-            values:  { value: -> (v) { Member.where('uid = ? OR username = ?', v, v).present? }, message: 'admin.receiver.doesnt_exist' },
-            desc: 'Sender uid or username.'
+                   values:  { value: -> (v) { Member.where('uid = ? OR username = ?', v, v).present? }, message: 'admin.receiver.doesnt_exist' },
+                   desc: 'Sender uid or username.'
           optional :receiver,
-            values:  { value: -> (v) { Member.where('uid = ? OR username = ?', v, v).present? }, message: 'admin.receiver.doesnt_exist' },
-            desc: 'Receiver uid or username.'
+                   values:  { value: -> (v) { Member.where('uid = ? OR username = ?', v, v).present? }, message: 'admin.receiver.doesnt_exist' },
+                   desc: 'Receiver uid or username.'
           use :currency
           use :pagination
           use :date_picker

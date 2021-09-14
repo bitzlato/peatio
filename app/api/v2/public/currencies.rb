@@ -22,8 +22,8 @@ module API
         end
 
         desc 'Get list of currencies',
-          is_array: true,
-          success: Entities::Currency
+             is_array: true,
+             success: Entities::Currency
         params do
           use :pagination
           optional :type,

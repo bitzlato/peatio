@@ -11,16 +11,16 @@ module API
 
         params do
           requires :uid,
-                    type: String,
-                    values: { value: ->(v) { Member.exists?(uid: v) }, message: 'management.payment_address.uid_doesnt_exist' },
-                    desc: API::V2::Management::Entities::PaymentAddress.documentation[:uid][:desc]
+                   type: String,
+                   values: { value: ->(v) { Member.exists?(uid: v) }, message: 'management.payment_address.uid_doesnt_exist' },
+                   desc: API::V2::Management::Entities::PaymentAddress.documentation[:uid][:desc]
           requires :currency,
-                    type: String,
-                    values: { value: -> { Currency.codes(bothcase: true) }, message: 'management.payment_address.currency_doesnt_exist' },
-                    desc: -> { API::V2::Management::Entities::Currency.documentation[:code][:desc] }
+                   type: String,
+                   values: { value: -> { Currency.codes(bothcase: true) }, message: 'management.payment_address.currency_doesnt_exist' },
+                   desc: -> { API::V2::Management::Entities::Currency.documentation[:code][:desc] }
           optional :remote,
-                    type: { value: Boolean, message: 'management.payment_address.non_boolean_remote' },
-                    desc: API::V2::Management::Entities::PaymentAddress.documentation[:remote][:desc]
+                   type: { value: Boolean, message: 'management.payment_address.non_boolean_remote' },
+                   desc: API::V2::Management::Entities::PaymentAddress.documentation[:remote][:desc]
         end
 
         post '/deposit_address/new' do
@@ -50,8 +50,8 @@ module API
               result = wallet.create_address!(member.uid, pa.details.merge(updated_at: pa.updated_at))
               if result.present?
                 pa.update!(address: result[:address],
-                          secret:  result[:secret],
-                          details: result.fetch(:details, {}).merge(pa.details))
+                           secret:  result[:secret],
+                           details: result.fetch(:details, {}).merge(pa.details))
               end
             end
 

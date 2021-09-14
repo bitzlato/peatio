@@ -13,8 +13,8 @@ module API
         # https://github.com/ruby-grape/grape/issues/1789
         # https://github.com/ruby-grape/grape-swagger/issues/705
         desc 'Get list of user accounts',
-            is_array: true,
-            success: API::V2::Entities::Account
+             is_array: true,
+             success: API::V2::Entities::Account
         params do
           use :pagination
           optional :nonzero,

@@ -9,13 +9,13 @@ describe API::V2::CoinGecko::Pairs, type: :request do
       ::Market.enabled.ordered.sample
     end
 
-    let!(:expected_response) {
+    let!(:expected_response) do
       {
           'ticker_id' => market.underscore_name,
           'base'      => market[:base_unit].upcase,
           'target'    => market[:quote_unit].upcase
       }
-    }
+    end
 
     it 'lists visible currencies' do
       get '/api/v2/coingecko/pairs'

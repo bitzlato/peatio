@@ -147,13 +147,13 @@ describe Beneficiary, 'Instance Methods' do
     context 'masked fields' do
       context 'account number' do
         context 'fiat beneficiary' do
-          let!(:fiat_beneficiary) { create(:beneficiary, currency: Currency.find('usd'),
+          let!(:fiat_beneficiary) do create(:beneficiary, currency: Currency.find('usd'),
                                     data: {
                                       full_name:      Faker::Name.name_with_middle,
                                       address:        Faker::Address.full_address,
                                       country:        Faker::Address.country,
                                       account_number: '0399261557'
-                                    })}
+                                    }) end
 
           it { expect(fiat_beneficiary.masked_account_number).to eq '03****1557'}
         end
@@ -166,13 +166,13 @@ describe Beneficiary, 'Instance Methods' do
 
       context 'masked data' do
         context 'fiat beneficiary' do
-          let!(:fiat_beneficiary) { create(:beneficiary, currency: Currency.find('usd'),
+          let!(:fiat_beneficiary) do create(:beneficiary, currency: Currency.find('usd'),
                                     data: {
                                       full_name:      'Full name',
                                       address:        'Address',
                                       country:        'Country',
                                       account_number: '0399261557'
-                                    })}
+                                    }) end
 
           it 'should mask account number' do
             expect(fiat_beneficiary.masked_data).to match ({

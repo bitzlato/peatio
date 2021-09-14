@@ -82,7 +82,7 @@ module Matching
       when LimitOrder
         updated_order = remove_limit_order(order)
         notify_change(@market, @side, order.price) { @limit_orders[order.price]&.total }
-        return updated_order
+        updated_order
       when MarketOrder
         remove_market_order(order)
       else

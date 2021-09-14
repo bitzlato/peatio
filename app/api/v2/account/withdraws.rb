@@ -9,8 +9,8 @@ module API
         before { withdraws_must_be_permitted! }
 
         desc 'List your withdraws as paginated collection.',
-          is_array: true,
-          success: API::V2::Entities::Withdraw
+             is_array: true,
+             success: API::V2::Entities::Withdraw
         params do
           optional :currency,
                    type: String,

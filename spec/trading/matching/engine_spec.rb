@@ -243,7 +243,7 @@ describe Matching::Engine do
                  :market=>'btc_usd',
                  :ord_type=>'market'}
             },
-           {:persistent=>false}
+            {:persistent=>false}
           ]
         ]
       end
@@ -406,7 +406,7 @@ describe Matching::Engine do
                 :ord_type=>'market'
               }
             },
-          { :persistent=>false }
+            { :persistent=>false }
           ]
         ]
       end

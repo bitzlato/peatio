@@ -48,7 +48,7 @@ class EthereumGateway < AbstractGateway
     logger.info("#{target_address} refueled with transaction #{transaction.as_json}")
 
     transaction
-    # TODO save GasRefuel record as reference
+    # TODO: save GasRefuel record as reference
 
   rescue EthereumGateway::GasRefueler::Error => err
     report_exception err, true, target_address: target_address, blockchain_key: blockchain.key

@@ -3,7 +3,7 @@
 
 class Deposit < ApplicationRecord
 
-  # TODO rename dispatched to completed
+  # TODO: rename dispatched to completed
   #
   serialize :error, JSON unless Rails.configuration.database_support_json
   serialize :from_addresses, Array
@@ -103,7 +103,7 @@ class Deposit < ApplicationRecord
         account.unlock_funds(account.locked)
         account.sub_funds! amount
         update!(:is_locked, false)
-        # TODO rollback operations
+        # TODO: rollback operations
       end
     end
   end
@@ -111,7 +111,7 @@ class Deposit < ApplicationRecord
   delegate :gateway, to: :blockchain
 
   def transfer_links
-    # TODO rename data['links'] to transfer_links
+    # TODO: rename data['links'] to transfer_links
     # TODO rename data['expires_at'] to expires_at
     # TODO Use txid instead of invoice_id
     data&.fetch 'links', []

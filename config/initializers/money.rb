@@ -39,7 +39,7 @@ class Money
 
     attr_reader :currency_record
     delegate :priority, :subunit_to_unit, :contract_address, :precision, :name, :subunits, :base_factor,
-      :min_collection_amount, :min_deposit_amount, :crypto?, :token?, :blockchain, to: :currency_record
+             :min_collection_amount, :min_deposit_amount, :crypto?, :token?, :blockchain, to: :currency_record
 
     def initialize_data!
       @currency_record = ::Currency.find(id)
@@ -51,7 +51,7 @@ class Money
       id
     end
 
-   # TODO rename from_units_to_money
+   # TODO: rename from_units_to_money
     def to_money_from_decimal(value)
       raise "Value must be an Decimal (#{value})" unless value.is_a? BigDecimal
       value.to_money(self).freeze

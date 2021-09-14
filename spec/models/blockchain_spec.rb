@@ -48,23 +48,23 @@ describe Blockchain do
 
     it 'saves server in encrypted column' do
       subject.save
-      expect {
+      expect do
         subject.server = 'http://parity:8545/'
         subject.save
-      }.to change { subject.server_encrypted }
+      end.to change { subject.server_encrypted }
     end
 
     it 'does not update server_encrypted before model is saved' do
       subject.save
-      expect {
+      expect do
         subject.server = 'http://geth:8545/'
-      }.not_to change { subject.server_encrypted }
+      end.not_to change { subject.server_encrypted }
     end
 
     it 'updates server field' do
-      expect {
+      expect do
         subject.server = 'http://geth:8545/'
-      }.to change { subject.server }.to 'http://geth:8545/'
+      end.to change { subject.server }.to 'http://geth:8545/'
     end
   end
 end

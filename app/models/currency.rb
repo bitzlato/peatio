@@ -5,10 +5,10 @@ class Currency < ApplicationRecord
 
   # == Constants ============================================================
 
-  # TODO remove erc20 contract_address
+  # TODO: remove erc20 contract_address
   OPTIONS_ATTRIBUTES = %i[erc20_contract_address gas_limit gas_price].freeze
   TOP_POSITION = 1
-  ID_SEPARATOR = '-'.freeze
+  ID_SEPARATOR = '-'
 
   # == Attributes ===========================================================
 
@@ -85,7 +85,7 @@ class Currency < ApplicationRecord
             :withdraw_limit_72h,
             numericality: { greater_than_or_equal_to: 0 }
 
-  # TODO improve tests
+  # TODO: improve tests
   validates :contract_address, presence: true, if: :parent_id unless Rails.env.test?
 
   # == Scopes ===============================================================

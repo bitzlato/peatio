@@ -21,10 +21,10 @@ class EthereumGateway
           if spread_transaction.status.pending?
             transaction = client.create_transaction!(transaction, subtract_fee: true)
 
-            # TODO update spread_transaction state to failed
+            # TODO: update spread_transaction state to failed
             return if transaction.nil?
 
-            # TODO update spread_transaction state to created
+            # TODO: update spread_transaction state to created
             Transaction.create!(
               transaction.merge(reference: deposit, txid: transaction.delete('hash'))
             )

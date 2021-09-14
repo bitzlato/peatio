@@ -281,9 +281,9 @@ describe API::V2::Admin::TradingFees, type: :request do
     end
 
     it 'deletes trading fee table' do
-      expect {
+      expect do
         api_post '/api/v2/admin/trading_fees/delete', token: token, params: { id: trading_fee.id }
-      }.to change { TradingFee.count }.by(-1)
+      end.to change { TradingFee.count }.by(-1)
 
       expect(response).to have_http_status(201)
     end
@@ -295,9 +295,9 @@ describe API::V2::Admin::TradingFees, type: :request do
     end
 
     it 'retuns 404 if record does not exist' do
-      expect {
+      expect do
         api_post '/api/v2/admin/trading_fees/delete', token: token, params: { id: TradingFee.last.id + 42 }
-      }.not_to change { TradingFee.count }
+      end.not_to change { TradingFee.count }
 
       expect(response.status).to eq 404
     end

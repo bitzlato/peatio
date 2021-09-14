@@ -366,11 +366,11 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         end
 
         context 'different currencies' do
-          let(:eth_beneficiary_data) {
+          let(:eth_beneficiary_data) do
             beneficiary_data.merge({
               data: { address: Faker::Blockchain::Ethereum.address }
             })
-          }
+          end
           before do
             create(:beneficiary,
                    member: member,

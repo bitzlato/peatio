@@ -16,8 +16,8 @@ module Operations
     # Notify third party trading engine about member balance update.
     after_commit on: :create do
       AMQP::Queue.enqueue(:events_processor,
-                        subject: :operation,
-                        payload: as_json_for_events_processor)
+                          subject: :operation,
+                          payload: as_json_for_events_processor)
     end
 
     def as_json_for_events_processor

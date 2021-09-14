@@ -40,7 +40,7 @@ class Trade < ApplicationRecord
 
   after_commit on: :create do
     EventAPI.notify ['market', market_id, 'trade_completed'].join('.'), \
-      Serializers::EventAPI::TradeCompleted.call(self)
+                    Serializers::EventAPI::TradeCompleted.call(self)
   end
 
   # == Class Methods ========================================================

@@ -16,8 +16,8 @@ module API
         def validate_param!(attr, params)
           if (params[attr] || @required) && !@range.cover?(params[attr])
             raise Grape::Exceptions::Validation, \
-              params:  [@scope.full_name(attr)],
-              message: "must be in range: #{@range}."
+                  params:  [@scope.full_name(attr)],
+                  message: "must be in range: #{@range}."
           end
         end
       end
@@ -72,8 +72,8 @@ module API
           return if params[name].to_s.to_i > 0
 
           raise Grape::Exceptions::Validation,
-              params:  [@scope.full_name(name)],
-              message: "#{name} must be greater than zero."
+                params:  [@scope.full_name(name)],
+                message: "#{name} must be greater than zero."
         end
       end
 
@@ -86,8 +86,8 @@ module API
           return if currency && currency.blockchain.gateway_class.supports_cash_addr_format?
 
           raise Grape::Exceptions::Validation,
-              params:  [@scope.full_name('currency')],
-              message: "#{@option.fetch(:prefix)}.#{REASON}"
+                params:  [@scope.full_name('currency')],
+                message: "#{@option.fetch(:prefix)}.#{REASON}"
         end
       end
     end

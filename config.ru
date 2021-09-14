@@ -9,10 +9,10 @@ map Rails.application.config.relative_url_root do
     allow do
       origins CORS::Validations.validate_origins(ENV['API_CORS_ORIGINS'])
       resource '/api/*',
-        methods: %i[get post delete put patch options head],
-        headers: :any,
-        credentials: ENV.true?('API_CORS_ALLOW_CREDENTIALS'),
-        max_age: CORS::Validations.validate_max_age(ENV['API_CORS_MAX_AGE'])
+               methods: %i[get post delete put patch options head],
+               headers: :any,
+               credentials: ENV.true?('API_CORS_ALLOW_CREDENTIALS'),
+               max_age: CORS::Validations.validate_max_age(ENV['API_CORS_MAX_AGE'])
     end
   end
   run Rails.application

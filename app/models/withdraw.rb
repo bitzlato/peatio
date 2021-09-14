@@ -38,7 +38,7 @@ class Withdraw < ApplicationRecord
     raise 'Закрыли вывод c бота (Ilia Gribovski)' if member.uid == 'IDEABB4E3F7F'
   end
 
-  # TODO validate rid by blockchain specs
+  # TODO: validate rid by blockchain specs
   #
   validates :rid, :aasm_state, presence: true
   validates :txid, uniqueness: { scope: :currency_id }, if: :txid?
@@ -123,7 +123,7 @@ class Withdraw < ApplicationRecord
       transitions from: %i[processing], to: :transfering
     end
 
-    # TODO Move to service
+    # TODO: Move to service
     #event :load do
       #transitions from: :accepted, to: :confirming do
         ## Load event is available only for coin withdrawals.

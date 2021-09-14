@@ -101,8 +101,8 @@ module API
         end
 
         desc 'Get list of currencies',
-          is_array: true,
-          success: API::V2::Admin::Entities::Currency
+             is_array: true,
+             success: API::V2::Admin::Entities::Currency
         params do
           use :currency_type
           use :pagination

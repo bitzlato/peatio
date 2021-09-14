@@ -6,7 +6,7 @@ module GatewayConcern
 
   GATEWAY_PREFIX = 'Gateway'
 
-  # TODO Move to Settings
+  # TODO: Move to Settings
   #
   AVAILABLE_GATEWAYS = [
     HecoGateway,

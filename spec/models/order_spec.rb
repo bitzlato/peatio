@@ -89,9 +89,9 @@ describe Order, '#submit' do
     end
 
     it 'insufficient balance' do
-      expect {
+      expect do
         Order.submit(order.id)
-      }.to raise_error(Account::AccountError)
+      end.to raise_error(Account::AccountError)
       expect(order.reload.state).to eq('reject')
     end
 

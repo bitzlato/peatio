@@ -212,8 +212,8 @@ describe API::V2::Management::Operations, type: :request do
             expect(JSON.parse(response.body)['credit'].to_d).to eq amount.to_d
             expect(JSON.parse(response.body)['code']).to \
               eq Operations::Account.find_by(type: op_type,
-                                            kind: :main,
-                                            currency_type: currency.type).code
+                                             kind: :main,
+                                             currency_type: currency.type).code
           end
 
           it 'saves operation' do
@@ -249,8 +249,8 @@ describe API::V2::Management::Operations, type: :request do
             expect(JSON.parse(response.body)['debit'].to_d).to eq amount.to_d
             expect(JSON.parse(response.body)['code']).to \
               eq Operations::Account.find_by(type: op_type,
-                                            kind: :main,
-                                            currency_type: currency.type).code
+                                             kind: :main,
+                                             currency_type: currency.type).code
           end
 
           it 'saves operation' do
@@ -289,8 +289,8 @@ describe API::V2::Management::Operations, type: :request do
             expect(JSON.parse(response.body)['credit'].to_d).to eq amount.to_d
             expect(JSON.parse(response.body)['code']).to \
               eq Operations::Account.find_by(type: op_type,
-                                            kind: :main,
-                                            currency_type: currency.type).code
+                                             kind: :main,
+                                             currency_type: currency.type).code
           end
 
           it 'saves operation' do
@@ -334,8 +334,8 @@ describe API::V2::Management::Operations, type: :request do
             expect(JSON.parse(response.body)['debit'].to_d).to eq amount.to_d
             expect(JSON.parse(response.body)['code']).to \
               eq Operations::Account.find_by(type: op_type,
-                                            kind: :main,
-                                            currency_type: currency.type).code
+                                             kind: :main,
+                                             currency_type: currency.type).code
           end
 
           it 'saves operation' do

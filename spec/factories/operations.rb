@@ -20,7 +20,7 @@ FactoryBot.define do
   factory :asset, class: Operations::Asset, parent: :operation do
     code do
       Operations::Account.find_by(type: :asset,
-                                 currency_type: currency.type).code
+                                  currency_type: currency.type).code
     end
   end
 
@@ -41,8 +41,8 @@ FactoryBot.define do
   factory :liability, class: Operations::Liability, parent: :operation do
     code do
       Operations::Account.find_by(type: :liability,
-                                 currency_type: currency.type,
-                                 kind: :main).code
+                                  currency_type: currency.type,
+                                  kind: :main).code
     end
     trait :with_member do
       member { create(:member, :level_3) }

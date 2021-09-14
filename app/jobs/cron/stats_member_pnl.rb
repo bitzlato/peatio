@@ -190,12 +190,12 @@ module Jobs::Cron
         else
           # User last market price
           if order.income_currency.id == currency.id
-            total_credit_value = (total_credit) * price_at(order.income_currency.id, pnl_currency.id, trade.created_at)
+            total_credit_value = total_credit * price_at(order.income_currency.id, pnl_currency.id, trade.created_at)
             queries << build_query(order.member_id, pnl_currency, order.income_currency.id, total_credit, total_credit_fees, total_credit_value, 0, 0, 0)
           end
 
           if order.outcome_currency.id == currency.id
-            total_debit_value = (total_debit) * price_at(order.outcome_currency.id, pnl_currency.id, trade.created_at)
+            total_debit_value = total_debit * price_at(order.outcome_currency.id, pnl_currency.id, trade.created_at)
             queries << build_query(order.member_id, pnl_currency, order.outcome_currency.id, 0, 0, 0, total_debit, total_debit_value, 0)
           end
         end

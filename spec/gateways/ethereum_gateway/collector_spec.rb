@@ -1,14 +1,14 @@
 describe ::EthereumGateway::Collector do
   subject { described_class.new(ethereum_client) }
 
-  let(:peatio_transaction) { Peatio::Transaction.new(
+  let(:peatio_transaction) do Peatio::Transaction.new(
     currency_id: 'eth',
     amount: 12,
     from_address: '123',
     to_address: '145',
     block_number: 1,
     status: 'pending'
-  )}
+  ) end
   let(:gas_factor) { 1 }
   let(:native_amount) { 1000000 }
   let(:contract_amount) { 1000000000000000000 }

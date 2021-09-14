@@ -8,8 +8,8 @@ module API
         helpers ::API::V2::Market::NamedParams
 
         desc 'Get your orders, result is paginated.',
-          is_array: true,
-          success: API::V2::Entities::Order
+             is_array: true,
+             success: API::V2::Entities::Order
         params do
           # TODO: Would be cool to validate market based on the market_type
           optional :market,
@@ -81,7 +81,7 @@ module API
         end
 
         desc 'Get information of specified order.',
-          success: API::V2::Entities::Order
+             success: API::V2::Entities::Order
         params do
           use :order_id
         end
@@ -99,7 +99,7 @@ module API
         end
 
         desc 'Create a Sell/Buy order.',
-          success: API::V2::Entities::Order
+             success: API::V2::Entities::Order
         params do
           use :enabled_markets, :order
         end
@@ -139,7 +139,7 @@ module API
         end
 
         desc 'Cancel all my orders.',
-          success: API::V2::Entities::Order
+             success: API::V2::Entities::Order
         params do
           optional :market,
                    type: String,

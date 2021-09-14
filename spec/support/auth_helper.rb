@@ -2,7 +2,7 @@
 
 # Authentication test helpers
 module AuthTestHelpers
-  AUTH_HEADER_NAME = 'Authorization'.freeze
+  AUTH_HEADER_NAME = 'Authorization'
 
   def inject_authorization!(member)
     @request.env['jwt.payload'] =

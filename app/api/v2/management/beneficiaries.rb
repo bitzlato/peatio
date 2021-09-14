@@ -13,18 +13,18 @@ module API
           end
           params do
             requires :uid,
-                      type: String,
-                      desc: 'The shared user ID.'
+                     type: String,
+                     desc: 'The shared user ID.'
             optional :currency,
-                      type: String,
-                      values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'management.currency.doesnt_exist' },
-                      as: :currency_id,
-                      desc: 'Beneficiary currency code.'
+                     type: String,
+                     values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'management.currency.doesnt_exist' },
+                     as: :currency_id,
+                     desc: 'Beneficiary currency code.'
             optional :state,
-                      type: String,
-                      values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state'},
-                      desc: 'Defines either beneficiary active - user can use it to withdraw money'\
-                            'or pending - requires beneficiary activation with pin.'
+                     type: String,
+                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state'},
+                     desc: 'Defines either beneficiary active - user can use it to withdraw money'\
+                           'or pending - requires beneficiary activation with pin.'
 
           end
           post '/list' do
@@ -46,31 +46,31 @@ module API
           end
           params do
             requires :currency,
-                    type: String,
-                    values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'management.currency.doesnt_exist' },
-                    as: :currency_id,
-                    desc: 'Beneficiary currency code.'
+                     type: String,
+                     values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'management.currency.doesnt_exist' },
+                     as: :currency_id,
+                     desc: 'Beneficiary currency code.'
             requires :name,
-                    type: String,
-                    allow_blank: false,
-                    values: { value: ->(v) { v.present? && v.size <= 64 }, message: 'management.beneficiary.too_long_name' },
-                    desc: 'Human rememberable name which refer beneficiary.'
+                     type: String,
+                     allow_blank: false,
+                     values: { value: ->(v) { v.present? && v.size <= 64 }, message: 'management.beneficiary.too_long_name' },
+                     desc: 'Human rememberable name which refer beneficiary.'
             optional :description,
-                    type: String,
-                    values: { value: ->(v) { v.size <= 255 }, message: 'management.beneficiary.too_long_description' },
-                    desc: 'Human rememberable description which refer beneficiary.'
+                     type: String,
+                     values: { value: ->(v) { v.size <= 255 }, message: 'management.beneficiary.too_long_description' },
+                     desc: 'Human rememberable description which refer beneficiary.'
             requires :data,
-                    type: { value: JSON, message: 'management.beneficiary.non_json_data' },
-                    allow_blank: false,
-                    desc: 'Beneficiary data in JSON format'
+                     type: { value: JSON, message: 'management.beneficiary.non_json_data' },
+                     allow_blank: false,
+                     desc: 'Beneficiary data in JSON format'
             requires :uid,
-                    type: String,
-                    desc: 'The shared user ID.'
+                     type: String,
+                     desc: 'The shared user ID.'
             optional :state,
-                    type: String,
-                    values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state'},
-                    desc: 'Defines either beneficiary active - user can use it to withdraw money'\
-                          'or pending - requires beneficiary activation with pin.'
+                     type: String,
+                     values: { value: -> { ::Beneficiary::STATES_AVAILABLE_FOR_MEMBER.map(&:to_s) }, message: 'management.beneficiary.invalid_state'},
+                     desc: 'Defines either beneficiary active - user can use it to withdraw money'\
+                           'or pending - requires beneficiary activation with pin.'
           end
           post do
             declared_params = declared(params)

@@ -70,7 +70,7 @@ class Transaction < ApplicationRecord
     raise 'transaction must be a Peatio::Transaction' unless tx.is_a? Peatio::Transaction
     raise 'transaction amount must be a Money' unless tx.amount.is_a? Money
     raise 'transaction fee must be nil or a Money' unless tx.fee.nil? || tx.fee.is_a?(Money)
-    # TODO just now created transaction has no txout. Available to change txout from nil to number
+    # TODO: just now created transaction has no txout. Available to change txout from nil to number
 
     attrs = {
       fee:             tx.fee.nil? ? nil : tx.fee.to_d,
@@ -89,7 +89,7 @@ class Transaction < ApplicationRecord
       options:         tx.options
     }.deep_merge(extra)
 
-    # TODO There are problem with save 'kind'a attribuve with upsert
+    # TODO: There are problem with save 'kind'a attribuve with upsert
     #
     t = find_by(blockchain_id: tx.blockchain_id, txid: tx.txid, txout: tx.txout)
     if t.nil?

@@ -2,12 +2,12 @@
 
 describe Workers::AMQP::CancelMemberOrders do
   let!(:member) { create(:member, :level_3) }
-  let!(:account) {
+  let!(:account) do
     create(:account, :usd, balance: 100.to_d, locked: 2.to_d, member: member)
-  }
-  let!(:account1) {
+  end
+  let!(:account1) do
     create(:account, :btc, balance: 100.to_d, locked: 2.to_d, member: member)
-  }
+  end
 
   let!(:ask_orders) do
     create(
@@ -38,12 +38,12 @@ describe Workers::AMQP::CancelMemberOrders do
 
   describe '#perform' do
     it 'cancels all active member orders' do
-      expect {
+      expect do
         subject.process({
           event: 'close_all_orders',
           member_uid: member.uid
         })
-      }.to change { member.orders.active.count }.from(4).to(0)
+      end.to change { member.orders.active.count }.from(4).to(0)
     end
   end
 end

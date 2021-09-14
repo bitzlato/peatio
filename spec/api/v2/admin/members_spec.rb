@@ -101,11 +101,11 @@ describe API::V2::Admin::Members, type: :request do
       let(:address) { Faker::Blockchain::Bitcoin.address }
       let(:coin) { Currency.find(:btc) }
 
-      let!(:beneficiary) { create(:beneficiary,
-                                  member: member,
-                                  currency: coin,
-                                  state: :active,
-                                  data: generate(:btc_beneficiary_data).merge(address: address)) }
+      let!(:beneficiary) do create(:beneficiary,
+                                   member: member,
+                                   currency: coin,
+                                   state: :active,
+                                   data: generate(:btc_beneficiary_data).merge(address: address)) end
 
 
       it 'returns user entities' do
@@ -134,11 +134,11 @@ describe API::V2::Admin::Members, type: :request do
       context 'fiat beneficiary' do
         let(:fiat) { Currency.find(:usd) }
 
-        let!(:beneficiary) { create(:beneficiary,
-                                    member: member,
-                                    currency: fiat,
-                                    state: :active,
-                                    data: generate(:fiat_beneficiary_data)) }
+        let!(:beneficiary) do create(:beneficiary,
+                                     member: member,
+                                     currency: fiat,
+                                     state: :active,
+                                     data: generate(:fiat_beneficiary_data)) end
 
         it 'returns user entities' do
           api_get "/api/v2/admin/members/#{member.uid}", token: token

@@ -6,14 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 35
-# Cop supports --auto-correct.
-# Configuration parameters: TreatCommentsAsGroupSeparators, ConsiderPunctuation, Include.
-# Include: **/*.gemfile, **/Gemfile, **/gems.rb
-Bundler/OrderedGems:
-  Exclude:
-    - 'Gemfile'
-
 # Offense count: 5
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
@@ -25,41 +17,6 @@ Layout/AccessModifierIndentation:
     - 'app/trading/matching/executor.rb'
     - 'db/migrate/20180305111648_create_withdraw_destinations_drop_fund_source.rb'
     - 'lib/peatio/amqp/event_api.rb'
-
-# Offense count: 127
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: with_first_argument, with_fixed_indentation
-Layout/ArgumentAlignment:
-  Enabled: false
-
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: with_first_element, with_fixed_indentation
-Layout/ArrayAlignment:
-  Exclude:
-    - 'lib/tasks/clear.rake'
-    - 'spec/api/v2/admin/trades_spec.rb'
-    - 'spec/trading/matching/engine_spec.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: IndentationWidth.
-Layout/AssignmentIndentation:
-  Exclude:
-    - 'lib/peatio/bench/matching/amqp.rb'
-    - 'lib/peatio/bench/matching/direct.rb'
-    - 'lib/peatio/bench/order_processing/direct.rb'
-    - 'spec/spec_helper.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleAlignWith, Severity.
-# SupportedStylesAlignWith: start_of_line, begin
-Layout/BeginEndAlignment:
-  Exclude:
-    - 'app/gateways/ethereum_gateway/gas_estimator.rb'
 
 # Offense count: 6
 # Cop supports --auto-correct.
@@ -1587,30 +1544,6 @@ Security/YAMLLoad:
   Exclude:
     - 'app/api/v2/import_configs_helper.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: separated, grouped
-Style/AccessorGrouping:
-  Exclude:
-    - 'app/gateways/abstract_gateway.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/ArrayJoin:
-  Exclude:
-    - 'lib/peatio/bitzlato/wallet.rb'
-
-# Offense count: 80
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, ProceduralMethods, FunctionalMethods, IgnoredMethods, AllowBracesOnProceduralOneLiners, BracesRequiredMethods.
-# SupportedStyles: line_count_based, semantic, braces_for_chaining, always_braces
-# ProceduralMethods: benchmark, bm, bmbm, create, each_with_object, measure, new, realtime, tap, with_object
-# FunctionalMethods: let, let!, subject, watch
-# IgnoredMethods: lambda, proc, it
-Style/BlockDelimiters:
-  Enabled: false
-
 # Offense count: 6
 # Cop supports --auto-correct.
 # Configuration parameters: AllowOnConstant.
@@ -1632,50 +1565,10 @@ Style/CaseLikeIf:
     - 'lib/tasks/import.rake'
     - 'spec/support/rspec_matchers.rb'
 
-# Offense count: 11
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: nested, compact
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'app/api/v2/account/mount.rb'
-    - 'app/api/v2/exception_handlers.rb'
-    - 'app/api/v2/market/mount.rb'
-    - 'app/jobs/cron/stats_member_pnl.rb'
-    - 'config/initializers/deprecate.rb'
-    - 'config/initializers/faraday.rb'
-    - 'config/initializers/grape.rb'
-    - 'config/initializers/peatio_transaction.rb'
-    - 'config/initializers/redis_store.rb'
-    - 'lib/peatio/cors/validations.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: is_a?, kind_of?
-Style/ClassCheck:
-  Exclude:
-    - 'app/models/user_ability.rb'
-    - 'config/initializers/exception_reporting.rb'
-    - 'config/initializers/grape.rb'
-
 # Offense count: 3
 Style/ClassVars:
   Exclude:
     - 'spec/support/matching_helper.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/ColonMethodCall:
-  Exclude:
-    - 'lib/peatio/influxdb.rb'
-
-# Offense count: 25
-# Cop supports --auto-correct.
-# Configuration parameters: Keywords, RequireColon.
-# Keywords: TODO, FIXME, OPTIMIZE, HACK, REVIEW, NOTE
-Style/CommentAnnotation:
-  Enabled: false
 
 # Offense count: 2
 # Cop supports --auto-correct.
@@ -2031,40 +1924,6 @@ Style/RedundantBegin:
     - 'config/initializers/exception_reporting.rb'
     - 'lib/tasks/export.rake'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/RedundantException:
-  Exclude:
-    - 'config/initializers/presence.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: SafeForConstants.
-Style/RedundantFetchBlock:
-  Exclude:
-    - 'config/puma.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/RedundantFreeze:
-  Exclude:
-    - 'app/models/currency.rb'
-    - 'spec/support/auth_helper.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-Style/RedundantInterpolation:
-  Exclude:
-    - 'config/initializers/aml.rb'
-    - 'lib/peatio/upstream/opendax.rb'
-
-# Offense count: 9
-# Cop supports --auto-correct.
-Style/RedundantParentheses:
-  Exclude:
-    - 'app/jobs/cron/stats_member_pnl.rb'
-    - 'spec/api/v2/account/stats_spec.rb'
-
 # Offense count: 13
 # Cop supports --auto-correct.
 Style/RedundantRegexpEscape:
@@ -2078,16 +1937,6 @@ Style/RedundantRegexpEscape:
     - 'app/api/v2/public/markets.rb'
     - 'spec/models/market_spec.rb'
     - 'spec/models/order_spec.rb'
-
-# Offense count: 13
-# Cop supports --auto-correct.
-# Configuration parameters: AllowMultipleReturnValues.
-Style/RedundantReturn:
-  Exclude:
-    - 'app/models/beneficiary.rb'
-    - 'app/models/helpers/reorder_position.rb'
-    - 'app/trading/matching/order_book.rb'
-    - 'lib/peatio/app.rb'
 
 # Offense count: 18
 # Cop supports --auto-correct.

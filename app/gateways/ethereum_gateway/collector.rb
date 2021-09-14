@@ -9,7 +9,7 @@ class EthereumGateway
     def call(from_address:, to_address: , amounts:, secret:, gas_limits:, gas_factor: 1 )
       raise NoAmounts if amounts.empty?
 
-      # TODO Сообщать о том что не хватает газа ДО выполнения, так как он потратися
+      # TODO: Сообщать о том что не хватает газа ДО выполнения, так как он потратися
       # Не выводить базовую валюту пока не счету есть токены
       # Базовую валюту откидывать за вычетом необходимой суммы газа для токенов
       #
@@ -30,7 +30,7 @@ class EthereumGateway
                )
         logger.info("Collect transaction created #{transaction.as_json}")
         transaction.txid
-        # TODO Save CollectRecord with transaction dump
+        # TODO: Save CollectRecord with transaction dump
       rescue EthereumGateway::TransactionCreator::Error => err
         report_exception err, true, payment_address_id: payment_address.id, currency: currency
         logger.warn("Errored collecting #{currency} #{amount} from address #{payment_address.address} with #{err}")

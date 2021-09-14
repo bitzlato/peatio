@@ -12,8 +12,8 @@ module API
 
         resource :markets do
           desc 'Get all available markets.',
-            is_array: true,
-            success: API::V2::Entities::Market
+               is_array: true,
+               success: API::V2::Entities::Market
           params do
             use :pagination
             optional :ordering,
@@ -74,8 +74,8 @@ module API
           end
 
           desc 'Get the order book of specified market.',
-            is_array: true,
-            success: API::V2::Entities::OrderBook
+               is_array: true,
+               success: API::V2::Entities::OrderBook
           params do
             requires :market,
                      type: String,
@@ -101,8 +101,8 @@ module API
           end
 
           desc 'Get recent trades on market, each trade is included only once. Trades are sorted in reverse creation order.',
-            is_array: true,
-            success: API::V2::Entities::Trade
+               is_array: true,
+               success: API::V2::Entities::Trade
           params do
             requires :market,
                      type: String,

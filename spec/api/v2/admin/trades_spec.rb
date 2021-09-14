@@ -26,7 +26,7 @@ describe API::V2::Admin::Trades, type: :request do
       api_get'/api/v2/admin/trades', token: token, params: { limit: 5 }
       result = JSON.parse(response.body).first
       keys = %w[id amount price total maker_order_email taker_order_email created_at maker_uid taker_uid
-        taker_type market market_type maker_fee_currency maker_fee_amount taker_fee_currency taker_fee_amount]
+                taker_type market market_type maker_fee_currency maker_fee_amount taker_fee_currency taker_fee_amount]
 
       expect(result.keys).to match_array keys
       expect(result.values).not_to include nil
@@ -231,7 +231,7 @@ describe API::V2::Admin::Trades, type: :request do
       api_get "/api/v2/admin/trades/#{trade.id}", token: token
       result = JSON.parse(response.body)
       keys = %w[id amount price total maker_order_email taker_order_email created_at maker_uid taker_uid taker_type
-        market market_type maker_fee_currency maker_fee maker_fee_amount taker_fee_currency taker_fee taker_fee_amount maker_order taker_order]
+                market market_type maker_fee_currency maker_fee maker_fee_amount taker_fee_currency taker_fee taker_fee_amount maker_order taker_order]
 
       expect(result.keys).to match_array keys
       expect(result.values).not_to include nil
