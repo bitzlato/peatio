@@ -94,9 +94,10 @@ class EthereumGateway
       blockchain
         .fee_currency
         .to_money_from_units(
-          Rails.cache.fetch([blockchain.id, :gas_price].join(':'), expires_in: GAS_PRICE_EXPIRES) do
-            AbstractCommand.new(client).fetch_gas_price
-          end
+          # мы не можем кешировать, потому что при сборе газ посчитается из ноды и будет
+          # другой. Нужно или при сборе брать газ из кэша или тут убрать. Я пока убрал тут.
+          # Rails.cache.fetch([blockchain.id, :gas_price].join(':'), expires_in: GAS_PRICE_EXPIRES) do
+          AbstractCommand.new(client).fetch_gas_price
       )
     end
 
