@@ -89,6 +89,7 @@ class EthereumGateway < AbstractGateway
             to_address: to_address,
             amount: amount.base_units,
             secret: secret,
+            gas_limit: gas_limit,
             gas_price: gas_price,
             contract_address: contract_address,
             subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee,
