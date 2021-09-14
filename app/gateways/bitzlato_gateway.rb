@@ -30,7 +30,7 @@ class BitzlatoGateway < AbstractGateway
 
   def poll_deposits!
     client.poll_deposits.each do |intention|
-      deposit = Deposit.find_by(currency_id: intention[:currency], invoice_id: intention[:id])
+      deposit = Deposit.find_by(currency_id: intention[:currency], invoice_id: intention[:invoice_id])
       if deposit.nil?
         Rails.logger.warn("No such deposit intention ##{intention[:id]} in blockchain #{blockchain.name}")
         next
@@ -38,11 +38,19 @@ class BitzlatoGateway < AbstractGateway
       deposit.with_lock do
         next if deposit.dispatched?
         unless deposit.amount==intention[:amount]
-          Rails.logger.warn("Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} in blockchain #{blockchain.name}")
+          report_exception(
+            "Deposit and intention amounts are not equeal #{deposit.amount}<>#{intention[:amount]} with intention ##{intention[:id]} in blockchain #{blockchain.name}",
+            true,
+            deposit_id: deposit.id, deposit_amount: deposit.amount, intention_amount: intention[:amount]
+          )
           next
         end
         unless deposit.invoiced? || deposit.submitted?
-          Rails.logger.debug("Deposit #{deposit.id} has skippable status (#{deposit.aasm_state})")
+          report_exception(
+            "Deposit #{deposit.id} has skippable status (#{deposit.aasm_state})",
+            true,
+            deposit_id: deposit.id, deposit_state: deposit.aasm_state
+          )
           next
         end
         deposit.accept!
@@ -78,7 +86,13 @@ class BitzlatoGateway < AbstractGateway
     end
   end
 
-  def create_transaction!(from_address: nil, to_address:, amount: , contract_address: nil, nonce: nil, secret: nil, meta: {})
+  def create_transaction!(from_address: nil,
+                          to_address:,
+                          amount:,
+                          contract_address: nil,
+                          nonce: nil,
+                          secret: nil,
+                          meta: {})
     raise 'amount must be a Money' unless amount.is_a? Money
     client.create_transaction!(
         key: meta.fetch(:withdraw_tid), # It is also posible to use nonce

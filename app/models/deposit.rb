@@ -76,7 +76,7 @@ class Deposit < ApplicationRecord
     event :invoice do
       transitions from: :submitted, to: :invoiced
       after do
-        update(invoice_expires_at: Time.now + ENV.fetch("INVOICE_EXPIRES_HOURS", 24))
+        update(invoice_expires_at: Time.now + ENV.fetch("INVOICE_EXPIRES_HOURS", 24).hours)
       end
     end
 

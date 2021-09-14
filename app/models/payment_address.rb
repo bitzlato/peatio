@@ -29,37 +29,28 @@ class PaymentAddress < ApplicationRecord
   aasm :collection_state, namespace: :collection, whiny_transitions: true, requires_lock: true do
     state :none, initial: true
     state :pending
-    state :processing
+    state :collecting
+    state :gas_refueling
     state :done
 
     event :collect do
-      transitions from: %i[pending none], to: :processing
+      transitions from: %i[pending none done], to: :collecting
       after do
-        do_collect!
+        blockchain.gateway.collect! self
+        done!
       end
     end
 
-    event :done do
-      transitions from: %i[processing], to: :done
-    end
-  end
-
-  aasm :gas_refueling_state, namespace: :gas_refueling, whiny_transcations: true, requires_lock: true do
-    state :none, initial: true
-    state :pending
-    state :processing
-    state :done
-
     event :refuel_gas do
-      transitions from: %i[none pending], to: :processing
+      transitions from: %i[pending none done], to: :gas_refueling
       after do
-        do_refuel_gas!
+        blockchain.gateway.refuel_gas! self
         done!
       end
     end
 
     event :done do
-      transitions from: %i[processing], to: :done
+      transitions from: %i[collecting gas_refueling], to: :done
     end
   end
 
@@ -100,12 +91,12 @@ class PaymentAddress < ApplicationRecord
   end
 
   def has_enough_gas_to_collect?
-    blockchain.gateway.has_enough_gas_to_collect? payment_address.address
+    blockchain.gateway.has_enough_gas_to_collect? address
   end
 
   # Balance reached amount limit to be collected
-  def collectable_balance?
-    blockchain.gateway.collectable_balance? payment_address.address
+  def has_collectable_balances?
+    blockchain.gateway.has_collectable_balances? address
   end
 
   def transactions
@@ -128,15 +119,5 @@ class PaymentAddress < ApplicationRecord
 
   def currency
     wallet.native_currency
-  end
-
-  private
-
-  def do_collect!
-    blockchain.gateway.collect! self
-  end
-
-  def do_refuel_gas!
-    blockchain.gateway.refuel_gas! self
   end
 end

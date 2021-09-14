@@ -58,8 +58,22 @@ describe ::EthereumGateway::GasRefueler do
     let(:balance_on_target_address) { 0 }
     let(:contract_addresses) { [Faker::Blockchain::Ethereum.address]  }
     before do
-      stub_estimate_gas id: 3, from: from_address, to: contract_addresses.first, gas_price: gas_price, estimated_gas: estimated_gas
-      stub_estimate_gas id: 4, from: from_address, to: to_address, gas_price: gas_price, estimated_gas: estimated_gas
+      stub_estimate_gas(
+        id:            3,
+        from:          from_address,
+        to:            contract_addresses.first,
+        gas_price:     gas_price,
+        estimated_gas: estimated_gas,
+        data:          abi_encode('transfer(address,uint256)', to_address, '0x'+EthereumGateway::GasEstimator::DEFAULT_AMOUNT.to_s(16))
+      )
+      stub_estimate_gas(
+        id: 4,
+        from: from_address,
+        to: to_address,
+        gas_price: gas_price,
+        estimated_gas: estimated_gas,
+        value: 1
+      )
     end
 
     context 'and it has no enough ethereum balance' do

@@ -116,6 +116,8 @@ gem "http_accept_language", "~> 2.1"
 
 gem "semver2", "~> 3.4"
 
+gem 'pry-rails'
+
 group :deploy do
   gem 'capistrano-dotenv'
   gem 'capistrano-dotenv-tasks'
@@ -145,4 +147,5 @@ gem "after_commit_everywhere", "~> 1.1"
 
 gem "request_store", "~> 1.5"
 
+gem "faraday-detailed_logger", "~> 2.3"
 gem "faraday_curl", "~> 0.0.2"

@@ -56,7 +56,7 @@ class Currency < ApplicationRecord
   end
 
   # Support for tower
-  before_create if: :erc20_contract_address do
+  before_update if: :erc20_contract_address do
     self.contract_address ||= erc20_contract_address
   end
 
@@ -85,8 +85,8 @@ class Currency < ApplicationRecord
             :withdraw_limit_72h,
             numericality: { greater_than_or_equal_to: 0 }
 
-  # TODO
-  # validates :contract_address, presence: true, if: :parent_id
+  # TODO improve tests
+  validates :contract_address, presence: true, if: :parent_id unless Rails.env.test?
 
   # == Scopes ===============================================================
 

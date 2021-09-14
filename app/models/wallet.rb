@@ -147,6 +147,18 @@ class Wallet < ApplicationRecord
     self.blockchain = Blockchain.find_by(key: key) || raise("No blockchain with key #{key}")
   end
 
+  def update_balances!
+    # TODO Получать балансы со шлюза
+    balances = current_balance.each_with_object({}) do |(k,v), a|
+      currency_id = k.is_a?(Money::Currency) ? k.id.downcase : k
+      a[currency_id] = v.nil? ? nil : v.to_d
+    end
+
+    update!(balance: balances, balance_updated_at: Time.zone.now)
+  rescue StandardError => e
+    report_exception(e, true, wallet_id: id)
+  end
+
   # TODO Move to wallet balances
   def current_balance(currency = nil)
     if blockchain.gateway.is_a? BitzlatoGateway

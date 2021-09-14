@@ -10,13 +10,16 @@ class EthereumGateway
              nonce: nil,
              contract_address: nil,
              subtract_fee: false,
+             gas_price: nil,
              gas_limit: ,
              gas_factor: 1)
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
-
+      raise 'No gas limit' if gas_limit.nil?
+      raise Error, 'zero amount transction' if amount.zero?
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
+      raise 'gas price zero' if gas_price.zero?
       peatio_transaction = contract_address.present? ?
         create_erc20_transaction!(amount: amount,
                                   from_address: from_address,
@@ -48,13 +51,6 @@ class EthereumGateway
                                 subtract_fee: false)
 
       raise 'amount must be an integer' unless amount.is_a? Integer
-
-      gas_limit ||= estimate_gas(
-        from: from_address,
-        to: to_address,
-        gas_price: gas_price,
-        value: amount.to_i
-      )
 
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= gas_limit.to_i * gas_price.to_i if subtract_fee
@@ -97,16 +93,9 @@ class EthereumGateway
                                   contract_address:,
                                   nonce: nil,
                                   secret:,
-                                  gas_limit: nil,
+                                  gas_limit:,
                                   gas_price:)
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
-
-      gas_limit ||= estimate_gas(
-        gas_price: gas_price,
-        from: from_address,
-        to: contract_address,
-        data: data
-      )
 
       logger.info("Create erc20 transaction #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       txid = validate_txid!(

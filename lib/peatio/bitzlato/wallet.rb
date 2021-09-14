@@ -106,7 +106,7 @@ module Bitzlato
         .map do |transaction|
         {
           address: transaction['username'],
-          id: generate_id(transaction['invoiceId']),
+          invoice_id: generate_id(transaction['invoiceId']),
           amount: transaction['amount'].to_d,
           currency: transaction['cryptocurrency'].downcase
         }
