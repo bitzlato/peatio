@@ -457,7 +457,8 @@ CREATE TABLE public.deposits (
     invoice_id character varying,
     error json,
     blockchain_id bigint NOT NULL,
-    invoice_expires_at timestamp without time zone
+    invoice_expires_at timestamp without time zone,
+    is_locked boolean DEFAULT false NOT NULL
 );
 
 
@@ -889,8 +890,7 @@ CREATE TABLE public.payment_addresses (
     balances jsonb DEFAULT '{}'::jsonb,
     balances_updated_at timestamp without time zone,
     blockchain_id bigint NOT NULL,
-    collection_state character varying DEFAULT 'none'::character varying NOT NULL,
-    gas_refueling_state character varying DEFAULT 'none'::character varying NOT NULL
+    collection_state character varying DEFAULT 'none'::character varying NOT NULL
 );
 
 
@@ -1366,7 +1366,8 @@ CREATE TABLE public.withdraws (
     metadata json,
     remote_id character varying,
     blockchain_id bigint NOT NULL,
-    tx_dump jsonb
+    tx_dump jsonb,
+    is_locked boolean DEFAULT false NOT NULL
 );
 
 
@@ -2918,6 +2919,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210831045259'),
 ('20210831072354'),
 ('20210908142557'),
-('20210908143407');
+('20210908143407'),
+('20210910085149'),
+('20210910085819'),
+('20210915190259');
 
 
