@@ -38,7 +38,7 @@ module API
                      values: { value: -> { ::Market::TYPES }, message: 'public.market.invalid_market_type' },
                      default: ::Market::DEFAULT_TYPE,
                      desc: 'Strict filter for market type'
-            optional :search, type: JSON, default: {} do
+            optional :search, type: Hash, default: {} do
               optional :base_code,
                        type: String,
                        desc: 'Search base currency code using LIKE'

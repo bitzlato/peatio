@@ -50,7 +50,7 @@ module API
           documentation: {
             desc: 'Bank Account details for fiat Beneficiary in JSON format.'\
                   'For crypto it\'s blockchain address.',
-            type: JSON
+            type: Hash
           }
         ) do |beneficiary|
           beneficiary.currency.fiat? ? beneficiary.masked_data : beneficiary.data

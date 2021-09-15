@@ -37,7 +37,8 @@ module API
             requires :currency,
                      type: String,
                      values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
-                     desc: 'The currency code.'
+                     desc: 'The currency code.',
+                     documentation: { param_type: 'body' }
             requires :amount,
                      type: { value: BigDecimal, message: 'account.internal_transfer.non_decimal_amount' },
                      values: { value: ->(v) { v.try(:positive?) }, message: 'account.internal_transfer.non_positive_amount' },
