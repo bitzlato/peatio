@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable RSpec/DescribedClass
 describe Bitcoin::Blockchain do
   context :features do
     it 'defaults' do
@@ -458,4 +457,3 @@ describe Bitcoin::Blockchain do
     end
   end
 end
-# rubocop:enable RSpec/DescribedClass
