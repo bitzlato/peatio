@@ -20,6 +20,7 @@ module Workers
       ].freeze
 
       def run
+        Rails.logger.info 'Start cron_job'
         @threads = JOBS.map { |j| Thread.new { process(j) } }
         @threads.map(&:join)
       end
