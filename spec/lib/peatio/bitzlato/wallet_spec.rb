@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe Bitzlato::Wallet do
-  let(:wallet) { described_class.new }
+  let(:wallet) { Bitzlato::Wallet.new }
   let(:uri) { ENV.fetch('BITZLATO_API_URL') }
 
   describe :requests do
@@ -133,8 +133,8 @@ describe Bitzlato::Wallet do
     context :create_transaction! do
       context :voucher do
         before do
-          described_class.send(:remove_const, :WITHDRAW_METHOD)
-          described_class::WITHDRAW_METHOD = 'voucher'
+          Bitzlato::Wallet.send(:remove_const, :WITHDRAW_METHOD)
+          Bitzlato::Wallet::WITHDRAW_METHOD = 'voucher'
         end
 
         it 'create withdrawal transaction' do
@@ -145,8 +145,8 @@ describe Bitzlato::Wallet do
 
       context :payment do
         before do
-          described_class.send(:remove_const, :WITHDRAW_METHOD)
-          described_class::WITHDRAW_METHOD = 'payment'
+          Bitzlato::Wallet.send(:remove_const, :WITHDRAW_METHOD)
+          Bitzlato::Wallet::WITHDRAW_METHOD = 'payment'
         end
 
         it 'create withdrawal transaction' do
