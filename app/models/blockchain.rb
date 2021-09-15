@@ -86,15 +86,15 @@ class Blockchain < ApplicationRecord
   end
 
   def wallets_addresses
-    @wallets_addresses ||= Set.new(wallets.where.not(address: nil).pluck(:address).map { |a| normalize_address a }).freeze
+    Set.new(wallets.where.not(address: nil).pluck(:address).map { |a| normalize_address a }).freeze
   end
 
   def deposit_addresses
-    @deposit_addresses ||= Set.new(payment_addresses.where.not(address: nil).pluck(:address).map { |a| normalize_address a }).freeze
+    Set.new(payment_addresses.where.not(address: nil).pluck(:address).map { |a| normalize_address a }).freeze
   end
 
   def follow_addresses
-    @follow_addresses ||= wallets_addresses + deposit_addresses
+    wallets_addresses + deposit_addresses
   end
 
   def contract_addresses
