@@ -5,6 +5,7 @@ module Jobs
     class Collector
       def self.process
         # TODO: select only payment addresses with enough balance
+        Rails.logger.info('Check collectable balances on PaymentAddresses')
         PaymentAddress.collection_required.lock.each do |payment_address|
           next unless payment_address.has_collectable_balances?
 

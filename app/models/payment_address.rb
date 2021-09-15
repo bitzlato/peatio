@@ -19,7 +19,7 @@ class PaymentAddress < ApplicationRecord
 
   scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
   scope :with_balances, -> { where 'EXISTS ( SELECT * FROM jsonb_each_text(balances) AS each(KEY,val) WHERE "val"::decimal >= 0)' }
-  scope :collection_required, -> { with_balances.where(collection_state: %i[none pending], gas_refueling_state: %i[none]) }
+  scope :collection_required, -> { with_balances.where(collection_state: %i[none pending done], gas_refueling_state: %i[none pending done]) }
 
   # TODO: Migrate association from wallet to blockchain and remove Wallet.deposit*
   belongs_to :member
