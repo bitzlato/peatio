@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe Bitcoin::Wallet do
-  let(:wallet) { described_class.new }
+  let(:wallet) { Bitcoin::Wallet.new }
 
   context :configure do
     let(:settings) { { wallet: {}, currency: {} } }
