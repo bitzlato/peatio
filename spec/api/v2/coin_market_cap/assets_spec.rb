@@ -2,36 +2,36 @@
 
 describe API::V2::CoinMarketCap::Assets, type: :request do
   describe 'GET /api/v2/coinmarketcap/assets' do
-    before(:each) { clear_redis }
+    before { clear_redis }
 
     context 'There are currencies' do
       context 'with unified id' do
         before do
           Currency.coins.each do |currency|
-            stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                                                                                      "listing_status=active&"\
-                                                                                      "symbol=#{currency.id}")
+            stub_request(:get, 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&'\
+                               'listing_status=active&'\
+                               "symbol=#{currency.id}")
               .to_return(body:
                 {
-                  'status'=>
+                  'status' =>
                       {
-                        'error_code'=>0,
-                        'error_message'=>nil,
-                        'elapsed'=>12,
-                        'credit_count'=>1,
-                        'notice'=>nil
+                        'error_code' => 0,
+                        'error_message' => nil,
+                        'elapsed' => 12,
+                        'credit_count' => 1,
+                        'notice' => nil
                       },
-                  'data'=>
+                  'data' =>
                     [
                       {
-                        'id'=>1
+                        'id' => 1
                       }
                     ]
                 }.to_json)
           end
         end
 
-        it 'should return crypto assets' do
+        it 'returns crypto assets' do
           get '/api/v2/coinmarketcap/assets'
           expect(response).to be_successful
           expect(response_body['BTC'].keys).to match_array %w[name unified_cryptoasset_id can_withdraw can_deposit min_withdraw]
@@ -46,25 +46,25 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
       context 'without unified id' do
         before do
           Currency.coins.each do |currency|
-            stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                                                                                      "listing_status=active&"\
-                                                                                      "symbol=#{currency.id}")
+            stub_request(:get, 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&'\
+                               'listing_status=active&'\
+                               "symbol=#{currency.id}")
               .to_return(status: 400, body:
                 {
-                  'status'=>
+                  'status' =>
                     {
-                      'timestamp'=>'2020-09-25T08:43:56.778Z',
-                      'error_code'=>400,
-                      'error_message'=>'Invalid value for \'symbol\': \'TESTTEST\'',
-                      'elapsed'=>0,
-                      'credit_count'=>0,
-                      'notice'=>nil
+                      'timestamp' => '2020-09-25T08:43:56.778Z',
+                      'error_code' => 400,
+                      'error_message' => 'Invalid value for \'symbol\': \'TESTTEST\'',
+                      'elapsed' => 0,
+                      'credit_count' => 0,
+                      'notice' => nil
                     }
                 }.to_json)
           end
         end
 
-        it 'should return crypto assets' do
+        it 'returns crypto assets' do
           get '/api/v2/coinmarketcap/assets'
 
           expect(response).to be_successful
@@ -78,14 +78,14 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
         context 'with 500 error from Faraday' do
           before do
             Currency.coins.each do |currency|
-              stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                                                                                        "listing_status=active&"\
-                                                                                        "symbol=#{currency.id}")
-                  .to_raise(Faraday::Error)
+              stub_request(:get, 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&'\
+                                 'listing_status=active&'\
+                                 "symbol=#{currency.id}")
+                .to_raise(Faraday::Error)
             end
           end
 
-          it 'should return crypto assets' do
+          it 'returns crypto assets' do
             get '/api/v2/coinmarketcap/assets'
 
             expect(response).to be_successful
@@ -102,7 +102,7 @@ describe API::V2::CoinMarketCap::Assets, type: :request do
     context 'There is no currencies' do
       before { DatabaseCleaner.clean }
 
-      it 'should return assets' do
+      it 'returns assets' do
         get '/api/v2/coinmarketcap/assets'
 
         expect(response).to be_successful

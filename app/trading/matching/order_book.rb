@@ -1,25 +1,23 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_relative 'constants'
 
 module Matching
   class OrderBook
-
     attr :side
 
-    def initialize(market, side, options={})
+    def initialize(market, side, options = {})
       @market = market
       @side   = side.to_sym
       @limit_orders = RBTree.new
       @market_orders = RBTree.new
       @on_change = options[:on_change]
 
-      singleton = class<<self;self;end
+      singleton = class << self; self; end
       singleton.send :define_method, :limit_top, self.class.instance_method("#{@side}_limit_top")
     end
 
-    def notify_change(market, side, price, amount=nil)
+    def notify_change(market, side, price, amount = nil)
       return unless @on_change
 
       amount ||= yield
@@ -43,7 +41,7 @@ module Matching
 
     def fill_top(trade_price, trade_volume, trade_funds)
       order = top
-      raise "No top order in empty book." unless order
+      raise 'No top order in empty book.' unless order
 
       order.fill trade_price, trade_volume, trade_funds
       if order.filled?
@@ -73,7 +71,7 @@ module Matching
       when MarketOrder
         raise MarketOrderbookError.new(order, 'market order adding to orderbook detected')
       else
-        raise ArgumentError, "Unknown order type"
+        raise ArgumentError, 'Unknown order type'
       end
     end
 
@@ -82,17 +80,17 @@ module Matching
       when LimitOrder
         updated_order = remove_limit_order(order)
         notify_change(@market, @side, order.price) { @limit_orders[order.price]&.total }
-        return updated_order
+        updated_order
       when MarketOrder
         remove_market_order(order)
       else
-        raise ArgumentError, "Unknown order type"
+        raise ArgumentError, 'Unknown order type'
       end
     end
 
     def limit_orders
       orders = {}
-      @limit_orders.keys.each {|k| orders[k] = @limit_orders[k].orders }
+      @limit_orders.each_key { |k| orders[k] = @limit_orders[k].orders }
       orders
     end
 
@@ -122,14 +120,18 @@ module Matching
       end
     end
 
-    def ask_limit_top # lowest price wins
+    # lowest price wins
+    def ask_limit_top
       return if @limit_orders.empty?
+
       price, level = @limit_orders.first
       level.top
     end
 
-    def bid_limit_top # highest price wins
+    # highest price wins
+    def bid_limit_top
       return if @limit_orders.empty?
+
       price, level = @limit_orders.last
       level.top
     end

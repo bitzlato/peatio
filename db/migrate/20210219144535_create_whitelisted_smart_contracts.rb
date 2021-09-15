@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateWhitelistedSmartContracts < ActiveRecord::Migration[5.2]
   def change
     create_table :whitelisted_smart_contracts do |t|

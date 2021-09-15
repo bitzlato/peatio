@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Run polling process for supported gateways
 module Jobs
   module Cron
@@ -5,6 +7,7 @@ module Jobs
       TIMEOUT = 10
       def self.process
         return unless Rails.env.production?
+
         Blockchain.active.find_each do |b|
           poll_deposits b if b.gateway_class.implements? :poll_deposits!
           poll_withdraws b if b.gateway_class.implements? :poll_withdraws!

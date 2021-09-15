@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module Workers
@@ -6,6 +5,7 @@ module Workers
     class DepositCoinAddress < Base
       def process(payload)
         return if Rails.env.staging?
+
         payload.symbolize_keys!
 
         member = Member.find payload[:member_id]
@@ -21,10 +21,11 @@ module Workers
         member.payment_address(blockchain).tap do |pa|
           pa.with_lock do
             return if pa.address.present?
-            result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency.to_s}")
+
+            result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
 
             pa.update!(address: result[:address],
-                       secret:  result[:secret],
+                       secret: result[:secret],
                        details: result[:details])
           end
 

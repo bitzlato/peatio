@@ -7,7 +7,7 @@ module API
         market.account.insufficient_balance
         market.order.insufficient_market_liquidity
         market.order.invalid_volume_or_price
-      ]
+      ].freeze
 
       def create_order(attrs)
         market = ::Market.active.find_spot_by_symbol(attrs[:market])

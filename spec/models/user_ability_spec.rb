@@ -1,80 +1,90 @@
 # frozen_string_literal: true
 
 describe UserAbility do
-
   context 'abilities for member' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'member') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for superadmin' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'superadmin') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for admin' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'admin') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for compliance' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'compliance') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for support' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'support') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for technical' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'technical') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for reporter' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'reporter') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for accountant' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'accountant') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for broker' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'broker') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for trader' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'trader') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end
 
   context 'abilities for maker' do
+    subject(:ability) { described_class.new(member) }
+
     let(:member) { create(:member, role: 'maker') }
-    subject(:ability) { UserAbility.new(member) }
 
     it { is_expected.to be_able_to(:manage, :all) }
   end

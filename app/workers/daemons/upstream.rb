@@ -31,7 +31,7 @@ module Workers
       end
 
       def stop
-        puts 'Shutting down'
+        Rails.logger.debug 'Shutting down'
         @shutdown = true
         exit(42)
       end

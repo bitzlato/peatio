@@ -1,21 +1,21 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Adjustment do
-  let!(:member) { create(:member) }
   subject { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-202-#{member.uid}") }
+
+  let!(:member) { create(:member) }
 
   context 'on create' do
     it 'does not insert liability' do
-      expect {
+      expect do
         subject
-      }.not_to change { Operations::Liability.count }
+      end.not_to change { Operations::Liability.count }
     end
 
     it 'does not insert asset' do
-      expect {
+      expect do
         subject
-      }.not_to change { Operations::Asset.count }
+      end.not_to change { Operations::Asset.count }
     end
 
     it 'builds operations' do
@@ -36,7 +36,7 @@ describe Adjustment do
         end
 
         it 'invalidates transfer' do
-          expect(subject.valid?).to be_falsey
+          expect(subject).not_to be_valid
           expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
         end
       end
@@ -56,7 +56,7 @@ describe Adjustment do
         end
 
         it 'invalidates transfer' do
-          expect(subject.valid?).to be_falsey
+          expect(subject).not_to be_valid
           expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
         end
       end
@@ -72,21 +72,21 @@ describe Adjustment do
         let(:liability) { build(:liability, :with_member, credit: 1, currency_id: :btc) }
 
         it 'invalidates transfer' do
-          expect(subject.valid?).to be_truthy
+          expect(subject).to be_valid
         end
       end
     end
   end
 
-  context '#prebuild_operations' do
+  describe '#prebuild_operations' do
     subject { adjustment.prebuild_operations }
 
     context 'asset and liability' do
       let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-202-#{member.uid}", amount: 1) }
 
       it do
-        expect(subject.first.is_a?(Operations::Asset)).to be_truthy
-        expect(subject.second.is_a?(Operations::Liability)).to be_truthy
+        expect(subject.first).to be_a(Operations::Asset)
+        expect(subject.second).to be_a(Operations::Liability)
         expect(subject.first.credit).to eq(1)
         expect(subject.second.credit).to eq(1)
       end
@@ -102,17 +102,17 @@ describe Adjustment do
     end
 
     context 'asset and revenue' do
-      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-302", amount: 1) }
+      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-302', amount: 1) }
 
       it do
-        expect(subject.first.is_a?(Operations::Asset)).to be_truthy
-        expect(subject.second.is_a?(Operations::Revenue)).to be_truthy
+        expect(subject.first).to be_a(Operations::Asset)
+        expect(subject.second).to be_a(Operations::Revenue)
         expect(subject.first.credit).to eq(1)
         expect(subject.second.credit).to eq(1)
       end
 
       context 'negative amount' do
-        let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-302", amount: -1) }
+        let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-302', amount: -1) }
 
         it do
           expect(subject.first.debit).to eq(1)
@@ -122,17 +122,17 @@ describe Adjustment do
     end
 
     context 'asset and expense' do
-      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-402", amount: 1) }
+      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-402', amount: 1) }
 
       it do
-        expect(subject.first.is_a?(Operations::Asset)).to be_truthy
-        expect(subject.second.is_a?(Operations::Expense)).to be_truthy
+        expect(subject.first).to be_a(Operations::Asset)
+        expect(subject.second).to be_a(Operations::Expense)
         expect(subject.first.credit).to eq(1)
         expect(subject.second.debit).to eq(1)
       end
 
       context 'negative amount' do
-        let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-402", amount: -1) }
+        let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-402', amount: -1) }
 
         it do
           expect(subject.first.debit).to eq(1)
@@ -145,7 +145,7 @@ describe Adjustment do
   context 'on accept' do
     it { expect { subject.accept!(validator: member) }.to change { Operations::Asset.count }.by(1) }
     it { expect { subject.accept!(validator: member) }.to change { Operations::Liability.count }.by(1) }
-    it { expect { subject.accept!(validator: member) }.to change { subject.state }.to('accepted') }
+    it { expect { subject.accept!(validator: member) }.to change(subject, :state).to('accepted') }
 
     it 'operaions have correct reference' do
       subject.accept!(validator: member)
@@ -155,9 +155,9 @@ describe Adjustment do
     end
 
     it 'updates legacy balances (credit for main account)' do
-      expect {
+      expect do
         subject.accept!(validator: member)
-      }.to change { member.get_account(subject.currency).balance }.by(subject.amount)
+      end.to change { member.get_account(subject.currency).balance }.by(subject.amount)
     end
 
     context 'updates legacy balances (debit for locked account)' do
@@ -168,45 +168,45 @@ describe Adjustment do
       end
 
       it 'updates legacy balances (credit for main account)' do
-        expect {
+        expect do
           subject.accept!(validator: member)
-        }.to change { member.accounts.find_by(currency: subject.currency).locked }.by(subject.amount)
+        end.to change { member.accounts.find_by(currency: subject.currency).locked }.by(subject.amount)
       end
     end
 
     it 'does not accept with invalid attributes' do
       subject.update(asset_account_code: 101)
 
-      expect {
+      expect do
         subject.accept!(validator: member)
-      }.to_not change { subject.state }
+      end.not_to change(subject, :state)
     end
 
     it 'does not accept without validator' do
       subject.update(asset_account_code: 101)
 
-      expect {
+      expect do
         subject.accept!(validator: nil)
-      }.to_not change { subject.state }
+      end.not_to change(subject, :state)
     end
 
     it 'does not create operations with invalid attributes' do
       subject.update(asset_account_code: 101)
-      expect {
+      expect do
         subject.accept!(validator: member)
-      }.not_to change { Operations::Asset.count }
+      end.not_to change { Operations::Asset.count }
 
-      expect {
+      expect do
         subject.accept!(validator: member)
-      }.not_to change { Operations::Liability.count }
+      end.not_to change { Operations::Liability.count }
     end
 
     context 'accepted' do
       before { subject.accept!(validator: member) }
 
-      it { expect { subject.accept!(validator: member) }.not_to change { subject.state } }
-      it { expect { subject.accept!(validator: member) }.not_to change { member.accounts } }
-      it { expect { subject.reject!(validator: member) }.not_to change { subject.state } }
+      it { expect { subject.accept!(validator: member) }.not_to change(subject, :state) }
+      it { expect { subject.accept!(validator: member) }.not_to change(member, :accounts) }
+      it { expect { subject.reject!(validator: member) }.not_to change(subject, :state) }
     end
 
     context 'accept without validator_id (presence validation)' do
@@ -227,20 +227,20 @@ describe Adjustment do
       end
 
       it do
-        expect(member.accounts.find_by(currency_id: 'btc').present?).to be_truthy
+        expect(member.accounts.find_by(currency_id: 'btc')).to be_present
       end
     end
   end
 
   context 'on reject' do
-    it { expect { subject.reject!(validator: member) }.to change { subject.state }.to('rejected') }
+    it { expect { subject.reject!(validator: member) }.to change(subject, :state).to('rejected') }
 
     it 'does not reject without validator' do
       subject.update(asset_account_code: 101)
 
-      expect {
+      expect do
         subject.reject!(validator: nil)
-      }.to_not change { subject.state }
+      end.not_to change(subject, :state)
     end
 
     context 'rejected' do
@@ -248,9 +248,9 @@ describe Adjustment do
         subject.reject!(validator: member)
       end
 
-      it { expect { subject.accept!(validator: member) }.not_to change { subject.state } }
-      it { expect { subject.accept!(validator: member) }.not_to change { member.accounts } }
-      it { expect { subject.reject!(validator: member) }.not_to change { subject.state } }
+      it { expect { subject.accept!(validator: member) }.not_to change(subject, :state) }
+      it { expect { subject.accept!(validator: member) }.not_to change(member, :accounts) }
+      it { expect { subject.reject!(validator: member) }.not_to change(subject, :state) }
     end
   end
 end

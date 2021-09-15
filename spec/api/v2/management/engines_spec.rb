@@ -5,14 +5,14 @@ describe API::V2::Management::Engines, type: :request do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
       scopes: {
-        read_engines:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] },
+        read_engines: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] },
         write_engines: { permitted_signers: %i[alex jeff james], mandatory_signers: %i[alex jeff] }
       }
   end
 
   describe 'POST /engines/get' do
     def request
-      post_json "/api/v2/management/engines/get", multisig_jwt_management_api_v1({ data: data }, *signers)
+      post_json '/api/v2/management/engines/get', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
     let(:signers) { %i[alex jeff] }
@@ -96,7 +96,7 @@ describe API::V2::Management::Engines, type: :request do
 
   describe 'POST /engines/new' do
     def request
-      post_json "/api/v2/management/engines/new", multisig_jwt_management_api_v1({ data: data }, *signers)
+      post_json '/api/v2/management/engines/new', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
     let(:signers) { %i[alex jeff] }
@@ -131,7 +131,7 @@ describe API::V2::Management::Engines, type: :request do
         expect(result['url']).to eq 'your_url'
 
         request
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         result = JSON.parse(response.body)
         expect(result['error']).to include('management.engine.duplicate_name')
       end
@@ -139,10 +139,11 @@ describe API::V2::Management::Engines, type: :request do
 
     context do
       let(:engines_params) { {} }
+
       it 'checked required params' do
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         result = JSON.parse(response.body)
         expect(result['error']).to include('name is missing, driver is missing')
       end
@@ -151,7 +152,7 @@ describe API::V2::Management::Engines, type: :request do
 
   describe 'POST /engines/update' do
     def request
-      post_json "/api/v2/management/engines/update", multisig_jwt_management_api_v1({ data: data }, *signers)
+      post_json '/api/v2/management/engines/update', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
     let(:signers) { %i[alex jeff] }
@@ -201,10 +202,11 @@ describe API::V2::Management::Engines, type: :request do
 
     context do
       let(:engines_params) { {} }
+
       it 'checkes required params' do
         request
 
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         result = JSON.parse(response.body)
         expect(result['error']).to include('id is missing')
       end

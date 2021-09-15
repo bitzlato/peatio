@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CompactLiabilities < ActiveRecord::Migration[5.2]
   def up_mysql
     execute 'DROP procedure IF EXISTS `compact_orders`;'
@@ -91,7 +93,6 @@ class CompactLiabilities < ActiveRecord::Migration[5.2]
     else
       raise "Unsupported adapter: #{ActiveRecord::Base.connection.adapter_name}"
     end
-
   end
 
   def down

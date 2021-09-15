@@ -1,18 +1,19 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe WithdrawLimit, 'Validations' do
-  before(:each) { WithdrawLimit.delete_all }
+  before { described_class.delete_all }
 
   context 'group presence' do
     context 'nil group' do
       subject { build(:withdraw_limit, group: nil) }
-      it { expect(subject.valid?).to be_falsey }
+
+      it { expect(subject).not_to be_valid }
     end
 
     context 'empty string group' do
       subject { build(:withdraw_limit, group: '') }
-      it { expect(subject.valid?).to be_falsey }
+
+      it { expect(subject).not_to be_valid }
     end
   end
 
@@ -22,18 +23,22 @@ describe WithdrawLimit, 'Validations' do
 
       context 'same group' do
         subject { build(:withdraw_limit, kyc_level: 1, group: 'vip-1') }
-        it { expect(subject.valid?).to be_falsey }
+
+        it { expect(subject).not_to be_valid }
       end
 
       context 'different group' do
         subject { build(:withdraw_limit, kyc_level: 1, group: 'vip-2') }
-        it { expect(subject.valid?).to be_truthy }
+
+        it { expect(subject).to be_valid }
       end
 
       context ':any group' do
-        before { create(:withdraw_limit, kyc_level: 1, group: :any) }
         subject { build(:withdraw_limit, kyc_level: 1, group: :any) }
-        it { expect(subject.valid?).to be_falsey }
+
+        before { create(:withdraw_limit, kyc_level: 1, group: :any) }
+
+        it { expect(subject).not_to be_valid }
       end
     end
   end
@@ -41,36 +46,38 @@ describe WithdrawLimit, 'Validations' do
   context 'limit_24_hour, limit_1_month numericality' do
     context 'non decimal limit_24_hour/limit_1_month' do
       subject { build(:withdraw_limit, limit_24_hour: '1', limit_1_month: '1') }
+
       it do
-        expect(subject.valid?).to be_truthy
+        expect(subject).to be_valid
       end
     end
 
     context 'valid withdraw_limit' do
       subject { build(:withdraw_limit, limit_24_hour: 0.1, limit_1_month: 0.2) }
-      it { expect(subject.valid?).to be_truthy }
+
+      it { expect(subject).to be_valid }
     end
   end
 end
 
 describe WithdrawLimit, 'Class Methods' do
-  before(:each) { WithdrawLimit.delete_all }
+  before { described_class.delete_all }
 
-  context '#for' do
+  describe '#for' do
     let!(:member) { create(:member) }
 
-
     context 'get withdraw_limit with kyc_level and group' do
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+
       let!(:member) { create(:member, level: 1) }
+      let(:withdraw) { Withdraw.new(member: member) }
+
       before do
         create(:withdraw_limit, kyc_level: 1, group: 'vip-0')
         create(:withdraw_limit, group: 'vip-0')
         create(:withdraw_limit, kyc_level: 2, group: :any)
         create(:withdraw_limit, kyc_level: 3, group: :any)
       end
-
-      let(:withdraw) { Withdraw.new(member: member) }
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       it do
         expect(subject).to be_truthy
@@ -80,6 +87,8 @@ describe WithdrawLimit, 'Class Methods' do
     end
 
     context 'get withdraw_limit with group' do
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+
       before do
         create(:withdraw_limit, group: 'vip-0')
         create(:withdraw_limit, group: 'vip-1')
@@ -87,7 +96,6 @@ describe WithdrawLimit, 'Class Methods' do
       end
 
       let(:withdraw) { Withdraw.new(member: member) }
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       it do
         expect(subject).to be_truthy
@@ -96,12 +104,13 @@ describe WithdrawLimit, 'Class Methods' do
     end
 
     context 'get withdraw_limit with kyc_level' do
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+
       before do
         create(:withdraw_limit, kyc_level: 1)
       end
 
       let(:withdraw) { Withdraw.new(member: member) }
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       it do
         expect(subject).to be_truthy
@@ -110,13 +119,14 @@ describe WithdrawLimit, 'Class Methods' do
     end
 
     context 'get default withdraw_limit' do
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+
       before do
         create(:withdraw_limit, group: 'vip-1')
         create(:withdraw_limit, group: :any)
       end
 
       let(:withdraw) { Withdraw.new(member: member) }
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       it do
         expect(subject).to be_truthy
@@ -125,8 +135,9 @@ describe WithdrawLimit, 'Class Methods' do
     end
 
     context 'get default withdraw_limit (doesnt create it)' do
+      subject { described_class.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
+
       let(:withdraw) { Withdraw.new(member: member) }
-      subject { WithdrawLimit.for(kyc_level: withdraw.member.level, group: withdraw.member.group) }
 
       it do
         expect(subject).to be_truthy

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DropOperationsConstraints < ActiveRecord::Migration[4.2]
   def change
     %i[liabilities assets revenues expenses].each do |op|
@@ -6,4 +8,3 @@ class DropOperationsConstraints < ActiveRecord::Migration[4.2]
     end
   end
 end
-

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Market::Orders, type: :request do
@@ -8,7 +7,7 @@ describe API::V2::Market::Orders, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Order'],'create'=>['Order'],'update'=>['Order']}})
+    Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['Order'], 'create' => ['Order'], 'update' => ['Order'] } })
   end
 
   describe 'GET /api/v2/market/orders' do
@@ -29,13 +28,13 @@ describe API::V2::Market::Orders, type: :request do
 
     it 'validates market param' do
       api_get '/api/v2/market/orders', params: { market: 'usdusd' }, token: token
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('market.market.doesnt_exist')
     end
 
     it 'validates market param based on type' do
       api_get '/api/v2/market/orders', params: { market: 'btc_usd' }, token: token
-      expect(response).to have_http_status 200
+      expect(response).to have_http_status :ok
     end
 
     it 'validates market_type param' do
@@ -101,7 +100,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'returns orders for several markets' do
-      api_get '/api/v2/market/orders', params: { market: ['btc_usd', 'btc_eth'] }, token: token
+      api_get '/api/v2/market/orders', params: { market: %w[btc_usd btc_eth] }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -165,8 +164,8 @@ describe API::V2::Market::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['ord_type']}.uniq.size).to eq 1
-      expect(result.map{|r| r['ord_type']}.uniq.first).to eq 'limit'
+      expect(result.map { |r| r['ord_type'] }.uniq.size).to eq 1
+      expect(result.map { |r| r['ord_type'] }.uniq.first).to eq 'limit'
     end
 
     it 'returns orders with type sell' do
@@ -174,8 +173,8 @@ describe API::V2::Market::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['side']}.uniq.size).to eq 1
-      expect(result.map{|r| r['side']}.uniq.first).to eq 'sell'
+      expect(result.map { |r| r['side'] }.uniq.size).to eq 1
+      expect(result.map { |r| r['side'] }.uniq.first).to eq 'sell'
     end
 
     it 'returns orders with base unit btc' do
@@ -220,7 +219,7 @@ describe API::V2::Market::Orders, type: :request do
 
       it 'renders unauthorized error' do
         api_get '/api/v2/market/orders', params: { time_from: 3.hours.ago.to_i }, token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -238,7 +237,7 @@ describe API::V2::Market::Orders, type: :request do
     let!(:trade) { create(:trade, :btc_usd, taker_order: order) }
     let!(:qe_trade) { create(:trade, :btc_eth_qe, taker_order: qe_order) }
 
-    it 'should get specified spot order by id' do
+    it 'gets specified spot order by id' do
       api_get "/api/v2/market/orders/#{order.id}", token: token
       expect(response).to be_successful
 
@@ -247,7 +246,7 @@ describe API::V2::Market::Orders, type: :request do
       expect(result['executed_volume']).to eq '8.99'
     end
 
-    it 'should get specified qe order by id' do
+    it 'gets specified qe order by id' do
       api_get "/api/v2/market/orders/#{qe_order.id}", token: token
       expect(response).to be_successful
 
@@ -256,7 +255,7 @@ describe API::V2::Market::Orders, type: :request do
       expect(result['executed_volume']).to eq '8.99'
     end
 
-    it 'should get specified order by uuid' do
+    it 'gets specified order by uuid' do
       api_get "/api/v2/market/orders/#{order.uuid}", token: token
       expect(response).to be_successful
 
@@ -265,7 +264,7 @@ describe API::V2::Market::Orders, type: :request do
       expect(result['executed_volume']).to eq '8.99'
     end
 
-    it 'should include related spot trades' do
+    it 'includes related spot trades' do
       api_get "/api/v2/market/orders/#{order.id}", token: token
 
       result = JSON.parse(response.body)
@@ -275,7 +274,7 @@ describe API::V2::Market::Orders, type: :request do
       expect(result['trades'].first['side']).to eq 'buy'
     end
 
-    it 'should include related qe trades' do
+    it 'includes related qe trades' do
       api_get "/api/v2/market/orders/#{qe_order.id}", token: token
 
       result = JSON.parse(response.body)
@@ -292,18 +291,18 @@ describe API::V2::Market::Orders, type: :request do
 
       it 'renders unauthorized error' do
         api_get "/api/v2/market/orders/#{order.id}", token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
 
-    it 'should get 404 error when order doesn\'t exist' do
-        api_get '/api/v2/market/orders/1234', token: token
-        expect(response.code).to eq '404'
-        expect(response).to include_api_error('record.not_found')
+    it 'gets 404 error when order doesn\'t exist' do
+      api_get '/api/v2/market/orders/1234', token: token
+      expect(response.code).to eq '404'
+      expect(response).to include_api_error('record.not_found')
     end
 
-    it 'should raise error' do
+    it 'raises error' do
       api_get '/api/v2/market/orders/1234asd', token: token
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invaild_id_or_uuid')
@@ -312,7 +311,7 @@ describe API::V2::Market::Orders, type: :request do
 
   describe 'POST /api/v2/market/orders' do
     it 'creates a sell order on peatio engine' do
-      member.get_account(:btc).update_attributes(balance: 100)
+      member.get_account(:btc).update(balance: 100)
 
       expect do
         api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: '2014' }
@@ -323,8 +322,8 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'submit a sell order on third party engine' do
-      member.get_account(:btc).update_attributes(balance: 100)
-      Market.find_spot_by_symbol('btc_usd').engine.update(driver: "finex-spot")
+      member.get_account(:btc).update(balance: 100)
+      Market.find_spot_by_symbol('btc_usd').engine.update(driver: 'finex-spot')
       AMQP::Queue.expects(:publish)
 
       api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: '2014' }
@@ -333,7 +332,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'creates a buy order' do
-      member.get_account(:usd).update_attributes(balance: 100_000)
+      member.get_account(:usd).update(balance: 100_000)
       AMQP::Queue.expects(:enqueue).with(:order_processor, is_a(Hash), is_a(Hash))
 
       expect do
@@ -350,15 +349,15 @@ describe API::V2::Market::Orders, type: :request do
 
       it 'renders unauthorized error' do
         api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '12.13', price: '2014' }
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
 
     it 'validates missing params' do
-      member.get_account(:usd).update_attributes(balance: 100_000)
+      member.get_account(:usd).update(balance: 100_000)
       api_post '/api/v2/market/orders', token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('market.order.missing_market')
       expect(response).to include_api_error('market.order.missing_side')
       expect(response).to include_api_error('market.order.missing_volume')
@@ -380,7 +379,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'validates volume greater than min_amount' do
-      member.get_account(:btc).update_attributes(balance: 1)
+      member.get_account(:btc).update(balance: 1)
       m = Market.find_spot_by_symbol(:btc_usd)
       m.update(min_amount: 1.0)
       api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '0.1', price: '2014' }
@@ -389,7 +388,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'validates price less than max_price' do
-      member.get_account(:usd).update_attributes(balance: 1)
+      member.get_account(:usd).update(balance: 1)
       m = Market.find_spot_by_symbol(:btc_usd)
       m.update(max_price: 1.0)
       api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.1', price: '2' }
@@ -398,14 +397,14 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'validates volume precision' do
-      member.get_account(:usd).update_attributes(balance: 1)
+      member.get_account(:usd).update(balance: 1)
       api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.123456789', price: '0.1' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invalid_volume_or_price')
     end
 
     it 'validates price greater than min_price' do
-      member.get_account(:usd).update_attributes(balance: 1)
+      member.get_account(:usd).update(balance: 1)
       m = Market.find_spot_by_symbol(:btc_usd)
       m.update(min_price: 1.0)
       api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.1', price: '0.2' }
@@ -414,7 +413,7 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     it 'validates price precision' do
-      member.get_account(:usd).update_attributes(balance: 1)
+      member.get_account(:usd).update(balance: 1)
       api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.12', price: '0.123' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.order.invalid_volume_or_price')
@@ -422,7 +421,7 @@ describe API::V2::Market::Orders, type: :request do
 
     it 'validates enough funds' do
       OrderAsk.expects(:create!).raises(::Account::AccountError)
-      member.get_account(:btc).update_attributes(balance: 1)
+      member.get_account(:btc).update(balance: 1)
       api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: '2014' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.account.insufficient_balance')
@@ -442,7 +441,7 @@ describe API::V2::Market::Orders, type: :request do
 
     context 'market order' do
       it 'validates that market has sufficient volume' do
-        member.get_account(:btc).update_attributes(balance: 20)
+        member.get_account(:btc).update(balance: 20)
         api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', ord_type: 'market' }
         expect(response.code).to eq '422'
         expect(response).to include_api_error('market.order.insufficient_market_liquidity')
@@ -457,7 +456,7 @@ describe API::V2::Market::Orders, type: :request do
       it 'creates sell order' do
         create(:order_bid, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
 
-        member.get_account(:btc).update_attributes(balance: 1)
+        member.get_account(:btc).update(balance: 1)
 
         expect do
           api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '0.5', ord_type: 'market' }
@@ -471,9 +470,9 @@ describe API::V2::Market::Orders, type: :request do
         it do
           create(:order_bid, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
 
-          member.get_account(:btc).update_attributes(balance: 1)
+          member.get_account(:btc).update(balance: 1)
 
-          Market.find_spot_by_symbol('btc_usd').engine.update(driver: "finex-spot")
+          Market.find_spot_by_symbol('btc_usd').engine.update(driver: 'finex-spot')
 
           AMQP::Queue.expects(:publish)
 
@@ -486,7 +485,7 @@ describe API::V2::Market::Orders, type: :request do
       it 'creates buy order' do
         create(:order_ask, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
 
-        member.get_account(:usd).update_attributes(balance: 10)
+        member.get_account(:usd).update(balance: 10)
 
         api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.5', ord_type: 'market' }
 
@@ -498,10 +497,10 @@ describe API::V2::Market::Orders, type: :request do
         expect(JSON.parse(response.body)['id']).to eq OrderBid.last.id
       end
 
-      context '#compute_locked' do
+      describe '#compute_locked' do
         before do
           create(:order_ask, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
-          member.get_account(:usd).update_attributes(balance: 10)
+          member.get_account(:usd).update(balance: 10)
         end
 
         it 'locks all balance' do
@@ -525,10 +524,10 @@ describe API::V2::Market::Orders, type: :request do
 
     context 'succesful' do
       before do
-        member.get_account(:usd).update_attributes(locked: order.price * order.volume)
+        member.get_account(:usd).update(locked: order.price * order.volume)
       end
 
-      it 'should cancel specified order by id' do
+      it 'cancels specified order by id' do
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes)
 
         expect do
@@ -538,7 +537,7 @@ describe API::V2::Market::Orders, type: :request do
         end.not_to change(Order, :count)
       end
 
-      it 'should cancel specified order by uuid' do
+      it 'cancels specified order by uuid' do
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes)
 
         expect do
@@ -551,10 +550,10 @@ describe API::V2::Market::Orders, type: :request do
 
     context 'third party order' do
       before do
-        order.market.engine.update(driver: "finex-spot")
+        order.market.engine.update(driver: 'finex-spot')
       end
 
-      it 'should cancel specified order by uuid' do
+      it 'cancels specified order by uuid' do
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes).never
         AMQP::Queue.expects(:publish).with(order.market.engine.driver, data: order.as_json_for_third_party, type: 3)
 
@@ -567,14 +566,13 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     context 'failed' do
-      it 'should return order not found error' do
+      it 'returns order not found error' do
         api_post '/api/v2/market/orders/0/cancel', token: token
         expect(response.code).to eq '404'
         expect(response).to include_api_error('record.not_found')
       end
 
-
-      it 'should not cancel specified qe order by id' do
+      it 'does not cancel specified qe order by id' do
         api_post "/api/v2/market/orders/#{qe_order.id}/cancel", token: token
         expect(response.code).to eq '404'
         expect(response).to include_api_error('record.not_found')
@@ -587,7 +585,7 @@ describe API::V2::Market::Orders, type: :request do
 
         it 'renders unauthorized error' do
           api_post "/api/v2/market/orders/#{order.uuid}/cancel", token: token
-          expect(response).to have_http_status 403
+          expect(response).to have_http_status :forbidden
           expect(response).to include_api_error('user.ability.not_permitted')
         end
       end
@@ -600,14 +598,13 @@ describe API::V2::Market::Orders, type: :request do
       create(:order_bid, :btc_usd, price: '12.32', volume: '3.14', origin_volume: '12.13', member: member)
       create(:order_bid, :btc_eth, price: '12.32', volume: '3.14', origin_volume: '12.13', member: member)
 
-      member.get_account(:btc).update_attributes(locked: '5')
-      member.get_account(:usd).update_attributes(locked: '50')
+      member.get_account(:btc).update(locked: '5')
+      member.get_account(:usd).update(locked: '50')
     end
 
-    it 'should cancel all my orders' do
+    it 'cancels all my orders' do
       member.orders.each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
-
       end
 
       expect do
@@ -620,13 +617,12 @@ describe API::V2::Market::Orders, type: :request do
     end
 
     context 'third party order' do
-
       before do
-        Market.find_spot_by_symbol('btc_usd').engine.update(driver: "finex-spot")
-        Market.find_spot_by_symbol('btc_eth').engine.update(driver: "finex-spot")
+        Market.find_spot_by_symbol('btc_usd').engine.update(driver: 'finex-spot')
+        Market.find_spot_by_symbol('btc_eth').engine.update(driver: 'finex-spot')
       end
 
-      it 'should cancel all my orders on market with third party engine' do
+      it 'cancels all my orders on market with third party engine' do
         AMQP::Queue.expects(:enqueue).never
 
         member.orders.each do |o|
@@ -643,7 +639,7 @@ describe API::V2::Market::Orders, type: :request do
       end
     end
 
-    it 'should cancel all my orders for specific market' do
+    it 'cancels all my orders for specific market' do
       member.orders.where(market: 'btc_eth').each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
       end
@@ -657,7 +653,7 @@ describe API::V2::Market::Orders, type: :request do
       end.not_to change(Order, :count)
     end
 
-    it 'should cancel all my asks' do
+    it 'cancels all my asks' do
       member.orders.where(type: 'OrderAsk').each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
       end
@@ -679,7 +675,7 @@ describe API::V2::Market::Orders, type: :request do
 
       it 'renders unauthorized error' do
         api_post '/api/v2/market/orders/cancel', token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end

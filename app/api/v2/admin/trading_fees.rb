@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -8,8 +7,8 @@ module API
         helpers ::API::V2::Admin::Helpers
 
         desc 'Returns trading_fees table as paginated collection',
-          is_array: true,
-          success: API::V2::Entities::TradingFee
+             is_array: true,
+             success: API::V2::Entities::TradingFee
         params do
           optional :group,
                    type: String,
@@ -31,8 +30,8 @@ module API
           admin_authorize! :read, ::TradingFee
 
           ransack_params = Helpers::RansackBuilder.new(params)
-                             .eq(:group, :market_id, :market_type)
-                             .build
+                                                  .eq(:group, :market_id, :market_type)
+                                                  .build
 
           search = TradingFee.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
@@ -41,15 +40,15 @@ module API
         end
 
         desc 'It creates trading fees record',
-          success: API::V2::Entities::TradingFee
+             success: API::V2::Entities::TradingFee
         params do
           requires :maker,
                    type: { value: BigDecimal, message: 'admin.trading_fee.non_decimal_maker' },
-                   values: { value: -> (p){ p && p >= 0 }, message: 'admin.trading_fee.invalid_maker' },
+                   values: { value: ->(p) { p && p >= 0 }, message: 'admin.trading_fee.invalid_maker' },
                    desc: -> { API::V2::Entities::TradingFee.documentation[:maker][:desc] }
           requires :taker,
                    type: { value: BigDecimal, message: 'admin.trading_fee.non_decimal_taker' },
-                   values: { value: -> (p){ p && p >= 0 }, message: 'admin.trading_fee.invalid_taker' },
+                   values: { value: ->(p) { p && p >= 0 }, message: 'admin.trading_fee.invalid_taker' },
                    desc: -> { API::V2::Entities::TradingFee.documentation[:taker][:desc] }
           optional :group,
                    type: String,
@@ -80,18 +79,18 @@ module API
         end
 
         desc 'It updates trading fees record',
-          success: API::V2::Entities::TradingFee
+             success: API::V2::Entities::TradingFee
         params do
           requires :id,
                    type: { value: Integer, message: 'admin.trading_fee.non_integer_id' },
                    desc: -> { API::V2::Entities::TradingFee.documentation[:id][:desc] }
           optional :maker,
                    type: { value: BigDecimal, message: 'admin.trading_fee.non_decimal_maker' },
-                   values: { value: -> (p){ p && p >= 0 }, message: 'admin.trading_fee.invalid_maker' },
+                   values: { value: ->(p) { p && p >= 0 }, message: 'admin.trading_fee.invalid_maker' },
                    desc: -> { API::V2::Entities::TradingFee.documentation[:maker][:desc] }
           optional :taker,
                    type: { value: BigDecimal, message: 'admin.trading_fee.non_decimal_taker' },
-                   values: { value: -> (p){ p && p >= 0 }, message: 'admin.trading_fee.invalid_taker' },
+                   values: { value: ->(p) { p && p >= 0 }, message: 'admin.trading_fee.invalid_taker' },
                    desc: -> { API::V2::Entities::TradingFee.documentation[:taker][:desc] }
           optional :group,
                    type: String,
@@ -120,7 +119,7 @@ module API
         end
 
         desc 'It deletes trading fees record',
-          success: API::V2::Entities::TradingFee
+             success: API::V2::Entities::TradingFee
         params do
           requires :id,
                    type: { value: Integer, message: 'admin.trading_fee.non_integer_id' },

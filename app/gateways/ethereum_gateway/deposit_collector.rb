@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   class DepositCollector < AbstractCommand
     def call(deposit)
@@ -18,20 +20,19 @@ class EthereumGateway
           spread_transaction = Peatio::Transaction.new spread
 
           # In #spread_deposit valid transactions saved with pending state
-          if spread_transaction.status.pending?
-            transaction = client.create_transaction!(transaction, subtract_fee: true)
+          next unless spread_transaction.status.pending?
 
-            # TODO update spread_transaction state to failed
-            return if transaction.nil?
+          transaction = client.create_transaction!(transaction, subtract_fee: true)
 
-            # TODO update spread_transaction state to created
-            Transaction.create!(
-              transaction.merge(reference: deposit, txid: transaction.delete('hash'))
-            )
-          end
+          # TODO: update spread_transaction state to failed
+          return if transaction.nil?
+
+          # TODO: update spread_transaction state to created
+          Transaction.create!(
+            transaction.merge(reference: deposit, txid: transaction.delete('hash'))
+          )
         end
       end
     end
   end
 end
-

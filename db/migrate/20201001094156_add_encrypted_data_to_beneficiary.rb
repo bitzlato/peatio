@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddEncryptedDataToBeneficiary < ActiveRecord::Migration[5.2]
   def up
     data = Beneficiary.pluck(:id, :data)

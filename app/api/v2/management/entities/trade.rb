@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -51,7 +50,7 @@ module API
             :market_type,
             documentation: {
               type: String,
-              desc: "Market type."
+              desc: 'Market type.'
             }
           )
 
@@ -112,7 +111,7 @@ module API
 
           expose(
             :side,
-            if: ->(trade, options) { options[:side] || options[:current_user] },
+            if: ->(_trade, options) { options[:side] || options[:current_user] },
             documentation: {
               type: String,
               desc: 'Trade side.'

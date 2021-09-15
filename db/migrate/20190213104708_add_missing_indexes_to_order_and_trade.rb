@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddMissingIndexesToOrderAndTrade < ActiveRecord::Migration[4.2]
   def change
     # index_trade_on_created_at is used in Trade #h24

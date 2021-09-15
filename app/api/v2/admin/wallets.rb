@@ -1,28 +1,27 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Admin
+      # Collection of shared params, used to
+      # generate required/optional Grape params.
+      OPTIONAL_WALLET_PARAMS = {
+        max_balance: {
+          type: { value: BigDecimal, message: 'admin.blockchain.non_decimal_max_balance' },
+          values: { value: ->(p) { p >= 0 }, message: 'admin.wallet.invalid_max_balance' },
+          default: 0.0,
+          desc: -> { API::V2::Admin::Entities::Wallet.documentation[:max_balance][:desc] }
+        },
+        status: {
+          values: { value: Wallet::STATES, message: 'admin.wallet.invalid_status' },
+          default: 'active',
+          desc: -> { API::V2::Admin::Entities::Wallet.documentation[:status][:desc] }
+        }
+      }.freeze
+
       class Wallets < Grape::API
         helpers ::API::V2::Admin::Helpers
         helpers do
-          # Collection of shared params, used to
-          # generate required/optional Grape params.
-          OPTIONAL_WALLET_PARAMS ||= {
-            max_balance: {
-              type: { value: BigDecimal, message: 'admin.blockchain.non_decimal_max_balance' },
-              values: { value: -> (p){ p >= 0 }, message: 'admin.wallet.invalid_max_balance' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Wallet.documentation[:max_balance][:desc] }
-            },
-            status: {
-              values: { value: Wallet::STATES, message: 'admin.wallet.invalid_status' },
-              default: 'active',
-              desc: -> { API::V2::Admin::Entities::Wallet.documentation[:status][:desc] }
-            },
-          }
-
           params :create_wallet_params do
             OPTIONAL_WALLET_PARAMS.each do |key, params|
               optional key, params
@@ -37,8 +36,8 @@ module API
         end
 
         desc 'Get all wallets, result is paginated.',
-          is_array: true,
-          success: API::V2::Admin::Entities::Wallet
+             is_array: true,
+             success: API::V2::Admin::Entities::Wallet
         params do
           optional :blockchain_key,
                    values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.currency.blockchain_key_doesnt_exist' },
@@ -60,11 +59,11 @@ module API
           admin_authorize! :read, ::Wallet
 
           ransack_params = Helpers::RansackBuilder.new(params)
-            .eq(:blockchain_id)
-            .eq(:blockchain_key)
-            .translate_in(currencies: :currencies_id)
-            .merge(kind_eq: params[:kind].present? ? Wallet.kinds[params[:kind].to_sym] : nil)
-            .build
+                                                  .eq(:blockchain_id)
+                                                  .eq(:blockchain_key)
+                                                  .translate_in(currencies: :currencies_id)
+                                                  .merge(kind_eq: params[:kind].present? ? Wallet.kinds[params[:kind].to_sym] : nil)
+                                                  .build
 
           search = ::Wallet.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
@@ -97,9 +96,9 @@ module API
         params do
           use :create_wallet_params
           requires :blockchain_id,
-            type: Integer,
-            values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.wallet.blockchain_id_doesnt_exist' },
-            desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_id][:desc] }
+                   type: Integer,
+                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.wallet.blockchain_id_doesnt_exist' },
+                   desc: -> { API::V2::Admin::Entities::Wallet.documentation[:blockchain_id][:desc] }
           requires :name,
                    desc: -> { API::V2::Admin::Entities::Wallet.documentation[:name][:desc] }
           optional :address,
@@ -168,8 +167,8 @@ module API
                    as: :currency_ids,
                    desc: -> { API::V2::Admin::Entities::Wallet.documentation[:currencies][:desc] }
           optional :plain_settings, type: JSON,
-                   default: {},
-                   desc: -> { 'Wallet plain settings (external_wallet_id)' }
+                                    default: {},
+                                    desc: -> { 'Wallet plain settings (external_wallet_id)' }
           optional :settings, type: JSON,
                               desc: -> { 'Wallet settings' } do
             optional :uri,

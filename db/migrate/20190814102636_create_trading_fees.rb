@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 class CreateTradingFees < ActiveRecord::Migration[5.2]
   def change
     create_table :trading_fees do |t|
-
       t.string :market_id, limit: 20, default: 'any', null: false, index: true, foreign_key: true
       t.string :group, limit: 32, default: 'any', null: false, index: true
 

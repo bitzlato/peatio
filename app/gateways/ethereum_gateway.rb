@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Proxy to Ethereum.
 #
 # Converts amounts from money to ethereum base units.
@@ -48,11 +50,10 @@ class EthereumGateway < AbstractGateway
     logger.info("#{target_address} refueled with transaction #{transaction.as_json}")
 
     transaction
-    # TODO save GasRefuel record as reference
-
-  rescue EthereumGateway::GasRefueler::Error => err
-    report_exception err, true, target_address: target_address, blockchain_key: blockchain.key
-    logger.info("Canceled refueling address #{target_address} with #{err}")
+    # TODO: save GasRefuel record as reference
+  rescue EthereumGateway::GasRefueler::Error => e
+    report_exception e, true, target_address: target_address, blockchain_key: blockchain.key
+    logger.info("Canceled refueling address #{target_address} with #{e}")
   end
 
   def create_address!(secret = nil)
@@ -69,20 +70,21 @@ class EthereumGateway < AbstractGateway
                           subtract_fee: false, # nil means auto
                           nonce: nil,
                           gas_factor: nil,
-                          meta: {})
+                          meta: {}) # rubocop:disable Lint/UnusedMethodArgument
 
     raise 'amount must be a Money' unless amount.is_a? Money
+
     gas_factor = gas_factor || blockchain.client_options[:gas_factor].to_d || 1
     gas_factor = 1.01 if gas_factor.to_d < 1
     gas_price = (AbstractCommand.new(client).fetch_gas_price * gas_factor).to_i
     gas_limit ||= GasEstimator
-      .new(client)
-      .call(from_address: from_address,
-            to_address: to_address,
-            contract_addresses: [contract_address].compact,
-            account_native: contract_address.nil?,
-            gas_limits: gas_limits,
-            gas_price: gas_price)
+                  .new(client)
+                  .call(from_address: from_address,
+                        to_address: to_address,
+                        contract_addresses: [contract_address].compact,
+                        account_native: contract_address.nil?,
+                        gas_limits: gas_limits,
+                        gas_price: gas_price)
 
     monefy_transaction(
       TransactionCreator
@@ -95,8 +97,7 @@ class EthereumGateway < AbstractGateway
             gas_price: gas_price,
             contract_address: contract_address,
             subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee,
-            nonce: nonce
-           )
+            nonce: nonce)
     )
   end
 

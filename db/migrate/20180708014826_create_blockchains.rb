@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 class CreateBlockchains < ActiveRecord::Migration[4.2]
   def change
     create_table :blockchains do |t|
-      t.string  :key,                 null: false,                index: { unique: true }
+      t.string  :key, null: false, index: { unique: true }
       t.string  :name
-      t.string  :client,              null: false
+      t.string  :client, null: false
       t.string  :server
-      t.integer :height,              null: false
+      t.integer :height, null: false
       t.string  :explorer_address
       t.string  :explorer_transaction
       t.integer :min_confirmations,   null: false, default: 6
-      t.string  :status,              null: false,                index: true
+      t.string  :status,              null: false, index: true
 
       t.timestamps null: false
     end

@@ -1,18 +1,21 @@
+# frozen_string_literal: true
+
 describe API::V2::Management::Trades, type: :request do
   let(:member) do
     create(:member, :level_3).tap do |m|
-      m.get_account(:btc).update_attributes(balance: 12.13,   locked: 3.14)
-      m.get_account(:usd).update_attributes(balance: 2014.47, locked: 0)
+      m.get_account(:btc).update(balance: 12.13,   locked: 3.14)
+      m.get_account(:usd).update(balance: 2014.47, locked: 0)
     end
   end
+  let(:data) { {} }
+  let(:signers) { %i[alex jeff] }
 
   let(:second_member) do
     create(:member, :level_3).tap do |m|
-      m.get_account(:btc).update_attributes(balance: 12.13,   locked: 3.14)
-      m.get_account(:usd).update_attributes(balance: 2014.47, locked: 0)
+      m.get_account(:btc).update(balance: 12.13,   locked: 3.14)
+      m.get_account(:usd).update(balance: 2014.47, locked: 0)
     end
   end
-
 
   let(:btc_usd_ask) do
     create(
@@ -63,17 +66,14 @@ describe API::V2::Management::Trades, type: :request do
   before do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
-    scopes: {
-      read_trades:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] },
-    }
+      scopes: {
+        read_trades: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] }
+      }
   end
 
   def request
     post_json '/api/v2/management/trades', multisig_jwt_management_api_v1({ data: data }, *signers)
   end
-
-  let(:data) { {} }
-  let(:signers) { %i[alex jeff] }
 
   it 'returns all recent spot trades' do
     request

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class StatsMemberPnl < ApplicationRecord
@@ -12,9 +11,9 @@ class StatsMemberPnl < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :currency, required: true, foreign_key: :currency_id
-  belongs_to :currency, required: true, foreign_key: :pnl_currency_id
-  belongs_to :member, required: true
+  belongs_to :currency, optional: false
+  belongs_to :currency, optional: false, foreign_key: :pnl_currency_id
+  belongs_to :member, optional: false
 
   # == Validations ==========================================================
 

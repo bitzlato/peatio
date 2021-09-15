@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeHeightToBeBigintInBlockchains < ActiveRecord::Migration[5.2]
   def change
     reversible do |dir|

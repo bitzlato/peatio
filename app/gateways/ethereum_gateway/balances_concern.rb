@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   module BalancesConcern
     def load_balances(address)
@@ -20,7 +22,7 @@ class EthereumGateway
     def fetch_balance(address)
       address = address.address if address.is_a? PaymentAddress
       blockchain.native_currency.to_money_from_units(
-        AbstractCommand.new(client).load_basic_balance address
+        AbstractCommand.new(client).load_basic_balance(address)
       )
     end
   end

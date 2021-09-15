@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddGroupToMemberDropFeesFromMarket < ActiveRecord::Migration[5.2]
   def up
     add_column :members, :group, :string, limit: 32, default: 'vip-0', null: false, after: :role

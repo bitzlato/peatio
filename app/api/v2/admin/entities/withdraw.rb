@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -18,7 +17,7 @@ module API
           expose(
             :beneficiary,
             using: API::V2::Entities::Beneficiary,
-            if: ->(withdraw, options) do
+            if: lambda do |withdraw, options|
               options[:with_beneficiary] && withdraw.beneficiary.present?
             end
           )

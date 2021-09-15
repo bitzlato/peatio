@@ -1,26 +1,25 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Order, 'validations', type: :model do
   context 'validations' do
     subject do
-      Order.validators
-           .select { |v| v.is_a? ActiveRecord::Validations::PresenceValidator }
-           .map(&:attributes)
-           .flatten
+      described_class.validators
+                     .select { |v| v.is_a? ActiveRecord::Validations::PresenceValidator }
+                     .map(&:attributes)
+                     .flatten
     end
 
     it do
-      is_expected.to include :ord_type
-      is_expected.to include :volume
-      is_expected.to include :origin_volume
-      is_expected.to include :locked
-      is_expected.to include :origin_locked
+      expect(subject).to include :ord_type
+      expect(subject).to include :volume
+      expect(subject).to include :origin_volume
+      expect(subject).to include :locked
+      expect(subject).to include :origin_locked
     end
   end
 
   context 'limit order' do
-    it 'should make sure price is present' do
+    it 'makes sure price is present' do
       order = OrderAsk.new(market_id: 'btc_usd', price: nil, ord_type: 'limit')
       expect(order).not_to be_valid
       expect(order.errors[:price]).to include 'is not a number'
@@ -28,7 +27,7 @@ describe Order, 'validations', type: :model do
   end
 
   context 'market order' do
-    it 'should make sure price is not present' do
+    it 'makes sure price is not present' do
       order = OrderAsk.new(market_id: 'btc_usd', price: '0.0'.to_d, ord_type: 'market')
       expect(order).not_to be_valid
       expect(order.errors[:price]).to include 'must not be present'
@@ -38,7 +37,7 @@ describe Order, 'validations', type: :model do
   context 'attr_readonly' do
     let!(:order) { create(:order_bid, :btc_usd) }
 
-    it "does not allow updating readonly attributes" do
+    it 'does not allow updating readonly attributes' do
       expect { order.update_attribute(:member_id, 1) }.to \
         raise_error(ActiveRecord::ActiveRecordError, 'member_id is marked as readonly')
 
@@ -73,8 +72,8 @@ describe Order, '#submit' do
   let(:order_ask) { create(:order_ask, :with_deposit_liability, state: 'pending', price: '12.32'.to_d, volume: '123.12345678') }
 
   before do
-    Order.submit(order_bid.id)
-    Order.submit(order_ask.id)
+    described_class.submit(order_bid.id)
+    described_class.submit(order_ask.id)
   end
 
   it do
@@ -89,14 +88,14 @@ describe Order, '#submit' do
     end
 
     it 'insufficient balance' do
-      expect {
-        Order.submit(order.id)
-      }.to raise_error(Account::AccountError)
+      expect do
+        described_class.submit(order.id)
+      end.to raise_error(Account::AccountError)
       expect(order.reload.state).to eq('reject')
     end
 
     it 'rejected order' do
-      Order.submit(rejected_order.id)
+      described_class.submit(rejected_order.id)
       expect(rejected_order.reload.state).to eq('reject')
     end
   end
@@ -104,14 +103,14 @@ describe Order, '#submit' do
   if defined? Mysql2
     it 'mysql connection error' do
       ActiveRecord::Base.stubs(:transaction).raises(Mysql2::Error::ConnectionError.new(''))
-      expect { Order.submit(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
+      expect { described_class.submit(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
     end
   end
 
   if defined? PG
     it 'postgresql connection error' do
       ActiveRecord::Base.stubs(:transaction).raises(PG::Error.new(''))
-      expect { Order.cancel(order.id) }.to raise_error(PG::Error)
+      expect { described_class.cancel(order.id) }.to raise_error(PG::Error)
     end
   end
 end
@@ -122,14 +121,14 @@ describe Order, '#cancel' do
   if defined? Mysql2
     it 'mysql connection error' do
       ActiveRecord::Base.stubs(:transaction).raises(Mysql2::Error::ConnectionError.new(''))
-      expect { Order.cancel(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
+      expect { described_class.cancel(order.id) }.to raise_error(Mysql2::Error::ConnectionError)
     end
   end
 
   if defined? PG
     it 'postgresql connection error' do
       ActiveRecord::Base.stubs(:transaction).raises(PG::Error.new(''))
-      expect { Order.cancel(order.id) }.to raise_error(PG::Error)
+      expect { described_class.cancel(order.id) }.to raise_error(PG::Error)
     end
   end
 end
@@ -158,7 +157,7 @@ describe Order, 'market_type validations', type: :model do
   it 'validates market_type precense' do
     record = order_bid
     expect(record.save).to eq false
-    expect(record.errors[:market_type]).to include(/can\'t be blank/i)
+    expect(record.errors[:market_type]).to include(/can't be blank/i)
   end
 
   it 'validates market_type value' do
@@ -190,7 +189,7 @@ describe Order, '#done', type: :model do
     build(:trade, volume: volume, price: price, id: rand(10))
   end
 
-  shared_examples 'trade done' do
+  shared_context 'trade done' do
     before do
       hold_account.reload
       expect_account.reload
@@ -199,11 +198,11 @@ describe Order, '#done', type: :model do
 end
 
 describe Order, '#kind' do
-  it 'should be ask for ask order' do
+  it 'is ask for ask order' do
     expect(OrderAsk.new.kind).to eq 'ask'
   end
 
-  it 'should be bid for bid order' do
+  it 'is bid for bid order' do
     expect(OrderBid.new.kind).to eq 'bid'
   end
 end
@@ -213,7 +212,7 @@ describe Order, 'related accounts' do
   let(:bob)   { who_is_billionaire }
 
   context OrderAsk do
-    it 'should hold btc and expect usd' do
+    it 'holds btc and expect usd' do
       ask = create(:order_ask, :btc_usd, member: alice)
       expect(ask.hold_account).to eq alice.get_account(:btc)
       expect(ask.expect_account).to eq alice.get_account(:usd)
@@ -221,7 +220,7 @@ describe Order, 'related accounts' do
   end
 
   context OrderBid do
-    it 'should hold usd and expect btc' do
+    it 'holds usd and expect btc' do
       bid = create(:order_bid, :btc_usd, member: bob)
       expect(bid.hold_account).to eq bob.get_account(:usd)
       expect(bid.expect_account).to eq bob.get_account(:btc)
@@ -230,7 +229,7 @@ describe Order, 'related accounts' do
 end
 
 describe Order, '#avg_price' do
-  it 'should be zero if not filled yet' do
+  it 'is zero if not filled yet' do
     expect(
       OrderAsk.new(
         locked: '1.0',
@@ -252,7 +251,7 @@ describe Order, '#avg_price' do
     ).to eq '0'.to_d
   end
 
-  it 'should calculate average price of bid order' do
+  it 'calculates average price of bid order' do
     expect(
       OrderBid.new(
         market_id: 'btc_usd',
@@ -265,7 +264,7 @@ describe Order, '#avg_price' do
     ).to eq '5'.to_d
   end
 
-  it 'should calculate average price of ask order' do
+  it 'calculates average price of ask order' do
     expect(
       OrderAsk.new(
         market_id: 'btc_usd',
@@ -281,26 +280,26 @@ end
 
 describe Order, '#record_submit_operations!' do
   # Persist Order in database.
-  let!(:order){ create(:order_ask, :btc_usd, :with_deposit_liability) }
-
   subject { order }
 
+  let!(:order) { create(:order_ask, :btc_usd, :with_deposit_liability) }
+
   it 'creates two liability operations' do
-    expect{ subject.record_submit_operations! }.to change{ Operations::Liability.count }.by(2)
+    expect { subject.record_submit_operations! }.to change { Operations::Liability.count }.by(2)
   end
 
   it 'doesn\'t create asset operations' do
-    expect{ subject.record_submit_operations! }.to_not change{ Operations::Asset.count }
+    expect { subject.record_submit_operations! }.not_to change { Operations::Asset.count }
   end
 
   it 'debits main liabilities for member' do
-    expect{ subject.record_submit_operations! }.to change {
+    expect { subject.record_submit_operations! }.to change {
       subject.member.balance_for(currency: subject.currency, kind: :main)
     }.by(-subject.locked)
   end
 
   it 'credits locked liabilities for member' do
-    expect{ subject.record_submit_operations! }.to change {
+    expect { subject.record_submit_operations! }.to change {
       subject.member.balance_for(currency: subject.currency, kind: :locked)
     }.by(subject.locked)
   end
@@ -308,56 +307,55 @@ end
 
 describe Order, '#record_cancel_operations!' do
   # Persist Order in database.
-  let!(:order){ create(:order_ask, :with_deposit_liability) }
-
   subject { order }
+
+  let!(:order) { create(:order_ask, :with_deposit_liability) }
+
   before { subject.record_submit_operations! }
 
   it 'creates two liability operations' do
-    expect{ subject.record_cancel_operations! }.to change{ Operations::Liability.count }.by(2)
+    expect { subject.record_cancel_operations! }.to change { Operations::Liability.count }.by(2)
   end
 
   it 'doesn\'t create asset operations' do
-    expect{ subject.record_cancel_operations! }.to_not change{ Operations::Asset.count }
+    expect { subject.record_cancel_operations! }.not_to change { Operations::Asset.count }
   end
 
   it 'credits main liabilities for member' do
-    expect{ subject.record_cancel_operations! }.to change {
+    expect { subject.record_cancel_operations! }.to change {
       subject.member.balance_for(currency: subject.currency, kind: :main)
     }.by(subject.locked)
   end
 
   it 'debits locked liabilities for member' do
-    expect{ subject.record_cancel_operations! }.to change {
+    expect { subject.record_cancel_operations! }.to change {
       subject.member.balance_for(currency: subject.currency, kind: :locked)
     }.by(-subject.locked)
   end
 end
 
 describe Order, '#trigger_private_event' do
-
   context 'trigger pusher event for limit order' do
-    let!(:order){ create(:order_ask, :with_deposit_liability) }
-
     subject { order }
 
+    let!(:order) { create(:order_ask, :with_deposit_liability) }
     let(:data) do
       {
-        id:               subject.id,
-        market:           subject.market_id,
-        kind:             subject.kind,
-        side:             subject.side,
-        ord_type:         subject.ord_type,
-        price:            subject.price&.to_s('F'),
-        avg_price:        subject.avg_price&.to_s('F'),
-        state:            subject.state,
-        origin_volume:    subject.origin_volume.to_s('F'),
+        id: subject.id,
+        market: subject.market_id,
+        kind: subject.kind,
+        side: subject.side,
+        ord_type: subject.ord_type,
+        price: subject.price&.to_s('F'),
+        avg_price: subject.avg_price&.to_s('F'),
+        state: subject.state,
+        origin_volume: subject.origin_volume.to_s('F'),
         remaining_volume: subject.volume.to_s('F'),
-        executed_volume:  (subject.origin_volume - subject.volume).to_s('F'),
-        at:               subject.created_at.to_i,
-        created_at:       subject.created_at.to_i,
-        updated_at:       subject.updated_at.to_i,
-        trades_count:     subject.trades_count,
+        executed_volume: (subject.origin_volume - subject.volume).to_s('F'),
+        at: subject.created_at.to_i,
+        created_at: subject.created_at.to_i,
+        updated_at: subject.updated_at.to_i,
+        trades_count: subject.trades_count
       }
     end
 
@@ -367,27 +365,26 @@ describe Order, '#trigger_private_event' do
   end
 
   context 'trigger pusher event for market order' do
-    let!(:order) { create(:order_ask, :with_deposit_liability, ord_type: 'market', price: nil) }
-
     subject { order }
 
+    let!(:order) { create(:order_ask, :with_deposit_liability, ord_type: 'market', price: nil) }
     let(:data) do
       {
-        id:               subject.id,
-        market:           subject.market_id,
-        kind:             subject.kind,
-        side:             subject.side,
-        ord_type:         subject.ord_type,
-        price:            subject.price&.to_s('F'),
-        avg_price:        subject.avg_price&.to_s('F'),
-        state:            subject.state,
-        origin_volume:    subject.origin_volume.to_s('F'),
+        id: subject.id,
+        market: subject.market_id,
+        kind: subject.kind,
+        side: subject.side,
+        ord_type: subject.ord_type,
+        price: subject.price&.to_s('F'),
+        avg_price: subject.avg_price&.to_s('F'),
+        state: subject.state,
+        origin_volume: subject.origin_volume.to_s('F'),
         remaining_volume: subject.volume.to_s('F'),
-        executed_volume:  (subject.origin_volume - subject.volume).to_s('F'),
-        at:               subject.created_at.to_i,
-        created_at:       subject.created_at.to_i,
-        updated_at:       subject.updated_at.to_i,
-        trades_count:     subject.trades_count
+        executed_volume: (subject.origin_volume - subject.volume).to_s('F'),
+        at: subject.created_at.to_i,
+        created_at: subject.created_at.to_i,
+        updated_at: subject.updated_at.to_i,
+        trades_count: subject.trades_count
       }
     end
 

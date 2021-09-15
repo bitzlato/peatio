@@ -1,11 +1,9 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_relative 'constants'
 
 module Matching
   class LimitOrder < BaseOrder
-
     attr_reader :price
 
     def initialize(attrs)
@@ -16,9 +14,7 @@ module Matching
     end
 
     def trade_with(counter_order, _counter_book)
-      if counter_order.is_a?(MarketOrder)
-        raise MarketOrderbookError.new(order, 'market order in orderbook detected')
-      end
+      raise MarketOrderbookError.new(order, 'market order in orderbook detected') if counter_order.is_a?(MarketOrder)
 
       return unless crossed?(counter_order.price)
 
@@ -30,6 +26,7 @@ module Matching
 
     def fill(_trade_price, trade_volume, _trade_funds)
       raise NotEnoughVolume if trade_volume > @volume
+
       @volume -= trade_volume
     end
 
@@ -46,7 +43,7 @@ module Matching
     end
 
     def label
-      "%d/$%s/%s" % [id, price.to_s('F'), volume.to_s('F')]
+      format('%d/$%s/%s', id, price.to_s('F'), volume.to_s('F'))
     end
 
     def valid?(_attrs)
@@ -58,12 +55,12 @@ module Matching
     end
 
     def attributes
-      { id:        @id,
+      { id: @id,
         timestamp: @timestamp,
-        type:      @type,
-        volume:    @volume,
-        price:     @price,
-        market:    @market,
+        type: @type,
+        volume: @volume,
+        price: @price,
+        market: @market,
         ord_type: 'limit' }
     end
   end

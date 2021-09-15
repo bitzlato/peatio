@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -31,10 +30,8 @@ module API
           documentation: {
             desc: 'Payment address state.',
             type: String
-          }
-        ) do |pa|
-          pa.status
-        end
+          }, &:status
+        )
       end
     end
   end

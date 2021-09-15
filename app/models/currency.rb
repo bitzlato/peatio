@@ -1,14 +1,12 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class Currency < ApplicationRecord
-
   # == Constants ============================================================
 
-  # TODO remove erc20 contract_address
+  # TODO: remove erc20 contract_address
   OPTIONS_ATTRIBUTES = %i[erc20_contract_address gas_limit gas_price].freeze
   TOP_POSITION = 1
-  ID_SEPARATOR = '-'.freeze
+  ID_SEPARATOR = '-'
 
   # == Attributes ===========================================================
 
@@ -32,7 +30,7 @@ class Currency < ApplicationRecord
 
   OPTIONS_ATTRIBUTES.each do |attribute|
     define_method attribute do
-      self.options[attribute.to_s]
+      options[attribute.to_s]
     end
 
     define_method "#{attribute}=".to_sym do |value|
@@ -42,7 +40,7 @@ class Currency < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain, required: true
+  belongs_to :blockchain, optional: false
   has_and_belongs_to_many :wallets
 
   belongs_to :parent, class_name: 'Currency'
@@ -61,9 +59,7 @@ class Currency < ApplicationRecord
   end
 
   validate on: :create do
-    if ENV['MAX_CURRENCIES'].present? && Currency.count >= ENV['MAX_CURRENCIES'].to_i
-      errors.add(:max, 'Currency limit has been reached')
-    end
+    errors.add(:max, 'Currency limit has been reached') if ENV['MAX_CURRENCIES'].present? && Currency.count >= ENV['MAX_CURRENCIES'].to_i
   end
 
   validates :code, presence: true, uniqueness: { case_sensitive: false }
@@ -85,7 +81,7 @@ class Currency < ApplicationRecord
             :withdraw_limit_72h,
             numericality: { greater_than_or_equal_to: 0 }
 
-  # TODO improve tests
+  # TODO: improve tests
   validates :contract_address, presence: true, if: :parent_id unless Rails.env.test?
 
   # == Scopes ===============================================================
@@ -111,7 +107,7 @@ class Currency < ApplicationRecord
   before_validation { self.code = code.downcase }
   before_validation { self.deposit_fee = 0 unless fiat? }
   before_validation(if: :token?) { self.blockchain ||= parent.blockchain }
-  before_validation(on: :create) { self.position = Currency.count + 1 unless position.present? }
+  before_validation(on: :create) { self.position = Currency.count + 1 if position.blank? }
 
   before_validation do
     self.erc20_contract_address = erc20_contract_address.try(:downcase) if erc20_contract_address.present?
@@ -139,10 +135,9 @@ class Currency < ApplicationRecord
   class << self
     def codes(options = {})
       pluck(:id).yield_self do |downcase_codes|
-        case
-        when options.fetch(:bothcase, false)
+        if options.fetch(:bothcase, false)
           downcase_codes + downcase_codes.map(&:upcase)
-        when options.fetch(:upcase, false)
+        elsif options.fetch(:upcase, false)
           downcase_codes.map(&:upcase)
         else
           downcase_codes
@@ -167,7 +162,7 @@ class Currency < ApplicationRecord
   end
 
   def wipe_cache
-    Rails.cache.delete_matched("currencies*")
+    Rails.cache.delete_matched('currencies*')
   end
 
   def initialize_defaults
@@ -203,6 +198,7 @@ class Currency < ApplicationRecord
 
   def token_name
     return unless token?
+
     id.to_s.upcase.split(ID_SEPARATOR).first.presence
   end
 
@@ -214,12 +210,13 @@ class Currency < ApplicationRecord
   # that is valued at a fraction (usually one hundredth)
   # of the basic monetary unit
   def subunits=(n)
-    self.base_factor = 10 ** n
+    self.base_factor = 10**n
   end
 
   def subunits
     Math.log(base_factor, 10).round
   end
+
   # This method defines that token currency need to have parent_id and coin type
   # We use parent_id for token type to inherit some useful info such as blockchain_key from parent currency
   # For coin currency enough to have only coin type
@@ -243,10 +240,10 @@ class Currency < ApplicationRecord
     # We pass options are available as top-level hash keys and via options for
     # compatibility with Wallet#to_wallet_api_settings.
     opt = options.compact.deep_symbolize_keys
-    opt.deep_symbolize_keys.merge(id:                    id,
-                                  base_factor:           base_factor,
+    opt.deep_symbolize_keys.merge(id: id,
+                                  base_factor: base_factor,
                                   min_collection_amount: min_collection_amount,
-                                  options:               opt)
+                                  options: opt)
   end
 
   def min_deposit_amount_money

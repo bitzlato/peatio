@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module Services
@@ -37,7 +36,7 @@ module Services
       end
 
       def check_rabbitmq
-        Bunny.run(AMQP::Config.connect) { |c| c.connected? }
+        Bunny.run(AMQP::Config.connect, &:connected?)
       end
     end
   end

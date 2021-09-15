@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Admin::Abilities, type: :request do
@@ -6,16 +5,17 @@ describe API::V2::Admin::Abilities, type: :request do
     context 'member role' do
       let(:admin) { create(:member, :admin, :level_3, email: 'example@gmail.com', uid: 'ID73BF61C8H0') }
       let(:token) { jwt_for(admin) }
+
       it 'get all roles and permissions' do
         api_get '/api/v2/admin/abilities', token: token
         result = JSON.parse(response.body)
 
         expect(response).to be_successful
         expect(result).to eq(
-          "create" => ["Deposits::Fiat"],
-          "manage" => ["Operations::Account", "Operations::Asset", "Operations::Expense", "Operations::Liability", "Operations::Revenue", "Member", "Account", "Beneficiary", "PaymentAddress", "Deposit", "Withdraw", "WithdrawLimit", "Blockchain", "Currency", "Engine", "Market", "TradingFee", "Wallet", "Adjustment", "InternalTransfer", "WhitelistedSmartContract"],
-          "read" => ["Trade", "Order"],
-          "update" => ["Order"],
+          'create' => ['Deposits::Fiat'],
+          'manage' => ['Operations::Account', 'Operations::Asset', 'Operations::Expense', 'Operations::Liability', 'Operations::Revenue', 'Member', 'Account', 'Beneficiary', 'PaymentAddress', 'Deposit', 'Withdraw', 'WithdrawLimit', 'Blockchain', 'Currency', 'Engine', 'Market', 'TradingFee', 'Wallet', 'Adjustment', 'InternalTransfer', 'WhitelistedSmartContract'],
+          'read' => %w[Trade Order],
+          'update' => ['Order']
         )
       end
     end
@@ -23,6 +23,7 @@ describe API::V2::Admin::Abilities, type: :request do
     context 'member role' do
       let(:member) { create(:member, :level_3, email: 'example@gmail.com', uid: 'ID73BF61C8H0') }
       let(:token) { jwt_for(member) }
+
       it 'get all roles and permissions' do
         api_get '/api/v2/admin/abilities', token: token
         result = JSON.parse(response.body)

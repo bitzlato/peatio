@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 FactoryBot.define do
@@ -6,9 +5,9 @@ FactoryBot.define do
     email { Faker::Internet.email }
     level { 0 }
     uid { "ID#{Faker::Number.unique.hexadecimal(10)}".upcase }
-    role { "member" }
-    group { "vip-0" }
-    state { "active" }
+    role { 'member' }
+    group { 'vip-0' }
+    state { 'active' }
 
     trait :level_3 do
       level { 3 }
@@ -27,7 +26,7 @@ FactoryBot.define do
     end
 
     trait :admin do
-      role { "admin" }
+      role { 'admin' }
     end
 
     trait :barong do

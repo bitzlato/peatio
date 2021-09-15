@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module OrderServices
   class CreateOrder
     include ServiceBase
 
-    POSSIBLE_SIDE_VALUES = %i[sell buy]
+    POSSIBLE_SIDE_VALUES = %i[sell buy].freeze
 
     def initialize(member:)
       @member = member
@@ -30,30 +32,30 @@ module OrderServices
         ord_type: ord_type,
         price: price.to_d,
         volume: volume.to_d,
-        uuid: uuid,
+        uuid: uuid
       )
       order = submit_and_return_order(order)
       success(data: order)
     rescue ::Order::InsufficientMarketLiquidity => e
       trigger_amqp_and_failure(
         error_message: 'market.order.insufficient_market_liquidity',
-        uuid: uuid,
+        uuid: uuid
       )
     rescue ::Account::AccountError => e
       trigger_amqp_and_failure(
         error_message: 'market.account.insufficient_balance',
-        uuid: uuid,
+        uuid: uuid
       )
     rescue ActiveRecord::RecordInvalid => e
       trigger_amqp_and_failure(
         error_message: 'market.order.invalid_volume_or_price',
-        uuid: uuid,
+        uuid: uuid
       )
     rescue StandardError => e
       report_exception(e, true)
       trigger_amqp_and_failure(
         error_message: e.message,
-        uuid: uuid,
+        uuid: uuid
       )
     end
 
@@ -62,7 +64,7 @@ module OrderServices
     def amqp_event_payload_with_uuid(uuid:, payload:)
       {
         uuid: uuid,
-        payload: payload,
+        payload: payload
       }
     end
 
@@ -73,13 +75,13 @@ module OrderServices
         'order_error',
         amqp_event_payload_with_uuid(
           uuid: uuid,
-          payload: error_message,
-        ),
+          payload: error_message
+        )
       )
       failure(errors: [error_message])
     end
 
-    def create_order(market: ,side:, ord_type:, price:, volume:, uuid:)
+    def create_order(market:, side:, ord_type:, price:, volume:, uuid:)
       symbolized_side = symbolize_and_check_side!(side)
 
       member_account = get_member_account(side: symbolized_side, market: market)
@@ -96,7 +98,7 @@ module OrderServices
       maker_fee = trading_fee.maker
       taker_fee = trading_fee.taker
       locked_value, order_subclass = nil
-      price = ord_type == 'market' ? nil : price
+      price = nil if ord_type == 'market'
 
       member_account.with_lock do
         if symbolized_side == :sell
@@ -104,7 +106,7 @@ module OrderServices
           locked_value = calc_sell_compute_locked(
             ord_type: ord_type,
             volume: volume,
-            market: market,
+            market: market
           )
         else
           order_subclass = OrderBid
@@ -113,27 +115,27 @@ module OrderServices
             price: price,
             volume: volume,
             market: market,
-            member_balance: member_account.balance,
+            member_balance: member_account.balance
           )
         end
       end
 
       order_subclass.create!(
-        state:         ::Order::PENDING,
-        member:        @member,
-        ask:           market.base_unit,
-        bid:           market.quote_unit,
-        market:        market,
-        market_type:   ::Market::DEFAULT_TYPE,
-        ord_type:      ord_type || 'limit',
-        price:         price,
-        volume:        volume,
+        state: ::Order::PENDING,
+        member: @member,
+        ask: market.base_unit,
+        bid: market.quote_unit,
+        market: market,
+        market_type: ::Market::DEFAULT_TYPE,
+        ord_type: ord_type || 'limit',
+        price: price,
+        volume: volume,
         origin_volume: volume,
-        locked:        locked_value,
+        locked: locked_value,
         origin_locked: locked_value,
-        uuid:          uuid,
-        maker_fee:     maker_fee,
-        taker_fee:     taker_fee,
+        uuid: uuid,
+        maker_fee: maker_fee,
+        taker_fee: taker_fee
       )
     end
 
@@ -144,7 +146,7 @@ module OrderServices
       when 'market'
         estimate_required_funds(
           price_levels: OrderBid.get_depth(market.symbol),
-          volume: volume,
+          volume: volume
         ) { |_, value| value }
       end
     end
@@ -156,7 +158,7 @@ module OrderServices
               when 'market'
                 funds = estimate_required_funds(
                   price_levels: OrderAsk.get_depth(market.symbol),
-                  volume: volume,
+                  volume: volume
                 ) { |price, volume| price * volume }
                 # Maximum funds precision defined in Market::FUNDS_PRECISION.
                 funds.round(Market::FUNDS_PRECISION, BigDecimal::ROUND_UP)
@@ -185,20 +187,24 @@ module OrderServices
         expected_volume -= actual_volume
       end
 
-      raise(
-        ::Order::InsufficientMarketLiquidity,
-        "Insufficient market liquidity for volume = #{volume}",
-      ) if expected_volume.nonzero?
+      if expected_volume.nonzero?
+        raise(
+          ::Order::InsufficientMarketLiquidity,
+          "Insufficient market liquidity for volume = #{volume}"
+        )
+      end
 
       required_funds
     end
 
     def submit_and_return_order(order)
       if order.market.engine.peatio_engine?
-        EventAPI.notify(
-          ['market', order.market_id, 'order_created'].join('.'),
-          Serializers::EventAPI::OrderCreated.call(order),
-        ) if order.is_limit_order?
+        if order.is_limit_order?
+          EventAPI.notify(
+            ['market', order.market_id, 'order_created'].join('.'),
+            Serializers::EventAPI::OrderCreated.call(order)
+          )
+        end
 
         AMQP::Queue.enqueue(:order_processor,
                             { action: 'submit', order: order.attributes },
@@ -206,17 +212,19 @@ module OrderServices
       else
         order.trigger_third_party_creation
       end
-      
+
       order
     end
 
     def symbolize_and_check_side!(side)
       symbol = side.to_sym
 
-      raise(
-        IncorrectSideValue,
-        "side = #{symbol}. Possible side values: #{POSSIBLE_SIDE_VALUES.join(' or ')}",
-      ) unless POSSIBLE_SIDE_VALUES.include?(symbol)
+      unless POSSIBLE_SIDE_VALUES.include?(symbol)
+        raise(
+          IncorrectSideValue,
+          "side = #{symbol}. Possible side values: #{POSSIBLE_SIDE_VALUES.join(' or ')}"
+        )
+      end
 
       symbol
     end

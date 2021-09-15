@@ -1,8 +1,7 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class MultipleDepositAddresses < ActiveRecord::Migration[4.2]
-  class Currency < ActiveRecord::Base
+  class Currency < ApplicationRecord
     serialize :options, JSON
     self.inheritance_column = nil
   end
@@ -16,9 +15,7 @@ class MultipleDepositAddresses < ActiveRecord::Migration[4.2]
             (ccy.id.in?(%w[xrp eth]) && ccy.options['api_client'] == 'BitGo')
         end
 
-        unless ccy.options.key?('allow_multiple_deposit_addresses')
-          ccy.options['allow_multiple_deposit_addresses'] = false
-        end
+        ccy.options['allow_multiple_deposit_addresses'] = false unless ccy.options.key?('allow_multiple_deposit_addresses')
 
         ccy.save!
       end

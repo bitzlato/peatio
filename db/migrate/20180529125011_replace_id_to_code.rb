@@ -32,9 +32,7 @@ class ReplaceIdToCode < ActiveRecord::Migration[4.2]
       Currency.update_all('id = code')
       remove_column :currencies, :code
 
-      if index_exists?(:currencies, %i[enabled code])
-        remove_index :currencies, column: %i[enabled code]
-      end
+      remove_index :currencies, column: %i[enabled code] if index_exists?(:currencies, %i[enabled code])
 
       add_index :currencies, [:enabled]
     end

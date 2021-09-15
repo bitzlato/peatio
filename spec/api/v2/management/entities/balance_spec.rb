@@ -1,11 +1,12 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Management::Entities::Balance do
+  subject { OpenStruct.new described_class.represent(record).serializable_hash }
+
   let(:member) { create(:member, :barong) }
   let(:record) { member.get_account(:usd) }
+
   before { record.update!(balance: 1000.85, locked: 330.55) }
-  subject { OpenStruct.new API::V2::Management::Entities::Balance.represent(record).serializable_hash }
 
   it do
     expect(subject.uid).to eq record.member.uid

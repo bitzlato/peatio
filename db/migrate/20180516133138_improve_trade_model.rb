@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class ImproveTradeModel < ActiveRecord::Migration[4.2]
@@ -19,7 +18,7 @@ class ImproveTradeModel < ActiveRecord::Migration[4.2]
     remove_index :trades, column: :ask_member_id
     remove_index :trades, column: :bid_member_id
     remove_index :trades, column: :created_at
-    add_index :trades, [:market_id, :created_at]
-    add_index :trades, [:ask_member_id, :bid_member_id]
+    add_index :trades, %i[market_id created_at]
+    add_index :trades, %i[ask_member_id bid_member_id]
   end
 end

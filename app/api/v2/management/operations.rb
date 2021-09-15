@@ -1,11 +1,9 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Management
       class Operations < Grape::API
-
         # POST: api/v2/management/assets
         # POST: api/v2/management/expenses
         # POST: api/v2/management/revenues
@@ -35,16 +33,16 @@ module API
                      range: 1..1000,
                      desc: 'The number of objects per page (defaults to 100, maximum is 1000).'
             optional :time_from,
-                    type: Integer,
-                    desc: "An integer represents the seconds elapsed since Unix epoch."\
-                        "If set, only operations after the time will be returned."
+                     type: Integer,
+                     desc: 'An integer represents the seconds elapsed since Unix epoch.'\
+                           'If set, only operations after the time will be returned.'
             optional :time_to,
-                    type: Integer,
-                    desc: "An integer represents the seconds elapsed since Unix epoch."\
-                       "If set, only operations before the time will be returned."
+                     type: Integer,
+                     desc: 'An integer represents the seconds elapsed since Unix epoch.'\
+                           'If set, only operations before the time will be returned.'
             optional :reference_type,
-                    type: String,
-                    desc: "The reference type for operations filtering"
+                     type: String,
+                     desc: 'The reference type for operations filtering'
           end
           post op_type_plural do
             currency_id = params.fetch(:currency, nil)
@@ -119,15 +117,15 @@ module API
                      desc: 'The user ID for operations filtering.'
             optional :reference_type,
                      type: String,
-                     desc: "The reference type for operations filtering"
+                     desc: 'The reference type for operations filtering'
             optional :time_from,
                      type: Integer,
-                     desc: "An integer represents the seconds elapsed since Unix epoch."\
-                         "If set, only operations after the time will be returned."
+                     desc: 'An integer represents the seconds elapsed since Unix epoch.'\
+                           'If set, only operations after the time will be returned.'
             optional :time_to,
                      type: Integer,
-                     desc: "An integer represents the seconds elapsed since Unix epoch."\
-                        "If set, only operations before the time will be returned."
+                     desc: 'An integer represents the seconds elapsed since Unix epoch.'\
+                           'If set, only operations before the time will be returned.'
             optional :page,
                      type: Integer,
                      default: 1,
@@ -136,7 +134,7 @@ module API
             optional :limit,
                      type: Integer,
                      default: 100,
-                     range: 1..10000,
+                     range: 1..10_000,
                      desc: 'The number of objects per page (defaults to 100, maximum is 10000).'
           end
           post op_type_plural do

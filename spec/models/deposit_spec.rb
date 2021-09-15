@@ -22,8 +22,10 @@ describe Deposit do
 
   context 'fee exceeds amount' do
     before { Currency.any_instance.expects(:deposit_fee).once.returns(1.1) }
+
     let(:amount) { 1 }
     let(:deposit) { build(:deposit_usd, member: member, amount: amount, currency: currency) }
+
     it 'fails validation' do
       expect(deposit.save).to eq false
       expect(deposit.errors.full_messages).to eq ['Amount must be greater than 0.0']
@@ -56,35 +58,36 @@ describe Deposit do
     it 'uses height from blockchain by default' do
       deposit.blockchain.stubs(:processed_height).returns(100)
       deposit.stubs(:block_number).returns(90)
-      expect(deposit.confirmations).to eql(10)
+      expect(deposit.confirmations).to be(10)
     end
   end
 
   context :spread_between_wallets! do
     pending
 
-    #let(:spread) do
-      #[Peatio::Transaction.new(to_address: 'to-address-1', amount: 1.2),
-       #Peatio::Transaction.new(to_address: 'to-address-2', amount: 2.5)]
-    #end
-    #let(:deposit) { create(:deposit_btc, amount: 3.7) }
+    # let(:spread) do
+    # [Peatio::Transaction.new(to_address: 'to-address-1', amount: 1.2),
+    # Peatio::Transaction.new(to_address: 'to-address-2', amount: 2.5)]
+    # end
+    # let(:deposit) { create(:deposit_btc, amount: 3.7) }
 
-    #before do
-      #DepositSpreader.any_instance.expects(:call).returns(spread)
-    #end
+    # before do
+    # DepositSpreader.any_instance.expects(:call).returns(spread)
+    # end
 
-    #it 'spreads deposit between wallets' do
-      #expect(deposit.spread).to eq([])
-      #expect(deposit.spread_between_wallets!).to be_truthy
-      #expect(deposit.reload.spread).to eq(spread.map(&:as_json).map(&:symbolize_keys))
+    # it 'spreads deposit between wallets' do
+    # expect(deposit.spread).to eq([])
+    # expect(deposit.spread_between_wallets!).to be_truthy
+    # expect(deposit.reload.spread).to eq(spread.map(&:as_json).map(&:symbolize_keys))
 
-      #expect(deposit.spread_between_wallets!).to be_falsey
-    #end
+    # expect(deposit.spread_between_wallets!).to be_falsey
+    # end
   end
 
   context :accept do
     context :record_complete_operations! do
       subject { deposit }
+
       it 'creates single asset operation' do
         expect { subject.accept! }.to change { Operations::Asset.count }.by(1)
       end
@@ -107,7 +110,7 @@ describe Deposit do
 
       context 'zero deposit fee' do
         it 'doesn\'t create revenue operation' do
-          expect { subject.accept! }.to_not change { Operations::Revenue.count }
+          expect { subject.accept! }.not_to change { Operations::Revenue.count }
         end
       end
 
@@ -151,6 +154,7 @@ describe Deposit do
         context 'without locked funds' do
           context 'credits both legacy and operations based member balance for coin deposit' do
             subject { create(:deposit_btc, amount: 3.7) }
+
             it do
               subject.accept!
               %i[main locked].each do |kind|
@@ -176,6 +180,7 @@ describe Deposit do
 
         context 'with manual deposit approval' do
           before { Peatio::App.config.stubs(:manual_deposit_approval).returns(true) }
+
           context 'credits both legacy and operations based member balance for coin deposit' do
             subject { create(:deposit_btc, amount: 3.7) }
 
@@ -204,6 +209,7 @@ describe Deposit do
 
         context 'with locked funds' do
           before { Peatio::App.config.stubs(:deposit_funds_locked).returns(true) }
+
           context 'credits both legacy and operations based member balance for coin deposit' do
             subject { create(:deposit_btc, amount: 3.7) }
 
@@ -234,9 +240,9 @@ describe Deposit do
   end
 
   context :dispatch do
-    let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
-
     subject { crypto_deposit }
+
+    let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
 
     context 'with locked funds' do
       before do
@@ -301,17 +307,17 @@ describe Deposit do
     end
   end
 
-  #context :err do
-    #let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
+  # context :err do
+  # let(:crypto_deposit) { create(:deposit_btc, amount: 3.7) }
 
-    #subject { crypto_deposit }
-    #it 'transitions to :errored after calling #err!' do
-      #subject.accept!
-      #subject.process!
-      #subject.err! StandardError.new "This is an exception"
+  # subject { crypto_deposit }
+  # it 'transitions to :errored after calling #err!' do
+  # subject.accept!
+  # subject.process!
+  # subject.err! StandardError.new "This is an exception"
 
-      #expect(subject.errored?).to be true
-      #expect(subject.error).to eq [{"class"=>"StandardError", "message"=>"This is an exception"}]
-    #end
-  #end
+  # expect(subject.errored?).to be true
+  # expect(subject.error).to eq [{"class"=>"StandardError", "message"=>"This is an exception"}]
+  # end
+  # end
 end

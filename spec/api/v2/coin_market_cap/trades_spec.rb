@@ -2,20 +2,21 @@
 
 describe API::V2::CoinMarketCap::Trades, type: :request do
   describe 'GET /api/v2/coinmarketcap/trades/:market_pair' do
-    before(:each) { delete_measurments('trades') }
-    after(:each) { delete_measurments('trades') }
+    before { delete_measurments('trades') }
+
+    after { delete_measurments('trades') }
 
     context 'there is no market pair' do
-      it 'should return error' do
+      it 'returns error' do
         get '/api/v2/coinmarketcap/trades/TEST_TEST'
 
-        expect(response).to have_http_status 404
+        expect(response).to have_http_status :not_found
         expect(response).to include_api_error('record.not_found')
       end
     end
 
     context 'there is no trades in influx' do
-      it 'should return recent trades' do
+      it 'returns recent trades' do
         get '/api/v2/coinmarketcap/trades/BTC_USD'
 
         expect(response).to be_successful
@@ -25,15 +26,15 @@ describe API::V2::CoinMarketCap::Trades, type: :request do
     end
 
     context 'there are trades in influx' do
-      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
-      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
+      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d) }
 
       before do
         trade1.write_to_influx
         trade2.write_to_influx
       end
 
-      it 'should return recent trades' do
+      it 'returns recent trades' do
         get '/api/v2/coinmarketcap/trades/BTC_USD'
 
         expect(response).to be_successful

@@ -92,7 +92,7 @@ end
 # Removed rake, bundle, gem
 # Added rails.
 # rake has its own dotenv requirement in Rakefile
-set :dotenv_hook_commands, %w{bundle rake rails ruby}
+set :dotenv_hook_commands, %w[bundle rake rails ruby]
 
 Capistrano::DSL.stages.each do |stage|
   after stage, 'dotenv:hook'

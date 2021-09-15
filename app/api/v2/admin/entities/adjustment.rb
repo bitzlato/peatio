@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -62,7 +61,7 @@ module API
             documentation: {
               type: Integer,
               desc: 'Unique adjustment creator identifier in database.'
-            },
+            }
           ) do |adjustment, _options|
             adjustment.creator.uid
           end

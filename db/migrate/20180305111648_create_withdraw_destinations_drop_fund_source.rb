@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class CreateWithdrawDestinationsDropFundSource < ActiveRecord::Migration[4.2]
@@ -22,25 +21,26 @@ class CreateWithdrawDestinationsDropFundSource < ActiveRecord::Migration[4.2]
     drop_table :fund_sources
   end
 
-private
+  private
 
   def migrate_existing_data
     return unless defined?(Withdraw) && defined?(WithdrawDestination)
+
     Withdraw.transaction do
       Withdraw.find_each do |withdraw|
-        if Withdraws::Fiat === withdraw
+        if withdraw.is_a?(Withdraws::Fiat)
           WithdrawDestination::Fiat.create! \
-            label:               withdraw.fund_extra,
-            member:              withdraw.member,
-            currency:            withdraw.currency,
-            bank_name:           withdraw.fund_extra,
+            label: withdraw.fund_extra,
+            member: withdraw.member,
+            currency: withdraw.currency,
+            bank_name: withdraw.fund_extra,
             bank_account_number: withdraw.fund_uid
         else
           WithdrawDestination::Coin.create! \
-            label:    withdraw.fund_extra,
-            member:   withdraw.member,
+            label: withdraw.fund_extra,
+            member: withdraw.member,
             currency: withdraw.currency,
-            address:  withdraw.fund_uid
+            address: withdraw.fund_uid
         end.tap { |record| withdraw.update!(destination: record) }
       end
     end

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class AddFieldSupportsCashAddrFormatToCurrencies < ActiveRecord::Migration[4.2]
-  class Ccy < ActiveRecord::Base
+  class Ccy < ApplicationRecord
     serialize :options, JSON
     self.table_name = 'currencies'
     self.inheritance_column = :disabled

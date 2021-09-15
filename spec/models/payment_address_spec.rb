@@ -1,9 +1,8 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe PaymentAddress do
-  context '.create' do
-    let(:member)  { create(:member, :level_3) }
+  describe '.create' do
+    let(:member) { create(:member, :level_3) }
     let!(:account) { member.get_account(:btc) }
     let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet' }
     let(:secret) { 's3cr3t' }
@@ -16,33 +15,33 @@ describe PaymentAddress do
     end
 
     it 'updates secret' do
-      expect {
+      expect do
         addr.update(secret: 'new_secret')
-      }.to change { addr.reload.secret_encrypted }.and change { addr.reload.secret }.to 'new_secret'
+      end.to change { addr.reload.secret_encrypted }.and change { addr.reload.secret }.to 'new_secret'
     end
 
     it 'updates details' do
-      expect {
+      expect do
         addr.update(details: details)
-      }.to change { addr.reload.details_encrypted }.and change { addr.reload.details }.to details
+      end.to change { addr.reload.details_encrypted }.and change { addr.reload.details }.to details
     end
 
     it 'long secret' do
-      expect {
+      expect do
         addr.update(secret: Faker::String.random(1024))
-      }.to raise_error ActiveRecord::ValueTooLong
+      end.to raise_error ActiveRecord::ValueTooLong
     end
 
     it 'long details' do
-      expect {
+      expect do
         addr.update(details: { test: Faker::String.random(1024) })
-      }.to raise_error ActiveRecord::ValueTooLong
+      end.to raise_error ActiveRecord::ValueTooLong
     end
   end
 
   context 'methods' do
     context 'status' do
-      let(:member)  { create(:member, :level_3) }
+      let(:member) { create(:member, :level_3) }
       let!(:account) { member.get_account(:btc) }
       let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet' }
 

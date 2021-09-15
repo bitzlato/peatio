@@ -1,11 +1,9 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 # Deprecated
 # TODO: Delete this class and update type column
 module Withdraws
   class Fiat < Withdraw
-
   end
 end
 

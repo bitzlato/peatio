@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -30,8 +29,8 @@ module API
             desc: 'Member accounts.'
           }
         ) do |m|
-            m.accounts.includes(:currency)
-          end
+          m.accounts.includes(:currency)
+        end
       end
     end
   end

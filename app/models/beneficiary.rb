@@ -1,8 +1,6 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class Beneficiary < ApplicationRecord
-
   # == Constants ============================================================
 
   extend Enumerize
@@ -16,10 +14,10 @@ class Beneficiary < ApplicationRecord
   STATES_MAPPING = { pending: 0, active: 1, archived: 2, aml_processing: 3, aml_suspicious: 4 }.freeze
 
   STATES = %i[pending aml_processing aml_suspicious active archived].freeze
-  STATES_AVAILABLE_FOR_MEMBER = %i[pending active]
+  STATES_AVAILABLE_FOR_MEMBER = %i[pending active].freeze
 
   PIN_LENGTH  = 6
-  PIN_RANGE   = 10**5..10**Beneficiary::PIN_LENGTH
+  PIN_RANGE   = ((10**5)..(10**Beneficiary::PIN_LENGTH)).freeze
 
   # == Attributes ===========================================================
 
@@ -47,13 +45,17 @@ class Beneficiary < ApplicationRecord
       end
     end
 
-    event :enable do
-      transitions from: :aml_processing, to: :active
-    end if Peatio::AML.adapter.present?
+    if Peatio::AML.adapter.present?
+      event :enable do
+        transitions from: :aml_processing, to: :active
+      end
+    end
 
-    event :aml_suspicious do
-      transitions from: :aml_processing, to: :aml_suspicious
-    end if Peatio::AML.adapter.present?
+    if Peatio::AML.adapter.present?
+      event :aml_suspicious do
+        transitions from: :aml_processing, to: :aml_suspicious
+      end
+    end
 
     event :archive do
       transitions from: %i[pending aml_processing aml_suspicious active], to: :archived
@@ -64,8 +66,8 @@ class Beneficiary < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :currency, required: true
-  belongs_to :member, required: true
+  belongs_to :currency, optional: false
+  belongs_to :member, optional: false
 
   # == Validations ==========================================================
 
@@ -80,9 +82,7 @@ class Beneficiary < ApplicationRecord
 
   # Validates address field which is required for coin.
   validate if: ->(b) { b.currency.present? && b.currency.coin? } do
-    if data.blank? || !currency.blockchain.valid_address?(data.symbolize_keys[:address])
-      errors.add(:data, 'invlalid address')
-    end
+    errors.add(:data, 'invlalid address') if data.blank? || !currency.blockchain.valid_address?(data.symbolize_keys[:address])
   end
 
   # Validates that data contains full_name field which is required for fiat.
@@ -122,16 +122,16 @@ class Beneficiary < ApplicationRecord
   # == Instance Methods =====================================================
 
   def as_json_for_event_api
-    { user:        { uid: member.uid, email: member.email },
-      currency:    currency_id,
-      name:        name,
+    { user: { uid: member.uid, email: member.email },
+      currency: currency_id,
+      name: name,
       description: description,
-      data:        data,
-      pin:         pin,
-      state:       state,
-      sent_at:     sent_at.iso8601,
-      created_at:  created_at.iso8601,
-      updated_at:  updated_at.iso8601 }
+      data: data,
+      pin: pin,
+      state: state,
+      sent_at: sent_at.iso8601,
+      created_at: created_at.iso8601,
+      updated_at: updated_at.iso8601 }
   end
 
   def aml_check!
@@ -148,11 +148,11 @@ class Beneficiary < ApplicationRecord
   def valid_pin?(user_pin)
     case user_pin
     when Integer
-      return pin == user_pin
+      pin == user_pin
     when String
-      return pin == user_pin.to_i
+      pin == user_pin.to_i
     else
-      return false
+      false
     end
   end
 
@@ -167,9 +167,7 @@ class Beneficiary < ApplicationRecord
   def masked_account_number
     account_number = data.symbolize_keys[:account_number]
 
-    if data.present? && account_number.present?
-      account_number.sub(/(?<=\A.{2})(.*)(?=.{4}\z)/) { |match| '*' * match.length }
-    end
+    account_number.sub(/(?<=\A.{2})(.*)(?=.{4}\z)/) { |match| '*' * match.length } if data.present? && account_number.present?
   end
 
   def masked_data
@@ -180,11 +178,13 @@ class Beneficiary < ApplicationRecord
 
   def coin_rid
     return unless currency.coin?
+
     data.symbolize_keys[:address]
   end
 
   def fiat_rid
     return unless currency.fiat?
-    "%s-%s-%08d" % [data.symbolize_keys[:full_name].downcase.split.join('-'), currency_id.downcase, id]
+
+    format('%s-%s-%08d', data.symbolize_keys[:full_name].downcase.split.join('-'), currency_id.downcase, id)
   end
 end

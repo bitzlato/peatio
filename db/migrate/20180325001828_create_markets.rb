@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class CreateMarkets < ActiveRecord::Migration[4.2]
@@ -17,6 +16,6 @@ class CreateMarkets < ActiveRecord::Migration[4.2]
 
     change_column :markets, :id, :string, limit: 10
 
-    add_index :markets, %i[ ask_unit bid_unit ], unique: true
+    add_index :markets, %i[ask_unit bid_unit], unique: true
   end
 end

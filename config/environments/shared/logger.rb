@@ -1,8 +1,6 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 Rails.application.configure do
-
   # Available levels (verbosity goes from high to less): debug, info, warn, error, fatal.
   # Default level for production is warn, otherwise – debug.
   log_level = ENV['LOG_LEVEL'].presence || (Rails.env.production? ? :warn : :debug)
@@ -11,7 +9,7 @@ Rails.application.configure do
   # In non-test environments logging always goes to STDOUT since this is the most appropriate way
   # to get logs in Docker environment.
   unless Rails.env.test?
-    config.logger = ActiveSupport::Logger.new STDERR, level: log_level
+    config.logger = ActiveSupport::Logger.new $stderr, level: log_level
     config.logger.formatter = config.log_formatter
   end
 

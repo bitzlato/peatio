@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Admin::InternalTransfers, type: :request do
@@ -66,8 +65,8 @@ describe API::V2::Admin::InternalTransfers, type: :request do
         result = JSON.parse(response.body)
 
         expect(response).to be_successful
-        expect(result.map{|r| r['sender_uid']}.size).to eq 4
-        expect(result.map{|r| r['sender_uid']}).to all eq admin.uid
+        expect(result.map { |r| r['sender_uid'] }.size).to eq 4
+        expect(result.map { |r| r['sender_uid'] }).to all eq admin.uid
       end
 
       it 'returns orders for specific sender by username' do
@@ -75,8 +74,8 @@ describe API::V2::Admin::InternalTransfers, type: :request do
         result = JSON.parse(response.body)
 
         expect(response).to be_successful
-        expect(result.map{|r| r['sender_username']}.size).to eq 4
-        expect(result.map{|r| r['sender_username']}).to all eq admin.username
+        expect(result.map { |r| r['sender_username'] }.size).to eq 4
+        expect(result.map { |r| r['sender_username'] }).to all eq admin.username
       end
 
       it 'returns orders for specific receiver by uid' do
@@ -84,8 +83,8 @@ describe API::V2::Admin::InternalTransfers, type: :request do
         result = JSON.parse(response.body)
 
         expect(response).to be_successful
-        expect(result.map{|r| r['receiver_uid']}.size).to eq 4
-        expect(result.map{|r| r['receiver_uid']}).to all eq level_3_member.uid
+        expect(result.map { |r| r['receiver_uid'] }.size).to eq 4
+        expect(result.map { |r| r['receiver_uid'] }).to all eq level_3_member.uid
       end
 
       it 'returns orders for specific receiver by username' do
@@ -93,8 +92,8 @@ describe API::V2::Admin::InternalTransfers, type: :request do
         result = JSON.parse(response.body)
 
         expect(response).to be_successful
-        expect(result.map{|r| r['receiver_username']}.size).to eq 4
-        expect(result.map{|r| r['receiver_username']}).to all eq level_3_member.username
+        expect(result.map { |r| r['receiver_username'] }.size).to eq 4
+        expect(result.map { |r| r['receiver_username'] }).to all eq level_3_member.username
       end
     end
   end

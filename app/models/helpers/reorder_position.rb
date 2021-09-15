@@ -2,7 +2,6 @@
 
 module Helpers
   module ReorderPosition
-
     # Function which insert object inside existing list
     def insert_position(model)
       # Get current currency amount
@@ -17,7 +16,7 @@ module Helpers
         model.update_column(:position, count)
       elsif model.position == count
         # System shouldn't reorder objects if new object has last position in the list
-        return
+        nil
       else
         # As soon as create doesnt have old position value
         # System will move the list up to the highest position(count)
@@ -74,18 +73,18 @@ module Helpers
     # If old position > new position
     def increment_positions_on_lower_items(model_id, table_name, old_position, new_position)
       "UPDATE #{table_name} SET position = (#{table_name}.position + 1) "\
-      "WHERE (#{table_name}.id != '#{model_id}') "\
-      "AND (#{table_name}.position >= #{new_position}) "\
-      "AND (#{table_name}.position < #{old_position})"
+        "WHERE (#{table_name}.id != '#{model_id}') "\
+        "AND (#{table_name}.position >= #{new_position}) "\
+        "AND (#{table_name}.position < #{old_position})"
     end
 
     # Updates objects positions between old position and new position
     # If old position < new position
     def decrement_positions_on_higher_items(model_id, table_name, old_position, new_position)
       "UPDATE #{table_name} SET position = (#{table_name}.position - 1) "\
-      "WHERE (#{table_name}.id != '#{model_id}') "\
-      "AND (#{table_name}.position > #{old_position}) "\
-      "AND (#{table_name}.position <= #{new_position})"
+        "WHERE (#{table_name}.id != '#{model_id}') "\
+        "AND (#{table_name}.position > #{old_position}) "\
+        "AND (#{table_name}.position <= #{new_position})"
     end
   end
 end

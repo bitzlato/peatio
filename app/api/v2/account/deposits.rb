@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_relative '../validations'
@@ -10,7 +9,7 @@ module API
         before { deposits_must_be_permitted! }
 
         desc 'Create deposit intention',
-          success: API::V2::Entities::Deposit
+             success: API::V2::Entities::Deposit
         params do
           requires :currency,
                    type: String,
@@ -24,9 +23,7 @@ module API
         post '/deposits/intention' do
           currency = Currency.find(params[:currency])
 
-          unless currency.deposit_enabled?
-            error!({ errors: ['management.currency.deposit_disabled'] }, 422)
-          end
+          error!({ errors: ['management.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
 
           deposit = Deposit.create!(
             type: Deposit.name,
@@ -40,8 +37,8 @@ module API
         end
 
         desc 'Get your deposits history.',
-          is_array: true,
-          success: API::V2::Entities::Deposit
+             is_array: true,
+             success: API::V2::Entities::Deposit
 
         params do
           optional :currency,
@@ -67,14 +64,14 @@ module API
                    type: { value: Integer, message: 'account.deposit.non_integer_limit' },
                    values: { value: 1..100, message: 'account.deposit.invalid_limit' },
                    default: 100,
-                   desc: "Number of deposits per page (defaults to 100, maximum is 100)."
+                   desc: 'Number of deposits per page (defaults to 100, maximum is 100).'
           optional :page,
                    type: { value: Integer, message: 'account.deposit.non_integer_page' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'account.deposit.non_positive_page'},
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'account.deposit.non_positive_page' },
                    default: 1,
                    desc: 'Page number (defaults to 1).'
         end
-        get "/deposits" do
+        get '/deposits' do
           user_authorize! :read, ::Deposit
 
           currency = Currency.find(params[:currency]) if params[:currency].present?
@@ -95,9 +92,9 @@ module API
           requires :txid,
                    type: String,
                    allow_blank: false,
-                   desc: "Deposit transaction id"
+                   desc: 'Deposit transaction id'
         end
-        get "/deposits/:txid" do
+        get '/deposits/:txid' do
           user_authorize! :read, ::Deposit
 
           deposit = current_user.deposits.find_by!(txid: params[:txid])
@@ -105,13 +102,13 @@ module API
         end
 
         desc 'Returns deposit address for account you want to deposit to by currency. ' \
-          'The address may be blank because address generation process is still in progress. ' \
-          'If this case you should try again later.',
-          success: API::V2::Entities::Deposit
+             'The address may be blank because address generation process is still in progress. ' \
+             'If this case you should try again later.',
+             success: API::V2::Entities::Deposit
         params do
           requires :currency,
                    type: String,
-                   values: { value: -> { Currency.coins.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
+                   values: { value: -> { Currency.coins.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                    desc: 'The account you want to deposit to.'
           given :currency do
             optional :address_format,
@@ -121,18 +118,14 @@ module API
                      desc: 'Address format legacy/cash'
           end
         end
-        get '/deposit_address/:currency', requirements: { currency: /[\w\.\-]+/ } do
+        get '/deposit_address/:currency', requirements: { currency: /[\w.\-]+/ } do
           user_authorize! :read, ::PaymentAddress
 
           currency = Currency.find(params[:currency])
 
-          unless currency.deposit_enabled?
-            error!({ errors: ['account.currency.deposit_disabled'] }, 422)
-          end
+          error!({ errors: ['account.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
 
-          if currency.enable_invoice?
-            error!({ errors: ['account.currency.no_deposit_address_invoices_only'] }, 422)
-          end
+          error!({ errors: ['account.currency.no_deposit_address_invoices_only'] }, 422) if currency.enable_invoice?
 
           payment_address = current_user.payment_address(currency.blockchain)
           present payment_address, with: API::V2::Entities::PaymentAddress, address_format: params[:address_format]

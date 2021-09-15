@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'base64'
@@ -9,36 +8,36 @@ ENV['RAILS_ENV'] ||= 'test'
 ENV['EVENT_API_JWT_PRIVATE_KEY'] ||= Base64.urlsafe_encode64(OpenSSL::PKey::RSA.generate(2048).to_pem)
 ENV['PEATIO_JWT_PRIVATE_KEY'] ||= Base64.urlsafe_encode64(OpenSSL::PKey::RSA.generate(2048).to_pem)
 ENV['WITHDRAW_ADMIN_APPROVE'] = 'true'
-ENV['MINIMUM_MEMBER_LEVEL_FOR_DEPOSIT']='3'
-ENV['MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW']='3'
-ENV['MINIMUM_MEMBER_LEVEL_FOR_TRADING']='3'
-ENV['JWT_PUBLIC_KEY']=nil
-ENV['VAULT_ENABLED']='false'
+ENV['MINIMUM_MEMBER_LEVEL_FOR_DEPOSIT'] = '3'
+ENV['MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW'] = '3'
+ENV['MINIMUM_MEMBER_LEVEL_FOR_TRADING'] = '3'
+ENV['JWT_PUBLIC_KEY'] = nil
+ENV['VAULT_ENABLED'] = 'false'
 
 # We remove lib/peatio.rb from LOAD_PATH because of conflict with peatio gem.
 # lib/peatio.rb is added to LOAD_PATH later after requiring gems.
 # https://relishapp.com/rspec/rspec-core/v/2-6/docs/command-line
 $LOAD_PATH.delete_if { |p| File.expand_path(p) == File.expand_path('./lib') }
 
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 require 'rspec/rails'
 require 'rspec/retry'
 require 'webmock/rspec'
 require 'cancan/matchers'
 
-ENV['BITZLATO_API_KEY']=
-    {"kty":"EC","alg":"ES256","crv":"P-256",
-     "x":"wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus",
-     "y":"OL-0AqcTNoaCBVAEpDNsU1bpZA7eQ9CtGPZGmEEg5QI",
-     "d":"nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk"}.to_json
-ENV['BITZLATO_API_URL']='http://127.0.0.1:8000'
-ENV['BITZLATO_API_CLIENT_UID']='merchant_uid'
-ENV['BITZLATO_WITHDRAW_POLLING_METHODS']='voucher,payment'
+ENV['BITZLATO_API_KEY'] =
+  { kty: 'EC', alg: 'ES256', crv: 'P-256',
+    x: 'wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus',
+    y: 'OL-0AqcTNoaCBVAEpDNsU1bpZA7eQ9CtGPZGmEEg5QI',
+    d: 'nDTvKjSPQ4UAPiBmJKXeF1MKhuhLtjJtW6hypstWolk' }.to_json
+ENV['BITZLATO_API_URL'] = 'http://127.0.0.1:8000'
+ENV['BITZLATO_API_CLIENT_UID'] = 'merchant_uid'
+ENV['BITZLATO_WITHDRAW_POLLING_METHODS'] = 'voucher,payment'
 WebMock.allow_net_connect!
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
 
 # Checks for pending migrations before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
@@ -85,7 +84,7 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.before(:each) do
+  config.before do
     DatabaseCleaner.strategy = :transaction
   end
 
@@ -93,11 +92,11 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :truncation, { only: %w[orders trades] }
   end
 
-  config.append_after(:each) do
+  config.append_after do
     DatabaseCleaner.clean
   end
 
-  config.before(:each) do
+  config.before do
     DatabaseCleaner.start
     AMQP::Queue.stubs(:publish)
     KlineDB.stubs(:kline).returns([])
@@ -114,7 +113,7 @@ RSpec.configure do |config|
     end
 
     Wallet.delete_all
-    %i[eth_deposit eth_hot eth_warm eth_fee trst_deposit trst_hot btc_hot btc_deposit ].each do |name|
+    %i[eth_deposit eth_hot eth_warm eth_fee trst_deposit trst_hot btc_hot btc_deposit].each do |name|
       FactoryBot.create(:wallet, name)
     end
 
@@ -130,7 +129,7 @@ RSpec.configure do |config|
     FactoryBot.create(:withdraw_limit)
   end
 
-  config.after(:each) do
+  config.after do
     DatabaseCleaner.clean
   end
 
@@ -140,8 +139,8 @@ RSpec.configure do |config|
   config.exceptions_to_retry = [Net::ReadTimeout]
 
   if Bullet.enable?
-    config.before(:each) { Bullet.start_request }
-    config.after :each do
+    config.before { Bullet.start_request }
+    config.after do
       Bullet.perform_out_of_channel_notifications if Bullet.notification?
       Bullet.end_request
     end

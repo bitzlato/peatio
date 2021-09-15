@@ -1,92 +1,91 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Admin
       class Currencies < Grape::API
+        # Collection of shared params, used to
+        # generate required/optional Grape params.
+        OPTIONAL_CURRENCY_PARAMS = {
+          name: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:name][:desc] } },
+          deposit_fee: {
+            type: { value: BigDecimal, message: 'admin.currency.non_decimal_deposit_fee' },
+            values: { value: ->(p) { p >= 0 }, message: 'admin.currency.invalid_deposit_fee' },
+            default: 0.0,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:deposit_fee][:desc] }
+          },
+          min_deposit_amount: {
+            type: { value: BigDecimal, message: 'admin.currency.min_deposit_amount' },
+            values: { value: ->(p) { p >= 0 }, message: 'admin.currency.min_deposit_amount' },
+            default: 0.0,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:min_deposit_amount][:desc] }
+          },
+          min_collection_amount: {
+            type: { value: BigDecimal, message: 'admin.currency.non_decimal_min_collection_amount' },
+            values: { value: ->(p) { p >= 0 }, message: 'admin.currency.invalid_min_collection_amount' },
+            default: 0.0,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:min_collection_amount][:desc] }
+          },
+          withdraw_fee: {
+            type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_fee' },
+            values: { value: ->(p) { p >= 0 }, message: 'admin.currency.ivalid_withdraw_fee' },
+            default: 0.0,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_fee][:desc] }
+          },
+          min_withdraw_amount: {
+            type: { value: BigDecimal, message: 'admin.currency.non_decimal_min_withdraw_amount' },
+            values: { value: ->(p) { p >= 0 }, message: 'admin.currency.invalid_min_withdraw_amount' },
+            default: 0.0,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:min_withdraw_amount][:desc] }
+          },
+          withdraw_limit_24h: {
+            type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_limit_24h' },
+            values: { value: ->(p) { p >= 0 }, message: 'admin.currency.invalid_withdraw_limit_24h' },
+            default: 0.0,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_limit_24h][:desc] }
+          },
+          withdraw_limit_72h: {
+            type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_limit_72h' },
+            values: { value: ->(p) { p >= 0 }, message: 'admin.currency.invalid_withdraw_limit_72h' },
+            default: 0.0,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_limit_72h][:desc] }
+          },
+          options: {
+            type: { value: JSON, message: 'admin.currency.non_json_options' },
+            default: {},
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:options][:desc] }
+          },
+          visible: {
+            type: { value: Boolean, message: 'admin.currency.non_boolean_visible' },
+            default: true,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:visible][:desc] }
+          },
+          deposit_enabled: {
+            type: { value: Boolean, message: 'admin.currency.non_boolean_deposit_enabled' },
+            default: true,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:deposit_enabled][:desc] }
+          },
+          withdrawal_enabled: {
+            type: { value: Boolean, message: 'admin.currency.non_boolean_withdrawal_enabled' },
+            default: true,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdrawal_enabled][:desc] }
+          },
+          precision: {
+            type: { value: Integer, message: 'admin.currency.non_integer_base_precision' },
+            default: 8,
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:precision][:desc] }
+          },
+          price: {
+            type: { value: BigDecimal, message: 'admin.currency.non_decimal_price' },
+            desc: -> { API::V2::Admin::Entities::Currency.documentation[:price][:desc] }
+          },
+          icon_url: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:icon_url][:desc] } },
+          description: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:description][:desc] } },
+          homepage: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:homepage][:desc] } }
+        }.freeze
+
         helpers ::API::V2::Admin::Helpers
         helpers do
-          # Collection of shared params, used to
-          # generate required/optional Grape params.
-          OPTIONAL_CURRENCY_PARAMS ||= {
-            name: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:name][:desc] } },
-            deposit_fee: {
-              type: { value: BigDecimal, message: 'admin.currency.non_decimal_deposit_fee' },
-              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_deposit_fee' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:deposit_fee][:desc] }
-            },
-            min_deposit_amount: {
-              type: { value: BigDecimal, message: 'admin.currency.min_deposit_amount' },
-              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.min_deposit_amount' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:min_deposit_amount][:desc] }
-            },
-            min_collection_amount: {
-              type: { value: BigDecimal, message: 'admin.currency.non_decimal_min_collection_amount' },
-              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_min_collection_amount' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:min_collection_amount][:desc] }
-            },
-            withdraw_fee: {
-              type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_fee' },
-              values: { value: -> (p){ p >= 0  }, message: 'admin.currency.ivalid_withdraw_fee' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_fee][:desc] }
-            },
-            min_withdraw_amount: {
-              type: { value: BigDecimal, message: 'admin.currency.non_decimal_min_withdraw_amount' },
-              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_min_withdraw_amount' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:min_withdraw_amount][:desc] }
-            },
-            withdraw_limit_24h: {
-              type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_limit_24h' },
-              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_withdraw_limit_24h' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_limit_24h][:desc] }
-            },
-            withdraw_limit_72h: {
-              type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_limit_72h' },
-              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_withdraw_limit_72h' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_limit_72h][:desc] }
-            },
-            options: {
-              type: { value: JSON, message: 'admin.currency.non_json_options' },
-              default: {},
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:options][:desc] }
-            },
-            visible: {
-              type: { value: Boolean, message: 'admin.currency.non_boolean_visible' },
-              default: true,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:visible][:desc] }
-            },
-            deposit_enabled: {
-              type: { value: Boolean, message: 'admin.currency.non_boolean_deposit_enabled' },
-              default: true,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:deposit_enabled][:desc] }
-            },
-            withdrawal_enabled: {
-              type: { value: Boolean, message: 'admin.currency.non_boolean_withdrawal_enabled' },
-              default: true,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdrawal_enabled][:desc] }
-            },
-            precision: {
-              type: { value: Integer, message: 'admin.currency.non_integer_base_precision' },
-              default: 8,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:precision][:desc] }
-            },
-            price: {
-              type: { value: BigDecimal, message: 'admin.currency.non_decimal_price' },
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:price][:desc] }
-            },
-            icon_url: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:icon_url][:desc] } },
-            description: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:description][:desc] } },
-            homepage: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:homepage][:desc] } },
-          }
-
           params :create_currency_params do
             OPTIONAL_CURRENCY_PARAMS.each do |key, params|
               optional key, params
@@ -101,13 +100,13 @@ module API
         end
 
         desc 'Get list of currencies',
-          is_array: true,
-          success: API::V2::Admin::Entities::Currency
+             is_array: true,
+             success: API::V2::Admin::Entities::Currency
         params do
           use :currency_type
           use :pagination
           optional :ordering,
-                   values: { value: %w(asc desc), message: 'admin.pagination.invalid_ordering' },
+                   values: { value: %w[asc desc], message: 'admin.pagination.invalid_ordering' },
                    default: 'asc',
                    desc: 'If set, returned values will be sorted in specific order, defaults to \'asc\'.'
           optional :order_by,
@@ -127,9 +126,9 @@ module API
           admin_authorize! :read, ::Currency
 
           ransack_params = Helpers::RansackBuilder.new(params)
-            .eq(:type, :deposit_enabled, :withdrawal_enabled, :visible)
-            .with_daterange
-            .build
+                                                  .eq(:type, :deposit_enabled, :withdrawal_enabled, :visible)
+                                                  .with_daterange
+                                                  .build
 
           search = Currency.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
@@ -143,10 +142,10 @@ module API
         params do
           requires :code,
                    type: String,
-                   values: { value: -> { Currency.codes(bothcase: true) }, message: 'admin.currency.doesnt_exist'},
+                   values: { value: -> { Currency.codes(bothcase: true) }, message: 'admin.currency.doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Currency.documentation[:code][:desc] }
         end
-        get '/currencies/:code', requirements: { code: /[\w\.\-]+/ } do
+        get '/currencies/:code', requirements: { code: /[\w.\-]+/ } do
           admin_authorize! :read, ::Currency
 
           present Currency.find(params[:code]), with: API::V2::Admin::Entities::Currency
@@ -206,12 +205,12 @@ module API
                    desc: -> { API::V2::Admin::Entities::Currency.documentation[:code][:desc] }
           optional :position,
                    type: { value: Integer, message: 'admin.currency.non_integer_position' },
-                   values: { value: -> (p){ p >= ::Currency::TOP_POSITION }, message: 'admin.currency.invalid_position' },
+                   values: { value: ->(p) { p >= ::Currency::TOP_POSITION }, message: 'admin.currency.invalid_position' },
                    desc: -> { API::V2::Admin::Entities::Currency.documentation[:position][:desc] }
           optional :blockchain_key,
                    values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.currency.blockchain_key_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Currency.documentation[:blockchain_key][:desc] }
-          given code: -> (val) { val.in?(Currency.coins.pluck(:code).map(&:to_s)) } do
+          given code: ->(val) { val.in?(Currency.coins.pluck(:code).map(&:to_s)) } do
             optional :parent_id,
                      values: { value: -> { Currency.coins_without_tokens.pluck(:id).map(&:to_s) }, message: 'admin.currency.parent_id_doesnt_exist' },
                      desc: -> { API::V2::Admin::Entities::Currency.documentation[:parent_id][:desc] }

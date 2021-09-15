@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -9,21 +8,21 @@ module API
 
         namespace :adjustments do
           desc 'Get all adjustments, result is paginated.',
-            is_array: true,
-            success: API::V2::Admin::Entities::Adjustment
+               is_array: true,
+               success: API::V2::Admin::Entities::Adjustment
           params do
             use :currency
             use :date_picker
             use :pagination
             use :ordering
             optional :state,
-                    type: String,
-                    values: { value: -> { Adjustment.aasm.states.map(&:name).map(&:to_s) }, message: 'admin.adjustment.invalid_action' },
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:state][:desc] }
+                     type: String,
+                     values: { value: -> { Adjustment.aasm.states.map(&:name).map(&:to_s) }, message: 'admin.adjustment.invalid_action' },
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:state][:desc] }
             optional :category,
-                    type: String,
-                    values: { value: -> { ::Adjustment::CATEGORIES }, message: 'admin.adjustment.invalid_category' },
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:category][:desc] }
+                     type: String,
+                     values: { value: -> { ::Adjustment::CATEGORIES }, message: 'admin.adjustment.invalid_category' },
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:category][:desc] }
           end
           get do
             admin_authorize! :read, ::Adjustment
@@ -41,11 +40,11 @@ module API
           end
 
           desc 'Get adjustment by ID',
-            success: API::V2::Admin::Entities::Adjustment
+               success: API::V2::Admin::Entities::Adjustment
           params do
             requires :id,
-                    type: { value: Integer, message: 'account.adjustment.non_integer_id' },
-                    desc: 'Adjsustment Identifier in Database'
+                     type: { value: Integer, message: 'account.adjustment.non_integer_id' },
+                     desc: 'Adjsustment Identifier in Database'
           end
           get ':id' do
             admin_authorize! :read, ::Adjustment
@@ -54,37 +53,37 @@ module API
           end
 
           desc 'Create new adjustment.',
-            success: API::V2::Admin::Entities::Adjustment
+               success: API::V2::Admin::Entities::Adjustment
           params do
             requires :reason,
-                    type: String,
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:reason][:desc] }
+                     type: String,
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:reason][:desc] }
             requires :description,
-                    type: String,
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:description][:desc] }
+                     type: String,
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:description][:desc] }
             requires :category,
-                    type: String,
-                    values: { value: -> { ::Adjustment::CATEGORIES }, message: 'admin.adjustment.invalid_category' },
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:category][:desc] }
+                     type: String,
+                     values: { value: -> { ::Adjustment::CATEGORIES }, message: 'admin.adjustment.invalid_category' },
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:category][:desc] }
             requires :amount,
-                    type: { value: BigDecimal, message: 'admin.adjustment.non_decimal_amount' },
-                    allow_blank: false,
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:amount][:desc] }
+                     type: { value: BigDecimal, message: 'admin.adjustment.non_decimal_amount' },
+                     allow_blank: false,
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:amount][:desc] }
             requires :currency_id,
-                    type: String,
-                    values: { value: -> { ::Currency.codes }, message: 'admin.adjustment.currency_doesnt_exist' },
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:currency][:desc] }
+                     type: String,
+                     values: { value: -> { ::Currency.codes }, message: 'admin.adjustment.currency_doesnt_exist' },
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:currency][:desc] }
             requires :asset_account_code,
-                    type: { value: Integer, message: 'admin.adjustment.non_integer_asset_account_code' },
-                    values: { value: -> { ::Operations::Account.where(type: :asset).pluck(:code) }, message: 'admin.adjustment.invalid_asset_account_code' },
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:asset_account_code][:desc] }
+                     type: { value: Integer, message: 'admin.adjustment.non_integer_asset_account_code' },
+                     values: { value: -> { ::Operations::Account.where(type: :asset).pluck(:code) }, message: 'admin.adjustment.invalid_asset_account_code' },
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:asset_account_code][:desc] }
             requires :receiving_account_code,
-                    type: { value: Integer, message: 'admin.adjustment.non_integer_receiving_account_code' },
-                    values: { value: -> { ::Operations::Account.where.not(type: :asset).pluck(:code) }, message: 'admin.adjustment.invalid_receiving_account_code' },
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:receiving_account_code][:desc] }
+                     type: { value: Integer, message: 'admin.adjustment.non_integer_receiving_account_code' },
+                     values: { value: -> { ::Operations::Account.where.not(type: :asset).pluck(:code) }, message: 'admin.adjustment.invalid_receiving_account_code' },
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:receiving_account_code][:desc] }
             optional :receiving_member_uid,
-                    type: String,
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:receiving_account_code][:desc] }
+                     type: String,
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:receiving_account_code][:desc] }
           end
           post '/new' do
             admin_authorize! :create, ::Adjustment
@@ -116,15 +115,15 @@ module API
           end
 
           desc 'Accepts adjustment and creates operations or reject adjustment.',
-            success: API::V2::Admin::Entities::Adjustment
+               success: API::V2::Admin::Entities::Adjustment
           params do
             requires :id,
-                    type: { value: Integer, message: 'admin.adjustment.non_integer_id' },
-                    desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:id][:desc] }
+                     type: { value: Integer, message: 'admin.adjustment.non_integer_id' },
+                     desc: -> { API::V2::Admin::Entities::Adjustment.documentation[:id][:desc] }
             requires :action,
-                    type: String,
-                    values: { value: -> { Adjustment.aasm.events.map(&:name).map(&:to_s) }, message: 'admin.adjustment.invalid_action' },
-                    desc: "Adjustment action all available actions: #{Adjustment.aasm.events.map(&:name)}"
+                     type: String,
+                     values: { value: -> { Adjustment.aasm.events.map(&:name).map(&:to_s) }, message: 'admin.adjustment.invalid_action' },
+                     desc: "Adjustment action all available actions: #{Adjustment.aasm.events.map(&:name)}"
           end
           post '/action' do
             admin_authorize! :update, ::Adjustment
@@ -136,9 +135,7 @@ module API
               if member.present?
                 balance = member.get_account(account_number_hash[:currency_id]).balance
 
-                if adjustment.amount.abs() > balance && params[:action] != 'reject'
-                  error!({ errors: ['admin.adjustment.user_insufficient_balance'] }, 422)
-                end
+                error!({ errors: ['admin.adjustment.user_insufficient_balance'] }, 422) if adjustment.amount.abs > balance && params[:action] != 'reject'
               end
             end
 

@@ -1,10 +1,8 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module Workers
   module AMQP
     class Matching < Base
-
       class DryrunError < StandardError
         attr :engine
 
@@ -13,12 +11,12 @@ module Workers
         end
       end
 
-      def initialize(options={})
+      def initialize(options = {})
         @options = options
         reload 'all'
       end
 
-      def process(payload, metadata, delivery_info)
+      def process(payload, _metadata, _delivery_info)
         payload.symbolize_keys!
 
         case payload[:action]
@@ -47,14 +45,14 @@ module Workers
         if market == 'all'
           # NOTE: Run matching engine for disabled markets.
           Market.find_each(&method(:initialize_engine))
-          Rails.logger.info { "All engines reloaded." }
+          Rails.logger.info { 'All engines reloaded.' }
         else
           initialize_engine Market.find_spot_by_symbol(market)
           Rails.logger.info { "#{market} engine reloaded." }
         end
       rescue DryrunError => e
         # stop started engines
-        engines.each {|id, engine| engine.shift_gears(:dryrun) unless engine == e.engine }
+        engines.each { |_id, engine| engine.shift_gears(:dryrun) unless engine == e.engine }
 
         Rails.logger.fatal { "#{market} engine failed to start. Matched during dryrun:" }
         e.engine.queue.each do |trade|
@@ -92,8 +90,8 @@ module Workers
           else
             accept = ENV['ACCEPT_MINUTES'] ? ENV['ACCEPT_MINUTES'].to_i : 30
             order_ids = engine.queue
-              .map {|args| [args[1][:trade][:maker_order_id], args[1][:trade][:taker_order_id]] }
-              .flatten.uniq
+                              .map { |args| [args[1][:trade][:maker_order_id], args[1][:trade][:taker_order_id]] }
+                              .flatten.uniq
 
             orders = Order.where('created_at < ?', accept.minutes.ago).where(id: order_ids)
             if orders.exists?
@@ -101,7 +99,7 @@ module Workers
               raise DryrunError, engine
             else
               # only buffered orders matched, just publish trades and continue
-              engine.queue.each {|args| ::AMQP::Queue.enqueue(*args) }
+              engine.queue.each { |args| ::AMQP::Queue.enqueue(*args) }
               engine.shift_gears :run
             end
           end
@@ -121,20 +119,20 @@ module Workers
           limit_orders = eng.limit_orders
 
           File.open(dump_file, 'w') do |f|
-            f.puts "ASK"
+            f.puts 'ASK'
             limit_orders[:ask].keys.reverse.each do |k|
               f.puts k.to_s('F')
-              limit_orders[:ask][k].each {|o| f.puts "\t#{o.label}" }
+              limit_orders[:ask][k].each { |o| f.puts "\t#{o.label}" }
             end
-            f.puts "-"*40
+            f.puts '-' * 40
             limit_orders[:bid].keys.reverse.each do |k|
               f.puts k.to_s('F')
-              limit_orders[:bid][k].each {|o| f.puts "\t#{o.label}" }
+              limit_orders[:bid][k].each { |o| f.puts "\t#{o.label}" }
             end
-            f.puts "BID"
+            f.puts 'BID'
           end
 
-          puts "#{id} limit orderbook dumped to #{dump_file}."
+          Rails.logger.debug { "#{id} limit orderbook dumped to #{dump_file}." }
         end
       end
 
@@ -145,14 +143,14 @@ module Workers
           market_orders = eng.market_orders
 
           File.open(dump_file, 'w') do |f|
-            f.puts "ASK"
-            market_orders[:ask].each {|o| f.puts "\t#{o.label}" }
-            f.puts "-"*40
-            market_orders[:bid].each {|o| f.puts "\t#{o.label}" }
-            f.puts "BID"
+            f.puts 'ASK'
+            market_orders[:ask].each { |o| f.puts "\t#{o.label}" }
+            f.puts '-' * 40
+            market_orders[:bid].each { |o| f.puts "\t#{o.label}" }
+            f.puts 'BID'
           end
 
-          puts "#{id} market orderbook dumped to #{dump_file}."
+          Rails.logger.debug { "#{id} market orderbook dumped to #{dump_file}." }
         end
       end
     end

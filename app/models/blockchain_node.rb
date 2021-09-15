@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BlockchainNode < ApplicationRecord
   include GatewayConcern
   include Vault::EncryptedModel

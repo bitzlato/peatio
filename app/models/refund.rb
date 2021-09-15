@@ -1,11 +1,10 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class Refund < ApplicationRecord
   extend Enumerize
   include AASM
 
-  belongs_to :deposit, required: true
+  belongs_to :deposit, optional: false
 
   aasm column: :state, whiny_transitions: false, requires_lock: true do
     state :pending, initial: true

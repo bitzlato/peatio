@@ -1,11 +1,9 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Public
       class Currencies < Grape::API
-
         helpers ::API::V2::ParamHelpers
 
         desc 'Get a currency' do
@@ -14,16 +12,16 @@ module API
         params do
           requires :id,
                    type: String,
-                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'public.currency.doesnt_exist'},
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'public.currency.doesnt_exist' },
                    desc: -> { API::V2::Entities::Currency.documentation[:id][:desc] }
         end
-        get '/currencies/:id', requirements: { id: /[\w\.\-]+/ } do
+        get '/currencies/:id', requirements: { id: /[\w.\-]+/ } do
           present Currency.find(params[:id]), with: API::V2::Entities::Currency
         end
 
         desc 'Get list of currencies',
-          is_array: true,
-          success: Entities::Currency
+             is_array: true,
+             success: Entities::Currency
         params do
           use :pagination
           optional :type,
@@ -43,7 +41,6 @@ module API
           search_attrs = { m: 'or',
                            code_cont: params.dig(:search, :code),
                            name_cont: params.dig(:search, :name) }
-
 
           present paginate(Rails.cache.fetch("currencies_#{params}", expires_in: 600) do
             currencies = Currency.visible.ordered

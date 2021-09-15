@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddMarketType < ActiveRecord::Migration[5.2]
-  class LegacyMarket < ActiveRecord::Base
+  class LegacyMarket < ApplicationRecord
   end
 
   def up
@@ -45,7 +45,6 @@ class AddMarketType < ActiveRecord::Migration[5.2]
     add_index(:orders, %w[type market_id market_type]) unless index_exists?(:orders, %w[type market_id market_type])
     add_index(:orders, %w[type state market_id market_type]) unless index_exists?(:orders, %w[type state market_id market_type])
 
-
     add_column(:trades, :market_type, :string, null: false, default: 'spot', after: 'market_id')
     remove_index(:trades, 'maker_id') if index_exists?(:trades, 'market_id')
     remove_index(:trades, 'taker_id') if index_exists?(:trades, 'taker_id')
@@ -53,7 +52,6 @@ class AddMarketType < ActiveRecord::Migration[5.2]
     add_index(:trades, %w[maker_id market_type]) unless index_exists?(:trades, %w[maker_id market_type])
     add_index(:trades, %w[taker_id market_type]) unless index_exists?(:trades, %w[taker_id market_type])
     add_index(:trades, %w[maker_id market_type created_at]) unless index_exists?(:trades, %w[maker_id market_type created_at])
-
 
     add_column(:trading_fees, :market_type, :string, null: false, default: 'spot', after: 'market_id')
     remove_index(:trading_fees, %w[market_id group]) if index_exists?(:trading_fees, %w[market_id group])

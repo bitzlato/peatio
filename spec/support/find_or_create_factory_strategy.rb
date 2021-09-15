@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Source https://gist.github.com/hiasinho/0ed0567dfc091047dc26
 module FactoryBot
   module Strategy
@@ -18,6 +20,7 @@ module FactoryBot
 
       def get_overrides(evaluation = nil)
         return @overrides unless @overrides.nil?
+
         evaluation.instance_variable_get(:@attribute_assigner).instance_variable_get(:@evaluator).instance_variable_get(:@overrides).clone
       end
     end

@@ -7,31 +7,32 @@ describe API::V2::CoinMarketCap::Ticker, type: :request do
       create_list(:order_ask, 5, :btc_usd)
     end
 
-    before(:each) { clear_redis }
+    before { clear_redis }
 
     context 'with unified id' do
-      before(:each) { delete_measurments('trades') }
-      after(:each) { delete_measurments('trades') }
+      before { delete_measurments('trades') }
+
+      after { delete_measurments('trades') }
 
       before do
         Currency.ordered.coins.each.with_index(1) do |currency, index|
-          stub_request(:get, "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&"\
-                                                                                    "listing_status=active&"\
-                                                                                    "symbol=#{currency.id}")
+          stub_request(:get, 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=UNIFIED-CRYPTOASSET-INDEX&'\
+                             'listing_status=active&'\
+                             "symbol=#{currency.id}")
             .to_return(body:
               {
-                'status'=>
+                'status' =>
                     {
-                      'error_code'=>0,
-                      'error_message'=>nil,
-                      'elapsed'=>12,
-                      'credit_count'=>1,
-                      'notice'=>nil
+                      'error_code' => 0,
+                      'error_message' => nil,
+                      'elapsed' => 12,
+                      'credit_count' => 1,
+                      'notice' => nil
                     },
-                'data'=>
+                'data' =>
                   [
                     {
-                      'id'=>index
+                      'id' => index
                     }
                   ]
               }.to_json)
@@ -43,14 +44,16 @@ describe API::V2::CoinMarketCap::Ticker, type: :request do
           {
             'base_id' => 1, 'last_price' => '0.0',
             'quote_volume' => '0.0', 'base_volume' => '0.0',
-            'isFrozen' => 0 }
+            'isFrozen' => 0
+          }
         end
 
         let(:expected_btc_eth_ticker) do
           {
             'base_id' => 1, 'quote_id' => 2, 'last_price' => '0.0',
             'quote_volume' => '0.0', 'base_volume' => '0.0',
-            'isFrozen' => 0 }
+            'isFrozen' => 0
+          }
         end
 
         it 'returns ticker of all markets' do
@@ -67,7 +70,7 @@ describe API::V2::CoinMarketCap::Ticker, type: :request do
       end
 
       context 'single trade was executed' do
-        let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+        let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
 
         let(:expected_btc_usd_ticker) do
           {
@@ -99,8 +102,8 @@ describe API::V2::CoinMarketCap::Ticker, type: :request do
       end
 
       context 'multiple trades were executed' do
-        let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
-        let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+        let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
+        let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d) }
 
         let(:expected_btc_usd_ticker) do
           { 'base_id' => 1, 'last_price' => '6.0',

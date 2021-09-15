@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Transfer do
@@ -13,13 +12,13 @@ describe Transfer do
       it 'uniqueness' do
         existing_transfer = create(:transfer)
         subject.key = existing_transfer.key
-        expect(subject.valid?).to be_falsey
+        expect(subject).not_to be_valid
         expect(subject).to include_ar_error(:key, /has already been taken/)
       end
 
       it 'presence' do
         subject.key = nil
-        expect(subject.valid?).to be_falsey
+        expect(subject).not_to be_valid
         expect(subject).to include_ar_error(:key, /can't be blank/)
       end
     end
@@ -27,7 +26,7 @@ describe Transfer do
     describe 'category' do
       it 'presence' do
         subject.category = nil
-        expect(subject.valid?).to be_falsey
+        expect(subject).not_to be_valid
         expect(subject).to include_ar_error(:category, /can't be blank/)
       end
     end
@@ -37,7 +36,7 @@ describe Transfer do
         subject { build(:transfer, assets: build_list(:asset, 5)) }
 
         it 'invalidates transfer' do
-          expect(subject.valid?).to be_falsey
+          expect(subject).not_to be_valid
           expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
         end
       end
@@ -58,7 +57,7 @@ describe Transfer do
           let(:expenses) { [build(:expense, credit: 1, currency: currency_btc)] }
 
           it 'invalidates transfer' do
-            expect(subject.valid?).to be_falsey
+            expect(subject).not_to be_valid
             expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
           end
         end
@@ -70,7 +69,7 @@ describe Transfer do
           let(:expenses) { [build(:expense, credit: 1, currency: currency_btc)] }
 
           it 'invalidates transfer' do
-            expect(subject.valid?).to be_falsey
+            expect(subject).not_to be_valid
             expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
           end
         end
@@ -118,7 +117,7 @@ describe Transfer do
           let(:expenses) { [expense1, expense2, expense3, expense4] }
 
           it 'invalidates transfer' do
-            expect(subject.valid?).to be_falsey
+            expect(subject).not_to be_valid
             expect(subject).to include_ar_error(:base, /invalidates accounting equation/)
           end
         end
@@ -132,6 +131,7 @@ describe Transfer do
                 revenues: revenues,
                 expenses: expenses)
         end
+
         context 'with single currency' do
           # assets - liabilities = revenues - expenses
           #
@@ -157,7 +157,6 @@ describe Transfer do
           let(:expense2) { build(:expense, credit: 4, currency: currency_btc) }
           let(:expense3) { build(:expense, :debit, debit: 3, currency: currency_btc) }
 
-
           let(:assets) { [asset1, asset2, asset3] }
           let(:liabilities) { [liability1, liability2, liability3] }
           let(:revenues) { [revenue1, revenue2, revenue3] }
@@ -173,12 +172,13 @@ describe Transfer do
 
   context 'do_transfer!' do
     subject do
-      Transfer.create!(attributes_for(:transfer,
-                                           liabilities: liabilities,
-                                           assets: assets,
-                                           revenues: revenues,
-                                           expenses: expenses))
+      described_class.create!(attributes_for(:transfer,
+                                             liabilities: liabilities,
+                                             assets: assets,
+                                             revenues: revenues,
+                                             expenses: expenses))
     end
+
     let(:asset1) { build(:asset, credit: 9, currency: currency_btc) }
     let(:asset2) { build(:asset, :debit, debit: 6, currency: currency_btc) }
     let(:revenue1) { build(:revenue, credit: 12, currency: currency_btc) }
@@ -191,17 +191,17 @@ describe Transfer do
     let(:liabilities) { [] }
 
     it 'creates transfer' do
-      expect {
+      expect do
         subject
-      }.to change { Transfer.count }.by 1
+      end.to change(described_class, :count).by 1
     end
 
     context 'update_legacy_balances' do
       context 'without liabilities' do
         it 'does not change legacy balances' do
-          expect {
+          expect do
             subject
-          }.not_to change { Member.all.map(&:accounts) }
+          end.not_to change { Member.all.map(&:accounts) }
         end
       end
 
@@ -216,21 +216,21 @@ describe Transfer do
         let(:liabilities) { [credit, debit1, debit2] }
 
         it 'increases balance for member1' do
-          expect {
+          expect do
             subject
-          }.to change { member1.accounts.find_by(currency: currency_btc).balance }.by(9)
+          end.to change { member1.accounts.find_by(currency: currency_btc).balance }.by(9)
         end
 
         it 'decreases balance for member2' do
-          expect {
+          expect do
             subject
-          }.to change { member2.accounts.find_by(currency: currency_btc).balance }.by(-5)
+          end.to change { member2.accounts.find_by(currency: currency_btc).balance }.by(-5)
         end
 
         it 'decreases balance for member3' do
-          expect {
+          expect do
             subject
-          }.to change { member3.accounts.find_by(currency: currency_btc).balance }.by(-4)
+          end.to change { member3.accounts.find_by(currency: currency_btc).balance }.by(-4)
         end
 
         context 'legacy balance update raise error' do
@@ -239,9 +239,14 @@ describe Transfer do
           end
 
           it 'does not create transfer' do
-            expect {
-              subject rescue Account::AccountError; nil
-            }.to_not change{ Transfer.count }
+            expect do
+              begin
+                subject
+              rescue StandardError
+                Account::AccountError
+              end
+              nil
+            end.not_to change(described_class, :count)
           end
         end
       end

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_relative 'constants'
@@ -19,14 +18,14 @@ module Matching
       when 'cancel'
         publish_cancel
       else
-        raise ExecutorError.new("Unknown action: #{@payload[:action]}")
+        raise ExecutorError, "Unknown action: #{@payload[:action]}"
       end
     end
 
     def publish_cancel
       AMQP::Queue.enqueue(:order_processor,
-                        { action: 'cancel', order: @payload[:order] },
-                        { persistent: false })
+                          { action: 'cancel', order: @payload[:order] },
+                          { persistent: false })
     end
 
     def execute
@@ -37,6 +36,7 @@ module Matching
       [@maker_order, @taker_order].each do |order|
         order.with_lock do
           next unless order.state == Order::WAIT
+
           AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
         end
       end
@@ -56,7 +56,7 @@ module Matching
       @trade
     end
 
-  private
+    private
 
     def validate!
       ask, bid = @maker_order.side == 'sell' ? [@maker_order, @taker_order] : [@taker_order, @maker_order]
@@ -64,9 +64,7 @@ module Matching
       raise_error(3002, 'Bid price is less than strike price.') if bid.ord_type == 'limit' && bid.price < @price
       raise_error(3003, "Maker order state isn\'t equal to «wait» (#{@maker_order.state}).") unless @maker_order.state == Order::WAIT
       raise_error(3004, "Taker order state isn\'t equal to «wait» (#{@taker_order.state}).") unless @taker_order.state == Order::WAIT
-      unless @total > ZERO && [@maker_order.volume, @taker_order.volume].min >= @amount
-        raise_error(3005, 'Not enough funds.')
-      end
+      raise_error(3005, 'Not enough funds.') unless @total > ZERO && [@maker_order.volume, @taker_order.volume].min >= @amount
     end
 
     def create_trade_and_strike_orders
@@ -86,20 +84,20 @@ module Matching
         validate!
 
         accounts_table = Account
-          .lock
-          .select(:member_id, :currency_id, :balance, :locked)
-          .where(member_id: [@maker_order.member_id, @taker_order .member_id].uniq, currency_id: [@market.base_unit, @market.quote_unit])
-          .each_with_object({}) { |record, memo| memo["#{record.currency_id}:#{record.member_id}"] = record }
+                         .lock
+                         .select(:member_id, :currency_id, :balance, :locked)
+                         .where(member_id: [@maker_order.member_id, @taker_order.member_id].uniq, currency_id: [@market.base_unit, @market.quote_unit])
+                         .each_with_object({}) { |record, memo| memo["#{record.currency_id}:#{record.member_id}"] = record }
 
         @trade = Trade.new \
-          maker_order:   @maker_order,
-          maker_id:      @maker_order.member_id,
-          taker_order:   @taker_order,
-          taker_id:      @taker_order.member_id,
-          price:         @price,
-          amount:        @amount,
-          total:         @total,
-          market:        @market
+          maker_order: @maker_order,
+          maker_id: @maker_order.member_id,
+          taker_order: @taker_order,
+          taker_id: @taker_order.member_id,
+          price: @price,
+          amount: @amount,
+          total: @total,
+          market: @market
 
         strike(@trade, @maker_order, accounts_table["#{@maker_order.outcome_currency.id}:#{@maker_order.member_id}"], accounts_table["#{@maker_order.income_currency.id}:#{@maker_order.member_id}"])
         strike(@trade, @taker_order, accounts_table["#{@taker_order.outcome_currency.id}:#{@taker_order.member_id}"], accounts_table["#{@taker_order.income_currency.id}:#{@taker_order.member_id}"])
@@ -119,7 +117,7 @@ module Matching
           end
 
           updates = record.changed_attributes.map do |(attribute, _)|
-            if Order === record
+            if record.is_a?(Order)
               value = record.public_send(attribute)
               [table[attribute], ::Order::STATES.with_indifferent_access.fetch(value, value)]
             else
@@ -139,6 +137,7 @@ module Matching
               (res = client.get_result) or break
               res.check
               res.each do |_row|
+                # WTF?
               end
             end
           else
@@ -155,8 +154,8 @@ module Matching
     def publish_trade
       AMQP::Queue.publish :trade, @trade.as_json, {
         headers: {
-          type:     :local,
-          market:   @market.symbol,
+          type: :local,
+          market: @market.symbol,
           maker_id: @maker_id,
           taker_id: @taker_id
         }
@@ -176,7 +175,7 @@ module Matching
         next unless order.ord_type == 'limit' # Skip market orders.
 
         EventAPI.notify ['market', order.market_id, event].join('.'), \
-          Serializers::EventAPI.const_get(event.camelize).call(order)
+                        Serializers::EventAPI.const_get(event.camelize).call(order)
       end
     end
 
@@ -184,15 +183,15 @@ module Matching
       raise TradeExecutionError.new \
         maker_order: @maker_order.attributes,
         taker_order: @taker_order.attributes,
-        price:       @price,
-        amount:      @amount,
-        total:       @total,
-        code:        code,
-        message:     message
+        price: @price,
+        amount: @amount,
+        total: @total,
+        code: code,
+        message: message
     end
 
     def strike(trade, order, outcome_account, income_account)
-      outcome_value, income_value = OrderAsk === order ? [trade.amount, trade.total] : [trade.total, trade.amount]
+      outcome_value, income_value = order.is_a?(OrderAsk) ? [trade.amount, trade.total] : [trade.total, trade.amount]
       fee = income_value * trade.order_fee(order)
       real_income_value = income_value - fee
 
@@ -209,9 +208,7 @@ module Matching
         order.state = Order::DONE
 
         # Unlock not used funds.
-        unless order.locked.zero?
-          outcome_account.assign_attributes outcome_account.attributes_after_unlock_funds!(order.locked)
-        end
+        outcome_account.assign_attributes outcome_account.attributes_after_unlock_funds!(order.locked) unless order.locked.zero?
       elsif order.ord_type == 'market' && order.locked.zero?
         # Partially filled market order has run out it's locked funds.
         order.state = Order::CANCEL

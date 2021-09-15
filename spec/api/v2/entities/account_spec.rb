@@ -1,10 +1,9 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Entities::Account do
-  let(:account) { create(:account, :btc, balance: 100) }
+  subject { OpenStruct.new described_class.represent(account).serializable_hash }
 
-  subject { OpenStruct.new API::V2::Entities::Account.represent(account).serializable_hash }
+  let(:account) { create(:account, :btc, balance: 100) }
 
   it do
     expect(subject.currency).to eq 'btc'

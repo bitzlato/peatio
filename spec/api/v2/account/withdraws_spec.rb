@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Account::Withdraws, type: :request do
@@ -8,12 +7,12 @@ describe API::V2::Account::Withdraws, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Withdraw'],'create'=>['Withdraw']}})
+    Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['Withdraw'], 'create' => ['Withdraw'] } })
   end
 
   describe 'GET /api/v2/account/withdraws' do
     let!(:btc_withdraws) { create_list(:btc_withdraw, 20, :with_deposit_liability, member: member, updated_at: 5.days.ago) }
-    let!(:usd_withdraws) { create_list(:usd_withdraw, 20, :with_deposit_liability, member: member, updated_at: 2.hour.ago) }
+    let!(:usd_withdraws) { create_list(:usd_withdraw, 20, :with_deposit_liability, member: member, updated_at: 2.hours.ago) }
 
     context 'unauthorized' do
       before do
@@ -23,7 +22,7 @@ describe API::V2::Account::Withdraws, type: :request do
       it 'renders unauthorized error' do
         api_get '/api/v2/account/withdraws', token: token
 
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -73,7 +72,7 @@ describe API::V2::Account::Withdraws, type: :request do
 
       expect(response).to be_successful
       expect(response.headers.fetch('Total')).to eq '40'
-      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[ btc usd ]
+      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[btc usd]
     end
 
     it 'returns withdraws specified currency' do
@@ -82,28 +81,26 @@ describe API::V2::Account::Withdraws, type: :request do
 
       expect(response).to be_successful
       expect(response.headers.fetch('Total')).to eq '20'
-      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[ btc ]
+      expect(result.map { |x| x['currency'] }.uniq.sort).to eq %w[btc]
     end
-
 
     it 'returns withdraws with txid filter' do
       api_get '/api/v2/account/withdraws', params: { rid: btc_withdraws.first.rid }, token: token
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 1
-      expect(result.all? { |d| d['rid'] == btc_withdraws.first.rid }).to be_truthy
+      expect(result).to be_all { |d| d['rid'] == btc_withdraws.first.rid }
     end
-
 
     it 'filters withdraws by multiple states' do
       create(:usd_withdraw, member: member, aasm_state: :rejected)
-      api_get '/api/v2/account/withdraws', params: { state: ['canceled', 'rejected'] }, token: token
+      api_get '/api/v2/account/withdraws', params: { state: %w[canceled rejected] }, token: token
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 1
 
       create(:usd_withdraw, member: member, aasm_state: :canceled)
-      api_get '/api/v2/account/withdraws', params: { state: ['canceled', 'rejected'] }, token: token
+      api_get '/api/v2/account/withdraws', params: { state: %w[canceled rejected] }, token: token
       result = JSON.parse(response.body)
 
       expect(result.size).to eq 2
@@ -161,7 +158,10 @@ describe API::V2::Account::Withdraws, type: :request do
   end
 
   describe 'create withdraw' do
-    let(:currency) { Currency.visible.sample; Currency.find(:usd) }
+    let(:currency) do
+      Currency.visible.sample
+      Currency.find(:usd)
+    end
     let(:amount) { 0.15 }
 
     let(:beneficiary) do
@@ -169,26 +169,30 @@ describe API::V2::Account::Withdraws, type: :request do
     end
 
     let :data do
-      { uid:            member.uid,
-        currency:       currency.code,
-        amount:         amount,
+      { uid: member.uid,
+        currency: currency.code,
+        amount: amount,
         beneficiary_id: beneficiary.id,
-        otp:            123456 }
+        otp: 123_456 }
     end
 
     let(:account) { member.get_account(currency) }
     let(:balance) { 1.2 }
-    let(:long_note) { (0...257).map { (65 + rand(26)).chr }.join }
+    let(:long_note) { (0...257).map { rand(65..90).chr }.join }
+
     before { account.plus_funds(balance) }
+
     before { Vault::TOTP.stubs(:validate?).returns(true) }
 
     context 'extremely precise values' do
       before { Currency.any_instance.stubs(:withdraw_fee).returns(BigDecimal(0)) }
+
       before { Currency.any_instance.stubs(:precision).returns(16) }
+
       it 'keeps precision for amount' do
         data[:amount] = '0.0000000123456789'
         api_post '/api/v2/account/withdraws', params: data, token: token
-        expect(response).to have_http_status(201)
+        expect(response).to have_http_status(:created)
         expect(Withdraw.last.sum.to_s).to eq data[:amount]
       end
     end
@@ -196,7 +200,7 @@ describe API::V2::Account::Withdraws, type: :request do
     it 'validates missing params' do
       data.except!(:otp, :amount, :currency, :beneficiary_id)
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.missing_otp')
       expect(response).to include_api_error('account.withdraw.missing_amount')
       expect(response).to include_api_error('account.withdraw.missing_currency')
@@ -208,25 +212,27 @@ describe API::V2::Account::Withdraws, type: :request do
         it do
           data[:beneficiary_id] = data[:beneficiary_id] + 1
           api_post '/api/v2/account/withdraws', params: data, token: token
-          expect(response).to have_http_status(422)
+          expect(response).to have_http_status(:unprocessable_entity)
           expect(response).to include_api_error('account.beneficiary.doesnt_exist')
         end
       end
 
       context 'archived' do
         before { beneficiary.update(state: :archived) }
+
         it do
           api_post '/api/v2/account/withdraws', params: data, token: token
-          expect(response).to have_http_status(422)
+          expect(response).to have_http_status(:unprocessable_entity)
           expect(response).to include_api_error('account.beneficiary.doesnt_exist')
         end
       end
 
       context 'pending' do
         before { beneficiary.update(state: :pending) }
+
         it do
           api_post '/api/v2/account/withdraws', params: data, token: token
-          expect(response).to have_http_status(422)
+          expect(response).to have_http_status(:unprocessable_entity)
           expect(response).to include_api_error('account.beneficiary.invalid_state_for_withdrawal')
         end
       end
@@ -235,77 +241,77 @@ describe API::V2::Account::Withdraws, type: :request do
     it 'requires beneficiary_id' do
       data[:beneficiary_id] = nil
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.empty_beneficiary_id')
     end
 
     it 'validates beneficiary_id type' do
       data[:beneficiary_id] = 'beneficiary_id'
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.non_integer_beneficiary_id')
     end
 
     it 'requires otp' do
       data[:otp] = nil
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.empty_otp')
     end
 
     it 'validates otp code' do
       Vault::TOTP.stubs(:validate?).returns(false)
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.invalid_otp')
     end
 
     it 'requires amount' do
       data[:amount] = nil
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.non_positive_amount')
     end
 
     it 'validates negative amount' do
       data[:amount] = -1
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.non_positive_amount')
     end
 
     it 'validates enough balance' do
       data[:amount] = 100
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.insufficient_balance')
     end
 
     it 'validates amount type' do
       data[:amount] = 'one'
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.non_decimal_amount')
     end
 
     it 'validates amount precision' do
       data[:amount] = 0.123456789123456789
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.invalid_amount')
     end
 
     it 'requires currency' do
       data[:currency] = nil
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.currency.doesnt_exist')
     end
 
     it 'disabled currency' do
       data[:currency] = :eur
       api_post '/api/v2/account/withdraws', params: data, token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.currency.doesnt_exist')
     end
 
@@ -316,7 +322,7 @@ describe API::V2::Account::Withdraws, type: :request do
 
       it 'returns error' do
         api_post '/api/v2/account/withdraws', params: data, token: token
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.currency.withdrawal_disabled')
       end
     end
@@ -324,7 +330,7 @@ describe API::V2::Account::Withdraws, type: :request do
     it 'creates new withdraw and immediately submits it' do
       api_post '/api/v2/account/withdraws', params: data, token: token
 
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       record = Withdraw.last
       expect(record.sum).to eq amount
       expect(record.aasm_state).to eq 'accepted'
@@ -335,7 +341,7 @@ describe API::V2::Account::Withdraws, type: :request do
 
     it 'creates new withdraw with note' do
       api_post '/api/v2/account/withdraws', params: data.merge(note: 'Test note'), token: token
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
 
       result = JSON.parse(response.body)
       expect(result['note']).to eq 'Test note'
@@ -346,7 +352,7 @@ describe API::V2::Account::Withdraws, type: :request do
 
     it 'doesnt create new withdraw with too long note' do
       api_post '/api/v2/account/withdraws', params: data.merge(note: long_note), token: token
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to include_api_error('account.withdraw.too_long_note')
     end
 
@@ -358,7 +364,7 @@ describe API::V2::Account::Withdraws, type: :request do
       it 'renders unauthorized error' do
         api_post '/api/v2/account/withdraws', params: data, token: token
 
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -376,8 +382,8 @@ describe API::V2::Account::Withdraws, type: :request do
     it 'returns withdrawals sums' do
       api_get '/api/v2/account/withdraws/sums', token: token
 
-      expect(response_body.key?('last_24_hours')).to be_truthy
-      expect(response_body.key?('last_1_month')).to be_truthy
+      expect(response_body).to be_key('last_24_hours')
+      expect(response_body).to be_key('last_1_month')
     end
 
     context 'unauthorized' do
@@ -388,7 +394,7 @@ describe API::V2::Account::Withdraws, type: :request do
       it 'renders unauthorized error' do
         api_get '/api/v2/account/withdraws/sums', token: token
 
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end

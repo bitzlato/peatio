@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Account do
@@ -50,14 +49,14 @@ describe Account do
       expect do
         account.plus_funds(strike_volume)
         account.sub_funds(strike_volume)
-      end.to_not(change { account.balance })
+      end.not_to(change(account, :balance))
     end
   end
 
   describe 'concurrent lock_funds' do
-    it 'should raise error on the second lock_funds' do
-      account1 = Account.find subject.id
-      account2 = Account.find subject.id
+    it 'raises error on the second lock_funds' do
+      account1 = described_class.find subject.id
+      account2 = described_class.find subject.id
 
       expect(subject.reload.balance).to eq 10.to_d
 
@@ -85,7 +84,7 @@ describe Account do
       currency = Currency.find(:eth)
       currency.transaction do
         # We have created 3 account.
-        expect{ currency.update_columns(visible: false) }.to change { Account.visible.count }.by(-1)
+        expect { currency.update_columns(visible: false) }.to change { described_class.visible.count }.by(-1)
         currency.update_columns(visible: true)
       end
     end

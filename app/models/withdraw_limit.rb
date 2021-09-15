@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 class WithdrawLimit < ApplicationRecord
-
   # Default value for kyc_level, group name and currency_id in WithdrawLimit table;
   ANY = 'any'
 
-    # == Attributes ===========================================================
+  # == Attributes ===========================================================
 
   # == Extensions ===========================================================
 
@@ -30,7 +29,7 @@ class WithdrawLimit < ApplicationRecord
 
   # == Callbacks ============================================================
 
-  before_create { self.group = self.group.strip.downcase }
+  before_create { self.group = group.strip.downcase }
   after_commit :wipe_cache
 
   # == Class Methods ========================================================
@@ -64,7 +63,7 @@ class WithdrawLimit < ApplicationRecord
   end
 
   def wipe_cache
-    Rails.cache.delete_matched("withdraw_limits_fees*")
+    Rails.cache.delete_matched('withdraw_limits_fees*')
   end
 end
 

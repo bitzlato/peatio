@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # enco  ding: UTF-8
 # froz  en_string_literal: true
 
@@ -19,10 +21,10 @@ module API
           expose(
             :blockchain_key,
             documentation: {
-                type: String,
-                desc: 'Associated blockchain key which will perform transactions synchronization for currency.'
+              type: String,
+              desc: 'Associated blockchain key which will perform transactions synchronization for currency.'
             },
-            if: -> (currency){ currency.coin? }
+            if: ->(currency) { currency.coin? }
           )
 
           expose(
@@ -31,7 +33,7 @@ module API
               desc: 'Parent currency id.',
               type: String
             },
-            if: -> (currency){ currency.token? }
+            if: ->(currency) { currency.token? }
           )
 
           expose(
@@ -71,8 +73,8 @@ module API
             documentation: {
               type: Integer,
               desc: 'Fraction of the basic monetary unit.'
-            }
-          ) { |currency| currency.subunits }
+            }, &:subunits
+          )
 
           expose(
             :options,
@@ -80,7 +82,7 @@ module API
               type: JSON,
               desc: 'Currency options.'
             },
-            if: -> (currency){ currency.coin? }
+            if: ->(currency) { currency.coin? }
           )
 
           expose(

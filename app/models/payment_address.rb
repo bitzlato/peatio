@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 # TODO: Rename to DepositAddress
@@ -22,7 +21,7 @@ class PaymentAddress < ApplicationRecord
   scope :with_balances, -> { where 'EXISTS ( SELECT * FROM jsonb_each_text(balances) AS each(KEY,val) WHERE "val"::decimal >= 0)' }
   scope :collection_required, -> { with_balances.where(collection_state: %i[none pending], gas_refueling_state: %i[none]) }
 
-  # TODO Migrate association from wallet to blockchain and remove Wallet.deposit*
+  # TODO: Migrate association from wallet to blockchain and remove Wallet.deposit*
   belongs_to :member
   belongs_to :blockchain
 
@@ -66,12 +65,12 @@ class PaymentAddress < ApplicationRecord
 
   def enqueue_address_generation
     AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain_id }, { persistent: true })
-  rescue Bunny::ConnectionClosedError => err
-    report_exception err, true, member_id: member.id, blockchain_id: blockchain_id
+  rescue Bunny::ConnectionClosedError => e
+    report_exception e, true, member_id: member.id, blockchain_id: blockchain_id
   end
 
   def address_url
-    blockchain.explore_address_url address if blockchain
+    blockchain&.explore_address_url address
   end
 
   def update_balances!
@@ -114,7 +113,7 @@ class PaymentAddress < ApplicationRecord
     ::AMQP::Queue.enqueue_event('private', member.uid, :deposit_address,
                                 type: :create,
                                 currencies: currencies.codes,
-                                address:  address)
+                                address: address)
   end
 
   def currency

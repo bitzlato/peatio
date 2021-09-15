@@ -1,18 +1,16 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Management
       class Deposits < Grape::API
-
         desc 'Returns deposits as paginated collection.' do
           @settings[:scope] = :read_deposits
           success API::V2::Management::Entities::Deposit
         end
         params do
-          optional :uid,      type: String,  desc: 'The shared user ID.'
-          optional :from_id,  type: Integer,  desc: 'Unique blockchain identifier in database. Will return starting from given id.'
+          optional :uid,      type: String, desc: 'The shared user ID.'
+          optional :from_id,  type: Integer, desc: 'Unique blockchain identifier in database. Will return starting from given id.'
           optional :currency, type: String,  values: -> { Currency.codes(bothcase: true) }, desc: 'The currency code.'
           optional :page,     type: Integer, default: 1,   integer_gt_zero: true, desc: 'The page number (defaults to 1).'
           optional :limit,    type: Integer, default: 100, range: 1..1000, desc: 'The number of deposits per page (defaults to 100, maximum is 1000).'
@@ -46,8 +44,8 @@ module API
         end
 
         desc 'Creates new fiat deposit with state set to «submitted». ' \
-            'Optionally pass field «state» set to «accepted» if want to load money instantly. ' \
-            'You can also use PUT /fiat_deposits/:id later to load money or cancel deposit.' do
+             'Optionally pass field «state» set to «accepted» if want to load money instantly. ' \
+             'You can also use PUT /fiat_deposits/:id later to load money or cancel deposit.' do
           @settings[:scope] = :write_deposits
           success API::V2::Management::Entities::Deposit
         end
@@ -58,16 +56,14 @@ module API
           requires :amount,   type: BigDecimal, desc: 'The deposit amount.'
           optional :state,    type: String, desc: 'The state of deposit.', values: %w[accepted]
           optional :transfer_type,  type: String,
-                                    values:  { value: -> { Deposit::TRANSFER_TYPES.keys }, message: 'account.deposit.transfer_type_not_in_list' },
+                                    values: { value: -> { Deposit::TRANSFER_TYPES.keys }, message: 'account.deposit.transfer_type_not_in_list' },
                                     desc: -> { API::V2::Admin::Entities::Deposit.documentation[:transfer_type][:desc] }
         end
         post '/deposits/new' do
           member   = Member.find_by(uid: params[:uid])
           currency = Currency.find(params[:currency])
 
-          unless currency.deposit_enabled?
-            error!({ errors: ['management.currency.deposit_disabled'] }, 422)
-          end
+          error!({ errors: ['management.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
 
           data     = { member: member, currency: currency }.merge!(params.slice(:amount, :tid, :transfer_type))
           deposit  = ::Deposits::Fiat.new(data)

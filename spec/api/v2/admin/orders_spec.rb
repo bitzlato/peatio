@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Admin::Orders, type: :request do
@@ -10,16 +9,16 @@ describe API::V2::Admin::Orders, type: :request do
   describe 'GET /api/v2/admin/orders' do
     before do
       # NOTE: We specify updated_at attribute for testing order of Order.
-      create(:order_bid, :btc_usd, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1548224524), created_at: Time.at(1548234524))
-      create(:order_bid, :btc_eth, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1548234524), created_at: Time.at(1548254524))
-      create(:order_bid, :btc_eth_qe, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1548234524), created_at: Time.at(1548254524))
-      create(:order_bid, :btc_usd, price: '12'.to_d, origin_volume: '123.12', member: admin, state: Order::CANCEL, updated_at: Time.at(1548244524), created_at: Time.at(1548254524))
-      create(:order_ask, :btc_usd, price: '13'.to_d, origin_volume: '123.12', member: admin, state: Order::WAIT, updated_at: Time.at(1548254524), created_at: Time.at(1548254524))
-      create(:order_ask, :btc_usd, price: '14'.to_d, origin_volume: '123.12', member: admin, state: Order::DONE, created_at: Time.at(1548254524))
+      create(:order_bid, :btc_usd, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1_548_224_524), created_at: Time.at(1_548_234_524))
+      create(:order_bid, :btc_eth, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1_548_234_524), created_at: Time.at(1_548_254_524))
+      create(:order_bid, :btc_eth_qe, price: '11'.to_d, origin_volume: '123.12', member: admin, updated_at: Time.at(1_548_234_524), created_at: Time.at(1_548_254_524))
+      create(:order_bid, :btc_usd, price: '12'.to_d, origin_volume: '123.12', member: admin, state: Order::CANCEL, updated_at: Time.at(1_548_244_524), created_at: Time.at(1_548_254_524))
+      create(:order_ask, :btc_usd, price: '13'.to_d, origin_volume: '123.12', member: admin, state: Order::WAIT, updated_at: Time.at(1_548_254_524), created_at: Time.at(1_548_254_524))
+      create(:order_ask, :btc_usd, price: '14'.to_d, origin_volume: '123.12', member: admin, state: Order::DONE, created_at: Time.at(1_548_254_524))
     end
 
     it 'csv export' do
-      api_get'/api/v2/admin/orders', token: token, params: { format: :csv }
+      api_get '/api/v2/admin/orders', token: token, params: { format: :csv }
       expect(response).to be_successful
     end
 
@@ -30,7 +29,7 @@ describe API::V2::Admin::Orders, type: :request do
 
     it 'validates market param' do
       api_get '/api/v2/admin/orders', params: { market: 'usdusd' }, token: token
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('admin.market.doesnt_exist')
     end
 
@@ -53,7 +52,7 @@ describe API::V2::Admin::Orders, type: :request do
     end
 
     it 'validates page param' do
-      api_get '/api/v2/admin/orders', params: { market: 'btc_usd', limit: 2, page: "page 2" }, token: token
+      api_get '/api/v2/admin/orders', params: { market: 'btc_usd', limit: 2, page: 'page 2' }, token: token
       expect(response.code).to eq '422'
       expect(response).to include_api_error('admin.pagination.non_integer_page')
     end
@@ -106,7 +105,7 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['ord_type']}).to all eq 'limit'
+      expect(result.map { |r| r['ord_type'] }).to all eq 'limit'
     end
 
     it 'returns orders with type sell' do
@@ -114,7 +113,7 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['side']}).to all eq 'sell'
+      expect(result.map { |r| r['side'] }).to all eq 'sell'
     end
 
     it 'returns orders for specific price' do
@@ -122,8 +121,8 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['price']}.size).to eq 2
-      expect(result.map{|r| r['price']}).to all eq '11.0'
+      expect(result.map { |r| r['price'] }.size).to eq 2
+      expect(result.map { |r| r['price'] }).to all eq '11.0'
     end
 
     it 'returns orders for specific origin_volume' do
@@ -131,8 +130,8 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['origin_volume']}.size).to eq 5
-      expect(result.map{|r| r['origin_volume']}).to all eq '123.12'
+      expect(result.map { |r| r['origin_volume'] }.size).to eq 5
+      expect(result.map { |r| r['origin_volume'] }).to all eq '123.12'
     end
 
     it 'returns orders for specific user by email' do
@@ -140,8 +139,8 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['email']}.size).to eq 5
-      expect(result.map{|r| r['email']}).to all eq 'example@gmail.com'
+      expect(result.map { |r| r['email'] }.size).to eq 5
+      expect(result.map { |r| r['email'] }).to all eq 'example@gmail.com'
     end
 
     it 'returns orders for specific user by uid' do
@@ -149,8 +148,8 @@ describe API::V2::Admin::Orders, type: :request do
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.map{|r| r['uid']}.size).to eq 5
-      expect(result.map{|r| r['uid']}).to all eq 'ID73BF61C8H0'
+      expect(result.map { |r| r['uid'] }.size).to eq 5
+      expect(result.map { |r| r['uid'] }).to all eq 'ID73BF61C8H0'
     end
 
     it 'returns paginated orders' do
@@ -170,7 +169,7 @@ describe API::V2::Admin::Orders, type: :request do
     end
 
     it 'returns orders by ascending order' do
-      api_get '/api/v2/admin/orders', params: { market: 'btc_usd', ordering: 'asc', order_by: 'updated_at'}, token: token
+      api_get '/api/v2/admin/orders', params: { market: 'btc_usd', ordering: 'asc', order_by: 'updated_at' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -178,7 +177,7 @@ describe API::V2::Admin::Orders, type: :request do
     end
 
     it 'returns orders for updated time range' do
-      api_get '/api/v2/admin/orders', params: { range: 'updated', from: Time.at(1548224524).iso8601, to: Time.at(1548244524).iso8601 }, token: token
+      api_get '/api/v2/admin/orders', params: { range: 'updated', from: Time.at(1_548_224_524).iso8601, to: Time.at(1_548_244_524).iso8601 }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -186,7 +185,7 @@ describe API::V2::Admin::Orders, type: :request do
     end
 
     it 'return error in case of not permitted ability' do
-      api_get'/api/v2/admin/orders', token: level_3_member_token
+      api_get '/api/v2/admin/orders', token: level_3_member_token
       expect(response.code).to eq '403'
       expect(response).to include_api_error('admin.ability.not_permitted')
     end
@@ -196,10 +195,10 @@ describe API::V2::Admin::Orders, type: :request do
     let!(:order) { create(:order_bid, :btc_usd, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', locked: '20.1082', origin_locked: '38.0882', member: level_3_member) }
 
     before do
-      level_3_member.get_account(:usd).update_attributes(locked: order.price * order.volume)
+      level_3_member.get_account(:usd).update(locked: order.price * order.volume)
     end
 
-    it 'should cancel specified order' do
+    it 'cancels specified order' do
       AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes)
       expect do
         api_post "/api/v2/admin/orders/#{order.id}/cancel", token: token
@@ -229,11 +228,11 @@ describe API::V2::Admin::Orders, type: :request do
       create(:order_bid, :btc_usd, price: '12.32', volume: '3.14', origin_volume: '12.13', member: level_3_member)
       create(:order_bid, :btc_eth, price: '12.32', volume: '3.14', origin_volume: '12.13', member: level_3_member)
 
-      level_3_member.get_account(:btc).update_attributes(locked: '5')
-      level_3_member.get_account(:usd).update_attributes(locked: '50')
+      level_3_member.get_account(:btc).update(locked: '5')
+      level_3_member.get_account(:usd).update(locked: '50')
     end
 
-    it 'should cancel all my orders for specific market' do
+    it 'cancels all my orders for specific market' do
       level_3_member.orders.where(market: 'btc_eth').each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
       end
@@ -247,7 +246,7 @@ describe API::V2::Admin::Orders, type: :request do
       end.not_to change(Order, :count)
     end
 
-    it 'should cancel all asks for specific market' do
+    it 'cancels all asks for specific market' do
       level_3_member.orders.where(type: 'OrderAsk', market_id: 'btc_usd').each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
       end

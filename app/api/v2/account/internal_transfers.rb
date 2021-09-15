@@ -57,17 +57,11 @@ module API
             error!({ errors: ['account.internal_transfer.receiver_not_found'] }, 422) if receiver.nil?
             currency = Currency.find(params[:currency])
 
-            unless Vault::TOTP.validate?(current_user.uid, params[:otp])
-              error!({ errors: ['account.internal_transfer.invalid_otp'] }, 422)
-            end
+            error!({ errors: ['account.internal_transfer.invalid_otp'] }, 422) unless Vault::TOTP.validate?(current_user.uid, params[:otp])
 
-            if current_user.get_account(currency).balance < params[:amount]
-              error!({ errors: ['account.internal_transfer.insufficient_balance'] }, 422)
-            end
+            error!({ errors: ['account.internal_transfer.insufficient_balance'] }, 422) if current_user.get_account(currency).balance < params[:amount]
 
-            if current_user == receiver
-              error!({ errors: ['account.internal_transfer.can_not_tranfer_to_yourself'] }, 422)
-            end
+            error!({ errors: ['account.internal_transfer.can_not_tranfer_to_yourself'] }, 422) if current_user == receiver
 
             internal_transfer = ::InternalTransfer.new(
               currency: currency,

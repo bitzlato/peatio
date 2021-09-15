@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Make an incentive airdrop deposit
 #
 class AirdropService
@@ -23,19 +25,19 @@ class AirdropService
 
   def perform
     self.class.currencies.each do |currency|
-      #wallet = Wallet.deposit_wallet(currency.id) || raise("No deposit wallet found for currency #{currency.id}")
-      #wallet.service.create_incentive_deposit!(
-        #member: @member,
-        #currency: currency,
-        #amount: self.class.get_amount(currency.id)
-      #)
-      #raise "Can't create incentive deposit for non dummy wallets" unless wallet.gateway == ALLOWED_INCENTIVE_GATEWAY
-      #Deposit.create!(
-        #type: Deposit.name,
-        #member: member,
-        #currency: currency,
-        #amount: amount
-      #).tap(&:accept!)
+      # wallet = Wallet.deposit_wallet(currency.id) || raise("No deposit wallet found for currency #{currency.id}")
+      # wallet.service.create_incentive_deposit!(
+      # member: @member,
+      # currency: currency,
+      # amount: self.class.get_amount(currency.id)
+      # )
+      # raise "Can't create incentive deposit for non dummy wallets" unless wallet.gateway == ALLOWED_INCENTIVE_GATEWAY
+      # Deposit.create!(
+      # type: Deposit.name,
+      # member: member,
+      # currency: currency,
+      # amount: amount
+      # ).tap(&:accept!)
     end
   end
 end

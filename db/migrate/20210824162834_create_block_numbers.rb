@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateBlockNumbers < ActiveRecord::Migration[5.2]
   def change
     create_table :block_numbers do |t|
@@ -10,6 +12,6 @@ class CreateBlockNumbers < ActiveRecord::Migration[5.2]
       t.timestamps
     end
 
-    add_index :block_numbers, [:blockchain_id, :number], unique: true
+    add_index :block_numbers, %i[blockchain_id number], unique: true
   end
 end

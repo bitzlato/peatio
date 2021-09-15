@@ -1,16 +1,16 @@
+# frozen_string_literal: true
+
 class ChangePrimaryKeyToBigInt < ActiveRecord::Migration[5.2]
   include ::PrimaryKeyMigration
 
   def up
-    if ActiveRecord::Base.connection.column_exists?("accounts", "id")
-      drop_primary_key("accounts", "id", ["currency_id", "member_id"])
-    end
+    drop_primary_key('accounts', 'id', %w[currency_id member_id]) if ActiveRecord::Base.connection.column_exists?('accounts', 'id')
 
     table_names = %w[assets blockchains deposits expenses liabilities
                      members operations_accounts orders payment_addresses revenues
                      transfers trades transfers wallets withdraws]
 
-    run_primary_key_migration("BIGINT(20)", "bigint", table_names)
+    run_primary_key_migration('BIGINT(20)', 'bigint', table_names)
 
     ActiveRecord::Base.transaction do
       change_column :accounts, :member_id, :bigint, null: false
@@ -39,12 +39,12 @@ class ChangePrimaryKeyToBigInt < ActiveRecord::Migration[5.2]
   end
 
   def down
-    renew_primary_key("accounts", "id")
+    renew_primary_key('accounts', 'id')
 
     table_names = %w[assets blockchains deposits expenses liabilities
                      members operations_accounts orders payment_addresses revenues
                      transfers trades transfers wallets withdraws]
-    run_primary_key_migration("INT(11)", "int", table_names)
+    run_primary_key_migration('INT(11)', 'int', table_names)
 
     ActiveRecord::Base.transaction do
       change_column :accounts, :member_id, :integer, null: false

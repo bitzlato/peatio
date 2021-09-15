@@ -41,7 +41,7 @@ class Engine < ApplicationRecord
   # == Instance Methods =====================================================
 
   def peatio_engine?
-    self.driver.in?(PEATIO_ENGINE_DRIVERS)
+    driver.in?(PEATIO_ENGINE_DRIVERS)
   end
 end
 

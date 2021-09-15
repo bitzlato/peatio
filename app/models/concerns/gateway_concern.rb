@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GatewayConcern
   extend ActiveSupport::Concern
 
@@ -6,7 +8,7 @@ module GatewayConcern
 
   GATEWAY_PREFIX = 'Gateway'
 
-  # TODO Move to Settings
+  # TODO: Move to Settings
   #
   AVAILABLE_GATEWAYS = [
     HecoGateway,
@@ -44,6 +46,7 @@ module GatewayConcern
 
   def gateway_klass=(value)
     return self.client = nil if value.blank?
+
     self.client = value.to_s.remove(GATEWAY_PREFIX).downcase
   end
 end

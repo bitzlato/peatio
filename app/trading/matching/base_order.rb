@@ -1,10 +1,8 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module Matching
   # TODO: doc.
   class BaseOrder
-
     attr_reader :id, :timestamp, :type, :market, :volume
 
     def initialize(attrs)

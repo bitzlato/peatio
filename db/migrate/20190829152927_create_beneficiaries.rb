@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class CreateBeneficiaries < ActiveRecord::Migration[5.2]
   def change
     create_table :beneficiaries do |t|
       t.references  :member,      null: false
-      t.string      :currency_id, null: false, limit: 10,            index: true
+      t.string      :currency_id, null: false, limit: 10, index: true
       t.string      :name,        null: false, limit: 64
       t.string      :description, default: ''
       t.json        :data

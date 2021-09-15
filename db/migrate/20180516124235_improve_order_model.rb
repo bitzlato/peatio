@@ -1,10 +1,9 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class ImproveOrderModel < ActiveRecord::Migration[4.2]
   def change
     remove_columns :orders, :sn, :done_at, :source
-    execute %[DELETE FROM orders WHERE ask IS NULL OR bid IS NULL]
+    execute %(DELETE FROM orders WHERE ask IS NULL OR bid IS NULL)
     change_column :orders, :bid, :integer, null: false
     change_column :orders, :ask, :integer, null: false
     change_column :orders, :market_id, :string, null: false, limit: 10

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module Workers
@@ -7,12 +6,11 @@ module Workers
       def process(payload)
         payload.symbolize_keys!
 
-
         deposit = Deposit.find_by_id(payload[:deposit_id])
         unless deposit
           Rails.logger.warn do
             'Unable to make deposit.'\
-            "Deposit with id: #{payload[:deposit_id]} doesn't exist"
+              "Deposit with id: #{payload[:deposit_id]} doesn't exist"
           end
           return
         end

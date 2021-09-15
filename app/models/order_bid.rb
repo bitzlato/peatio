@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class OrderBid < Order
@@ -35,6 +34,7 @@ class OrderBid < Order
 
   def avg_price
     return ::Trade::ZERO if funds_received.zero?
+
     market.round_price(funds_used / funds_received)
   end
 

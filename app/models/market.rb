@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 # People exchange commodities in markets. Each market focuses on certain
@@ -16,7 +15,6 @@
 # Bid/Quote currency/unit = USD.
 
 class Market < ApplicationRecord
-
   self.inheritance_column = nil
 
   # == Constants ============================================================
@@ -63,23 +61,19 @@ class Market < ApplicationRecord
 
   has_one :base, class_name: 'Currency', foreign_key: :id, primary_key: :base_unit
   has_one :quote, class_name: 'Currency', foreign_key: :id, primary_key: :quote_unit
-  belongs_to :engine, required: true
+  belongs_to :engine, optional: false
 
-  has_many :trading_fees, foreign_key: :market_id, primary_key: :symbol, dependent: :delete_all
-  has_many :trades, foreign_key: :market_id, primary_key: :symbol
+  has_many :trading_fees, primary_key: :symbol, dependent: :delete_all
+  has_many :trades, primary_key: :symbol
 
   # == Validations ==========================================================
 
   validate do
-    if quote_currency == base_currency
-      errors.add(:quote_currency, 'duplicates base currency')
-    end
+    errors.add(:quote_currency, 'duplicates base currency') if quote_currency == base_currency
   end
 
   validate on: :create do
-    if ENV['MAX_MARKETS'].present? && Market.count >= ENV['MAX_MARKETS'].to_i
-      errors.add(:max, 'Market limit has been reached')
-    end
+    errors.add(:max, 'Market limit has been reached') if ENV['MAX_MARKETS'].present? && Market.count >= ENV['MAX_MARKETS'].to_i
 
     if Market.where(base_currency: quote_currency, quote_currency: base_currency, type: type).present? ||
        Market.where(base_currency: base_currency, quote_currency: quote_currency, type: type).present?
@@ -115,18 +109,18 @@ class Market < ApplicationRecord
               less_than_or_equal_to: ->(m) { FUNDS_PRECISION - m.price_precision }
             }
 
-  validates :base_currency, :quote_currency, inclusion: { in: -> (_) { Currency.codes } }
+  validates :base_currency, :quote_currency, inclusion: { in: ->(_) { Currency.codes } }
 
   validates :min_price,
             presence: true,
-            numericality: { greater_than_or_equal_to: ->(market){ market.min_price_by_precision } }
+            numericality: { greater_than_or_equal_to: ->(market) { market.min_price_by_precision } }
   validates :max_price,
-            numericality: { allow_blank: true, greater_than_or_equal_to: ->(market){ market.min_price }},
+            numericality: { allow_blank: true, greater_than_or_equal_to: ->(market) { market.min_price } },
             if: ->(market) { !market.max_price.zero? }
 
   validates :min_amount,
             presence: true,
-            numericality: { greater_than_or_equal_to: ->(market){ market.min_amount_by_precision } }
+            numericality: { greater_than_or_equal_to: ->(market) { market.min_amount_by_precision } }
 
   validates :state, inclusion: { in: STATES }
 
@@ -142,7 +136,7 @@ class Market < ApplicationRecord
 
   after_initialize :initialize_defaults, if: :new_record?
   before_validation(on: :create) { self.symbol = generate_symbol }
-  before_validation(on: :create) { self.position = Market.count + 1 unless position.present? }
+  before_validation(on: :create) { self.position = Market.count + 1 if position.blank? }
 
   after_commit { AMQP::Queue.enqueue(:matching, action: 'new', market: symbol) }
   after_commit :wipe_cache
@@ -173,7 +167,7 @@ class Market < ApplicationRecord
   end
 
   def wipe_cache
-    Rails.cache.delete_matched("markets*")
+    Rails.cache.delete_matched('markets*')
   end
 
   def name

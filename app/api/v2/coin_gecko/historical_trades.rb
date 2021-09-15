@@ -12,7 +12,7 @@ module API
                    coerce_with: ->(name) { name.strip.downcase }
           optional :type,
                    type: String,
-                   values: { value: %w(buy sell), message: 'coingecko.historical_trades.invalid_type' },
+                   values: { value: %w[buy sell], message: 'coingecko.historical_trades.invalid_type' },
                    desc: 'To indicate nature of trade - buy/sell'
           optional :limit,
                    type: Integer,
@@ -33,7 +33,7 @@ module API
           filters = declared(params, include_missing: false)
                     .except(:ticker_id, :limit)
 
-          Trade.public_from_influx(market.symbol, params[:limit], filters).each_with_object({'buy' => [], 'sell' => []}) do |trade, hash|
+          Trade.public_from_influx(market.symbol, params[:limit], filters).each_with_object({ 'buy' => [], 'sell' => [] }) do |trade, hash|
             hash[trade[:taker_type]] << format_trade(trade)
           end
         end

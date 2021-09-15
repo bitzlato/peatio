@@ -15,7 +15,7 @@ module API
                    values: { value: 0..500, message: 'coinmarketcap.market_depth.invalid_depth' },
                    desc: 'Orders depth quantity: [0,5,10,20,50,100,500]'
         end
-        get "/orderbook/:market_pair" do
+        get '/orderbook/:market_pair' do
           market = ::Market.find_spot_by_symbol(params[:market_pair])
           asks = OrderAsk.get_depth(market.symbol)
           bids = OrderBid.get_depth(market.symbol)
@@ -23,8 +23,8 @@ module API
           # Depth = 100 means 50 for each bid/ask side
           # Not defined or 0 = full order book
           unless params[:depth].to_d.zero?
-            asks = asks[0, params[:depth]/2]
-            bids = bids[0, params[:depth]/2]
+            asks = asks[0, params[:depth] / 2]
+            bids = bids[0, params[:depth] / 2]
           end
 
           format_orderbook(asks, bids)

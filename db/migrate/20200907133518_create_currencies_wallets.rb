@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateCurrenciesWallets < ActiveRecord::Migration[5.2]
   def change
     reversible do |dir|
@@ -29,7 +31,7 @@ class CreateCurrenciesWallets < ActiveRecord::Migration[5.2]
         end
         change_column_default :currencies, :options, nil
         remove_column :wallets, :currency_id
-        remove_index :payment_addresses, column: [:currency_id, :address]
+        remove_index :payment_addresses, column: %i[currency_id address]
         remove_column :payment_addresses, :currency_id
         remove_column :payment_addresses, :account_id
 
@@ -65,7 +67,7 @@ class CreateCurrenciesWallets < ActiveRecord::Migration[5.2]
         PaymentAddress.where(account_id: nil, currency_id: nil).delete_all
         remove_column :payment_addresses, :member_id
         remove_column :payment_addresses, :wallet_id
-        change_column :currencies, :options, limit: 1000, default: "{}"
+        change_column :currencies, :options, limit: 1000, default: '{}'
         drop_table :currencies_wallets
       end
     end

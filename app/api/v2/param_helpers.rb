@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -21,7 +20,7 @@ module API
 
       params :ordering do
         optional :ordering,
-                 values: { value: %w(asc desc), message: 'pagination.invalid_ordering' },
+                 values: { value: %w[asc desc], message: 'pagination.invalid_ordering' },
                  default: 'asc',
                  desc: 'If set, returned values will be sorted in specific order, defaults to \'asc\'.'
         optional :order_by,

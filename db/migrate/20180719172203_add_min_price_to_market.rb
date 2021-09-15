@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddMinPriceToMarket < ActiveRecord::Migration[4.2]
   def change
     add_column :markets, :max_bid, :decimal, precision: 17, scale: 16, after: :bid_fee

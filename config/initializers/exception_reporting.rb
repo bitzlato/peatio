@@ -1,14 +1,11 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 def catch_and_report_exception(options = {})
-  begin
-    yield
-    nil
-  rescue options.fetch(:class) { StandardError } => e
-    report_exception(e)
-    e
-  end
+  yield
+  nil
+rescue options.fetch(:class) { StandardError } => e
+  report_exception(e)
+  e
 end
 
 # report_api_error sample output.
@@ -19,7 +16,7 @@ end
 # {"message":"Account balance is insufficient","path":"/api/v2/account/withdraws","params":{"uid":"ID5DE7A981C4","currency":"usd","amount":"100.0","beneficiary_id":1,"otp":123456},"level":"INFO","time":"2019-09-18 12:54:36"}
 
 def report_api_error(exception, request)
-  message = exception.kind_of?(String) ? exception : exception.message
+  message = exception.is_a?(String) ? exception : exception.message
   Rails.logger.info message: message, path: request.path, params: request.params
 end
 
@@ -35,10 +32,13 @@ end
 
 def report_exception_to_ets(exception, meta = {})
   return if Rails.env.test? || Rails.env.development?
-  Bugsnag.notify exception do |b|
-    b.meta_data = meta
-  end if defined?(Bugsnag)
+
+  if defined?(Bugsnag)
+    Bugsnag.notify exception do |b|
+      b.meta_data = meta
+    end
+  end
   Sentry.capture_exception(exception) if defined?(Sentry)
-rescue => ets_exception
-  report_exception(ets_exception, false)
+rescue StandardError => e
+  report_exception(e, false)
 end

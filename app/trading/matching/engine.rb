@@ -1,21 +1,20 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require_relative 'constants'
 
 module Matching
   class Engine
-
     ORDER_SUBMIT_MAX_ATTEMPTS = 3
     MIN_INCREMENT_COUNT_TO_SNAPSHOT = 20
-    MIN_PERIOD_TO_SNAPSHOT = 10.second
-    MAX_PERIOD_TO_SNAPSHOT = 60.second
+    MIN_PERIOD_TO_SNAPSHOT = 10.seconds
+    MAX_PERIOD_TO_SNAPSHOT = 60.seconds
 
     attr :orderbook, :mode, :queue
     attr_accessor :initializing, :snapshot_time, :increment_count, :sequence_number
+
     delegate :ask_orders, :bid_orders, to: :orderbook
 
-    def initialize(market, options={})
+    def initialize(market, options = {})
       @market    = market
       @orderbook = OrderBookManager.new(market.symbol, on_change: method(:publish_increment))
       @initializing = true
@@ -32,7 +31,7 @@ module Matching
       case mode
       when :dryrun
         @queue = []
-        class <<@queue
+        class << @queue
           def enqueue(*args)
             push args
           end
@@ -113,7 +112,7 @@ module Matching
       book, _counter_book = orderbook.get_books(order.type)
       book.remove(order)
       publish_cancel(order)
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error { "Failed to cancel order #{order.label}." }
       report_exception(e)
     end
@@ -130,11 +129,11 @@ module Matching
 
     def publish_snapshot
       @snapshot_time = Time.now
-      ::AMQP::Queue.enqueue_event("public", @market.symbol, "ob-snap", {
-        "asks" => ask_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}[0..300],
-        "bids" => bid_orders.limit_orders.map{|k,v| [k.to_s, v.map(&:volume).sum.to_s]}.reverse[0..300],
-        "sequence" => @sequence_number,
-      })
+      ::AMQP::Queue.enqueue_event('public', @market.symbol, 'ob-snap', {
+                                    'asks' => ask_orders.limit_orders.map { |k, v| [k.to_s, v.map(&:volume).sum.to_s] }[0..300],
+                                    'bids' => bid_orders.limit_orders.map { |k, v| [k.to_s, v.map(&:volume).sum.to_s] }.reverse[0..300],
+                                    'sequence' => @sequence_number
+                                  })
     end
 
     def publish_increment(market, side, price, amount)
@@ -143,19 +142,17 @@ module Matching
       # Publish snapshot if:
       # increment_count < 20 and last snapshot time > 1 min
       # increment_count > 20 and last snapshot time > 10 second
-      if @increment_count < MIN_INCREMENT_COUNT_TO_SNAPSHOT && @snapshot_time <= Time.now - MAX_PERIOD_TO_SNAPSHOT
-        publish_snapshot
-        @increment_count = 0
-      elsif @increment_count >= MIN_INCREMENT_COUNT_TO_SNAPSHOT && @snapshot_time < Time.now - MIN_PERIOD_TO_SNAPSHOT
+      if (@increment_count < MIN_INCREMENT_COUNT_TO_SNAPSHOT && @snapshot_time <= Time.now - MAX_PERIOD_TO_SNAPSHOT) ||
+         (@increment_count >= MIN_INCREMENT_COUNT_TO_SNAPSHOT && @snapshot_time < Time.now - MIN_PERIOD_TO_SNAPSHOT)
         publish_snapshot
         @increment_count = 0
       end
       @increment_count += 1
       @sequence_number += 1
-      ::AMQP::Queue.enqueue_event("public", market, "ob-inc", {
-        "#{side}s" => [price.to_s, amount.to_s],
-        "sequence" => @sequence_number,
-      })
+      ::AMQP::Queue.enqueue_event('public', market, 'ob-inc', {
+                                    "#{side}s" => [price.to_s, amount.to_s],
+                                    'sequence' => @sequence_number
+                                  })
     end
 
     private
@@ -178,7 +175,8 @@ module Matching
                          taker_order_id: taker_order.id,
                          strike_price: price,
                          amount: amount,
-                         total: total } },
+                         total: total
+                       } },
                      { persistent: false })
     end
 

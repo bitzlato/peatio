@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Withdraw do
@@ -29,21 +28,21 @@ describe Withdraw do
 
       context :record_submit_operations! do
         it 'creates two liability operations' do
-          expect{ subject.accept! }.to change{ Operations::Liability.count }.by(2)
+          expect { subject.accept! }.to change { Operations::Liability.count }.by(2)
         end
 
         it 'doesn\'t create asset operations' do
-          expect{ subject.accept! }.to_not change{ Operations::Asset.count }
+          expect { subject.accept! }.not_to change { Operations::Asset.count }
         end
 
         it 'debits main liabilities for member' do
-          expect{ subject.accept! }.to change {
+          expect { subject.accept! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :main)
           }.by(-subject.sum)
         end
 
         it 'credits locked liabilities for member' do
-          expect{ subject.accept! }.to change {
+          expect { subject.accept! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :locked)
           }.by(subject.sum)
         end
@@ -78,7 +77,7 @@ describe Withdraw do
 
         subject.process!
 
-        expect { subject.fail! }.to_not change { subject.account.amount }
+        expect { subject.fail! }.not_to change { subject.account.amount }
 
         expect(subject.failed?).to be true
       end
@@ -106,7 +105,7 @@ describe Withdraw do
         subject.process!
         expect(subject.processing?).to be true
 
-        expect { subject.err! StandardError.new }.to_not change { subject.account.amount }
+        expect { subject.err! StandardError.new }.not_to change { subject.account.amount }
         expect(subject.errored?).to be true
 
         subject.process!
@@ -132,22 +131,23 @@ describe Withdraw do
         before do
           subject.accept!
         end
+
         it 'creates two liability operations' do
-          expect{ subject.cancel! }.to change{ Operations::Liability.count }.by(2)
+          expect { subject.cancel! }.to change { Operations::Liability.count }.by(2)
         end
 
         it 'doesn\'t create asset operations' do
-          expect{ subject.cancel! }.to_not change{ Operations::Asset.count }
+          expect { subject.cancel! }.not_to change { Operations::Asset.count }
         end
 
         it 'credits main liabilities for member' do
-          expect{ subject.cancel! }.to change {
+          expect { subject.cancel! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :main)
           }.by(subject.sum)
         end
 
         it 'debits locked liabilities for member' do
-          expect{ subject.cancel! }.to change {
+          expect { subject.cancel! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :locked)
           }.by(-subject.sum)
         end
@@ -202,23 +202,22 @@ describe Withdraw do
       end
 
       context :record_cancel_operations do
-
         it 'creates two liability operations' do
-          expect{ subject.reject! }.to change{ Operations::Liability.count }.by(2)
+          expect { subject.reject! }.to change { Operations::Liability.count }.by(2)
         end
 
         it 'doesn\'t create asset operations' do
-          expect{ subject.reject! }.to_not change{ Operations::Asset.count }
+          expect { subject.reject! }.not_to change { Operations::Asset.count }
         end
 
         it 'credits main liabilities for member' do
-          expect{ subject.reject! }.to change {
+          expect { subject.reject! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :main)
           }.by(subject.sum)
         end
 
         it 'debits locked liabilities for member' do
-          expect{ subject.reject! }.to change {
+          expect { subject.reject! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :locked)
           }.by(-subject.sum)
         end
@@ -238,7 +237,6 @@ describe Withdraw do
     end
 
     context :success do
-
       before do
         subject.accept!
         subject.process!
@@ -253,23 +251,22 @@ describe Withdraw do
       end
 
       context :record_complete_operations do
-
         it 'creates single liability operation' do
-          expect{ subject.success! }.to change{ Operations::Liability.count }.by(1)
+          expect { subject.success! }.to change { Operations::Liability.count }.by(1)
         end
 
         it 'creates asset operation' do
-          expect{ subject.success! }.to change{ Operations::Asset.count }.by(1)
+          expect { subject.success! }.to change { Operations::Asset.count }.by(1)
         end
 
         it 'doesn\'t change main liability balance for member' do
-          expect{ subject.success! }.to_not change {
+          expect { subject.success! }.not_to change {
             subject.member.balance_for(currency: subject.currency, kind: :main)
           }
         end
 
         it 'debits locked liabilities for member' do
-          expect{ subject.success! }.to change {
+          expect { subject.success! }.to change {
             subject.member.balance_for(currency: subject.currency, kind: :locked)
           }.by(-subject.sum)
         end
@@ -287,56 +284,56 @@ describe Withdraw do
         end
 
         it 'credits revenues' do
-          expect{ subject.success! }.to change {
+          expect { subject.success! }.to change {
             Operations::Revenue.balance(currency: subject.currency)
           }.by(subject.fee)
         end
 
         it 'creates revenue operation from member' do
-          expect{ subject.success! }.to change {
+          expect { subject.success! }.to change {
             Operations::Revenue.where(member: subject.member).count
           }.by(1)
         end
       end
     end
-    #context :load do
-      #let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
+    # context :load do
+    # let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
 
-      #subject { create(:btc_withdraw, :with_deposit_liability) }
+    # subject { create(:btc_withdraw, :with_deposit_liability) }
 
-      #before { subject.accept! }
+    # before { subject.accept! }
 
-      #it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
-        #expect { subject.load! }.to raise_error(AASM::InvalidTransition)
-      #end
+    # it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
+    # expect { subject.load! }.to raise_error(AASM::InvalidTransition)
+    # end
 
-      #it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
-        #BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
-        #subject.update(txid: txid)
-        #subject.load!
-        #expect(subject.confirming?).to be true
-      #end
-    #end
+    # it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
+    # BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
+    # subject.update(txid: txid)
+    # subject.load!
+    # expect(subject.confirming?).to be true
+    # end
+    # end
 
-    #context :load do
-      #let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
+    # context :load do
+    # let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
 
-      #subject { create(:btc_withdraw, :with_deposit_liability) }
+    # subject { create(:btc_withdraw, :with_deposit_liability) }
 
-      #before { subject.accept! }
+    # before { subject.accept! }
 
-      #it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
-        #subject.load!
-        #expect(subject.accepted?).to be true
-      #end
+    # it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
+    # subject.load!
+    # expect(subject.accepted?).to be true
+    # end
 
-      #it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
-        #BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
-        #subject.update(txid: txid)
-        #subject.load!
-        #expect(subject.confirming?).to be true
-      #end
-    #end
+    # it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
+    # BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
+    # subject.update(txid: txid)
+    # subject.load!
+    # expect(subject.confirming?).to be true
+    # end
+    # end
 
     context :fail do
       subject { create(:btc_withdraw, :with_deposit_liability) }
@@ -378,23 +375,25 @@ describe Withdraw do
       end
 
       context 'with archived beneficiary' do
-        let(:member) { create(:member) }
-        let(:address) { Faker::Blockchain::Bitcoin.address }
-        let(:coin) { Currency.find(:btc) }
-
         subject { create(:btc_withdraw, :with_deposit_liability, member: member, rid: address, beneficiary: beneficiary) }
 
-        let!(:beneficiary) { create(:beneficiary,
-                                    member: member,
-                                    currency: coin,
-                                    state: :active,
-                                    data: generate(:btc_beneficiary_data).merge(address: address)) }
+        let(:member) { create(:member) }
+        let!(:beneficiary) do
+          create(:beneficiary,
+                 member: member,
+                 currency: coin,
+                 state: :active,
+                 data: generate(:btc_beneficiary_data).merge(address: address))
+        end
+        let(:address) { Faker::Blockchain::Bitcoin.address }
+        let(:coin) { Currency.find(:btc) }
 
         before do
           subject.update!(aasm_state: :processing)
           subject.err!(Peatio::Wallet::ClientError.new('Something wrong with request'))
           beneficiary.update!(state: :archived)
         end
+
         it do
           subject.fail!
           expect(subject.failed?).to be true
@@ -411,7 +410,6 @@ describe Withdraw do
         subject.process!
         subject.review!
 
-
         expect(subject.under_review?).to be true
       end
     end
@@ -419,7 +417,9 @@ describe Withdraw do
 
   context 'fee is set to fixed value of 10' do
     let(:withdraw) { create(:usd_withdraw, :with_deposit_liability, sum: 200) }
+
     before { Currency.any_instance.expects(:withdraw_fee).once.returns(10) }
+
     it 'computes fee' do
       expect(withdraw.fee).to eql 10.to_d
       expect(withdraw.amount).to eql 190.to_d
@@ -430,10 +430,12 @@ describe Withdraw do
     let(:member) { create(:member) }
     let!(:account) { member.get_account(:usd).tap { |x| x.update!(balance: 200.0.to_d) } }
     let(:withdraw) { build(:usd_withdraw, sum: 200, member: member) }
+
     before { Currency.any_instance.expects(:withdraw_fee).once.returns(200) }
+
     it 'fails validation' do
       expect(withdraw.save).to eq false
-      expect(withdraw.errors[:amount]).to match(["must be greater than 0.0"])
+      expect(withdraw.errors[:amount]).to match(['must be greater than 0.0'])
     end
   end
 
@@ -449,7 +451,7 @@ describe Withdraw do
     record1 = create(:btc_withdraw, :with_deposit_liability)
     record2 = build(:btc_withdraw, tid: record1.tid, member: record1.member)
     record2.save
-    expect(record2.errors[:tid]).to match(["has already been taken"])
+    expect(record2.errors[:tid]).to match(['has already been taken'])
   end
 
   it 'uppercases TID' do
@@ -497,23 +499,24 @@ describe Withdraw do
 
       let(:withdraw) do
         build(:usd_withdraw,
-               :with_deposit_liability,
-               beneficiary: beneficiary,
-               sum: 10,
-               member: beneficiary.member)
+              :with_deposit_liability,
+              beneficiary: beneficiary,
+              sum: 10,
+              member: beneficiary.member)
       end
 
       it 'automatically sets rid from beneficiary' do
-        expect(withdraw.valid?).to be_falsey
+        expect(withdraw).not_to be_valid
         expect(withdraw.errors[:beneficiary]).to include('not active')
       end
     end
   end
 
   context 'validate min withdrawal sum' do
+    subject { build(:btc_withdraw, sum: 0.1, member: member) }
+
     let(:member) { create(:member) }
     let!(:account) { member.get_account(:btc).tap { |x| x.update!(balance: 1.0.to_d) } }
-    subject { build(:btc_withdraw, sum: 0.1, member: member) }
 
     before do
       Currency.find('btc').update(min_withdraw_amount: 0.5.to_d)
@@ -523,23 +526,22 @@ describe Withdraw do
 
     it do
       subject.save
-      expect(subject.errors[:sum]).to match(["must be greater than or equal to 0.5"])
+      expect(subject.errors[:sum]).to match(['must be greater than or equal to 0.5'])
     end
-
   end
 
   context 'validate note length' do
     let(:member)    { create(:member) }
-    let!(:account)   { member.get_account(:btc).tap { |x| x.update!(balance: 1.0.to_d) } }
+    let!(:account) { member.get_account(:btc).tap { |x| x.update!(balance: 1.0.to_d) } }
     let(:address) { Faker::Blockchain::Bitcoin.address }
 
     let :record do
       Withdraws::Coin.new \
         currency: Currency.find(:btc),
-        member:   member,
-        rid:      address,
-        sum:      1.0.to_d,
-        note:     note
+        member: member,
+        rid: address,
+        sum: 1.0.to_d,
+        note: note
     end
 
     context 'valid note' do
@@ -552,7 +554,7 @@ describe Withdraw do
     end
 
     context 'invalid note' do
-      let(:note) { (0...257).map { (65 + rand(26)).chr }.join }
+      let(:note) { (0...257).map { rand(65..90).chr }.join }
 
       it do
         expect(record.save).to eq false
@@ -563,7 +565,7 @@ describe Withdraw do
 
   context 'validates sum precision' do
     let(:currency) { Currency.find(:usd) }
-    let(:member)    { create(:member) }
+    let(:member) { create(:member) }
 
     # Create deposit before withdraw for valid accounting cause withdraw
     # build callback doesn't trigger deposit creation.
@@ -577,7 +579,7 @@ describe Withdraw do
     end
 
     it do
-      expect(record.valid?).to be_falsey
+      expect(record).not_to be_valid
       expect(record.errors[:amount]).to include("precision must be less than or equal to #{currency.precision}")
       expect(record.errors[:sum]).to include("precision must be less than or equal to #{currency.precision}")
     end
@@ -613,8 +615,9 @@ describe Withdraw do
 
     context 'Withdraw 1 month limit exceeded' do
       before { withdraw.save }
+
       it do
-        withdraw.update(created_at: 2.day.ago)
+        withdraw.update(created_at: 2.days.ago)
         withdraw = build(:btc_withdraw, :with_deposit_liability, member: member, sum: 0.6.to_d)
         expect(withdraw.verify_limits).to be_falsey
       end
@@ -623,13 +626,13 @@ describe Withdraw do
     context 'zero limits' do
       before { WithdrawLimit.last.update!(limit_24_hour: 0, limit_1_month: 0) }
 
-      it { expect(withdraw.valid?).to be_truthy }
+      it { expect(withdraw).to be_valid }
     end
 
     context 'there are no WLs in DB' do
       before { WithdrawLimit.delete_all }
 
-      it { expect(withdraw.valid?).to be_truthy }
+      it { expect(withdraw).to be_valid }
     end
   end
 end

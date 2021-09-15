@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Management::Transfers, type: :request do
@@ -6,9 +5,9 @@ describe API::V2::Management::Transfers, type: :request do
     defaults_for_management_api_v1_security_configuration!
     management_api_v1_security_configuration.merge! \
       scopes: {
-      read_transfers:  { permitted_signers: %i[alex jeff],       mandatory_signers: %i[alex] },
-      write_transfers: { permitted_signers: %i[alex jeff james], mandatory_signers: %i[alex jeff] }
-    }
+        read_transfers: { permitted_signers: %i[alex jeff], mandatory_signers: %i[alex] },
+        write_transfers: { permitted_signers: %i[alex jeff james], mandatory_signers: %i[alex jeff] }
+      }
   end
 
   describe 'create operation' do
@@ -19,7 +18,7 @@ describe API::V2::Management::Transfers, type: :request do
     let(:currency) { Currency.coins.sample }
     let(:signers) { %i[alex jeff] }
     let(:data) do
-      { key:  generate(:transfer_key),
+      { key: generate(:transfer_key),
         category: Transfer::CATEGORIES.sample,
         description: "Referral program payoffs (#{Time.now.to_date})",
         operations: operations }
@@ -68,7 +67,7 @@ describe API::V2::Management::Transfers, type: :request do
         expect(receiver_member.accounts.count).to eq(0)
 
         request
-        expect(response).to have_http_status(201)
+        expect(response).to have_http_status(:created)
         expect(receiver_member.accounts.count).to eq(1)
       end
     end
@@ -82,13 +81,13 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/key is missing/i)
       end
     end
 
     context 'empty category' do
-      let(:operations) {[valid_operation]}
+      let(:operations) { [valid_operation] }
 
       before do
         data.delete(:category)
@@ -96,29 +95,29 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/category is missing/i)
       end
     end
 
     context 'empty description' do
-      let(:operations) {[valid_operation]}
+      let(:operations) { [valid_operation] }
 
       before do
         data.delete(:description)
         request
       end
 
-      it { expect(response).to have_http_status(201) }
+      it { expect(response).to have_http_status(:created) }
     end
 
     context 'empty operations' do
-      let(:operations) {[]}
+      let(:operations) { [] }
 
       before { request }
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/operations is empty/i)
       end
     end
@@ -128,10 +127,11 @@ describe API::V2::Management::Transfers, type: :request do
         valid_operation[:account_src][:code] = 999
         [valid_operation]
       end
+
       before { request }
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/does not have a valid value/i)
       end
     end
@@ -141,10 +141,11 @@ describe API::V2::Management::Transfers, type: :request do
         valid_operation[:currency] = :neo
         [valid_operation]
       end
+
       before { request }
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/does not have a valid value/i)
       end
     end
@@ -154,16 +155,18 @@ describe API::V2::Management::Transfers, type: :request do
         valid_operation[:amount] = -1
         [valid_operation]
       end
+
       before { request }
 
       it do
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/does not have a valid value/i)
       end
     end
 
     context 'existing transfer key' do
-      let(:operations) {[valid_operation]}
+      let(:operations) { [valid_operation] }
+
       before do
         t = create(:transfer)
         data[:key] = t.key
@@ -171,7 +174,7 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it do
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/key has already been taken/i)
       end
     end
@@ -184,23 +187,23 @@ describe API::V2::Management::Transfers, type: :request do
       let(:operation) do
         {
           currency: :btc,
-          amount:   '1.1',
+          amount: '1.1',
           account_src: {
             code: 202,
-            uid:  sender_member.uid
+            uid: sender_member.uid
           },
           account_dst: {
             code: 202,
-            uid:  receiver_member.uid
+            uid: receiver_member.uid
           }
         }
       end
-      let(:operations) {[operation]}
+      let(:operations) { [operation] }
 
       before { request }
 
       it do
-        expect(response).to have_http_status 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/account balance is insufficient/i)
       end
     end
@@ -213,9 +216,9 @@ describe API::V2::Management::Transfers, type: :request do
       before do
         # Credit Revenue accounts.
         create(:revenue, currency_id: base_unit,
-               code: coin_revenues_code, credit: 10)
+                         code: coin_revenues_code, credit: 10)
         create(:revenue, currency_id: quote_unit,
-               code: fiat_revenues_code, credit: 100)
+                         code: fiat_revenues_code, credit: 100)
       end
 
       let(:referrer1) { create(:member, :barong) }
@@ -251,7 +254,7 @@ describe API::V2::Management::Transfers, type: :request do
         [
           {
             currency: base_unit,
-            amount:   '0.0001',
+            amount: '0.0001',
             account_src: {
               code: coin_revenues_code
             },
@@ -262,7 +265,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: base_unit,
-            amount:   '0.00015',
+            amount: '0.00015',
             account_src: {
               code: coin_revenues_code
             },
@@ -273,7 +276,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: base_unit,
-            amount:   '0.0003',
+            amount: '0.0003',
             account_src: {
               code: coin_revenues_code
             },
@@ -284,7 +287,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: quote_unit,
-            amount:   '0.075',
+            amount: '0.075',
             account_src: {
               code: fiat_revenues_code
             },
@@ -295,7 +298,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: quote_unit,
-            amount:   '0.05',
+            amount: '0.05',
             account_src: {
               code: fiat_revenues_code
             },
@@ -309,7 +312,7 @@ describe API::V2::Management::Transfers, type: :request do
 
       it do
         request
-        expect(response).to have_http_status 201
+        expect(response).to have_http_status :created
       end
 
       it 'returns transfer with operations' do
@@ -330,10 +333,10 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it 'updates legacy balances' do
-        expect { request }.to change{ referrer1.get_account(base_unit).balance }.by(0.0001 + 0.0003).and \
-                              change{ referrer2.get_account(base_unit).balance }.by(0.00015).and \
-                              change{ referrer2.get_account(quote_unit).balance }.by(0.05).and \
-                              change{ referrer3.get_account(quote_unit).balance }.by(0.075)
+        expect { request }.to change { referrer1.get_account(base_unit).balance }.by(0.0001 + 0.0003).and \
+          change { referrer2.get_account(base_unit).balance }.by(0.00015).and \
+            change { referrer2.get_account(quote_unit).balance }.by(0.05).and \
+              change { referrer3.get_account(quote_unit).balance }.by(0.075)
       end
 
       context 'wrong account code' do
@@ -341,9 +344,9 @@ describe API::V2::Management::Transfers, type: :request do
           [
             {
               currency: base_unit,
-              amount:   '0.0001',
+              amount: '0.0001',
               account_src: {
-                code: fiat_revenues_code  # Wrong code because base_unit is coin.
+                code: fiat_revenues_code # Wrong code because base_unit is coin.
               },
               account_dst: {
                 code: coin_liabilities_code,
@@ -352,7 +355,7 @@ describe API::V2::Management::Transfers, type: :request do
             },
             {
               currency: quote_unit,
-              amount:  '0.05',
+              amount: '0.05',
               account_src: {
                 code: fiat_revenues_code
               },
@@ -366,19 +369,19 @@ describe API::V2::Management::Transfers, type: :request do
 
         it do
           request
-          expect(response).to have_http_status 422
+          expect(response).to have_http_status :unprocessable_entity
         end
 
         it 'doesn\'t save transfer' do
-          expect { request }.to_not change(Transfer, :count)
+          expect { request }.not_to change(Transfer, :count)
         end
 
         it 'doesn\'t save liabilities' do
-          expect { request }.to_not change(::Operations::Liability, :count)
+          expect { request }.not_to change(::Operations::Liability, :count)
         end
 
         it 'doesn\'t save revenues' do
-          expect { request }.to_not change(::Operations::Revenue, :count)
+          expect { request }.not_to change(::Operations::Revenue, :count)
         end
       end
     end
@@ -397,9 +400,9 @@ describe API::V2::Management::Transfers, type: :request do
         #   2. Credit token-distribution Liabilities account.
         # So we keep Balance Sheet equal Income Statement.
         create(:asset, currency_id: coin,
-               code: coin_assets_code, credit: 1000)
+                       code: coin_assets_code, credit: 1000)
         create(:liability, currency_id: coin,
-               code: coin_distribution_account_code, credit: 1000, member_id: nil)
+                           code: coin_distribution_account_code, credit: 1000, member_id: nil)
       end
 
       let(:member1) { create(:member, :barong) }
@@ -414,13 +417,12 @@ describe API::V2::Management::Transfers, type: :request do
         coin_distribution_account[:code]
       end
       let(:coin_distribution_account) do
-        { code:           292,
-          type:           :liability,
-          kind:           'token-distribution',
-          currency_type:  :coin,
-          description:    'Token Distributions Liabilities Account',
-          scope:          :platform
-        }
+        { code: 292,
+          type: :liability,
+          kind: 'token-distribution',
+          currency_type: :coin,
+          description: 'Token Distributions Liabilities Account',
+          scope: :platform }
       end
 
       # Balance changes:
@@ -435,7 +437,7 @@ describe API::V2::Management::Transfers, type: :request do
         [
           {
             currency: coin,
-            amount:   10,
+            amount: 10,
             account_src: {
               code: coin_distribution_account_code
             },
@@ -446,7 +448,7 @@ describe API::V2::Management::Transfers, type: :request do
           },
           {
             currency: coin,
-            amount:   5,
+            amount: 5,
             account_src: {
               code: coin_distribution_account_code
             },
@@ -460,7 +462,7 @@ describe API::V2::Management::Transfers, type: :request do
 
       it do
         request
-        expect(response).to have_http_status 201
+        expect(response).to have_http_status :created
       end
 
       it 'returns transfer with liabilities' do
@@ -477,8 +479,8 @@ describe API::V2::Management::Transfers, type: :request do
       end
 
       it 'updates legacy balance' do
-        expect { request }.to change{ member1.get_account(coin).balance }.by(10).and \
-                              change{ member2.get_account(coin).balance }.by(5)
+        expect { request }.to change { member1.get_account(coin).balance }.by(10).and \
+          change { member2.get_account(coin).balance }.by(5)
       end
     end
   end

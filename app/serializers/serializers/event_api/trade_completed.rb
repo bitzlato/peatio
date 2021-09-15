@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module Serializers
@@ -15,9 +14,7 @@ module Serializers
       end
 
       class << self
-        def call(trade)
-          new.call(trade)
-        end
+        delegate :call, to: :new
       end
 
       def maker_attributes(trade)

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -8,8 +7,8 @@ module API
         helpers ::API::V2::Market::NamedParams
 
         desc 'Get your orders, result is paginated.',
-          is_array: true,
-          success: API::V2::Entities::Order
+             is_array: true,
+             success: API::V2::Entities::Order
         params do
           # TODO: Would be cool to validate market based on the market_type
           optional :market,
@@ -42,7 +41,7 @@ module API
                    desc: 'Specify the page of paginated results.'
           optional :order_by,
                    type: String,
-                   values: { value: %w(asc desc), message: 'market.order.invalid_order_by' },
+                   values: { value: %w[asc desc], message: 'market.order.invalid_order_by' },
                    default: 'desc',
                    desc: 'If set, returned orders will be sorted in specific order, default to "desc".'
           optional :ord_type,
@@ -51,18 +50,18 @@ module API
                    desc: 'Filter order by ord_type.'
           optional :type,
                    type: String,
-                   values: { value: %w(buy sell), message: 'market.order.invalid_type' },
+                   values: { value: %w[buy sell], message: 'market.order.invalid_type' },
                    desc: 'Filter order by type.'
           optional :time_from,
                    type: { value: Integer, message: 'market.order.non_integer_time_from' },
                    allow_blank: { value: false, message: 'market.order.empty_time_from' },
-                   desc: "An integer represents the seconds elapsed since Unix epoch."\
-                         "If set, only orders created after the time will be returned."
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'\
+                         'If set, only orders created after the time will be returned.'
           optional :time_to,
                    type: { value: Integer, message: 'market.order.non_integer_time_to' },
                    allow_blank: { value: false, message: 'market.order.empty_time_to' },
-                   desc: "An integer represents the seconds elapsed since Unix epoch."\
-                         "If set, only orders created before the time will be returned."
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'\
+                         'If set, only orders created before the time will be returned.'
         end
         get '/orders' do
           user_authorize! :read, ::Order
@@ -81,7 +80,7 @@ module API
         end
 
         desc 'Get information of specified order.',
-          success: API::V2::Entities::Order
+             success: API::V2::Entities::Order
         params do
           use :order_id
         end
@@ -89,7 +88,7 @@ module API
           user_authorize! :read, ::Order
 
           if params[:id].match?(/\A[0-9]+\z/)
-            order = current_user.orders.find_by!(id: params[:id])
+            order = current_user.orders.find(params[:id])
           elsif UUID.validate(params[:id])
             order = current_user.orders.find_by!(uuid: params[:id])
           else
@@ -99,16 +98,14 @@ module API
         end
 
         desc 'Create a Sell/Buy order.',
-          success: API::V2::Entities::Order
+             success: API::V2::Entities::Order
         params do
           use :enabled_markets, :order
         end
         post '/orders' do
           user_authorize! :create, ::Order
 
-          if params[:ord_type] == 'market' && params.key?(:price)
-            error!({ errors: ['market.order.market_order_price'] }, 422)
-          end
+          error!({ errors: ['market.order.market_order_price'] }, 422) if params[:ord_type] == 'market' && params.key?(:price)
           order = create_order(params)
           present order, with: API::V2::Entities::Order
         end
@@ -122,7 +119,7 @@ module API
 
           begin
             if params[:id].match?(/\A[0-9]+\z/)
-              order = current_user.orders.spot.find_by!(id: params[:id])
+              order = current_user.orders.spot.find(params[:id])
             elsif UUID.validate(params[:id])
               order = current_user.orders.spot.find_by!(uuid: params[:id])
             else
@@ -133,13 +130,13 @@ module API
           rescue ActiveRecord::RecordNotFound => e
             # RecordNotFound in rescued by ExceptionsHandler.
             raise(e)
-          rescue
+          rescue StandardError
             error!({ errors: ['market.order.cancel_error'] }, 422)
           end
         end
 
         desc 'Cancel all my orders.',
-          success: API::V2::Entities::Order
+             success: API::V2::Entities::Order
         params do
           optional :market,
                    type: String,
@@ -151,7 +148,7 @@ module API
                    default: ::Market::DEFAULT_TYPE
           optional :side,
                    type: String,
-                   values: %w(sell buy),
+                   values: %w[sell buy],
                    desc: 'If present, only sell orders (asks) or buy orders (bids) will be cancelled.'
         end
         post '/orders/cancel' do
@@ -168,7 +165,7 @@ module API
             end
             orders.map(&:trigger_cancellation)
             present orders, with: API::V2::Entities::Order
-          rescue
+          rescue StandardError
             error!({ errors: ['market.order.cancel_error'] }, 422)
           end
         end

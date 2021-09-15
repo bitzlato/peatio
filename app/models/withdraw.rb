@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class Withdraw < ApplicationRecord
@@ -16,11 +15,11 @@ class Withdraw < ApplicationRecord
   serialize :error, JSON unless Rails.configuration.database_support_json
   serialize :metadata, JSON unless Rails.configuration.database_support_json
 
-  TRANSFER_TYPES = { fiat: 100, crypto: 200 }
+  TRANSFER_TYPES = { fiat: 100, crypto: 200 }.freeze
 
-  belongs_to :blockchain, required: true, touch: false
-  belongs_to :currency, required: true, touch: false
-  belongs_to :member, required: true, touch: false
+  belongs_to :blockchain, optional: false, touch: false
+  belongs_to :currency, optional: false, touch: false
+  belongs_to :member, optional: false, touch: false
 
   # Optional beneficiary association gives ability to support both in-peatio
   # beneficiaries and managed by third party application.
@@ -38,30 +37,26 @@ class Withdraw < ApplicationRecord
     raise 'Закрыли вывод c бота (Ilia Gribovski)' if member.uid == 'IDEABB4E3F7F'
   end
 
-  # TODO validate rid by blockchain specs
+  # TODO: validate rid by blockchain specs
   #
   validates :rid, :aasm_state, presence: true
   validates :txid, uniqueness: { scope: :currency_id }, if: :txid?
   validates :block_number, allow_blank: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validates :sum,
             presence: true,
-            numericality: { greater_than_or_equal_to: ->(withdraw) { withdraw.currency.min_withdraw_amount }}
+            numericality: { greater_than_or_equal_to: ->(withdraw) { withdraw.currency.min_withdraw_amount } }
 
   validate on: :create do
-    if beneficiary.present? && !beneficiary.active? && !aasm_state.to_sym.in?(COMPLETED_STATES)
-      errors.add(:beneficiary, 'not active')
-    end
+    errors.add(:beneficiary, 'not active') if beneficiary.present? && !beneficiary.active? && !aasm_state.to_sym.in?(COMPLETED_STATES)
   end
 
   validate on: :create, if: ->(w) { w.currency.present? && w.currency.coin? } do
-    unless blockchain.valid_address?(rid)
-      errors.add(:rid, 'invlalid address')
-    end
+    errors.add(:rid, 'invlalid address') unless blockchain.valid_address?(rid)
   end
 
   scope :completed, -> { where(aasm_state: COMPLETED_STATES) }
   scope :succeed_processing, -> { where(aasm_state: SUCCEED_PROCESSING_STATES) }
-  scope :last_24_hours, -> { where('created_at > ?', 24.hour.ago) }
+  scope :last_24_hours, -> { where('created_at > ?', 24.hours.ago) }
   scope :last_1_month, -> { where('created_at > ?', 1.month.ago) }
 
   aasm whiny_transitions: true, requires_lock: true do
@@ -123,19 +118,19 @@ class Withdraw < ApplicationRecord
       transitions from: %i[processing], to: :transfering
     end
 
-    # TODO Move to service
-    #event :load do
-      #transitions from: :accepted, to: :confirming do
-        ## Load event is available only for coin withdrawals.
-        #guard do
-          #currency.coin? && txid?
-        #end
-      #end
-      #after_commit do
-        #tx = currency.blockchain.gateway.fetch_transaction(self)
-        #success! if tx.present? && tx.status.success?
-      #end
-    #end
+    # TODO: Move to service
+    # event :load do
+    # transitions from: :accepted, to: :confirming do
+    ## Load event is available only for coin withdrawals.
+    # guard do
+    # currency.coin? && txid?
+    # end
+    # end
+    # after_commit do
+    # tx = currency.blockchain.gateway.fetch_transaction(self)
+    # success! if tx.present? && tx.status.success?
+    # end
+    # end
 
     event :review do
       transitions from: :processing, to: :under_review
@@ -198,8 +193,8 @@ class Withdraw < ApplicationRecord
   class << self
     def sum_query
       'SELECT sum(w.sum * c.price) as sum FROM withdraws as w ' \
-      'INNER JOIN currencies as c ON c.id=w.currency_id ' \
-      'where w.member_id = ? AND w.aasm_state IN (?) AND w.created_at > ?;'
+        'INNER JOIN currencies as c ON c.id=w.currency_id ' \
+        'where w.member_id = ? AND w.aasm_state IN (?) AND w.created_at > ?;'
     end
 
     def sanitize_execute_sum_queries(member_id)
@@ -238,13 +233,14 @@ class Withdraw < ApplicationRecord
     # Convert withdraw sums with price from the currency model.
     sum_24_hours, sum_1_month = Withdraw.sanitize_execute_sum_queries(member_id)
 
-    sum_24_hours + sum * currency.get_price <= limits.limit_24_hour &&
-      sum_1_month + sum * currency.get_price <= limits.limit_1_month
+    sum_24_hours + (sum * currency.get_price) <= limits.limit_24_hour &&
+      sum_1_month + (sum * currency.get_price) <= limits.limit_1_month
   end
 
   def confirmations
     return 0 if block_number.blank?
     return blockchain.processed_height - block_number if (blockchain.processed_height - block_number) >= 0
+
     nil
   rescue StandardError => e
     report_exception(e)
@@ -260,17 +256,17 @@ class Withdraw < ApplicationRecord
   end
 
   def as_json_for_event_api
-    { tid:             tid,
-      user:            { uid: member.uid, email: member.email },
-      uid:             member.uid,
-      rid:             rid,
-      currency:        currency_id,
-      amount:          amount.to_s('F'),
-      fee:             fee.to_s('F'),
-      state:           aasm_state,
-      created_at:      created_at.iso8601,
-      updated_at:      updated_at.iso8601,
-      completed_at:    completed_at&.iso8601,
+    { tid: tid,
+      user: { uid: member.uid, email: member.email },
+      uid: member.uid,
+      rid: rid,
+      currency: currency_id,
+      amount: amount.to_s('F'),
+      fee: fee.to_s('F'),
+      state: aasm_state,
+      created_at: created_at.iso8601,
+      updated_at: updated_at.iso8601,
+      completed_at: completed_at&.iso8601,
       blockchain_txid: txid }
   end
 
@@ -285,12 +281,12 @@ class Withdraw < ApplicationRecord
       # Debit main fiat/crypto Liability account.
       # Credit locked fiat/crypto Liability account.
       Operations::Liability.transfer!(
-        amount:     sum,
-        currency:   currency,
-        reference:  self,
-        from_kind:  :main,
-        to_kind:    :locked,
-        member_id:  member_id
+        amount: sum,
+        currency: currency,
+        reference: self,
+        from_kind: :main,
+        to_kind: :locked,
+        member_id: member_id
       )
     end
   end
@@ -300,12 +296,12 @@ class Withdraw < ApplicationRecord
       # Debit locked fiat/crypto Liability account.
       # Credit main fiat/crypto Liability account.
       Operations::Liability.transfer!(
-        amount:     sum,
-        currency:   currency,
-        reference:  self,
-        from_kind:  :locked,
-        to_kind:    :main,
-        member_id:  member_id
+        amount: sum,
+        currency: currency,
+        reference: self,
+        from_kind: :locked,
+        to_kind: :main,
+        member_id: member_id
       )
     end
   end
@@ -314,28 +310,28 @@ class Withdraw < ApplicationRecord
     transaction do
       # Debit locked fiat/crypto Liability account.
       Operations::Liability.debit!(
-        amount:     sum,
-        currency:   currency,
-        reference:  self,
-        kind:       :locked,
-        member_id:  member_id
+        amount: sum,
+        currency: currency,
+        reference: self,
+        kind: :locked,
+        member_id: member_id
       )
 
       # Credit main fiat/crypto Revenue account.
       # NOTE: Credit amount = fee.
       Operations::Revenue.credit!(
-        amount:     fee,
-        currency:   currency,
-        reference:  self,
-        member_id:  member_id
+        amount: fee,
+        currency: currency,
+        reference: self,
+        member_id: member_id
       )
 
       # Debit main fiat/crypto Asset account.
       # NOTE: Debit amount = sum - fee.
       Operations::Asset.debit!(
-        amount:     amount,
-        currency:   currency,
-        reference:  self
+        amount: amount,
+        currency: currency,
+        reference: self
       )
     end
   end

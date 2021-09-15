@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class AccountsMerger
   def call(from_currency, to_currency)
-    puts "Migrates accounts from #{from_currency} to #{to_currency}"
+    Rails.logger.debug { "Migrates accounts from #{from_currency} to #{to_currency}" }
     Account.where(currency_id: from_currency).lock.each do |from_account|
       from_account.lock!
       to_account = from_account.member.get_account(to_currency)
@@ -12,12 +14,12 @@ class AccountsMerger
       if balance.positive?
         from_account.sub_funds! balance
         to_account.plus_funds! balance
-        puts "balance #{balance} #{from_currency} moved as #{to_currency} for #{from_account.member.uid}"
+        Rails.logger.debug { "balance #{balance} #{from_currency} moved as #{to_currency} for #{from_account.member.uid}" }
       end
 
       if locked.positive?
         to_account.lock_funds! locked
-        puts "locked #{locked} #{from_currency} moved as #{to_currency} for #{from_account.member.uid}"
+        Rails.logger.debug { "locked #{locked} #{from_currency} moved as #{to_currency} for #{from_account.member.uid}" }
       end
 
       from_account.delete

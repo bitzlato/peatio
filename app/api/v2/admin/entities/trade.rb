@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -32,16 +31,16 @@ module API
             :maker_fee,
             documentation: {
               type: BigDecimal,
-              desc: 'Trade maker fee percentage.',
+              desc: 'Trade maker fee percentage.'
             },
-            if: ->(object, options) { options[:extended] }
+            if: ->(_object, options) { options[:extended] }
           ) { |trade| trade.maker_order.maker_fee }
 
           expose(
             :maker_fee_amount,
             documentation: {
               type: BigDecimal,
-              desc: 'Trade maker fee amount.',
+              desc: 'Trade maker fee amount.'
             }
           ) { |trade| fee_amount(trade, trade.maker_order) }
 
@@ -56,7 +55,7 @@ module API
           expose(
             :maker_order,
             using: API::V2::Admin::Entities::Order,
-            if: ->(object, options) { options[:extended] }
+            if: ->(_object, options) { options[:extended] }
           )
 
           expose(
@@ -87,23 +86,23 @@ module API
             :taker_fee,
             documentation: {
               type: BigDecimal,
-              desc: 'Trade taker fee percentage.',
+              desc: 'Trade taker fee percentage.'
             },
-            if: ->(object, options) { options[:extended] }
+            if: ->(_object, options) { options[:extended] }
           ) { |trade| trade.taker_order.taker_fee }
 
           expose(
             :taker_fee_amount,
             documentation: {
               type: BigDecimal,
-              desc: 'Trade taker fee amount.',
+              desc: 'Trade taker fee amount.'
             }
           ) { |trade| fee_amount(trade, trade.taker_order) }
 
           expose(
             :taker_order,
             using: API::V2::Admin::Entities::Order,
-            if: ->(object, options) { options[:extended] }
+            if: ->(_object, options) { options[:extended] }
           )
         end
       end

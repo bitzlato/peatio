@@ -3,15 +3,15 @@
 RSpec.describe Peatio::Upstream::Opendax do
   let(:upstream_opendax_config) do
     {
-      "driver": 'opendax',
-      "source": 'btc_usd',
-      "target": 'btc_usd',
-      "rest": 'http://localhost',
-      "websocket": 'wss://localhost'
+      driver: 'opendax',
+      source: 'btc_usd',
+      target: 'btc_usd',
+      rest: 'http://localhost',
+      websocket: 'wss://localhost'
     }.stringify_keys
   end
 
-  let(:opendax) { Peatio::Upstream::Opendax.new(upstream_opendax_config) }
+  let(:opendax) { described_class.new(upstream_opendax_config) }
 
   let(:msg) do
     {

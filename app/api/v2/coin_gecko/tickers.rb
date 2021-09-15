@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -6,7 +5,7 @@ module API
     module CoinGecko
       class Tickers < Grape::API
         desc 'Get list of all available trading pairs'
-        get "/tickers" do
+        get '/tickers' do
           tickers = Rails.cache.fetch(:markets_tickers_coingecko, expires_in: 60) do
             ::Market.spot.enabled.ordered.inject([]) do |hash, market|
               hash << TickersService[market].ticker.merge(market: market)

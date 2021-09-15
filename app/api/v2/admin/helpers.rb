@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -68,7 +67,7 @@ module API
 
         params :uid do
           optional :uid,
-                   values:  { value: -> (v) { Member.exists?(uid: v) }, message: 'admin.user.doesnt_exist' },
+                   values: { value: ->(v) { Member.exists?(uid: v) }, message: 'admin.user.doesnt_exist' },
                    desc: -> { API::V2::Entities::Member.documentation[:uid][:desc] }
         end
 
@@ -87,7 +86,7 @@ module API
 
         params :ordering do
           optional :ordering,
-                   values: { value: %w(asc desc), message: 'admin.pagination.invalid_ordering' },
+                   values: { value: %w[asc desc], message: 'admin.pagination.invalid_ordering' },
                    default: 'desc',
                    desc: 'If set, returned values will be sorted in specific order, defaults to \'desc\'.'
           optional :order_by,
@@ -103,11 +102,11 @@ module API
           optional :from,
                    type: { value: Time, message: 'admin.filter.range_from_invalid' },
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'\
-                     'If set, only entities FROM the time will be retrieved.'
+                         'If set, only entities FROM the time will be retrieved.'
           optional :to,
                    type: { value: Time, message: 'admin.filter.range_to_invalid' },
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'\
-                     'If set, only entities BEFORE the time will be retrieved.'
+                         'If set, only entities BEFORE the time will be retrieved.'
         end
       end
     end

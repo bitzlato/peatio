@@ -1,7 +1,6 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
-require File.expand_path('../shared', __FILE__)
+require File.expand_path('shared', __dir__)
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -36,7 +35,7 @@ Rails.application.configure do
   config.force_ssl = ENV['FORCE_SECURE_CONNECTION'] == 'true'
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :request_id ]
+  config.log_tags = [:request_id]
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -55,8 +54,8 @@ Rails.application.configure do
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
-  if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger           = ActiveSupport::Logger.new(STDOUT)
+  if ENV['RAILS_LOG_TO_STDOUT'].present?
+    logger           = ActiveSupport::Logger.new($stdout)
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 

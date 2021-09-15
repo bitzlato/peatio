@@ -1,12 +1,11 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Management::Entities::Trade do
+  subject { OpenStruct.new described_class.represent(trade, side: 'sell').serializable_hash }
+
   let(:trade) do
     create :trade, :btc_usd, maker_order: create(:order_ask, :btc_usd), taker_order: create(:order_bid, :btc_usd)
   end
-
-  subject { OpenStruct.new API::V2::Management::Entities::Trade.represent(trade, side: 'sell').serializable_hash }
 
   it do
     expect(subject.id).to eq trade.id
@@ -23,7 +22,6 @@ describe API::V2::Management::Entities::Trade do
     expect(subject.taker_member_uid).to eq trade.taker.uid
   end
 
-
   context 'sell order maker' do
     it { expect(subject.taker_type).to eq 'buy' }
   end
@@ -37,7 +35,8 @@ describe API::V2::Management::Entities::Trade do
   end
 
   context 'empty side' do
-    subject { OpenStruct.new API::V2::Management::Entities::Trade.represent(trade).serializable_hash }
-    it { expect(subject.respond_to?(:side)).to be_falsey }
+    subject { OpenStruct.new described_class.represent(trade).serializable_hash }
+
+    it { expect(subject).not_to respond_to(:side) }
   end
 end

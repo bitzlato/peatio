@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module APITestHelpers
@@ -6,13 +5,13 @@ module APITestHelpers
 
   def post_json(destination, body, headers = {})
     post destination,
-         params: String === body ? body : body.to_json,
+         params: body.is_a?(String) ? body : body.to_json,
          headers: headers.reverse_merge('Content-Type' => 'application/json')
   end
 
   def put_json(destination, body, headers = {})
     put destination,
-        params: String === body ? body : body.to_json,
+        params: body.is_a?(String) ? body : body.to_json,
         headers: headers.reverse_merge('Content-Type' => 'application/json')
   end
 
@@ -48,7 +47,7 @@ module APITestHelpers
   #
   def jwt_for(member, payload = { x: 'x', y: 'y', z: 'z' })
     jwt_build(payload.merge(email: member.email, uid: member.uid, \
-              role: member.role, state: member.state, level: member.level))
+                            role: member.role, state: member.state, level: member.level))
   end
 
   #
@@ -78,7 +77,7 @@ module APITestHelpers
     require 'base64'
     OpenSSL::PKey::RSA.generate(2048).yield_self do |p|
       Rails.configuration.x.jwt_public_key = p.public_key
-      { public:  Base64.urlsafe_encode64(p.public_key.to_pem),
+      { public: Base64.urlsafe_encode64(p.public_key.to_pem),
         private: Base64.urlsafe_encode64(p.to_pem) }
     end
   end
@@ -94,17 +93,17 @@ module APITestHelpers
 
   def management_api_v1_keychain
     require 'openssl'
-    { james:  OpenSSL::PKey::RSA.generate(2048),
-      john:   OpenSSL::PKey::RSA.generate(2048 ),
-      david:  OpenSSL::PKey::RSA.generate(2048 ),
-      robert: OpenSSL::PKey::RSA.generate(2048 ),
-      alex:   OpenSSL::PKey::RSA.generate(2048 ),
-      jeff:   OpenSSL::PKey::RSA.generate(2048 ) }
+    { james: OpenSSL::PKey::RSA.generate(2048),
+      john: OpenSSL::PKey::RSA.generate(2048),
+      david: OpenSSL::PKey::RSA.generate(2048),
+      robert: OpenSSL::PKey::RSA.generate(2048),
+      alex: OpenSSL::PKey::RSA.generate(2048),
+      jeff: OpenSSL::PKey::RSA.generate(2048) }
   end
   memoize :management_api_v1_keychain
 
   def management_api_v1_algorithms
-    management_api_v1_keychain.each_with_object({}) { |(k, v), memo| memo[k] = 'RS256' }
+    management_api_v1_keychain.transform_values { |_v| 'RS256' }
   end
   memoize :management_api_v1_algorithms
 

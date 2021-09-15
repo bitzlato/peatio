@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 module API
   module V2
     module Management
       class Members < Grape::API
-
         desc 'Create a member.' do
           @settings[:scope] = :write_members
         end

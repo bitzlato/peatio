@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class ImprovePaymentAddressModel < ActiveRecord::Migration[4.2]
@@ -9,6 +8,6 @@ class ImprovePaymentAddressModel < ActiveRecord::Migration[4.2]
     change_column :payment_addresses, :account_id, :integer, null: false
     change_column :payment_addresses, :currency_id, :integer, null: false, after: :id
     add_index :payment_addresses, :account_id, unique: true
-    add_index :payment_addresses, [:currency_id, :address], unique: true
+    add_index :payment_addresses, %i[currency_id address], unique: true
   end
 end

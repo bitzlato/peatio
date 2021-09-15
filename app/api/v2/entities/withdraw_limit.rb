@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module API
   module V2
     module Entities
       class WithdrawLimit < API::V2::Entities::Base
         expose(
           :id,
-          documentation:{
+          documentation: {
             type: Integer,
             desc: 'Unique withdraw limit table identifier in database.'
           }
@@ -12,7 +14,7 @@ module API
 
         expose(
           :group,
-          documentation:{
+          documentation: {
             type: String,
             desc: 'Member group for define withdraw limits.'
           }
@@ -20,7 +22,7 @@ module API
 
         expose(
           :kyc_level,
-          documentation:{
+          documentation: {
             type: String,
             desc: 'KYC level for define withdraw limits.'
           }
@@ -28,7 +30,7 @@ module API
 
         expose(
           :limit_24_hour,
-          documentation:{
+          documentation: {
             type: BigDecimal,
             desc: '24 hours withdraw limit.'
           }
@@ -36,7 +38,7 @@ module API
 
         expose(
           :limit_1_month,
-          documentation:{
+          documentation: {
             type: BigDecimal,
             desc: '1 month withdraw limit.'
           }

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -22,10 +21,10 @@ module API
 
           def ransack_params
             Helpers::RansackBuilder.new(params)
-              .eq(:code, :reference_type)
-              .translate(currency: :currency_id, rid: :reference_id)
-              .with_daterange
-              .build
+                                   .eq(:code, :reference_type)
+                                   .translate(currency: :currency_id, rid: :reference_id)
+                                   .with_daterange
+                                   .build
           end
         end
 

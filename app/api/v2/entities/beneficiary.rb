@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -67,12 +66,12 @@ module API
         )
 
         expose(
-            :sent_at,
-            format_with: :iso8601,
-            documentation: {
-                desc: 'Time when last pin was sent',
-                type: String
-            }
+          :sent_at,
+          format_with: :iso8601,
+          documentation: {
+            desc: 'Time when last pin was sent',
+            type: String
+          }
         )
       end
     end

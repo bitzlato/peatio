@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CompareMoneyCurrencyProperties < ActiveRecord::Migration[5.2]
   def change
     Currency.find_each do |c|

@@ -1,12 +1,11 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 def who_is_billionaire
   member = create(:member, :level_3)
-  member.get_account(:btc).update_attributes(
+  member.get_account(:btc).update(
     locked: '1000000000.0'.to_d, balance: '1000000000.0'.to_d
   )
-  member.get_account(:usd).update_attributes(
+  member.get_account(:usd).update(
     locked: '1000000000.0'.to_d, balance: '1000000000.0'.to_d
   )
   member
@@ -26,8 +25,8 @@ module Matching
       Matching::LimitOrder.new({
         id: @@mock_order_id,
         timestamp: Time.now.to_i,
-        volume: 1 + rand(10),
-        price:  3000 + rand(3000),
+        volume: rand(1..10),
+        price: rand(3000..5999),
         market: 'btc_usd'
       }.merge(attrs))
     end
@@ -37,8 +36,8 @@ module Matching
       Matching::MarketOrder.new({
         id: @@mock_order_id,
         timestamp: Time.now.to_i,
-        volume: 1 + rand(10),
-        locked: 15_000 + rand(15_000),
+        volume: rand(1..10),
+        locked: rand(15_000..29_999),
         market: 'btc_usd'
       }.merge(attrs))
     end

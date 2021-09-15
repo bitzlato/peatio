@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -34,7 +33,7 @@ module API
 
         expose(
           :deposit_address,
-          if: ->(account, _options) do
+          if: lambda do |account, _options|
             account.currency.coin? && !account.enable_invoice? && account.payment_address.try(:address).present?
           end,
           using: API::V2::Entities::PaymentAddress,
@@ -44,8 +43,8 @@ module API
           }
         ) do |account, options|
           account.payment_address
-        rescue => err
-          report_exception err, true, account: account, options: options
+        rescue StandardError => e
+          report_exception e, true, account: account, options: options
           nil
         end
 

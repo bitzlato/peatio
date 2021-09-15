@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDepositSpreads < ActiveRecord::Migration[5.2]
   def change
     create_table :deposit_spreads do |t|
@@ -17,10 +19,10 @@ class CreateDepositSpreads < ActiveRecord::Migration[5.2]
 
     Deposit.where.not(spread: [nil, []]).find_each do |deposit|
       # => [{:to_address=>"0x7075bbbd9bd3e8ce47a0e7ad23170d94c772dfa1",
-      #:amount=>"0.017962999969361",
-      #:currency_id=>"eth",
-      #:status=>"pending",
-      #:options=>{"subtract_fee"=>true, "gas_limit"=>21000, "gas_price"=>97000001459}}]
+      # :amount=>"0.017962999969361",
+      # :currency_id=>"eth",
+      # :status=>"pending",
+      # :options=>{"subtract_fee"=>true, "gas_limit"=>21000, "gas_price"=>97000001459}}]
       deposit.spread.each do |spread|
         DepositSpread.create!(
           deposit: deposit,
@@ -30,8 +32,8 @@ class CreateDepositSpreads < ActiveRecord::Migration[5.2]
           txid: spread.fetch(:hash),
           meta: { spread: spread }
         )
-      rescue => err
-        puts "#{err} for #{spread}"
+      rescue StandardError => e
+        Rails.logger.debug { "#{e} for #{spread}" }
       end
     end
 

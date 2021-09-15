@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Admin::Adjustments, type: :request do
@@ -31,14 +30,14 @@ describe API::V2::Admin::Adjustments, type: :request do
 
         expect(response).to be_successful
         expect(result.length).to eq 5
-        expect(result[0].key?('asset')).to be_truthy
-        expect(result[0].key?('liability')).to be_truthy
+        expect(result[0]).to be_key('asset')
+        expect(result[0]).to be_key('liability')
         expect(result[0]['state']).to eq('rejected')
         # We don't create operations for rejected adj.
-        expect(result[0]['liability']['id'].nil?).to be_truthy
-        expect(result[0]['asset']['id'].nil?).to be_truthy
-        expect(result[1].key?('asset')).to be_truthy
-        expect(result[1].key?('liability')).to be_truthy
+        expect(result[0]['liability']['id']).to be_nil
+        expect(result[0]['asset']['id']).to be_nil
+        expect(result[1]).to be_key('asset')
+        expect(result[1]).to be_key('liability')
         expect(result[1]['liability']['id']).to eq accepted.liability.id
         expect(result[1]['asset']['id']).to eq accepted.asset.id
         expect(result[1]['state']).to eq('accepted')
@@ -135,7 +134,7 @@ describe API::V2::Admin::Adjustments, type: :request do
       expect(result['id']).to eq adjustment3.id
       expect(result['currency']).to eq adjustment3.currency_id
       expect(result['receiving_account_code']).to eq '302'
-      expect(result['receiving_member_uid'].blank?).to be_truthy
+      expect(result['receiving_member_uid']).to be_blank
     end
   end
 
@@ -154,9 +153,9 @@ describe API::V2::Admin::Adjustments, type: :request do
     end
 
     it 'creates new adjustment' do
-      expect {
+      expect do
         api_post '/api/v2/admin/adjustments/new', token: token, params: params
-      }.to change { Adjustment.count }.by 1
+      end.to change(Adjustment, :count).by 1
 
       expect(response).to be_successful
     end
@@ -170,8 +169,8 @@ describe API::V2::Admin::Adjustments, type: :request do
       expect(result['category']).to eq('asset_registration')
       expect(result['amount']).to eq('100.0')
       expect(result['currency']).to eq('btc')
-      expect(result.key?('asset')).to be_truthy
-      expect(result.key?('liability')).to be_truthy
+      expect(result).to be_key('asset')
+      expect(result).to be_key('liability')
     end
 
     it 'checks account decimal amount' do
@@ -239,7 +238,6 @@ describe API::V2::Admin::Adjustments, type: :request do
         expect(result['reason']).to eq('Adjustment')
       end
 
-
       it 'doesnt requires for expense receiving account' do
         api_post '/api/v2/admin/adjustments/new', token: token, params: params.merge(receiving_account_code: 402).except(:receiving_member_uid)
 
@@ -261,10 +259,10 @@ describe API::V2::Admin::Adjustments, type: :request do
         expect(response).to be_successful
         result = JSON.parse(response.body)
         expect(result['reason']).to eq('Adjustment')
-        expect(result['receiving_member_uid'].blank?).to be_truthy
+        expect(result['receiving_member_uid']).to be_blank
         adjustment_db = Adjustment.find(result['id'])
         account_number_hash = Operations.split_account_number(account_number: adjustment_db.receiving_account_number)
-        expect(account_number_hash[:member_uid].present?).to be_truthy
+        expect(account_number_hash[:member_uid]).to be_present
       end
     end
   end
@@ -273,19 +271,19 @@ describe API::V2::Admin::Adjustments, type: :request do
     let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-202-#{member.uid}") }
 
     it 'accepts adjustment' do
-      expect {
+      expect do
         api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-      }.to change { adjustment.reload.state }.to('accepted')
-      .and change { Operations::Asset.count }.by(1)
-      .and change { Operations::Liability.count }.by(1)
+      end.to change { adjustment.reload.state }.to('accepted')
+                                               .and change { Operations::Asset.count }.by(1)
+                                                                                      .and change { Operations::Liability.count }.by(1)
 
       expect(response).to be_successful
     end
 
     it 'udpates member\'s balance' do
-      expect {
+      expect do
         api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-      }.to change { member.get_account(adjustment.currency).balance }.by(adjustment.amount)
+      end.to change { member.get_account(adjustment.currency).balance }.by(adjustment.amount)
     end
 
     it 'does not accept invalid asset_account_code.' do
@@ -299,7 +297,7 @@ describe API::V2::Admin::Adjustments, type: :request do
     end
 
     it 'does not accept negative adjustment for sum bigger than member\'s balance' do
-      adjustment.update(amount: -10000000.0)
+      adjustment.update(amount: -10_000_000.0)
 
       api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
 
@@ -309,24 +307,24 @@ describe API::V2::Admin::Adjustments, type: :request do
     end
 
     it 'does not update member\'s balance if it is lower than negative adjustment' do
-      adjustment.update(amount: -10000000.0)
+      adjustment.update(amount: -10_000_000.0)
 
-      expect {
+      expect do
         api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-      }.not_to change { member.get_account(adjustment.currency).balance }
+      end.not_to change { member.get_account(adjustment.currency).balance }
     end
 
     context 'adjustment without member' do
-      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-402-") }
+      let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: 'btc-402-') }
 
-      it 'should accept adjustment' do
-        adjustment.update(amount: -10000000.0)
+      it 'accepts adjustment' do
+        adjustment.update(amount: -10_000_000.0)
 
-        expect {
+        expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-        }.to change { adjustment.reload.state }.to('accepted')
-        .and change { Operations::Asset.count }.by(1)
-        .and change { Operations::Expense.count }.by(1)
+        end.to change { adjustment.reload.state }.to('accepted')
+                                                 .and change { Operations::Asset.count }.by(1)
+                                                                                        .and change { Operations::Expense.count }.by(1)
 
         expect(response).to be_successful
       end
@@ -343,15 +341,15 @@ describe API::V2::Admin::Adjustments, type: :request do
       end
 
       it 'does not udpate member\'s balance' do
-        expect {
+        expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-        }.not_to change { member.accounts }
+        end.not_to change(member, :accounts)
       end
 
       it 'does not create operations' do
-        expect {
+        expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-        }.not_to change { Operations::Asset.count }
+        end.not_to change { Operations::Asset.count }
       end
     end
 
@@ -366,15 +364,15 @@ describe API::V2::Admin::Adjustments, type: :request do
       end
 
       it 'does not udpate member\'s balance' do
-        expect {
+        expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-        }.not_to change { member.accounts }
+        end.not_to change(member, :accounts)
       end
 
       it 'does not create operations' do
-        expect {
+        expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :accept }
-        }.not_to change { Operations::Asset.count }
+        end.not_to change { Operations::Asset.count }
       end
     end
   end
@@ -383,19 +381,19 @@ describe API::V2::Admin::Adjustments, type: :request do
     let!(:adjustment) { create(:adjustment, currency_id: 'btc', receiving_account_number: "btc-202-#{member.uid}") }
 
     it 'rejects adjustment' do
-      expect {
+      expect do
         api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
-      }.to change { adjustment.reload.state }.to('rejected')
+      end.to change { adjustment.reload.state }.to('rejected')
     end
 
     it 'does not create operations' do
-      expect {
+      expect do
         api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
-      }.not_to change { Operations::Asset.count }
+      end.not_to change { Operations::Asset.count }
     end
 
     it 'does reject of negative amount' do
-      adjustment.update(amount: -10000000.0)
+      adjustment.update(amount: -10_000_000.0)
       api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
 
       expect(response.code).to eq '201'
@@ -412,15 +410,15 @@ describe API::V2::Admin::Adjustments, type: :request do
       end
 
       it 'does not udpate member\'s balance' do
-        expect {
+        expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
-        }.not_to change { member.accounts }
+        end.not_to change(member, :accounts)
       end
 
       it 'does not create operations' do
-        expect {
+        expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
-        }.not_to change { Operations::Asset.count }
+        end.not_to change { Operations::Asset.count }
       end
     end
 
@@ -435,15 +433,15 @@ describe API::V2::Admin::Adjustments, type: :request do
       end
 
       it 'does not udpate member\'s balance' do
-        expect {
+        expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
-        }.not_to change { member.accounts }
+        end.not_to change(member, :accounts)
       end
 
       it 'does not create operations' do
-        expect {
+        expect do
           api_post '/api/v2/admin/adjustments/action', token: token, params: { id: adjustment.id, action: :reject }
-        }.not_to change { Operations::Asset.count }
+        end.not_to change { Operations::Asset.count }
       end
     end
   end

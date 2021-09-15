@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class AbstractGateway
-  attr_reader :blockchain
+  attr_reader :blockchain, :client
 
   def self.supports_cash_addr_format?
     false
@@ -7,13 +9,13 @@ class AbstractGateway
 
   def self.normalize_address(address)
     # self.address = CashAddr::Converter.to_cash_address(address) if gateway.supports_cash_addr_format?
-    #if blockchain.supports_cash_addr_format? && rid? && CashAddr::Converter.is_valid?(rid)
-      #self.rid = CashAddr::Converter.to_cash_address(rid)
-    #end
+    # if blockchain.supports_cash_addr_format? && rid? && CashAddr::Converter.is_valid?(rid)
+    # self.rid = CashAddr::Converter.to_cash_address(rid)
+    # end
     address
   end
 
-  def self.format_address(address)
+  def self.format_address(_address)
     not_implemented!
   end
 
@@ -25,12 +27,12 @@ class AbstractGateway
     not_implemented!
   end
 
-  def self.valid_address?(address)
+  def self.valid_address?(_address)
     # CashAddr::Converter.is_valid?(rid)
     not_implemented!
   end
 
-  def self.valid_txid?(txid)
+  def self.valid_txid?(_txid)
     not_implemented
   end
 
@@ -41,8 +43,6 @@ class AbstractGateway
   def self.enable_personal_address_balance?
     true
   end
-
-  attr_reader :client
 
   def latest_block_number
     nil
@@ -57,7 +57,7 @@ class AbstractGateway
     false
   end
 
-  def support_wallet_kind?(kind)
+  def support_wallet_kind?(_kind)
     true # TODO
   end
 
@@ -69,7 +69,7 @@ class AbstractGateway
     self.class.name
   end
 
-  def fetch_block_transactions(block_number)
+  def fetch_block_transactions(_block_number)
     raise "not implemented #{self.class}"
   end
 
@@ -82,17 +82,21 @@ class AbstractGateway
   def kind_of_address(address)
     if address.is_a?(Enumerable)
       raise 'multiple addresses' if address.many?
+
       address = address.first
     end
     return :wallet if address.in? blockchain.wallets_addresses
     return :deposit if address.in? blockchain.deposit_addresses
+
     :unknown
   end
 
-  def monefy_transaction(hash, extras = {})
+  def monefy_transaction(hash, _extras = {})
     return if hash.nil?
+
     if hash.is_a? Peatio::Transaction
       raise "Sourced transaction must be plain #{hash}" if hash.amount.is_a? Money
+
       tx = hash
     else
       tx = Peatio::Transaction.new(hash)

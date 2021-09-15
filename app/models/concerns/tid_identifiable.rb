@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module TIDIdentifiable
@@ -8,10 +7,12 @@ module TIDIdentifiable
     validates :tid, presence: true, uniqueness: { case_sensitive: false }
 
     before_validation do
-      next unless tid.blank?
-      begin
+      next if tid.present?
+
+      loop do
         self.tid = "TID#{SecureRandom.hex(5).upcase}"
-      end while self.class.where(tid: tid).any?
+        break unless self.class.where(tid: tid).any?
+      end
     end
   end
 end

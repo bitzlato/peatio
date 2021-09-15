@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateGasRefuels < ActiveRecord::Migration[5.2]
   def change
     create_table :gas_refuels do |t|
@@ -15,8 +17,8 @@ class CreateGasRefuels < ActiveRecord::Migration[5.2]
       t.timestamps
     end
 
-    add_index :gas_refuels, [:blockchain_id, :txid], unique: true
-    add_index :gas_refuels, [:blockchain_id, :gas_wallet_address]
-    add_index :gas_refuels, [:blockchain_id, :target_address]
+    add_index :gas_refuels, %i[blockchain_id txid], unique: true
+    add_index :gas_refuels, %i[blockchain_id gas_wallet_address]
+    add_index :gas_refuels, %i[blockchain_id target_address]
   end
 end

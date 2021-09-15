@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Management::Beneficiaries, type: :request do
@@ -20,7 +19,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
     let(:member) { create(:member, :level_3) }
     let(:beneficiary_data) do
       {
-        uid: member.uid,
+        uid: member.uid
       }
     end
 
@@ -76,7 +75,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         beneficiary_data.merge!(currency: :btc)
         request
         expect(response.status).to eq 200
-        expect(response_body.all? { |b| b['currency'] == 'btc' }).to be_truthy
+        expect(response_body).to be_all { |b| b['currency'] == 'btc' }
       end
 
       context 'fiat currency' do
@@ -86,7 +85,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
           beneficiary_data.merge!(currency: :usd)
           request
           expect(response.status).to eq 200
-          expect(response_body.all? { |b| b['currency'] == 'usd' }).to be_truthy
+          expect(response_body).to be_all { |b| b['currency'] == 'usd' }
           expect(usd_beneficiary_for_member.id).to eq response_body.first['id']
           expect(usd_beneficiary_for_member.data[:account_number]).to eq response_body.first['data']['account_number']
         end
@@ -107,7 +106,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         beneficiary_data.merge!(state: :pending)
         request
         expect(response.status).to eq 200
-        expect(response_body.all? { |b| b['state'] == 'pending' }).to be_truthy
+        expect(response_body).to be_all { |b| b['state'] == 'pending' }
       end
     end
 
@@ -120,7 +119,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         beneficiary_data.merge!(currency: :btc, state: :active)
         request
         expect(response.status).to eq 200
-        expect(response_body.all? { |b| b['currency'] == 'btc' && b['state'] == 'active' }).to be_truthy
+        expect(response_body).to be_all { |b| b['currency'] == 'btc' && b['state'] == 'active' }
       end
     end
   end
@@ -227,9 +226,11 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
         context 'disabled withdrawal for currency' do
           let(:currency) { Currency.find(:btc) }
+
           before do
             currency.update(withdrawal_enabled: false)
           end
+
           it do
             request
             expect(response.status).to eq 422
@@ -241,6 +242,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
           before do
             beneficiary_data[:data][:address] = "'" + Faker::Blockchain::Bitcoin.address
           end
+
           it do
             request
             expect(response.status).to eq 422
@@ -254,7 +256,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
               create(:beneficiary,
                      member: member,
                      currency_id: beneficiary_data[:currency],
-                     data: {address: beneficiary_data.dig(:data, :address)})
+                     data: { address: beneficiary_data.dig(:data, :address) })
             end
 
             it do
@@ -265,20 +267,20 @@ describe API::V2::Management::Beneficiaries, type: :request do
           end
 
           context 'different currencies' do
-            let(:eth_beneficiary_data) {
+            let(:eth_beneficiary_data) do
               beneficiary_data.merge({
-                data: { address: Faker::Blockchain::Ethereum.address }
-              })
-            }
+                                       data: { address: Faker::Blockchain::Ethereum.address }
+                                     })
+            end
+
             before do
               create(:beneficiary,
                      member: member,
                      currency_id: :eth,
-                     data: {address: eth_beneficiary_data.dig(:data, :address)})
+                     data: { address: eth_beneficiary_data.dig(:data, :address) })
             end
 
             it do
-
               request
               expect(response.status).to eq 201
             end
@@ -288,8 +290,9 @@ describe API::V2::Management::Beneficiaries, type: :request do
             let(:address) { Faker::Blockchain::Bitcoin.address }
 
             before do
-              beneficiary_data[:data][:address] = " " + address + " "
+              beneficiary_data[:data][:address] = ' ' + address + ' '
             end
+
             it do
               request
               expect(response.status).to eq 201
@@ -366,15 +369,15 @@ describe API::V2::Management::Beneficiaries, type: :request do
       it 'creates beneficiary for member' do
         expect do
           request
-        end.to change{ member.beneficiaries.count }.by(1)
+        end.to change { member.beneficiaries.count }.by(1)
       end
 
       it 'creates beneficiary with active state' do
         request
         expect(response.status).to eq 201
         id = response_body['id']
-        expect(Beneficiary.find_by!(id: id).state).to eq 'active'
-        expect(Beneficiary.find_by!(id: id).data).to eq response_body['data']
+        expect(Beneficiary.find(id).state).to eq 'active'
+        expect(Beneficiary.find(id).data).to eq response_body['data']
       end
     end
   end

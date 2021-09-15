@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -8,8 +7,8 @@ module API
         helpers ::API::V2::Admin::Helpers
 
         desc 'Get all members, result is paginated.',
-          is_array: true,
-          success: API::V2::Admin::Entities::Member
+             is_array: true,
+             success: API::V2::Admin::Entities::Member
         params do
           optional :state,
                    desc: 'Filter order by state.'
@@ -28,9 +27,9 @@ module API
           admin_authorize! :read, ::Member
 
           ransack_params = Helpers::RansackBuilder.new(params)
-                             .eq(:uid, :email, :state, :role, :group)
-                             .with_daterange
-                             .build
+                                                  .eq(:uid, :email, :state, :role, :group)
+                                                  .with_daterange
+                                                  .build
 
           search = Member.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
@@ -38,7 +37,7 @@ module API
         end
 
         desc 'Get available members groups.',
-          is_array: true
+             is_array: true
         get '/members/groups' do
           admin_authorize! :read, ::Member
 

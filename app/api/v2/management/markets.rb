@@ -1,39 +1,38 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Management
       class Markets < Grape::API
-        helpers do
-          # Collection of shared params, used to
-          # generate required/optional Grape params.
-          OPTIONAL_MARKET_PARAMS ||= {
-            amount_precision: {
-              type: { value: Integer, message: 'management.market.non_integer_amount_precision' },
-              values: { value: -> (p){ p && p >= 0 }, message: 'management.market.invalid_amount_precision' },
-              default: 4,
-              desc: -> { API::V2::Management::Entities::Market.documentation[:amount_precision][:desc] }
-            },
-            price_precision: {
-              type: { value: Integer, message: 'management.market.non_integer_price_precision' },
-              values: { value: -> (p){ p && p >= 0 }, message: 'management.market.invalid_price_precision' },
-              default: 4,
-              desc: -> { API::V2::Management::Entities::Market.documentation[:price_precision][:desc] }
-            },
-            max_price: {
-              type: { value: BigDecimal, message: 'management.market.non_decimal_max_price' },
-              values: { value: -> (p){ p >= 0 }, message: 'management.market.invalid_max_price' },
-              default: 0.0,
-              desc: -> { API::V2::Management::Entities::Market.documentation[:max_price][:desc] }
-            },
-            state: {
-              values: { value: ::Market::STATES, message: 'management.market.invalid_state' },
-              default: 'enabled',
-              desc: -> { API::V2::Management::Entities::Market.documentation[:state][:desc] }
-            },
+        # Collection of shared params, used to
+        # generate required/optional Grape params.
+        OPTIONAL_MARKET_PARAMS = {
+          amount_precision: {
+            type: { value: Integer, message: 'management.market.non_integer_amount_precision' },
+            values: { value: ->(p) { p && p >= 0 }, message: 'management.market.invalid_amount_precision' },
+            default: 4,
+            desc: -> { API::V2::Management::Entities::Market.documentation[:amount_precision][:desc] }
+          },
+          price_precision: {
+            type: { value: Integer, message: 'management.market.non_integer_price_precision' },
+            values: { value: ->(p) { p && p >= 0 }, message: 'management.market.invalid_price_precision' },
+            default: 4,
+            desc: -> { API::V2::Management::Entities::Market.documentation[:price_precision][:desc] }
+          },
+          max_price: {
+            type: { value: BigDecimal, message: 'management.market.non_decimal_max_price' },
+            values: { value: ->(p) { p >= 0 }, message: 'management.market.invalid_max_price' },
+            default: 0.0,
+            desc: -> { API::V2::Management::Entities::Market.documentation[:max_price][:desc] }
+          },
+          state: {
+            values: { value: ::Market::STATES, message: 'management.market.invalid_state' },
+            default: 'enabled',
+            desc: -> { API::V2::Management::Entities::Market.documentation[:state][:desc] }
           }
+        }.freeze
 
+        helpers do
           params :create_market_params do
             OPTIONAL_MARKET_PARAMS.each do |key, params|
               optional key, params
@@ -56,11 +55,11 @@ module API
                    desc: -> { API::V2::Management::Entities::Market.documentation[:quote_unit][:desc] }
           requires :min_price,
                    type: { value: BigDecimal, message: 'management.market.non_decimal_min_price' },
-                   values: { value: -> (p){ p && p >= 0 }, message: 'management.market.invalid_min_price' },
+                   values: { value: ->(p) { p && p >= 0 }, message: 'management.market.invalid_min_price' },
                    desc: -> { API::V2::Management::Entities::Market.documentation[:min_price][:desc] }
           requires :min_amount,
                    type: { value: BigDecimal, message: 'management.market.non_decimal_min_amount' },
-                   values: { value: -> (p){ p && p >= 0 }, message: 'management.market.invalid_min_amount' },
+                   values: { value: ->(p) { p && p >= 0 }, message: 'management.market.invalid_min_amount' },
                    desc: -> { API::V2::Management::Entities::Market.documentation[:min_amount][:desc] }
           optional :engine_id,
                    type: { value: Integer, message: 'management.market.non_integer_engine_id' },
@@ -108,7 +107,7 @@ module API
                    desc: -> { API::V2::Management::Entities::Market.documentation[:engine_id][:desc] }
           optional :type,
                    type: { value: String },
-                   values: { value: -> { ::Market::TYPES }},
+                   values: { value: -> { ::Market::TYPES } },
                    default: -> { ::Market::DEFAULT_TYPE }
           optional :state,
                    type: String,
@@ -136,13 +135,13 @@ module API
                    desc: -> { API::V2::Management::Entities::Market.documentation[:max_price][:desc] }
           optional :position,
                    type: { value: Integer },
-                   values: { value: -> (p){ p >= ::Market::TOP_POSITION } },
+                   values: { value: ->(p) { p >= ::Market::TOP_POSITION } },
                    desc: -> { API::V2::Management::Entities::Market.documentation[:position][:desc] }
 
           exactly_one_of :id, :symbol
         end
         put '/markets/update' do
-          symbol = params[:symbol].present? ? params[:symbol] : params[:id]
+          symbol = params[:symbol].presence || params[:id]
           market = ::Market.find_by_symbol_and_type(symbol, params[:type])
           if market.update(declared(params, include_missing: false))
             present market, with: API::V2::Management::Entities::Market
@@ -161,7 +160,7 @@ module API
         params do
           optional :type,
                    type: { value: String },
-                   values: { value: -> { ::Market::TYPES }},
+                   values: { value: -> { ::Market::TYPES } },
                    default: -> { ::Market::DEFAULT_TYPE }
         end
 
@@ -181,7 +180,7 @@ module API
                    desc: -> { API::V2::Management::Entities::Market.documentation[:id][:desc] }
           optional :type,
                    type: { value: String },
-                   values: { value: -> { ::Market::TYPES }},
+                   values: { value: -> { ::Market::TYPES } },
                    default: -> { ::Market::DEFAULT_TYPE }
         end
         post '/markets/:symbol' do

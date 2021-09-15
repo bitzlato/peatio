@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -16,8 +15,9 @@ module API
 end
 
 describe API::V2::Mount, type: :request do
-  let(:middlewares) { API::V2::Mount.middleware }
-  it 'should use attack middleware' do
+  let(:middlewares) { described_class.middleware }
+
+  it 'uses attack middleware' do
     expect(middlewares.drop(1)).to eq [[:use, Rack::Attack]]
   end
 
@@ -42,7 +42,7 @@ describe API::V2::Mount, type: :request do
   end
 
   context 'handle exception on request routing' do
-    it 'should render json error message' do
+    it 'renders json error message' do
       get '/api/v2/public/non/exist'
       expect(response.code).to eq '404'
     end

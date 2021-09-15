@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdateMarketsMinAmountAndPrice < ActiveRecord::Migration[5.2]
   def up
     Market.all do |m|

@@ -1,18 +1,21 @@
+# frozen_string_literal: true
+
 describe Bitcoin::Wallet do
   let(:wallet) { Bitcoin::Wallet.new }
 
   context :configure do
-    let(:settings) { { wallet: {}, currency: {} }}
-    it 'requires wallet' do
-      expect{ wallet.configure(settings.except(:wallet)) }.to raise_error(Peatio::Wallet::MissingSettingError)
+    let(:settings) { { wallet: {}, currency: {} } }
 
-      expect{ wallet.configure(settings) }.to_not raise_error
+    it 'requires wallet' do
+      expect { wallet.configure(settings.except(:wallet)) }.to raise_error(Peatio::Wallet::MissingSettingError)
+
+      expect { wallet.configure(settings) }.not_to raise_error
     end
 
     it 'requires currency' do
-      expect{ wallet.configure(settings.except(:currency)) }.to raise_error(Peatio::Wallet::MissingSettingError)
+      expect { wallet.configure(settings.except(:currency)) }.to raise_error(Peatio::Wallet::MissingSettingError)
 
-      expect{ wallet.configure(settings) }.to_not raise_error
+      expect { wallet.configure(settings) }.not_to raise_error
     end
 
     it 'sets settings attribute' do
@@ -38,7 +41,7 @@ describe Bitcoin::Wallet do
       {
         wallet:
           { address: 'something',
-            uri:     uri },
+            uri: uri },
         currency: {}
       }
     end
@@ -52,10 +55,10 @@ describe Bitcoin::Wallet do
       stub_request(:post, uri_without_authority)
         .with(body: { jsonrpc: '1.0',
                       method: :getnewaddress,
-                      params:  [] }.to_json)
+                      params: [] }.to_json)
         .to_return(body: { result: address,
-                           error:  nil,
-                           id:     nil }.to_json)
+                           error: nil,
+                           id: nil }.to_json)
 
       result = wallet.create_address!(uid: 'UID123')
       expect(result.as_json.symbolize_keys).to eq(address: address)
@@ -63,19 +66,20 @@ describe Bitcoin::Wallet do
 
     it 'works with wallet path' do
       wallet.configure({
-        wallet: {
-          address: 'something',
-          uri:     uri_with_wallet },
-        currency: {}
-      })
+                         wallet: {
+                           address: 'something',
+                           uri: uri_with_wallet
+                         },
+                         currency: {}
+                       })
       address = '2N4qYjye5yENLEkz4UkLFxzPaxJatF3kRwf'
       stub_request(:post, uri_with_wallet_no_authority)
         .with(body: { jsonrpc: '1.0',
                       method: :getnewaddress,
-                      params:  [] }.to_json)
+                      params: [] }.to_json)
         .to_return(body: { result: address,
-                           error:  nil,
-                           id:     nil }.to_json)
+                           error: nil,
+                           id: nil }.to_json)
       result = wallet.create_address!(uid: 'UID123')
       expect(result.as_json.symbolize_keys).to eq(address: address)
     end
@@ -95,7 +99,7 @@ describe Bitcoin::Wallet do
       {
         wallet:
           { address: 'something',
-            uri:     uri },
+            uri: uri },
         currency: {}
       }
     end
@@ -121,8 +125,8 @@ describe Bitcoin::Wallet do
                         false
                       ] }.to_json)
         .to_return(body: { result: txid,
-                           error:  nil,
-                           id:     nil }.to_json)
+                           error: nil,
+                           id: nil }.to_json)
 
       result = wallet.create_transaction!(transaction)
       expect(result.as_json.symbolize_keys).to eq(amount: 1.1,
@@ -144,8 +148,8 @@ describe Bitcoin::Wallet do
                         true
                       ] }.to_json)
         .to_return(body: { result: txid,
-                           error:  nil,
-                           id:     nil }.to_json)
+                           error: nil,
+                           id: nil }.to_json)
 
       result = wallet.create_transaction!(transaction, subtract_fee: true)
       expect(result.as_json.symbolize_keys).to eq(amount: 1.1,
@@ -169,7 +173,7 @@ describe Bitcoin::Wallet do
       {
         wallet:
           { address: 'something',
-            uri:     uri },
+            uri: uri },
         currency: {}
       }
     end
@@ -185,8 +189,8 @@ describe Bitcoin::Wallet do
                       method: :getbalance,
                       params: [] }.to_json)
         .to_return(body: { result: balance,
-                           error:  nil,
-                           id:     nil }.to_json)
+                           error: nil,
+                           id: nil }.to_json)
 
       result = wallet.load_balance!
       expect(result).to be_a(BigDecimal)

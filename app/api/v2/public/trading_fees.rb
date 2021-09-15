@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -8,8 +7,8 @@ module API
         helpers ::API::V2::Admin::Helpers
 
         desc 'Returns trading_fees table as paginated collection',
-          is_array: true,
-          success: API::V2::Entities::TradingFee
+             is_array: true,
+             success: API::V2::Entities::TradingFee
         params do
           optional :group,
                    type: String,
@@ -29,8 +28,8 @@ module API
         end
         get '/trading_fees' do
           ransack_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
-                             .eq(:group, :market_id, :market_type)
-                             .build
+                                                                  .eq(:group, :market_id, :market_type)
+                                                                  .build
 
           search = TradingFee.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"

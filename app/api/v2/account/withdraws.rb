@@ -1,26 +1,24 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Account
       class Withdraws < Grape::API
-
         before { withdraws_must_be_permitted! }
 
         desc 'List your withdraws as paginated collection.',
-          is_array: true,
-          success: API::V2::Entities::Withdraw
+             is_array: true,
+             success: API::V2::Entities::Withdraw
         params do
           optional :currency,
                    type: String,
-                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                    desc: 'Currency code.'
           optional :limit,
                    type: { value: Integer, message: 'account.withdraw.non_integer_limit' },
                    values: { value: 1..100, message: 'account.withdraw.invalid_limit' },
                    default: 100,
-                   desc: "Number of withdraws per page (defaults to 100, maximum is 100)."
+                   desc: 'Number of withdraws per page (defaults to 100, maximum is 100).'
           optional :state,
                    values: { value: ->(v) { (Array.wrap(v) - Withdraw.aasm(:default).states.map(&:to_s)).blank? }, message: 'account.withdraw.invalid_state' },
                    desc: 'Filter withdrawals by states.'
@@ -38,7 +36,7 @@ module API
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'
           optional :page,
                    type: { value: Integer, message: 'account.withdraw.non_integer_page' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'account.withdraw.non_positive_page'},
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'account.withdraw.non_positive_page' },
                    default: 1,
                    desc: 'Page number (defaults to 1).'
         end
@@ -77,7 +75,7 @@ module API
                    desc: 'ID of Active Beneficiary belonging to user.'
           requires :currency,
                    type: String,
-                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                    desc: 'The currency code.'
           requires :amount,
                    type: { value: BigDecimal, message: 'account.withdraw.non_decimal_amount' },
@@ -92,9 +90,9 @@ module API
           user_authorize! :create, ::Withdraw
 
           beneficiary = current_user
-                          .beneficiaries
-                          .available_to_member
-                          .find_by(id: params[:beneficiary_id])
+                        .beneficiaries
+                        .available_to_member
+                        .find_by(id: params[:beneficiary_id])
 
           if beneficiary.blank?
             error!({ errors: ['account.beneficiary.doesnt_exist'] }, 422)
@@ -102,23 +100,19 @@ module API
             error!({ errors: ['account.beneficiary.invalid_state_for_withdrawal'] }, 422)
           end
 
-          unless Vault::TOTP.validate?(current_user.uid, params[:otp])
-            error!({ errors: ['account.withdraw.invalid_otp'] }, 422)
-          end
+          error!({ errors: ['account.withdraw.invalid_otp'] }, 422) unless Vault::TOTP.validate?(current_user.uid, params[:otp])
 
           currency = Currency.find(params[:currency])
 
-          unless currency.withdrawal_enabled?
-            error!({ errors: ['account.currency.withdrawal_disabled'] }, 422)
-          end
+          error!({ errors: ['account.currency.withdrawal_disabled'] }, 422) unless currency.withdrawal_enabled?
 
           # TODO: Delete subclasses from Deposit and Withdraw
           withdraw = "withdraws/#{currency.type}".camelize.constantize.new \
             beneficiary: beneficiary,
-            sum:         params[:amount],
-            member:      current_user,
-            currency:    currency,
-            note:        params[:note]
+            sum: params[:amount],
+            member: current_user,
+            currency: currency,
+            note: params[:note]
           withdraw.save!
           withdraw.with_lock { withdraw.accept! }
           present withdraw, with: API::V2::Entities::Withdraw
@@ -132,7 +126,7 @@ module API
           # For now single error which is not handled by params validations is
           # sum precision validation error (PrecisionValidator).
           error!({ errors: ['account.withdraw.invalid_amount'] }, 422)
-        rescue => e
+        rescue StandardError => e
           report_exception(e)
           error!({ errors: ['account.withdraw.create_error'] }, 422)
         end

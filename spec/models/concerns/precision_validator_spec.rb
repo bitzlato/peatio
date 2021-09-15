@@ -1,9 +1,9 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class Validatable
   include ActiveModel::Validations
   attr_accessor :amount
+
   validates :amount, precision: { less_than_or_eq_to: 2 }
 end
 

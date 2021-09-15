@@ -1,28 +1,27 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Management
       class Wallets < Grape::API
+        # Collection of shared params, used to
+        # generate required/optional Grape params.
+        OPTIONAL_WALLET_PARAMS = {
+          max_balance: {
+            type: { value: BigDecimal, message: 'management.blockchain.non_decimal_max_balance' },
+            values: { value: ->(p) { p >= 0 }, message: 'management.wallet.invalid_max_balance' },
+            default: 0.0,
+            desc: -> { API::V2::Management::Entities::Wallet.documentation[:max_balance][:desc] }
+          },
+          status: {
+            values: { value: %w[active disabled], message: 'management.wallet.invalid_status' },
+            default: 'active',
+            desc: -> { API::V2::Management::Entities::Wallet.documentation[:status][:desc] }
+          }
+        }.freeze
+
         helpers ::API::V2::ParamHelpers
         helpers do
-          # Collection of shared params, used to
-          # generate required/optional Grape params.
-          OPTIONAL_WALLET_PARAMS ||= {
-            max_balance: {
-              type: { value: BigDecimal, message: 'management.blockchain.non_decimal_max_balance' },
-              values: { value: -> (p){ p >= 0 }, message: 'management.wallet.invalid_max_balance' },
-              default: 0.0,
-              desc: -> { API::V2::Management::Entities::Wallet.documentation[:max_balance][:desc] }
-            },
-            status: {
-              values: { value: %w(active disabled), message: 'management.wallet.invalid_status' },
-              default: 'active',
-              desc: -> { API::V2::Management::Entities::Wallet.documentation[:status][:desc] }
-            },
-          }
-
           params :create_wallet_params do
             OPTIONAL_WALLET_PARAMS.each do |key, params|
               optional key, params
@@ -150,10 +149,10 @@ module API
         end
         post '/wallets' do
           ransack_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
-                             .eq(:blockchain_key)
-                             .translate_in(currencies: :currencies_id)
-                             .merge(kind_eq: params[:kind].present? ? Wallet.kinds[params[:kind].to_sym] : nil)
-                             .build
+                                                                  .eq(:blockchain_key)
+                                                                  .translate_in(currencies: :currencies_id)
+                                                                  .merge(kind_eq: params[:kind].present? ? Wallet.kinds[params[:kind].to_sym] : nil)
+                                                                  .build
 
           search = ::Wallet.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"

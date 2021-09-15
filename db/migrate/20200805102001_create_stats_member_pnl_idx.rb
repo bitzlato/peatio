@@ -20,7 +20,6 @@ class CreateStatsMemberPnlIdx < ActiveRecord::Migration[5.2]
         raise "Unsupported adapter: #{ActiveRecord::Base.connection.adapter_name}"
       end
 
-
       t.index %i[pnl_currency_id currency_id last_id], name: 'index_currency_ids_and_last_id'
       t.index %i[pnl_currency_id currency_id reference_type], unique: true, name: 'index_currency_ids_and_type'
     end

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class PrecisionValidator < ActiveModel::EachValidator
@@ -16,8 +15,6 @@ class PrecisionValidator < ActiveModel::EachValidator
       return
     end
 
-    unless value.round(precision) == value
-      record.errors.add(attribute, "precision must be less than or equal to #{precision}")
-    end
+    record.errors.add(attribute, "precision must be less than or equal to #{precision}") unless value.round(precision) == value
   end
 end

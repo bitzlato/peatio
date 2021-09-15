@@ -17,11 +17,11 @@ class TickersService
   attr_accessor :market_symbol
 
   def initialize(market)
-    if market.is_a? Market
-      @market_symbol = market.symbol
-    else
-      @market_symbol = market.to_s
-    end
+    @market_symbol = if market.is_a? Market
+                       market.symbol
+                     else
+                       market.to_s
+                     end
   end
 
   def ticker

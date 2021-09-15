@@ -21,7 +21,7 @@ yaml = ERB.new(raw_file).result
     x[:keychain][id][:value] = key
   end
 
-  x.fetch(:scopes).values.each do |scope|
+  x.fetch(:scopes).each_value do |scope|
     %i[permitted_signers mandatory_signers].each do |list|
       scope[list] = scope.fetch(list, []).map(&:to_sym)
       if list == :mandatory_signers && scope[list].empty?

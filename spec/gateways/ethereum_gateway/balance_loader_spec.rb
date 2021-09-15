@@ -1,11 +1,11 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe ::EthereumGateway::BalanceLoader do
+  subject { described_class.new(client) }
+
   let(:address) { Faker::Blockchain::Ethereum.address }
   let(:uri) { 'http://127.0.0.1:8545' }
   let(:client) { ::Ethereum::Client.new(uri) }
-  subject { described_class.new(client) }
 
   around do |example|
     WebMock.disable_net_connect!
@@ -50,7 +50,7 @@ describe ::EthereumGateway::BalanceLoader do
     end
     let(:contract_address) { '0x87099add3bcc0821b5b151307c147215f839a110' }
 
-    before  do
+    before do
       stub_request(:post, uri)
         .with(body: { jsonrpc: '2.0',
                       id: 1,
@@ -63,7 +63,7 @@ describe ::EthereumGateway::BalanceLoader do
                         },
                         'latest'
                       ] }.to_json)
-                        .to_return(body: response.to_json)
+        .to_return(body: response.to_json)
     end
 
     it 'requests rpc eth_call and get token balance' do

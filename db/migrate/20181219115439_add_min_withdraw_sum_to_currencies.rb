@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddMinWithdrawSumToCurrencies < ActiveRecord::Migration[4.2]
   def change
     add_column :currencies, :min_withdraw_amount, :decimal, precision: 32, scale: 16, default: 0.0, null: false, after: :min_collection_amount

@@ -11,7 +11,7 @@ module API
                    desc: 'A pair such as "LTC_BTC"',
                    coerce_with: ->(name) { name.strip.downcase }
         end
-        get "/trades/:market_pair" do
+        get '/trades/:market_pair' do
           market = ::Market.find_spot_by_symbol(params[:market_pair])
           Trade.public_from_influx(market.symbol).map { |trade| format_trade(trade) }
         end

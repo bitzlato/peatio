@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 FactoryBot.define do
@@ -24,7 +23,7 @@ FactoryBot.define do
       price { '1'.to_d }
       volume { '1'.to_d }
       origin_volume { volume.to_d }
-      locked { price.to_d *  volume.to_d }
+      locked { price.to_d * volume.to_d }
       origin_locked { locked.to_d }
     end
 
@@ -38,7 +37,7 @@ FactoryBot.define do
       price { '1'.to_d }
       volume { '1'.to_d }
       origin_volume { volume.to_d }
-      locked { price.to_d *  volume.to_d }
+      locked { price.to_d * volume.to_d }
       origin_locked { locked.to_d }
     end
 
@@ -52,7 +51,7 @@ FactoryBot.define do
       price { '1'.to_d }
       volume { '1'.to_d }
       origin_volume { volume.to_d }
-      locked { price.to_d *  volume.to_d }
+      locked { price.to_d * volume.to_d }
       origin_locked { locked.to_d }
     end
 
@@ -66,7 +65,7 @@ FactoryBot.define do
       price { '1'.to_d }
       volume { '1'.to_d }
       origin_volume { volume.to_d }
-      locked { price.to_d *  volume.to_d }
+      locked { price.to_d * volume.to_d }
       origin_locked { locked.to_d }
     end
   end

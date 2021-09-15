@@ -1,11 +1,10 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Management::Entities::Deposit do
   context 'fiat' do
-    let(:record) { create(:deposit_usd, member: create(:member, :barong)) }
+    subject { OpenStruct.new described_class.represent(record).serializable_hash }
 
-    subject { OpenStruct.new API::V2::Management::Entities::Deposit.represent(record).serializable_hash }
+    let(:record) { create(:deposit_usd, member: create(:member, :barong)) }
 
     it do
       expect(subject.tid).to eq record.tid
@@ -16,15 +15,15 @@ describe API::V2::Management::Entities::Deposit do
       expect(subject.state).to eq record.aasm_state
       expect(subject.created_at).to eq record.created_at.iso8601
       expect(subject.completed_at).to eq record.completed_at&.iso8601
-      expect(subject.respond_to?(:blockchain_txid)).to be_falsey
-      expect(subject.respond_to?(:confirmations)).to be_falsey
+      expect(subject).not_to respond_to(:blockchain_txid)
+      expect(subject).not_to respond_to(:confirmations)
     end
   end
 
   context 'coin' do
-    let(:record) { create(:deposit_btc, member: create(:member, :barong)) }
+    subject { OpenStruct.new described_class.represent(record).serializable_hash }
 
-    subject { OpenStruct.new API::V2::Management::Entities::Deposit.represent(record).serializable_hash }
+    let(:record) { create(:deposit_btc, member: create(:member, :barong)) }
 
     it do
       expect(subject.tid).to eq record.tid

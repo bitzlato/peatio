@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class WhitelistedSmartContract < ApplicationRecord
@@ -8,7 +7,7 @@ class WhitelistedSmartContract < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain, touch: true, required: true
+  belongs_to :blockchain, touch: true, optional: false
 
   # == Validations ==========================================================
 

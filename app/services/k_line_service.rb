@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'peatio/influxdb'
@@ -27,7 +26,6 @@ class KLineService
       @services ||= {}
     end
   end
-
 
   attr_accessor :market_symbol, :period
 

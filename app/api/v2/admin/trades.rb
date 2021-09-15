@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'csv'
@@ -12,8 +11,8 @@ module API
         content_type :csv, 'text/csv'
 
         desc 'Get all trades, result is paginated.',
-          is_array: true,
-          success: API::V2::Admin::Entities::Trade
+             is_array: true,
+             success: API::V2::Admin::Entities::Trade
         params do
           optional :market,
                    values: { value: -> { ::Market.pluck(:symbol) }, message: 'admin.market.doesnt_exist' },
@@ -36,13 +35,13 @@ module API
           member = Member.find_by(uid: params[:uid]) if params[:uid].present?
 
           ransack_params = Helpers::RansackBuilder.new(params.except!(:uid))
-                             .translate(market: :market_id)
-                             .eq(:market_type)
-                             .with_daterange
-                             .merge(g: [
-                               { maker_id_eq: member&.id, taker_id_eq: member&.id, m: 'or' },
-                               { maker_order_id_eq: params[:order_id], taker_order_id_eq: params[:order_id], m: 'or' },
-                             ]).build
+                                                  .translate(market: :market_id)
+                                                  .eq(:market_type)
+                                                  .with_daterange
+                                                  .merge(g: [
+                                                           { maker_id_eq: member&.id, taker_id_eq: member&.id, m: 'or' },
+                                                           { maker_order_id_eq: params[:order_id], taker_order_id_eq: params[:order_id], m: 'or' }
+                                                         ]).build
 
           search = Trade.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"

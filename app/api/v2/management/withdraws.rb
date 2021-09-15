@@ -1,25 +1,23 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Management
       class Withdraws < Grape::API
-
         helpers do
           def perform_action(withdraw, action)
             withdraw.with_lock do
               case action
-                when 'process'
-                  withdraw.accept!
-                  # Process fiat withdraw immediately. Crypto withdraws will be processed by workers.
-                  if withdraw.currency.fiat?
-                    withdraw.process!
-                    withdraw.dispatch!
-                    withdraw.success!
-                  end
-                when 'cancel'
-                  withdraw.cancel!
+              when 'process'
+                withdraw.accept!
+                # Process fiat withdraw immediately. Crypto withdraws will be processed by workers.
+                if withdraw.currency.fiat?
+                  withdraw.process!
+                  withdraw.dispatch!
+                  withdraw.success!
+                end
+              when 'cancel'
+                withdraw.cancel!
               end
             end
           end
@@ -66,16 +64,16 @@ module API
         desc 'Creates new withdraw.' do
           @settings[:scope] = :write_withdraws
           detail 'Creates new withdraw. The behaviours for fiat and crypto withdraws are different. ' \
-                'Fiat: money are immediately locked, withdraw state is set to «submitted», system workers ' \
-                      'will validate withdraw later against suspected activity, and assign state to «rejected» or «accepted». ' \
-                      'The processing will not begin automatically. The processing may be initiated manually from admin panel or by PUT /management_api/v1/withdraws/action. ' \
-                'Coin: money are immediately locked, withdraw state is set to «submitted», system workers ' \
-                      'will validate withdraw later against suspected activity, validate withdraw address and ' \
-                      'set state to «rejected» or «accepted». ' \
-                      'Then in case state is «accepted» withdraw workers will perform interactions with blockchain. ' \
-                      'The withdraw receives new state «processing». Then withdraw receives state either «confirming» or «failed».' \
-                      'Then in case state is «confirming» withdraw confirmations workers will perform interactions with blockchain.' \
-                      'Withdraw receives state «succeed» when it receives minimum necessary amount of confirmations.'
+                 'Fiat: money are immediately locked, withdraw state is set to «submitted», system workers ' \
+                 'will validate withdraw later against suspected activity, and assign state to «rejected» or «accepted». ' \
+                 'The processing will not begin automatically. The processing may be initiated manually from admin panel or by PUT /management_api/v1/withdraws/action. ' \
+                 'Coin: money are immediately locked, withdraw state is set to «submitted», system workers ' \
+                 'will validate withdraw later against suspected activity, validate withdraw address and ' \
+                 'set state to «rejected» or «accepted». ' \
+                 'Then in case state is «accepted» withdraw workers will perform interactions with blockchain. ' \
+                 'The withdraw receives new state «processing». Then withdraw receives state either «confirming» or «failed».' \
+                 'Then in case state is «confirming» withdraw confirmations workers will perform interactions with blockchain.' \
+                 'Withdraw receives state «succeed» when it receives minimum necessary amount of confirmations.'
           success API::V2::Management::Entities::Withdraw
         end
         params do
@@ -97,9 +95,7 @@ module API
           member = Member.find_by(uid: params[:uid])
 
           currency = Currency.find(params[:currency])
-          unless currency.withdrawal_enabled?
-            error!({ errors: ['management.currency.withdrawal_disabled'] }, 422)
-          end
+          error!({ errors: ['management.currency.withdrawal_disabled'] }, 422) unless currency.withdrawal_enabled?
 
           beneficiary = Beneficiary.find_by(id: params[:beneficiary_id]) if params[:beneficiary_id].present?
           if params[:rid].blank? && beneficiary.blank?
@@ -108,9 +104,7 @@ module API
             error!({ errors: ['management.beneficiary.invalid_state_for_withdrawal'] }, 422)
           end
 
-          if params[:tid].present?
-            error!({ errors: ['TID already exist'] }, 422) if Withdraw.where(tid: params[:tid]).present?
-          end
+          error!({ errors: ['TID already exist'] }, 422) if params[:tid].present? && Withdraw.where(tid: params[:tid]).present?
 
           declared_params = declared(params, include_missing: false).slice(:tid, :rid, :note, :transfer_type).merge(
             sum: params[:amount],
@@ -129,7 +123,7 @@ module API
         rescue ::Account::AccountError => e
           report_api_error(e, request)
           error!({ errors: [e.to_s] }, 422)
-        rescue => e
+        rescue StandardError => e
           report_exception(e)
           error!({ errors: ['Failed to create withdraw!'] }, 422)
         end
@@ -137,7 +131,7 @@ module API
         desc 'Performs action on withdraw.' do
           @settings[:scope] = :write_withdraws
           detail '«process» – system will lock the money, check for suspected activity, validate recipient address, and initiate the processing of the withdraw. ' \
-                '«cancel»  – system will mark withdraw as «canceled», and unlock the money.'
+                 '«cancel»  – system will mark withdraw as «canceled», and unlock the money.'
           success API::V2::Management::Entities::Withdraw
         end
         params do

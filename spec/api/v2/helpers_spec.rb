@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -16,27 +15,27 @@ module API
 end
 
 describe API::V2::Helpers, type: :request do
-  context '#authentic?' do
+  describe '#authentic?' do
     let!(:member) { create(:member, :level_3) }
     let!(:token) { jwt_for(member) }
 
     context 'Authenticate using headers' do
-      it 'should response successfully' do
+      it 'responses successfully' do
         api_get '/api/v2/auth_test', foo: 'bar', hello: 'world', token: token
         expect(response).to be_successful
       end
 
-      it 'should not return authorization header' do
+      it 'does not return authorization header' do
         api_get '/api/v2/auth_test', foo: 'bar', hello: 'world', token: token
         expect(response.headers).not_to include('Authorization')
       end
 
-      it 'should set current user' do
+      it 'sets current user' do
         api_get '/api/v2/auth_test', foo: 'bar', hello: 'world', token: token
         expect(response.body).to eq member.reload.to_json
       end
 
-      it 'should fail authorization' do
+      it 'fails authorization' do
         get '/api/v2/auth_test'
 
         expect(response.code).to eq '401'
@@ -45,12 +44,12 @@ describe API::V2::Helpers, type: :request do
     end
   end
 
-  context '#authentic_include_username?' do
+  describe '#authentic_include_username?' do
     let!(:member) { create(:member, username: 'foobar') }
     let!(:token) { jwt_for(member, { username: 'foobar' }) }
 
     context 'Authenticate using headers' do
-      it 'should set current user' do
+      it 'sets current user' do
         api_get '/api/v2/auth_test', token: token
         expect(response.body).to eq member.reload.to_json
       end

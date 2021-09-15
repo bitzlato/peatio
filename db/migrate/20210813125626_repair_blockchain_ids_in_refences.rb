@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RepairBlockchainIdsInRefences < ActiveRecord::Migration[5.2]
   def change
     # Blockchains:

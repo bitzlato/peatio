@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'securerandom'
@@ -21,7 +20,7 @@ class Member < ApplicationRecord
   validates :level, numericality: { greater_than_or_equal_to: 0 }
   validates :role, inclusion: { in: ::Ability.roles }
 
-  before_create { self.group = self.group.strip.downcase }
+  before_create { self.group = group.strip.downcase }
   after_create { AirdropService.new(self).perform if ENV.true? 'AUTO_AIRDROP_FOR_NEW_MEMBERS' }
 
   class << self
@@ -39,20 +38,22 @@ class Member < ApplicationRecord
   end
 
   def admin?
-    role == "admin"
+    role == 'admin'
   end
 
   def get_account(model_or_id_or_code)
-    if model_or_id_or_code.is_a?(String) || model_or_id_or_code.is_a?(Symbol)
+    case model_or_id_or_code
+    when String, Symbol
       accounts.find_or_create_by(currency_id: model_or_id_or_code)
-    elsif model_or_id_or_code.is_a?(Currency)
+    when Currency
       accounts.find_or_create_by(currency: model_or_id_or_code)
     end
   # Thread Safe Account creation
   rescue ActiveRecord::RecordNotUnique
-    if model_or_id_or_code.is_a?(String) || model_or_id_or_code.is_a?(Symbol)
+    case model_or_id_or_code
+    when String, Symbol
       accounts.find_by(currency_id: model_or_id_or_code)
-    elsif model_or_id_or_code.is_a?(Currency)
+    when Currency
       accounts.find_by(currency: model_or_id_or_code)
     end
   end
@@ -60,7 +61,8 @@ class Member < ApplicationRecord
   # @deprecated
   def touch_accounts
     Currency.find_each do |currency|
-      next if accounts.where(currency: currency).exists?
+      next if accounts.exists?(currency: currency)
+
       accounts.create!(currency: currency)
     end
   end
@@ -76,9 +78,10 @@ class Member < ApplicationRecord
   end
 
   def legacy_balance_for(currency:, kind:)
-    if kind.to_sym == :main
+    case kind.to_sym
+    when :main
       get_account(currency).balance
-    elsif kind.to_sym == :locked
+    when :locked
       get_account(currency).locked
     else
       raise Operations::Exception, "Account for #{options} doesn't exists."
@@ -90,8 +93,9 @@ class Member < ApplicationRecord
   end
 
   def payment_address(blockchain, remote = false)
-    raise "no blockchain" if blockchain.nil?
+    raise 'no blockchain' if blockchain.nil?
     raise "We must not build payment address for invoicing blockchains (#{blockchain.key}) member_id=#{id}" if blockchain.enable_invoice?
+
     pa = PaymentAddress.find_by(member: self, blockchain: blockchain, remote: remote)
 
     if pa.blank?
@@ -106,6 +110,7 @@ class Member < ApplicationRecord
   # Attempts to create additional deposit address for account.
   def payment_address!(blockchain, remote = false)
     raise "We must not build payment address for invoicing blockchains member_id=#{id}" if blockchain.enable_invoice?
+
     pa = PaymentAddress.find_by(member: self, blockchain: blockchain, remote: remote)
 
     # The address generation process is in progress.
@@ -187,9 +192,7 @@ class Member < ApplicationRecord
 
     def fetch_email(payload)
       payload[:email].to_s.tap do |email|
-        if email.present?
-         raise(Peatio::Auth::Error, 'E-Mail is invalid.') unless EmailValidator.valid?(email)
-        end
+        raise(Peatio::Auth::Error, 'E-Mail is invalid.') if email.present? && !EmailValidator.valid?(email)
       end
     end
 
@@ -197,7 +200,7 @@ class Member < ApplicationRecord
       term = "%#{term}%"
       case field
       when 'email'
-        where("email LIKE ?", term)
+        where('email LIKE ?', term)
       when 'uid'
         where('uid LIKE ?', term)
       when 'wallet_address'

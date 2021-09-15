@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InternalTransfer < ApplicationRecord
   # == Constants ============================================================
   # == Attributes ===========================================================
@@ -8,8 +10,8 @@ class InternalTransfer < ApplicationRecord
   # == Relationships ========================================================
 
   belongs_to :currency
-  belongs_to :sender, class_name: :Member, required: true
-  belongs_to :receiver, class_name: :Member, required: true
+  belongs_to :sender, class_name: :Member, optional: false
+  belongs_to :receiver, class_name: :Member, optional: false
 
   # == Validations ==========================================================
 
@@ -36,7 +38,6 @@ class InternalTransfer < ApplicationRecord
   def direction(user)
     user == sender ? 'out' : 'in'
   end
-
 end
 
 # == Schema Information

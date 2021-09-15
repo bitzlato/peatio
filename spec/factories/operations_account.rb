@@ -1,9 +1,8 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 FactoryBot.define do
   # TODO: Rename this factory to account once we drop legacy accounts.
-  factory :operations_account, class: Operations::Account do
+  factory :operations_account, class: 'Operations::Account' do
     trait '101' do
       code          { 101 }
       type          { :asset }

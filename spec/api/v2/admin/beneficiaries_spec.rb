@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Admin::Beneficiaries, type: :request do
@@ -23,9 +22,9 @@ describe API::V2::Admin::Beneficiaries, type: :request do
     create_list(:beneficiary, 5)
   end
 
-  let!(:fiat_beneficiary) {
+  let!(:fiat_beneficiary) do
     create(:beneficiary, state: :active, currency: Currency.find('usd'))
-  }
+  end
 
   describe 'GET /api/v2/admin/beneficiaries' do
     let(:url) { '/api/v2/admin/beneficiaries' }
@@ -57,16 +56,16 @@ describe API::V2::Admin::Beneficiaries, type: :request do
       end
 
       it 'by state' do
-        api_get url, token: token, params: { state: ['pending', 'archived'] }
+        api_get url, token: token, params: { state: %w[pending archived] }
 
-        expect(response_body.count).to eq(Beneficiary.where(state: ['pending', 'archived']).count)
+        expect(response_body.count).to eq(Beneficiary.where(state: %w[pending archived]).count)
       end
 
       context 'by currency' do
         it 'by crypto currency' do
-          api_get url, token: token, params: { currency: ['eth', 'btc'] }
+          api_get url, token: token, params: { currency: %w[eth btc] }
 
-          expect(response_body.count).to eq(Beneficiary.where(currency_id: ['eth', 'btc']).count)
+          expect(response_body.count).to eq(Beneficiary.where(currency_id: %w[eth btc]).count)
         end
 
         it 'by fiat currency' do

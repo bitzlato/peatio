@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 class Adjustment < ApplicationRecord
@@ -18,7 +17,7 @@ class Adjustment < ApplicationRecord
   # == Relationships ========================================================
 
   belongs_to :currency
-  belongs_to :creator, class_name: :Member, required: true
+  belongs_to :creator, class_name: :Member, optional: false
   belongs_to :validator, class_name: :Member
 
   # Define has_one relation with Operations::{Asset,Expense,Liability,Revenue}.
@@ -112,7 +111,7 @@ class Adjustment < ApplicationRecord
     code = account_number_hash[:code]
     member = Member.find_by(uid: account_number_hash[:member_uid]) if account_number_hash.key?(:member_uid)
 
-    amount > 0 ? credit = amount : debit = -amount
+    amount.positive? ? credit = amount : debit = -amount
 
     klass = Operations.klass_for(code: code)
 

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -6,7 +5,7 @@ module API
     module Constraints
       class << self
         def included(base)
-          rate_limit = ENV.fetch("PEATIO_RATE_LIMIT_5MIN", 6000).to_i
+          rate_limit = ENV.fetch('PEATIO_RATE_LIMIT_5MIN', 6000).to_i
           apply_rules!(rate_limit)
           base.use Rack::Attack
         end

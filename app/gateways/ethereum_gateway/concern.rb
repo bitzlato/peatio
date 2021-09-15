@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EthereumGateway
   module Concern
     def valid_address?(address)
@@ -10,6 +12,7 @@ class EthereumGateway
 
     def normalize_txid(txid)
       return nil if txid.nil?
+
       txid.to_s.downcase
     end
 
@@ -22,8 +25,10 @@ class EthereumGateway
     end
 
     def validate_txid!(txid)
-      raise Ethereum::Client::Error, \
-        "Transaction failed (invalid txid #{txid})." unless valid_txid? txid
+      unless valid_txid? txid
+        raise Ethereum::Client::Error, \
+              "Transaction failed (invalid txid #{txid})."
+      end
       txid
     end
   end

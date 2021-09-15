@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddBlockchainToWithdraws < ActiveRecord::Migration[5.2]
   def change
     add_reference :withdraws, :blockchain, foreign_key: true

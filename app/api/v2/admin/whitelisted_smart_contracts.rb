@@ -81,7 +81,7 @@ module API
                    desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:id][:desc] }
           optional :blockchain_id,
                    values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' }
-                   # desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:blockchain_id][:desc] }
+          # desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:blockchain_id][:desc] }
           optional :description,
                    desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:description][:desc] }
           optional :address,
@@ -109,7 +109,7 @@ module API
         params do
           requires :file,
                    type: File,
-                   desc: -> {'CSV file with whitelisted smart contracts data'}
+                   desc: -> { 'CSV file with whitelisted smart contracts data' }
         end
         post '/whitelisted_smart_contracts/csv' do
           admin_authorize! :create, ::WhitelistedSmartContract
@@ -123,7 +123,7 @@ module API
             next if address.blank? || blockchain_id.blank? || ::Blockchain.pluck(:id).exclude?(blockchain_id)
 
             ::WhitelistedSmartContract.create!(description: description, address: address,
-                                           blockchain_id: blockchain_id, state: 'active')
+                                               blockchain_id: blockchain_id, state: 'active')
             count += 1
           end
 

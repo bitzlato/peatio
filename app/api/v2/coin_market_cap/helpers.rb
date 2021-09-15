@@ -10,17 +10,17 @@ module API
           lowest_ask = OrderAsk.get_depth(market.symbol)
           highest_bid = OrderBid.get_depth(market.symbol)
           {
-            trading_pairs:            market.underscore_name,            # mandatory [string]: Identifier of a ticker with delimiter to separate base/quote
-            base_currency:            market.base_unit.upcase,           # recommended [string]: Symbol/currency code of base currency
-            quote_currency:           market.quote_unit.upcase,          # recommended [string]: Symbol/currency code of base currency
-            last_price:               ticker[:last],                     # mandatory [decimal]: Last transacted price of base currency based on given quote currency
-            lowest_ask:               lowest_ask.flatten.first.to_d,     # mandatory [decimal]: Lowest Ask price of base currency based on given quote currency
-            highest_bid:              highest_bid.flatten.first.to_d,    # mandatory [decimal]: Highest bid price of base currency based on given quote currency
-            base_volume:              ticker[:amount],                   # mandatory [decimal]: 24-hr volume of market pair denoted in BASE currency
-            quote_volume:             ticker[:volume],                   # mandatory [decimal]: 24-hr volume of market pair denoted in QUOTE currency
-            price_change_percent_24h: price_change_percent_24h(ticker),  # mandatory [decimal]: 24-hr % price change of market pair
-            highest_price_24h:        ticker[:high],                     # mandatory [decimal]: Highest price of base currency based on given quote currency in the last 24-hrs
-            lowest_price_24h:         ticker[:low]                       # mandatory [decimal]: Lowest price of base currency based on given quote currency in the last 24-hrs
+            trading_pairs: market.underscore_name,            # mandatory [string]: Identifier of a ticker with delimiter to separate base/quote
+            base_currency: market.base_unit.upcase,           # recommended [string]: Symbol/currency code of base currency
+            quote_currency: market.quote_unit.upcase, # recommended [string]: Symbol/currency code of base currency
+            last_price: ticker[:last],                     # mandatory [decimal]: Last transacted price of base currency based on given quote currency
+            lowest_ask: lowest_ask.flatten.first.to_d,     # mandatory [decimal]: Lowest Ask price of base currency based on given quote currency
+            highest_bid: highest_bid.flatten.first.to_d,    # mandatory [decimal]: Highest bid price of base currency based on given quote currency
+            base_volume: ticker[:amount],                   # mandatory [decimal]: 24-hr volume of market pair denoted in BASE currency
+            quote_volume: ticker[:volume], # mandatory [decimal]: 24-hr volume of market pair denoted in QUOTE currency
+            price_change_percent_24h: price_change_percent_24h(ticker), # mandatory [decimal]: 24-hr % price change of market pair
+            highest_price_24h: ticker[:high], # mandatory [decimal]: Highest price of base currency based on given quote currency in the last 24-hrs
+            lowest_price_24h: ticker[:low] # mandatory [decimal]: Lowest price of base currency based on given quote currency in the last 24-hrs
           }
         end
 
@@ -42,20 +42,20 @@ module API
 
         def format_trade(trade)
           {
-            trade_id:     trade[:id],                                  # mandatory [integer]: A unique ID associated with the trade for the currency pair transaction
-            price:        trade[:price],                               # mandatory [decimal]: Last transacted price of base currency based on given quote currency
-            base_volume:  trade[:amount],                              # mandatory [decimal]: Transaction amount in BASE currency
-            quote_volume: trade[:total],                               # mandatory [decimal]: Transaction amount in QUOTE currency
-            timestamp:    trade[:created_at] * MILLISECONDS_IN_SECOND, # mandatory [integer]: Unix timestamp in milliseconds for when the transaction occurred
-            type:         trade[:taker_type]                           # mandatory [string]: Used to determine whether or not the transaction originated as a buy or sell
+            trade_id: trade[:id], # mandatory [integer]: A unique ID associated with the trade for the currency pair transaction
+            price: trade[:price], # mandatory [decimal]: Last transacted price of base currency based on given quote currency
+            base_volume: trade[:amount], # mandatory [decimal]: Transaction amount in BASE currency
+            quote_volume: trade[:total], # mandatory [decimal]: Transaction amount in QUOTE currency
+            timestamp: trade[:created_at] * MILLISECONDS_IN_SECOND, # mandatory [integer]: Unix timestamp in milliseconds for when the transaction occurred
+            type: trade[:taker_type] # mandatory [string]: Used to determine whether or not the transaction originated as a buy or sell
           }
         end
 
         def format_orderbook(asks, bids)
           {
             timestamp: DateTime.now.strftime('%Q').to_i, # mandotory [decimal]: Unix timestamp in milliseconds for when the last updated time occurred
-            asks:      asks,                             # mandotory [decimal]: The offer price and quantity for each bid order
-            bids:      bids                              # mandotory [decimal]: The ask price and quantity for each ask order.
+            asks: asks,                             # mandotory [decimal]: The offer price and quantity for each bid order
+            bids: bids                              # mandotory [decimal]: The ask price and quantity for each ask order.
           }
         end
 

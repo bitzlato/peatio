@@ -1,20 +1,18 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
   module V2
     module Management
       class Trades < Grape::API
-
         desc 'Returns trades as paginated collection.' do
           @settings[:scope] = :read_trades
           success API::V2::Management::Entities::Trade
         end
         params do
-          optional :uid,      type: String,  desc: 'The shared user ID.'
+          optional :uid, type: String, desc: 'The shared user ID.'
           optional :market, type: String,
-                   values: { value: -> { ::Market.active.pluck(:symbol) },
-                   message: 'Market does not exist' }
+                            values: { value: -> { ::Market.active.pluck(:symbol) },
+                                      message: 'Market does not exist' }
           optional :market_type,
                    values: { value: -> { ::Market::TYPES }, message: 'market.market.invalid_market_type' },
                    desc: -> { V2::Entities::Market.documentation[:type] },
@@ -30,7 +28,7 @@ module API
             .order(id: :desc)
             .includes(:maker, :taker)
             .tap { |q| q.where!(market_type: params[:market_type]) }
-            .tap { |q| q.where!(market: market) if market}
+            .tap { |q| q.where!(market: market) if market }
             .tap { |q| q.where!("maker_id = #{member.id} OR taker_id = #{member.id}") if member }
             .page(params[:page])
             .per(params[:limit])

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module EthereumHelpers
   extend Memoist
 
@@ -10,7 +12,7 @@ module EthereumHelpers
   end
 
   def stub_balance_fetching(balance:, address:, id:)
-    response = { jsonrpc: '2.0', result: '0x' + (balance.to_s 16), id: 1 }
+    response = { jsonrpc: '2.0', result: '0x' + (balance.to_s 16), id: id }
     stub_request(:post, node_uri)
       .with(body: { jsonrpc: '2.0',
                     id: 1,
@@ -19,12 +21,12 @@ module EthereumHelpers
       .to_return(body: response.to_json)
   end
 
-  def stub_gas_fetching(gas_price: , id:)
+  def stub_gas_fetching(gas_price:, id:)
     body = {
-      "jsonrpc": '2.0',
-      "id": id,
-      "method": 'eth_gasPrice',
-      "params": []
+      jsonrpc: '2.0',
+      id: id,
+      method: 'eth_gasPrice',
+      params: []
     }
     stub_request(:post, node_uri)
       .with(body: body.to_json)
@@ -33,11 +35,11 @@ module EthereumHelpers
 
   def stub_estimate_gas(from:, to:, gas_price:, estimated_gas:, id:, data: nil, value: nil)
     body = {
-      "jsonrpc": '2.0',
-      "id": id,
-      "method": 'eth_estimateGas',
-      "params": [
-        {gasPrice: '0x'+ gas_price.to_s(16), from: from, to: to, data: data, value: value.nil? ? nil : '0x' + value.to_s(16)}.compact
+      jsonrpc: '2.0',
+      id: id,
+      method: 'eth_estimateGas',
+      params: [
+        { gasPrice: '0x' + gas_price.to_s(16), from: from, to: to, data: data, value: value.nil? ? nil : '0x' + value.to_s(16) }.compact
       ]
     }
     stub_request(:post, node_uri)
@@ -45,7 +47,7 @@ module EthereumHelpers
       .to_return(body: { result: '0x' + estimated_gas.to_s(16), error: nil, id: id }.to_json)
   end
 
-  def stub_personal_sendTransaction(from_address:, to_address:, value:, gas_price:, gas:, id:)
+  def stub_personal_send_transaction(from_address:, to_address:, value:, gas_price:, gas:, id:)
     request_body = { jsonrpc: '2.0',
                      id: id,
                      method: :personal_sendTransaction,

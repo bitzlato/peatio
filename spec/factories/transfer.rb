@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 FactoryBot.define do
@@ -7,7 +6,7 @@ FactoryBot.define do
   end
 
   factory :transfer do
-    key  { generate(:transfer_key) }
+    key { generate(:transfer_key) }
     category { Transfer::CATEGORIES.sample }
     description { "#{category} for #{Time.now.to_date}" }
 

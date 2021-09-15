@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Account::Transactions, type: :request do
@@ -7,20 +6,20 @@ describe API::V2::Account::Transactions, type: :request do
     let(:token) { jwt_for(member) }
     let(:btc_account) { member.get_account('btc') }
     let(:usd_account) { member.get_account('usd') }
-    let(:balance) { 100000 }
+    let(:balance) { 100_000 }
 
     before do
-      Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Deposit', 'Withdraw']}})
+      Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => %w[Deposit Withdraw] } })
     end
 
     context 'successful' do
       before do
         btc_account.plus_funds(balance)
         usd_account.plus_funds(balance)
-        create_list(:deposit_usd, 4, member: member, updated_at: 5.hour.ago)
-        create_list(:usd_withdraw, 4, member: member, updated_at: 5.hour.ago)
-        create_list(:deposit_btc, 3, member: member, updated_at: 10.hour.ago)
-        create_list(:btc_withdraw, 3, member: member, updated_at: 10.hour.ago)
+        create_list(:deposit_usd, 4, member: member, updated_at: 5.hours.ago)
+        create_list(:usd_withdraw, 4, member: member, updated_at: 5.hours.ago)
+        create_list(:deposit_btc, 3, member: member, updated_at: 10.hours.ago)
+        create_list(:btc_withdraw, 3, member: member, updated_at: 10.hours.ago)
         create_list(:deposit_usd, 5, member: member, updated_at: 5.days.ago)
         create_list(:usd_withdraw, 5, member: member, updated_at: 5.days.ago)
       end
@@ -113,14 +112,14 @@ describe API::V2::Account::Transactions, type: :request do
         api_get '/api/v2/account/transactions', params: { currency: 'USD' }, token: token
         result = JSON.parse(response.body)
 
-        expect(result.pluck('confimations').none?).to be_truthy
+        expect(result.pluck('confimations')).to be_none
       end
 
       it 'returns valid number in confirmations field for coin' do
         api_get '/api/v2/account/transactions', params: { currency: 'btc' }, token: token
         result = JSON.parse(response.body)
 
-        expect(result.pluck('confimations').any? { |c| c.nil? ? true : c > 1 }).to be_truthy
+        expect(result.pluck('confimations')).to be_any { |c| c.nil? ? true : c > 1 }
       end
 
       it 'returns transaction with txid filter' do
@@ -128,13 +127,13 @@ describe API::V2::Account::Transactions, type: :request do
         result = JSON.parse(response.body)
 
         expect(result.size).to eq 1
-        expect(result.all? { |d| d['txid'] == Deposits::Coin.first.txid }).to be_truthy
+        expect(result).to be_all { |d| d['txid'] == Deposits::Coin.first.txid }
       end
 
       context 'state filters' do
         before do
-          create_list(:deposit_usd, 4, member: member, updated_at: 5.hour.ago, aasm_state: 'accepted')
-          create_list(:deposit_usd, 4, member: member, updated_at: 5.hour.ago, aasm_state: 'rejected')
+          create_list(:deposit_usd, 4, member: member, updated_at: 5.hours.ago, aasm_state: 'accepted')
+          create_list(:deposit_usd, 4, member: member, updated_at: 5.hours.ago, aasm_state: 'rejected')
           create_list(:usd_withdraw, 4, member: member, updated_at: 5.days.ago, aasm_state: 'accepted')
           create_list(:usd_withdraw, 4, member: member, updated_at: 5.days.ago, aasm_state: 'rejected')
         end
@@ -142,11 +141,11 @@ describe API::V2::Account::Transactions, type: :request do
         it 'returns transactions with more than one deposit state' do
           expect(Deposit.count).to eq 20
 
-          api_get '/api/v2/account/transactions', params: { deposit_state: ['accepted', 'submitted'] }, token: token
+          api_get '/api/v2/account/transactions', params: { deposit_state: %w[accepted submitted] }, token: token
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Deposit' }.count).to eq 16
-          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to match_array(['submitted', 'accepted'])
+          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to match_array(%w[submitted accepted])
         end
 
         it 'returns transactions with one deposit state' do
@@ -156,17 +155,17 @@ describe API::V2::Account::Transactions, type: :request do
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Deposit' }.count).to eq 12
-          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to eq (['submitted'])
+          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to eq(['submitted'])
         end
 
         it 'returns transactions with more than one withdraw state' do
           expect(Withdraw.count).to eq 20
 
-          api_get '/api/v2/account/transactions', params: { withdraw_state: ['accepted', 'prepared'] }, token: token
+          api_get '/api/v2/account/transactions', params: { withdraw_state: %w[accepted prepared] }, token: token
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Withdraw' }.count).to eq 16
-          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to match_array(['prepared', 'accepted'])
+          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to match_array(%w[prepared accepted])
         end
 
         it 'returns transactions with one withdraw state' do
@@ -175,7 +174,7 @@ describe API::V2::Account::Transactions, type: :request do
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Withdraw' }.count).to eq 12
-          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to eq (['prepared'])
+          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to eq(['prepared'])
         end
 
         it 'returns transactions with one withdraw state and one deposit state' do
@@ -187,21 +186,21 @@ describe API::V2::Account::Transactions, type: :request do
 
           expect(result.select { |t| t['type'] == 'Deposit' }.count).to eq 4
           expect(result.select { |t| t['type'] == 'Withdraw' }.count).to eq 4
-          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to eq (['rejected'])
-          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to eq (['rejected'])
+          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to eq(['rejected'])
+          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to eq(['rejected'])
         end
 
         it 'returns transactions with more than one withdraw state and more that one deposit state' do
           expect(Withdraw.count).to eq 20
           expect(Deposit.count).to eq 20
 
-          api_get '/api/v2/account/transactions', params: { withdraw_state: ['rejected', 'accepted'], deposit_state: ['rejected', 'accepted'] }, token: token
+          api_get '/api/v2/account/transactions', params: { withdraw_state: %w[rejected accepted], deposit_state: %w[rejected accepted] }, token: token
           result = JSON.parse(response.body)
 
           expect(result.select { |t| t['type'] == 'Deposit' }.count).to eq 8
           expect(result.select { |t| t['type'] == 'Withdraw' }.count).to eq 8
-          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to match_array(['accepted','rejected'])
-          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to match_array(['accepted','rejected'])
+          expect(result.select { |t| t['type'] == 'Deposit' }.pluck('state').uniq).to match_array(%w[accepted rejected])
+          expect(result.select { |t| t['type'] == 'Withdraw' }.pluck('state').uniq).to match_array(%w[accepted rejected])
         end
       end
     end
@@ -287,7 +286,7 @@ describe API::V2::Account::Transactions, type: :request do
         it 'renders unauthorized error' do
           api_get '/api/v2/account/transactions', params: { limit: 1000 }, token: token
 
-          expect(response).to have_http_status 403
+          expect(response).to have_http_status :forbidden
           expect(response).to include_api_error('user.ability.not_permitted')
         end
       end

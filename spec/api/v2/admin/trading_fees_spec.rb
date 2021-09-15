@@ -1,8 +1,6 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Admin::TradingFees, type: :request do
-
   let(:admin) { create(:member, :admin, :level_3, email: 'example@gmail.com', uid: 'ID73BF61C8H1') }
   let(:token) { jwt_for(admin) }
   let(:level_3_member) { create(:member, :level_3) }
@@ -93,7 +91,7 @@ describe API::V2::Admin::TradingFees, type: :request do
     it 'returns created trading fee table' do
       api_post '/api/v2/admin/trading_fees/new', token: token, params: { group: 'vip-1', market_id: 'btc_usd', maker: 0.001, taker: 0.0015 }
 
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)['maker']).to eq('0.001')
       expect(JSON.parse(response.body)['taker']).to eq('0.0015')
       expect(JSON.parse(response.body)['group']).to eq('vip-1')
@@ -105,7 +103,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns created trading fee table' do
         api_post '/api/v2/admin/trading_fees/new', token: token, params: { market_id: 'btc_usd', maker: 0.001, taker: 0.0015 }
 
-        expect(response).to have_http_status(201)
+        expect(response).to have_http_status(:created)
         expect(JSON.parse(response.body)['maker']).to eq('0.001')
         expect(JSON.parse(response.body)['taker']).to eq('0.0015')
         expect(JSON.parse(response.body)['group']).to eq('any')
@@ -118,7 +116,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns created trading fee table' do
         api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.001, taker: 0.0015, group: 'vip-1' }
 
-        expect(response).to have_http_status(201)
+        expect(response).to have_http_status(:created)
         expect(JSON.parse(response.body)['maker']).to eq('0.001')
         expect(JSON.parse(response.body)['taker']).to eq('0.0015')
         expect(JSON.parse(response.body)['group']).to eq('vip-1')
@@ -131,7 +129,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 422 and error' do
         api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.001, taker: 0.0015, market_id: 'uahusd' }
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('admin.trading_fee.market_doesnt_exist')
       end
     end
@@ -140,7 +138,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 422 and error' do
         api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.001, taker: 0.0015, market_id: 'btc_usd', market_type: 'invalid' }
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('admin.trading_fee.invalid_market_type')
       end
     end
@@ -149,7 +147,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 422 and error' do
         api_post '/api/v2/admin/trading_fees/new', token: token, params: { taker: 0.0015, group: 'vip-1', market_id: 'btc_usd' }
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('admin.trading_fee.invalid_maker')
       end
     end
@@ -158,7 +156,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 422 and error' do
         api_post '/api/v2/admin/trading_fees/new', token: token, params: { maker: 0.0015, group: 'vip-1', market_id: 'btc_usd' }
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('admin.trading_fee.invalid_taker')
       end
     end
@@ -167,7 +165,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 422 and error' do
         api_post '/api/v2/admin/trading_fees/new', token: token, params: { taker: -0.1, maker: -0.15, group: 'vip-1', market_id: 'btc_usd' }
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('admin.trading_fee.invalid_maker')
         expect(response).to include_api_error('admin.trading_fee.invalid_taker')
       end
@@ -177,7 +175,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 422 and error' do
         api_post '/api/v2/admin/trading_fees/new', token: token, params: { taker: 1, maker: 1, group: 'vip-1', market_id: 'btc_usd' }
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('Maker must be less than or equal to 0.5')
         expect(response).to include_api_error('Taker must be less than or equal to 0.5')
       end
@@ -188,7 +186,7 @@ describe API::V2::Admin::TradingFees, type: :request do
     it 'returns updated trading fee table with new group' do
       api_post '/api/v2/admin/trading_fees/update', token: token, params: { group: 'vip-1', id: TradingFee.first.id }
 
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)['maker']).to eq('0.0015')
       expect(JSON.parse(response.body)['taker']).to eq('0.0015')
       expect(JSON.parse(response.body)['group']).to eq('vip-1')
@@ -198,7 +196,7 @@ describe API::V2::Admin::TradingFees, type: :request do
     it 'returns updated trading fee table with new market_type' do
       api_post '/api/v2/admin/trading_fees/update', token: token, params: { market_type: 'qe', id: TradingFee.first.id }
 
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)['maker']).to eq('0.0015')
       expect(JSON.parse(response.body)['taker']).to eq('0.0015')
       expect(JSON.parse(response.body)['market_type']).to eq('qe')
@@ -208,7 +206,7 @@ describe API::V2::Admin::TradingFees, type: :request do
     it 'returns updated trading fee table with new group with capitalized letter' do
       api_post '/api/v2/admin/trading_fees/update', token: token, params: { group: 'Vip-1 ', id: TradingFee.first.id }
 
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)['maker']).to eq('0.0015')
       expect(JSON.parse(response.body)['taker']).to eq('0.0015')
       expect(JSON.parse(response.body)['group']).to eq('vip-1')
@@ -218,7 +216,7 @@ describe API::V2::Admin::TradingFees, type: :request do
     it 'returns updated trading fee table with new maker' do
       api_post '/api/v2/admin/trading_fees/update', token: token, params: { market_id: 'btc_usd', id: TradingFee.first.id }
 
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)['maker']).to eq('0.0015')
       expect(JSON.parse(response.body)['taker']).to eq('0.0015')
       expect(JSON.parse(response.body)['group']).to eq('any')
@@ -228,7 +226,7 @@ describe API::V2::Admin::TradingFees, type: :request do
     it 'returns updated trading fee table with new maker, taker fields' do
       api_post '/api/v2/admin/trading_fees/update', token: token, params: { maker: 0.1, taker: 0.1, id: TradingFee.first.id }
 
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)['maker']).to eq('0.1')
       expect(JSON.parse(response.body)['taker']).to eq('0.1')
       expect(JSON.parse(response.body)['group']).to eq('any')
@@ -239,7 +237,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 404 and error' do
         api_post '/api/v2/admin/trading_fees/update', token: token, params: { id: TradingFee.last.id + 1 }
 
-        expect(response).to have_http_status(404)
+        expect(response).to have_http_status(:not_found)
         expect(response).to include_api_error('record.not_found')
       end
     end
@@ -248,7 +246,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 422 and error' do
         api_post '/api/v2/admin/trading_fees/update', token: token, params: { maker: -1, id: TradingFee.first.id }
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('admin.trading_fee.invalid_maker')
       end
     end
@@ -257,7 +255,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 422 and error' do
         api_post '/api/v2/admin/trading_fees/update', token: token, params: { taker: -1, id: TradingFee.first.id }
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('admin.trading_fee.invalid_taker')
       end
     end
@@ -266,7 +264,7 @@ describe API::V2::Admin::TradingFees, type: :request do
       it 'returns status 422 and error' do
         api_post '/api/v2/admin/trading_fees/update', token: token, params: { market_id: 'uahusd', id: TradingFee.first.id }
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response).to include_api_error('admin.trading_fee.market_doesnt_exist')
       end
     end
@@ -281,11 +279,11 @@ describe API::V2::Admin::TradingFees, type: :request do
     end
 
     it 'deletes trading fee table' do
-      expect {
+      expect do
         api_post '/api/v2/admin/trading_fees/delete', token: token, params: { id: trading_fee.id }
-      }.to change { TradingFee.count }.by(-1)
+      end.to change(TradingFee, :count).by(-1)
 
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
     end
 
     it 'returns deleted trading fee table' do
@@ -295,9 +293,9 @@ describe API::V2::Admin::TradingFees, type: :request do
     end
 
     it 'retuns 404 if record does not exist' do
-      expect {
+      expect do
         api_post '/api/v2/admin/trading_fees/delete', token: token, params: { id: TradingFee.last.id + 42 }
-      }.not_to change { TradingFee.count }
+      end.not_to change(TradingFee, :count)
 
       expect(response.status).to eq 404
     end

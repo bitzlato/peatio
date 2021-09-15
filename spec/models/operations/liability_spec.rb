@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Operations::Liability do
@@ -10,15 +9,14 @@ describe Operations::Liability do
     let(:expected_message) do
       { subject: :operation,
         payload: {
-          code:           201,
-          currency:       'usd',
-          member_id:      member.id,
-          reference_id:   deposit.id,
+          code: 201,
+          currency: 'usd',
+          member_id: member.id,
+          reference_id: deposit.id,
           reference_type: 'deposit',
-          debit:          '0.0'.to_d,
-          credit:         '0.1'.to_d
-        }
-      }
+          debit: '0.0'.to_d,
+          credit: '0.1'.to_d
+        } }
     end
 
     before { AMQP::Queue.expects(:enqueue).with(:events_processor, expected_message) }

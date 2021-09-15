@@ -1,8 +1,8 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe Matching::PriceLevel do
-  subject  { Matching::PriceLevel.new('1.0'.to_d) }
+  subject  { described_class.new('1.0'.to_d) }
+
   let(:o1) { Matching.mock_limit_order(type: :ask) }
   let(:o2) { Matching.mock_limit_order(type: :ask) }
   let(:o3) { Matching.mock_limit_order(type: :ask) }
@@ -13,12 +13,12 @@ describe Matching::PriceLevel do
     subject.add o3
   end
 
-  it 'should remove order' do
+  it 'removes order' do
     subject.remove o2
     expect(subject.orders).to eq [o1, o3]
   end
 
-  it 'should find order by id' do
+  it 'finds order by id' do
     expect(subject.find(o1.id)).to eq o1
     expect(subject.find(o2.id)).to eq o2
   end

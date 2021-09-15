@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module TransactionKindDefiner
   def define_kind
     if to_deposit?
@@ -39,6 +41,7 @@ module TransactionKindDefiner
 
   def define_direction
     return :failed if failed?
+
     if from_wallet? || from_deposit?
       if to_wallet? || to_deposit?
         :internal

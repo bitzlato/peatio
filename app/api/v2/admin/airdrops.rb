@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'peatio/airdrop'
@@ -7,7 +6,6 @@ module API
   module V2
     module Admin
       class Airdrops < Grape::API
-
         desc 'Process user airdrop'
         params do
           requires :file,

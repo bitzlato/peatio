@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -11,8 +10,8 @@ module API
         content_type :csv, 'text/csv'
 
         desc 'Get all orders, result is paginated.',
-          is_array: true,
-          success: API::V2::Admin::Entities::Order
+             is_array: true,
+             success: API::V2::Admin::Entities::Order
         params do
           optional :market,
                    values: { value: -> { ::Market.pluck(:symbol) }, message: 'admin.market.doesnt_exist' },
@@ -29,14 +28,14 @@ module API
                    desc: 'Filter order by ord_type.'
           optional :price,
                    type: { value: BigDecimal, message: 'admin.order.non_decimal_price' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'admin.order.non_positive_price' },
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'admin.order.non_positive_price' },
                    desc: -> { API::V2::Admin::Entities::Order.documentation[:price][:desc] }
           optional :origin_volume,
                    type: { value: BigDecimal, message: 'admin.order.non_decimal_price' },
-                   values: { value: -> (p){ p.try(:positive?) }, message: 'admin.order.non_positive_origin_volume' },
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'admin.order.non_positive_origin_volume' },
                    desc: -> { API::V2::Admin::Entities::Order.documentation[:origin_volume][:desc] }
           optional :type,
-                   values: { value: %w(sell buy), message: 'admin.order.invalid_type' },
+                   values: { value: %w[sell buy], message: 'admin.order.invalid_type' },
                    desc: 'Filter order by type.'
           optional :email,
                    desc: -> { API::V2::Entities::Member.documentation[:email][:desc] }
@@ -54,12 +53,14 @@ module API
           end
 
           ransack_params = Helpers::RansackBuilder.new(params)
-                             .eq(:price, :origin_volume, :ord_type, :state, :member_id, :market_type)
-                             .translate(market: :market_id)
-                             .with_daterange
-                             .merge({
-                                type_eq: params[:type].present? ? params[:type] == 'buy' ? 'OrderBid' : 'OrderAsk' : nil
-                             }).build
+                                                  .eq(:price, :origin_volume, :ord_type, :state, :member_id, :market_type)
+                                                  .translate(market: :market_id)
+                                                  .with_daterange
+                                                  .merge({
+                                                           type_eq: if params[:type].present?
+                                                                      params[:type] == 'buy' ? 'OrderBid' : 'OrderAsk'
+                                                                    end
+                                                         }).build
 
           search = Order.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
@@ -100,7 +101,7 @@ module API
                    values: { value: -> { ::Market.spot.active.pluck(:symbol) }, message: 'admin.order.market_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Market.documentation[:id][:desc] }
           optional :side,
-                   values: { value: %w(sell buy), message: 'admin.order.invalid_side' },
+                   values: { value: %w[sell buy], message: 'admin.order.invalid_side' },
                    desc: 'If present, only sell orders (asks) or buy orders (bids) will be cancelled.'
         end
         post '/orders/cancel' do
@@ -108,16 +109,18 @@ module API
 
           begin
             ransack_params = Helpers::RansackBuilder.new(params)
-                                    .eq(state: 'wait', market_type: 'spot')
-                                    .translate(market: :market_id)
-                                    .merge({
-                                      type_eq: params[:side].present? ? params[:side] == 'buy' ? 'OrderBid' : 'OrderAsk' : nil,
-                                    }).build
+                                                    .eq(state: 'wait', market_type: 'spot')
+                                                    .translate(market: :market_id)
+                                                    .merge({
+                                                             type_eq: if params[:side].present?
+                                                                        params[:side] == 'buy' ? 'OrderBid' : 'OrderAsk'
+                                                                      end
+                                                           }).build
 
             orders = Order.ransack(ransack_params)
             orders.result.map(&:trigger_cancellation)
             present orders.result, with: API::V2::Entities::Order
-          rescue
+          rescue StandardError
             error!({ errors: ['admin.order.cancel_error'] }, 422)
           end
         end

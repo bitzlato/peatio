@@ -4,13 +4,14 @@ module API
   module V2
     module WebhooksHelpers
       def process_webhook_event(request)
-        if request.params[:event] == 'deposit'
+        case request.params[:event]
+        when 'deposit'
           process_deposit_event(request)
-        elsif request.params[:event] == 'withdraw'
+        when 'withdraw'
           process_withdraw_event(request)
-        elsif request.params[:event] == 'deposit_address'
+        when 'deposit_address'
           process_deposit_address_event(request)
-        elsif request.params[:event] == 'generic'
+        when 'generic'
           process_generic_event(request)
         end
       end
@@ -21,7 +22,7 @@ module API
           next unless service.adapter.respond_to?(:trigger_webhook_event)
 
           transactions = service.trigger_webhook_event(request)
-          next unless transactions.present?
+          next if transactions.blank?
 
           # Process all deposit transactions
           accepted_deposits = []
@@ -43,9 +44,10 @@ module API
           service = w.service
 
           next unless service.adapter.respond_to?(:trigger_webhook_event)
+
           event = service.trigger_webhook_event(request)
 
-          next unless event.present?
+          next if event.blank?
 
           create_address(event[:address_id], event[:address], event[:currency_id])
         end
@@ -57,9 +59,10 @@ module API
           service = w.service
 
           next unless service.adapter.respond_to?(:trigger_webhook_event)
+
           transactions = service.trigger_webhook_event(request)
 
-          next unless transactions.present?
+          next if transactions.blank?
 
           accepted_deposits = []
           ActiveRecord::Base.transaction do
@@ -75,9 +78,10 @@ module API
           service = w.service
 
           next unless service.adapter.respond_to?(:trigger_webhook_event)
+
           transactions = service.trigger_webhook_event(request)
 
-          next unless transactions.present?
+          next if transactions.blank?
 
           ActiveRecord::Base.transaction do
             update_withdrawal(transactions)
@@ -173,12 +177,10 @@ module API
             next
           end
 
-          if transaction.options.present? && transaction.options[:remote_id].present?
-            if withdraw.txid.blank? && transaction.hash.present?
-              withdraw.txid = transaction.hash
-              withdraw.save!
-              withdraw.dispatch!
-            end
+          if transaction.options.present? && transaction.options[:remote_id].present? && (withdraw.txid.blank? && transaction.hash.present?)
+            withdraw.txid = transaction.hash
+            withdraw.save!
+            withdraw.dispatch!
           end
 
           Rails.logger.info { "Withdraw transaction detected: #{transaction.inspect}" }

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -77,7 +76,7 @@ module API
           format_with: :iso8601,
           documentation: {
             type: String,
-            desc: "Transaction created time in iso8601 format."
+            desc: 'Transaction created time in iso8601 format.'
           }
         )
 
@@ -86,7 +85,7 @@ module API
           format_with: :iso8601,
           documentation: {
             type: String,
-            desc: "Transaction updated time in iso8601 format."
+            desc: 'Transaction updated time in iso8601 format.'
           }
         )
 
@@ -97,7 +96,7 @@ module API
             desc: 'Type of transaction'
           }
         ) do |transaction, _options|
-            transaction[:type].constantize.superclass.to_s
+          transaction[:type].constantize.superclass.to_s
         end
       end
     end

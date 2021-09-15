@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddAccountableFeeToTransactions < ActiveRecord::Migration[5.2]
   def change
     add_column :transactions, :accountable_fee, :boolean, null: false, default: false
@@ -8,6 +10,6 @@ class AddAccountableFeeToTransactions < ActiveRecord::Migration[5.2]
     end
 
     change_column_null :transactions, :blockchain_id, false
-    add_index :transactions, [:blockchain_id, :accountable_fee]
+    add_index :transactions, %i[blockchain_id accountable_fee]
   end
 end

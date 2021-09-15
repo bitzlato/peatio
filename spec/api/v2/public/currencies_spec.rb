@@ -1,9 +1,8 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Public::Currencies, type: :request do
+  before { clear_redis }
 
-  before(:each) { clear_redis }
   describe 'GET /api/v2/public/currencies/:id' do
     let(:fiat) { Currency.find(:usd) }
     let(:coin) { Currency.find(:btc) }
@@ -58,7 +57,7 @@ describe API::V2::Public::Currencies, type: :request do
     it 'returns error in case of invalid id' do
       get '/api/v2/public/currencies/invalid'
 
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.currency.doesnt_exist')
     end
   end
@@ -91,7 +90,7 @@ describe API::V2::Public::Currencies, type: :request do
 
     it 'returns error in case of invalid type' do
       get '/api/v2/public/currencies', params: { type: 'invalid' }
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
     end
 
     context 'pagination' do

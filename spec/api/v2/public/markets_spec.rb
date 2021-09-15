@@ -1,9 +1,8 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Public::Markets, type: :request do
+  before { clear_redis }
 
-  before(:each) { clear_redis }
   describe 'GET /api/v2/markets' do
     before { create(:market, :eth_usd) }
 
@@ -26,6 +25,7 @@ describe API::V2::Public::Markets, type: :request do
 
     context 'api will return hidden markets' do
       before { create(:market, :btc_eur, state: :hidden) }
+
       it 'returns hidden market' do
         get '/api/v2/public/markets'
         expect(response).to be_successful
@@ -83,7 +83,7 @@ describe API::V2::Public::Markets, type: :request do
 
       context 'base_code & quote_code' do
         it 'filters by base_code' do
-          get '/api/v2/public/markets', params: { search: { base_code: "bt" } }
+          get '/api/v2/public/markets', params: { search: { base_code: 'bt' } }
           # Since we have next markets list:
           # btc_usd, btc_eth, eth_usd
           # Since 2 of them has 'bt' in base_unit (btc).
@@ -101,7 +101,7 @@ describe API::V2::Public::Markets, type: :request do
           # btc_eur, btc_usd, btc_eth, eth_usd
           # Since 2 of them has 'e' in quote_unit (eur, eth).
           # We expect them to be returned in API response.
-          get '/api/v2/public/markets', params: { search: { quote_code: "e" } }
+          get '/api/v2/public/markets', params: { search: { quote_code: 'e' } }
           expect(response).to be_successful
           result = JSON.parse(response.body)
 
@@ -214,20 +214,20 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     it 'validates market param' do
-      get "/api/v2/public/markets/somecoin/order-book", params: { asks_limit: 1, bids_limit: 1 }
-      expect(response).to have_http_status 422
+      get '/api/v2/public/markets/somecoin/order-book', params: { asks_limit: 1, bids_limit: 1 }
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.market.doesnt_exist')
     end
 
     it 'validates asks limit' do
-      get "/api/v2/public/markets/somecoin/order-book", params: { asks_limit: 201, bids_limit: 1 }
-      expect(response).to have_http_status 422
+      get '/api/v2/public/markets/somecoin/order-book', params: { asks_limit: 201, bids_limit: 1 }
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.order_book.invalid_ask_limit')
     end
 
     it 'validates bids limit' do
-      get "/api/v2/public/markets/somecoin/order-book", params: { asks_limit: 1, bids_limit: 201 }
-      expect(response).to have_http_status 422
+      get '/api/v2/public/markets/somecoin/order-book', params: { asks_limit: 1, bids_limit: 201 }
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.order_book.invalid_bid_limit')
     end
   end
@@ -240,8 +240,8 @@ describe API::V2::Public::Markets, type: :request do
       create_list(:order_ask, 5, :btc_usd, price: 3)
     end
 
-    let(:asks) { [["1.0", "5.0"], ["3.0", "5.0"]] }
-    let(:bids) { [["2.0", "5.0"], ["1.0", "5.0"]] }
+    let(:asks) { [['1.0', '5.0'], ['3.0', '5.0']] }
+    let(:bids) { [['2.0', '5.0'], ['1.0', '5.0']] }
 
     let(:market) { :btc_usd }
 
@@ -272,8 +272,8 @@ describe API::V2::Public::Markets, type: :request do
 
     context 'invalid market param' do
       it 'validates market param' do
-        api_get "/api/v2/public/markets/usdusd/depth"
-        expect(response).to have_http_status 422
+        api_get '/api/v2/public/markets/usdusd/depth'
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('public.market.doesnt_exist')
       end
     end
@@ -282,39 +282,39 @@ describe API::V2::Public::Markets, type: :request do
   describe 'GET /api/v2/public/markets/market/k-line' do
     let(:points) do
       # [timestamp, open_price, max_price, min_price, last_price, period_volume]
-      [[1537370460, 0.7079, 0.2204, 0.9794, 0.5273, 0.0747],
-       [1537370520, 0.6293, 0.5054, 0.2253, 0.1969, 0.7276],
-       [1537370580, 0.0939, 0.1949, 0.0032, 0.8328, 0.5895],
-       [1537370640, 0.6416, 0.0772, 0.7045, 0.7794, 0.6151],
-       [1537370700, 0.0566, 0.6377, 0.3007, 0.6855, 0.6976],
-       [1537370760, 0.7868, 0.6465, 0.3207, 0.6428, 0.1771],
-       [1537370820, 0.3318, 0.2124, 0.3773, 0.4274, 0.3473],
-       [1537370880, 0.0704, 0.4902, 0.5957, 0.5214, 0.3687],
-       [1537370940, 0.6629, 0.6585, 0.0756, 0.4559, 0.8554],
-       [1537371000, 0.6627, 0.6627, 0.2128, 0.0788, 0.2013],
-       [1537371060, 0.5165, 0.0435, 0.5228, 0.6447, 0.9237],
-       [1537371120, 0.9311, 0.8886, 0.1605, 0.3223, 0.0211],
-       [1537371180, 0.0704, 0.0103, 0.0325, 0.3846, 0.8957],
-       [1537371240, 0.1445, 0.6031, 0.9533, 0.0866, 0.4871],
-       [1537371300, 0.0974, 0.1344, 0.1533, 0.9029, 0.2009],
-       [1537371360, 0.2609, 0.9687, 0.0287, 0.4465, 0.7088],
-       [1537371420, 0.5671, 0.0576, 0.6617, 0.1041, 0.4942],
-       [1537371480, 0.8355, 0.5336, 0.7419, 0.7062, 0.9562],
-       [1537371540, 0.1805, 0.3577, 0.2768, 0.3162, 0.0209],
-       [1537371600, 0.7971, 0.1799, 0.8307, 0.5074, 0.0122],
-       [1537371660, 0.9491, 0.7448, 0.2019, 0.4662, 0.7035],
-       [1537371720, 0.8126, 0.3899, 0.8823, 0.8115, 0.6067],
-       [1537371780, 0.2632, 0.6558, 0.7411, 0.3894, 0.1509],
-       [1537371840, 0.4274, 0.8187, 0.6661, 0.4331, 0.6335],
-       [1537371900, 0.1356, 0.1787, 0.3081, 0.9549, 0.0723],
-       [1537371960, 0.1931, 0.9486, 0.2469, 0.2295, 0.9366],
-       [1537372020, 0.8323, 0.8168, 0.8453, 0.1278, 0.7975],
-       [1537372080, 0.5663, 0.1374, 0.0025, 0.0358, 0.6063],
-       [1537372140, 0.9296, 0.5443, 0.2732, 0.6434, 0.9173],
-       [1537372200, 0.7292, 0.0367, 0.3569, 0.7876, 0.6626],
-       [1537372260, 0.9979, 0.2182, 0.5141, 0.8984, 0.4512],
-       [1537372320, 0.4363, 0.4416, 0.2354, 0.6053, 0.7398],
-       [1537372380, 0.1815, 0.4969, 0.4091, 0.0798, 0.8797]]
+      [[1_537_370_460, 0.7079, 0.2204, 0.9794, 0.5273, 0.0747],
+       [1_537_370_520, 0.6293, 0.5054, 0.2253, 0.1969, 0.7276],
+       [1_537_370_580, 0.0939, 0.1949, 0.0032, 0.8328, 0.5895],
+       [1_537_370_640, 0.6416, 0.0772, 0.7045, 0.7794, 0.6151],
+       [1_537_370_700, 0.0566, 0.6377, 0.3007, 0.6855, 0.6976],
+       [1_537_370_760, 0.7868, 0.6465, 0.3207, 0.6428, 0.1771],
+       [1_537_370_820, 0.3318, 0.2124, 0.3773, 0.4274, 0.3473],
+       [1_537_370_880, 0.0704, 0.4902, 0.5957, 0.5214, 0.3687],
+       [1_537_370_940, 0.6629, 0.6585, 0.0756, 0.4559, 0.8554],
+       [1_537_371_000, 0.6627, 0.6627, 0.2128, 0.0788, 0.2013],
+       [1_537_371_060, 0.5165, 0.0435, 0.5228, 0.6447, 0.9237],
+       [1_537_371_120, 0.9311, 0.8886, 0.1605, 0.3223, 0.0211],
+       [1_537_371_180, 0.0704, 0.0103, 0.0325, 0.3846, 0.8957],
+       [1_537_371_240, 0.1445, 0.6031, 0.9533, 0.0866, 0.4871],
+       [1_537_371_300, 0.0974, 0.1344, 0.1533, 0.9029, 0.2009],
+       [1_537_371_360, 0.2609, 0.9687, 0.0287, 0.4465, 0.7088],
+       [1_537_371_420, 0.5671, 0.0576, 0.6617, 0.1041, 0.4942],
+       [1_537_371_480, 0.8355, 0.5336, 0.7419, 0.7062, 0.9562],
+       [1_537_371_540, 0.1805, 0.3577, 0.2768, 0.3162, 0.0209],
+       [1_537_371_600, 0.7971, 0.1799, 0.8307, 0.5074, 0.0122],
+       [1_537_371_660, 0.9491, 0.7448, 0.2019, 0.4662, 0.7035],
+       [1_537_371_720, 0.8126, 0.3899, 0.8823, 0.8115, 0.6067],
+       [1_537_371_780, 0.2632, 0.6558, 0.7411, 0.3894, 0.1509],
+       [1_537_371_840, 0.4274, 0.8187, 0.6661, 0.4331, 0.6335],
+       [1_537_371_900, 0.1356, 0.1787, 0.3081, 0.9549, 0.0723],
+       [1_537_371_960, 0.1931, 0.9486, 0.2469, 0.2295, 0.9366],
+       [1_537_372_020, 0.8323, 0.8168, 0.8453, 0.1278, 0.7975],
+       [1_537_372_080, 0.5663, 0.1374, 0.0025, 0.0358, 0.6063],
+       [1_537_372_140, 0.9296, 0.5443, 0.2732, 0.6434, 0.9173],
+       [1_537_372_200, 0.7292, 0.0367, 0.3569, 0.7876, 0.6626],
+       [1_537_372_260, 0.9979, 0.2182, 0.5141, 0.8984, 0.4512],
+       [1_537_372_320, 0.4363, 0.4416, 0.2354, 0.6053, 0.7398],
+       [1_537_372_380, 0.1815, 0.4969, 0.4091, 0.0798, 0.8797]]
     end
     let(:point_period)         { KLineService::POINT_PERIOD_IN_SECONDS }
     let(:points_default_limit) { 30 }
@@ -322,7 +322,8 @@ describe API::V2::Public::Markets, type: :request do
     let(:first_point) { points.first }
 
     before { write_to_influx(points) }
-    after { delete_measurments("candles_1m") }
+
+    after { delete_measurments('candles_1m') }
 
     def influx_data(point)
       {
@@ -332,7 +333,7 @@ describe API::V2::Public::Markets, type: :request do
           high: point[2],
           low: point[3],
           close: point[4],
-          volume: point[5],
+          volume: point[5]
         },
         tags:
         {
@@ -350,7 +351,7 @@ describe API::V2::Public::Markets, type: :request do
 
     def load_k_line(query = {})
       api_get '/api/v2/public/markets/btc_usd/k-line?' + query.to_query
-      expect(response).to have_http_status 200
+      expect(response).to have_http_status :ok
     end
 
     def response_body
@@ -360,30 +361,30 @@ describe API::V2::Public::Markets, type: :request do
     context 'data exists' do
       it 'without time limits' do
         load_k_line
-        expect(JSON.parse(response.body)).to eq points[-points_default_limit..-1]
+        expect(JSON.parse(response.body)).to eq points[-points_default_limit..]
       end
 
       context 'with time_from' do
         it 'smaller than first point timestamp' do
-          load_k_line(time_from: first_point.first - 2 * point_period)
+          load_k_line(time_from: first_point.first - (2 * point_period))
           expect(response_body).to eq points[0...points_default_limit]
         end
 
         it 'bigger than last point timestamp' do
-          load_k_line(time_from: last_point.first + 2 * point_period)
+          load_k_line(time_from: last_point.first + (2 * point_period))
           expect(response_body).to eq []
         end
 
         it 'in range of first and last timestamp' do
-          time_from = first_point.first + 10 * point_period
+          time_from = first_point.first + (10 * point_period)
           load_k_line(time_from: time_from)
-          expect(response_body).to eq points[10..-1]
+          expect(response_body).to eq points[10..]
           # First point timestamp should be eq to time_from.
           expect(response_body.first.first).to eq time_from
 
-          time_from = first_point.first + 22 * point_period
+          time_from = first_point.first + (22 * point_period)
           load_k_line(time_from: time_from)
-          expect(response_body).to eq points[22..-1]
+          expect(response_body).to eq points[22..]
           # First point timestamp should be eq to time_from.
           expect(response_body.first.first).to eq time_from
         end
@@ -391,54 +392,53 @@ describe API::V2::Public::Markets, type: :request do
 
       context 'with time_to' do
         it 'smaller than first point timestamp' do
-          load_k_line(time_to: first_point.first - 2 * point_period)
+          load_k_line(time_to: first_point.first - (2 * point_period))
           expect(response_body).to eq []
         end
 
         it 'bigger than last point timestamp' do
-          load_k_line(time_to: last_point.first + 2 * point_period)
+          load_k_line(time_to: last_point.first + (2 * point_period))
           # Returns (limit - 2) left points.
           expect(response_body).to eq points[-points_default_limit..]
         end
 
         it 'in range of first and last timestamp' do
-          load_k_line(time_to: first_point.first + 1 * point_period)
+          load_k_line(time_to: first_point.first + (1 * point_period))
           expect(response_body).to eq points[0..1]
 
-          load_k_line(time_to: first_point.first + 20 * point_period)
+          load_k_line(time_to: first_point.first + (20 * point_period))
           expect(response_body).to eq points[0..20]
         end
       end
 
       context 'with time_from and time_to' do
-
         it 'time_to less than time_from' do
-          time_from = first_point.first + 2 * point_period
-          time_to = first_point.first - 2 * point_period
+          time_from = first_point.first + (2 * point_period)
+          time_to = first_point.first - (2 * point_period)
 
           load_k_line(time_from: time_from, time_to: time_to)
           expect(response_body).to eq []
         end
 
         it 'both less than first point timestamp' do
-          time_from = first_point.first - 10 * point_period
-          time_to = first_point.first - 4 * point_period
+          time_from = first_point.first - (10 * point_period)
+          time_to = first_point.first - (4 * point_period)
 
           load_k_line(time_from: time_from, time_to: time_to)
           expect(response_body).to eq []
         end
 
         it 'both bigger than last point timestamp' do
-          time_from = last_point.first + 2 * point_period
-          time_to = last_point.first + 12 * point_period
+          time_from = last_point.first + (2 * point_period)
+          time_to = last_point.first + (12 * point_period)
 
           load_k_line(time_from: time_from, time_to: time_to)
           expect(response_body).to eq []
         end
 
         it 'both in range of first and last timestamp' do
-          time_from = first_point.first + 10 * point_period
-          time_to = last_point.first - 10 * point_period
+          time_from = first_point.first + (10 * point_period)
+          time_to = last_point.first - (10 * point_period)
 
           load_k_line(time_from: time_from, time_to: time_to)
           # Points timestamps should be in range time_from..time_to (limit is bigger).
@@ -453,11 +453,11 @@ describe API::V2::Public::Markets, type: :request do
         it 'returns n last points' do
           limit = 5
           load_k_line(limit: limit)
-          expect(response_body).to eq points[-limit..-1]
+          expect(response_body).to eq points[-limit..]
 
           limit = 10
           load_k_line(limit: limit)
-          expect(response_body).to eq points[-limit..-1]
+          expect(response_body).to eq points[-limit..]
         end
 
         it 'returns all points if limit greater than points number' do
@@ -469,13 +469,13 @@ describe API::V2::Public::Markets, type: :request do
 
       context 'with limits, time_from and time_to' do
         it 'ignores limit' do
-          time_from = first_point.first + 1 * point_period
-          time_to   = last_point.first - 1 * point_period
+          time_from = first_point.first + (1 * point_period)
+          time_to   = last_point.first - (1 * point_period)
           limit     = 5
           load_k_line(time_from: time_from, time_to: time_to, limit: limit)
 
           # All point in time_from..time_to including time_to (time_to - time_from) / 60 + 1.
-          expect(response_body.count).to eq (time_to - time_from) / 60 + 1
+          expect(response_body.count).to eq ((time_to - time_from) / 60) + 1
           # Points timestamps should be in range time_from..time_to.
           expect(response_body).to eq\
             points.select { |p| p.first >= time_from && p.first <= time_to }
@@ -486,7 +486,7 @@ describe API::V2::Public::Markets, type: :request do
 
       context 'with limits and time_from' do
         it 'returns n right points from time_from (adds limit to time_from)' do
-          time_from = first_point.first + 5 * point_period
+          time_from = first_point.first + (5 * point_period)
           limit     = 10
           load_k_line(time_from: time_from, limit: limit)
 
@@ -500,7 +500,7 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'data is missing' do
-      before { delete_measurments("candles_1m") }
+      before { delete_measurments('candles_1m') }
 
       it 'without time_from' do
         load_k_line
@@ -520,7 +520,7 @@ describe API::V2::Public::Markets, type: :request do
   end
 
   describe 'GET /api/v2/markets/tickers' do
-    after { delete_measurments("trades") }
+    after { delete_measurments('trades') }
 
     context 'no trades executed yet' do
       let(:expected_ticker) do
@@ -539,13 +539,14 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'single trade was executed' do
-      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
       let(:expected_ticker) do
         { 'low' => '5.0', 'high' => '5.0',
           'open' => '5.0', 'last' => '5.0',
           'volume' => '5.5', 'vol' => '5.5', 'amount' => '1.1',
           'avg_price' => '5.0', 'price_change_percent' => '+0.00%' }
       end
+
       before do
         trade.write_to_influx
       end
@@ -559,8 +560,8 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'multiple trades were executed' do
-      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
-      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
+      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d) }
 
       let(:expected_ticker) do
         { 'low' => '5.0', 'high' => '6.0',
@@ -568,6 +569,7 @@ describe API::V2::Public::Markets, type: :request do
           'vol' => '10.9', 'volume' => '10.9', 'amount' => '2.0',
           'avg_price' => '5.45', 'price_change_percent' => '+20.00%' }
       end
+
       before do
         trade1.write_to_influx
         trade2.write_to_influx
@@ -583,13 +585,14 @@ describe API::V2::Public::Markets, type: :request do
   end
 
   describe 'GET /api/v2/public/markets/:market/tickers' do
-    after { delete_measurments("trades") }
+    after { delete_measurments('trades') }
+
     context 'no trades executed yet' do
       let(:expected_ticker) do
         { 'low' => '0.0', 'high' => '0.0',
           'open' => '0.0', 'last' => '0.0',
           'volume' => '0.0', 'vol' => '0.0', 'amount' => '0.0',
-          'avg_price' => '0.0', 'price_change_percent' => '+0.00%'  }
+          'avg_price' => '0.0', 'price_change_percent' => '+0.00%' }
       end
 
       it 'returns market tickers' do
@@ -611,13 +614,14 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'single trade was executed' do
-      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
+      let!(:trade) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
       let(:expected_ticker) do
         { 'low' => '5.0', 'high' => '5.0',
           'open' => '5.0', 'last' => '5.0',
           'volume' => '5.5', 'vol' => '5.5', 'amount' => '1.1',
           'avg_price' => '5.0', 'price_change_percent' => '+0.00%' }
       end
+
       before do
         trade.write_to_influx
       end
@@ -630,8 +634,8 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     context 'multiple trades were executed' do
-      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
-      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
+      let!(:trade1) { create(:trade, :btc_usd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d) }
+      let!(:trade2) { create(:trade, :btc_usd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d) }
 
       # open = 6.0 because it takes last by default.
       # to make it work correctly need to run k-line daemon.
@@ -641,6 +645,7 @@ describe API::V2::Public::Markets, type: :request do
           'vol' => '10.9', 'volume' => '10.9', 'amount' => '2.0',
           'avg_price' => '5.45', 'price_change_percent' => '+20.00%' }
       end
+
       before do
         trade1.write_to_influx
         trade2.write_to_influx
@@ -682,7 +687,6 @@ describe API::V2::Public::Markets, type: :request do
     let!(:ask_trade) { create(:trade, :btc_usd, maker_order: ask, created_at: 2.days.ago) }
     let!(:bid_trade) { create(:trade, :btc_usd, taker_order: bid, created_at: 1.day.ago) }
 
-
     after do
       delete_measurments('trades')
     end
@@ -690,8 +694,8 @@ describe API::V2::Public::Markets, type: :request do
     before do
       ask_trade.write_to_influx
       bid_trade.write_to_influx
-      member.get_account(:btc).update_attributes(balance: 12.13,   locked: 3.14)
-      member.get_account(:usd).update_attributes(balance: 2014.47, locked: 0)
+      member.get_account(:btc).update(balance: 12.13,   locked: 3.14)
+      member.get_account(:usd).update(balance: 2014.47, locked: 0)
     end
 
     it 'returns all recent trades' do
@@ -713,7 +717,7 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     it 'returns 1 trade' do
-      get "/api/v2/public/markets/#{market}/trades", params: {limit: 1}
+      get "/api/v2/public/markets/#{market}/trades", params: { limit: 1 }
 
       expect(response).to be_successful
       expect(JSON.parse(response.body).size).to eq 1
@@ -730,7 +734,7 @@ describe API::V2::Public::Markets, type: :request do
       trade = create(:trade, :btc_usd, taker_order: bid, created_at: 6.hours.ago)
       trade.write_to_influx
 
-      get "/api/v2/public/markets/#{market}/trades", params: { limit: 2, order_by: 'asc'}
+      get "/api/v2/public/markets/#{market}/trades", params: { limit: 2, order_by: 'asc' }
 
       expect(response).to be_successful
       expect(JSON.parse(response.body).count).to eq 2
@@ -742,14 +746,14 @@ describe API::V2::Public::Markets, type: :request do
     end
 
     it 'validates market param' do
-      api_get "/api/v2/public/markets/usdusd/trades"
-      expect(response).to have_http_status 422
+      api_get '/api/v2/public/markets/usdusd/trades'
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.market.doesnt_exist')
     end
 
     it 'validates limit param' do
       get "/api/v2/public/markets/#{market}/trades", params: { limit: 1001 }
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('public.trade.invalid_limit')
     end
   end

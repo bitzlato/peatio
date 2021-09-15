@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 module API
@@ -45,8 +44,8 @@ module API
           },
           if: ->(_, options) { options[:current_user] }
         ) do |trade, options|
-            fee_currency(trade.order_for_member(options[:current_user]))
-          end
+          fee_currency(trade.order_for_member(options[:current_user]))
+        end
 
         expose(
           :fee,
@@ -56,8 +55,8 @@ module API
           },
           if: ->(_, options) { options[:current_user] }
         ) do |trade, options|
-            trade.order_fee(trade.order_for_member(options[:current_user]))
-          end
+          trade.order_fee(trade.order_for_member(options[:current_user]))
+        end
 
         expose(
           :fee_amount,
@@ -67,8 +66,8 @@ module API
           },
           if: ->(_, options) { options[:current_user] }
         ) do |trade, options|
-            fee_amount(trade, trade.order_for_member(options[:current_user]))
-          end
+          fee_amount(trade, trade.order_for_member(options[:current_user]))
+        end
 
         expose(
           :market_id,
@@ -108,7 +107,7 @@ module API
 
         expose(
           :side,
-          if: ->(trade, options) { options[:side] || options[:current_user] },
+          if: ->(_trade, options) { options[:side] || options[:current_user] },
           documentation: {
             type: String,
             desc: 'Trade side.'

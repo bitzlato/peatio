@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EnumerizeWalletKind < ActiveRecord::Migration[4.2]
   def change
     id_kind_hash = Wallet.pluck(:id, :kind).to_h

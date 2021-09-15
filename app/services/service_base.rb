@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ServiceBase
   def failure(errors:)
     ServiceBase::Result.new(errors: errors)

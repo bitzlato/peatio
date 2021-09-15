@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 describe API::V2::Account::Beneficiaries, 'GET', type: :request do
@@ -28,8 +27,8 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
   end
 
   before do
-    Ability.stubs(:user_permissions).returns({'member'=>{'read'=>['Beneficiary'],'update'=>['Beneficiary'],
-                                                         'create'=> ['Beneficiary'],'destroy'=> ['Beneficiary']}})
+    Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['Beneficiary'], 'update' => ['Beneficiary'],
+                                                             'create' => ['Beneficiary'], 'destroy' => ['Beneficiary'] } })
   end
 
   context 'without JWT' do
@@ -51,7 +50,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     end
 
     context 'pagination' do
-      it 'should return paginated result' do
+      it 'returns paginated result' do
         api_get endpoint, token: token, params: { page: 1, limit: 1 }
         expect(response.status).to eq 200
         result = JSON.parse(response.body)
@@ -81,7 +80,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     it do
       api_get endpoint, params: { currency: :btc }, token: token
       expect(response.status).to eq 200
-      expect(response_body.all? { |b| b['currency'] == 'btc' }).to be_truthy
+      expect(response_body).to be_all { |b| b['currency'] == 'btc' }
     end
   end
 
@@ -97,7 +96,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     it do
       api_get endpoint, params: { state: :pending }, token: token
       expect(response.status).to eq 200
-      expect(response_body.all? { |b| b['state'] == 'pending' }).to be_truthy
+      expect(response_body).to be_all { |b| b['state'] == 'pending' }
     end
   end
 
@@ -109,7 +108,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     it do
       api_get endpoint, params: { currency: :btc, state: :active }, token: token
       expect(response.status).to eq 200
-      expect(response_body.all? { |b| b['currency'] == 'btc' && b['state'] == 'active' }).to be_truthy
+      expect(response_body).to be_all { |b| b['currency'] == 'btc' && b['state'] == 'active' }
     end
   end
 
@@ -124,7 +123,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
 
     it 'renders unauthorized error' do
       api_get endpoint, params: { currency: :btc, state: :active }, token: token
-      expect(response).to have_http_status 403
+      expect(response).to have_http_status :forbidden
       expect(response).to include_api_error('user.ability.not_permitted')
     end
   end
@@ -214,7 +213,7 @@ describe API::V2::Account::Beneficiaries, 'GET /:id', type: :request do
     it 'renders unauthorized error' do
       api_get endpoint, token: token
 
-      expect(response).to have_http_status 403
+      expect(response).to have_http_status :forbidden
       expect(response).to include_api_error('user.ability.not_permitted')
     end
   end
@@ -256,7 +255,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
       it 'renders unauthorized error' do
         api_post endpoint, params: beneficiary_data.merge(description: Faker::String.random(120)), token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -328,9 +327,11 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
       context 'disabled withdrawal for currency' do
         let(:currency) { Currency.find(:btc) }
+
         before do
           currency.update(withdrawal_enabled: false)
         end
+
         it do
           api_post endpoint, params: beneficiary_data, token: token
           expect(response.status).to eq 422
@@ -342,6 +343,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         before do
           beneficiary_data[:data][:address] = "'" + Faker::Blockchain::Bitcoin.address
         end
+
         it do
           api_post endpoint, params: beneficiary_data, token: token
           expect(response.status).to eq 422
@@ -355,7 +357,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
             create(:beneficiary,
                    member: member,
                    currency_id: beneficiary_data[:currency],
-                   data: {address: beneficiary_data.dig(:data, :address)})
+                   data: { address: beneficiary_data.dig(:data, :address) })
           end
 
           it do
@@ -366,11 +368,12 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         end
 
         context 'different currencies' do
-          let(:eth_beneficiary_data) {
+          let(:eth_beneficiary_data) do
             beneficiary_data.merge({
-              data: { address: Faker::Blockchain::Ethereum.address }
-            })
-          }
+                                     data: { address: Faker::Blockchain::Ethereum.address }
+                                   })
+          end
+
           before do
             create(:beneficiary,
                    member: member,
@@ -388,8 +391,9 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
           let(:address) { Faker::Blockchain::Bitcoin.address }
 
           before do
-            beneficiary_data[:data][:address] = " " + address + " "
+            beneficiary_data[:data][:address] = ' ' + address + ' '
           end
+
           it do
             api_post endpoint, params: beneficiary_data, token: token
             expect(response.status).to eq 201
@@ -468,20 +472,19 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
     it 'creates beneficiary for member' do
       expect do
         api_post endpoint, params: beneficiary_data, token: token
-      end.to change{ member.beneficiaries.count }.by(1)
+      end.to change { member.beneficiaries.count }.by(1)
     end
 
     it 'creates beneficiary with pending state' do
       api_post endpoint, params: beneficiary_data, token: token
       expect(response.status).to eq 201
       id = response_body['id']
-      expect(Beneficiary.find_by!(id: id).state).to eq 'pending'
+      expect(Beneficiary.find(id).state).to eq 'pending'
     end
   end
 end
 
 describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
-
   let(:member) { create(:member, :level_3) }
   let(:token) { jwt_for(member) }
 
@@ -493,7 +496,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     let!(:pending_beneficiary) { create(:beneficiary, member: member) }
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
@@ -508,14 +511,14 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
 
       it 'renders unauthorized error' do
         api_patch endpoint, params: activation_data, token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
 
     context 'id has invalid type' do
       let(:endpoint) do
-        "/api/v2/account/beneficiaries/id/activate"
+        '/api/v2/account/beneficiaries/id/activate'
       end
 
       it do
@@ -544,7 +547,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     end
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
@@ -575,7 +578,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     end
 
     let(:activation_data) do
-      { id:  active_beneficiary.id,
+      { id: active_beneficiary.id,
         pin: active_beneficiary.pin }
     end
 
@@ -605,7 +608,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     end
 
     let(:activation_data) do
-      { id:  archived_beneficiary.id,
+      { id: archived_beneficiary.id,
         pin: archived_beneficiary.pin }
     end
 
@@ -627,7 +630,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     end
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
@@ -643,7 +646,6 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
 end
 
 describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
-
   let(:member) { create(:member, :level_3) }
   let(:token) { jwt_for(member) }
 
@@ -660,7 +662,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
 
     context 'id has invalid type' do
       let(:endpoint) do
-        "/api/v2/account/beneficiaries/id/resend_pin"
+        '/api/v2/account/beneficiaries/id/resend_pin'
       end
 
       it do
@@ -681,7 +683,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
 
       it 'renders unauthorized error' do
         api_patch endpoint, params: resend_data, token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -711,7 +713,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
         api_patch endpoint, params: resend_data, token: token
         expect(response.status).to eq 422
         expect(response).to include_api_error('account.beneficiary.cant_resend_within_1_minute')
-        expect(response_body.include?("sent_at")).to eq true
+        expect(response_body.include?('sent_at')).to eq true
       end
     end
   end
@@ -750,7 +752,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
     end
 
     let(:resend_data) do
-      { id:  archived_beneficiary.id }
+      { id: archived_beneficiary.id }
     end
 
     let!(:archived_beneficiary) { create(:beneficiary, state: :archived, member: member) }
@@ -769,7 +771,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
     end
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
@@ -783,7 +785,6 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
 end
 
 describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
-
   let(:member) { create(:member, :level_3) }
   let(:token) { jwt_for(member) }
 
@@ -795,13 +796,13 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
     let!(:pending_beneficiary) { create(:beneficiary, member: member) }
 
     let(:activation_data) do
-      { id:  pending_beneficiary.id,
+      { id: pending_beneficiary.id,
         pin: pending_beneficiary.pin }
     end
 
     context 'id has invalid type' do
       let(:endpoint) do
-        "/api/v2/account/beneficiaries/id"
+        '/api/v2/account/beneficiaries/id'
       end
 
       it do
@@ -822,7 +823,7 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
 
       it 'renders unauthorized error' do
         api_delete endpoint, token: token
-        expect(response).to have_http_status 403
+        expect(response).to have_http_status :forbidden
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
@@ -884,5 +885,3 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
     end
   end
 end
-
-

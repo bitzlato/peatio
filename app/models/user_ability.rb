@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserAbility
   include CanCan::Ability
 
@@ -6,7 +8,7 @@ class UserAbility
 
     # Iterate through member permissions
     Ability.user_permissions[member.role].each do |action, rules|
-      if rules.kind_of?(Array)
+      if rules.is_a?(Array)
         # Iterate through a list of member model access
         rules.each do |rule|
           # check if rule define attributes

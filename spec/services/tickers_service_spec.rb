@@ -2,7 +2,8 @@
 
 describe TickersService, '#ticker' do
   let(:market) { Market.all.sample.id.to_sym }
-  let(:service) { TickersService }
+  let(:service) { described_class }
+
   context 'no trades executed' do
     let(:default) do
       {
@@ -24,6 +25,7 @@ describe TickersService, '#ticker' do
 
   context 'single trade executed during last 24 hours' do
     after { delete_measurments('trades') }
+
     let!(:trade) { create(:trade, :btc_usd, price: 5, amount: 2) }
 
     let(:ticker) do

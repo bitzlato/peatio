@@ -457,8 +457,7 @@ CREATE TABLE public.deposits (
     invoice_id character varying,
     error json,
     blockchain_id bigint NOT NULL,
-    invoice_expires_at timestamp without time zone,
-    is_locked boolean DEFAULT false NOT NULL
+    invoice_expires_at timestamp without time zone
 );
 
 
@@ -887,9 +886,9 @@ CREATE TABLE public.payment_addresses (
     details_encrypted character varying(1024),
     member_id bigint,
     remote boolean DEFAULT false NOT NULL,
-    blockchain_id bigint NOT NULL,
     balances jsonb DEFAULT '{}'::jsonb,
     balances_updated_at timestamp without time zone,
+    blockchain_id bigint NOT NULL,
     collection_state character varying DEFAULT 'none'::character varying NOT NULL,
     gas_refueling_state character varying DEFAULT 'none'::character varying NOT NULL
 );
@@ -1244,8 +1243,8 @@ CREATE TABLE public.wallets (
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
-    plain_settings json,
     enable_invoice boolean DEFAULT false NOT NULL,
+    plain_settings json,
     blockchain_id bigint NOT NULL,
     use_as_fee_source boolean DEFAULT false NOT NULL,
     balance_updated_at timestamp without time zone
@@ -1367,8 +1366,7 @@ CREATE TABLE public.withdraws (
     metadata json,
     remote_id character varying,
     blockchain_id bigint NOT NULL,
-    tx_dump jsonb,
-    is_locked boolean DEFAULT false NOT NULL
+    tx_dump jsonb
 );
 
 
@@ -2689,7 +2687,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2871,6 +2869,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210722125206'),
 ('20210727101029'),
 ('20210803084921'),
+('20210803134756'),
 ('20210806112457'),
 ('20210806112458'),
 ('20210806131828'),
@@ -2919,8 +2918,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210831045259'),
 ('20210831072354'),
 ('20210908142557'),
-('20210908143407'),
-('20210910085149'),
-('20210910085819');
+('20210908143407');
 
 

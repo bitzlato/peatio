@@ -1,30 +1,28 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'rack/cors'
 
 describe Rack::Cors, type: :request do
-
   let(:member) { create(:member, :level_3) }
   let(:frontend_url) { 'https://frontend.io' }
   let(:local_url) { 'http://localhost:3000' }
   let(:token) { jwt_for(member) }
 
-  let(:app) {
+  let(:app) do
     Rack::Builder.new do
       use Rack::Cors do
         allow do
           origins CORS::Validations.validate_origins(ENV['API_CORS_ORIGINS'])
           resource '/api/*',
-            methods: %i[get post delete put patch options head],
-            headers: :any,
-            credentials: ENV.true?('API_CORS_ALLOW_CREDENTIALS'),
-            max_age: CORS::Validations.validate_max_age(ENV['API_CORS_MAX_AGE'])
+                   methods: %i[get post delete put patch options head],
+                   headers: :any,
+                   credentials: ENV.true?('API_CORS_ALLOW_CREDENTIALS'),
+                   max_age: CORS::Validations.validate_max_age(ENV['API_CORS_MAX_AGE'])
         end
       end
       run Peatio::Application
     end
-  }
+  end
 
   def check_cors(response, origin, allow_crendentails, max_age = '3600')
     expect(response.headers['Access-Control-Allow-Origin']).to eq(origin)
@@ -120,13 +118,13 @@ describe Rack::Cors, type: :request do
 
     it 'sends CORS headers ever when user is not authenticated' do
       api_get '/api/v2/account/balances', headers: { 'Origin' => local_url }
-      expect(response).to have_http_status 401
+      expect(response).to have_http_status :unauthorized
       check_cors(response, local_url, allow_crendentails)
     end
 
     it 'sends CORS headers when invalid parameter supplied' do
       api_get '/api/v2/account/balances/somecoin', token: token, headers: { 'Origin' => local_url }
-      expect(response).to have_http_status 422
+      expect(response).to have_http_status :unprocessable_entity
       check_cors(response, local_url, allow_crendentails)
     end
   end
