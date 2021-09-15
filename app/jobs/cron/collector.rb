@@ -4,8 +4,8 @@ module Jobs
   module Cron
     class Collector
       def self.process
-        # TODO: select only payment addresses with enought balance
-        PaymentAddress.collection_required.lock.each do |_pa|
+        # TODO: select only payment addresses with enough balance
+        PaymentAddress.collection_required.lock.each do |payment_address|
           next unless payment_address.has_collectable_balances?
 
           process_address payment_address
@@ -16,9 +16,12 @@ module Jobs
       def self.process_address(payment_address)
         return unless payment_address.has_collectable_balances?
 
+        Rails.logger.info("PaymentAddress #{payment_address.addresses} has collectable balances")
         if payment_address.has_enough_gas_to_collect?
+          Rails.logger.info("PaymentAddress #{payment_address.addresses} has enough gas to collect. Collect it!")
           payment_address.collect!
         else
+          Rails.logger.info("PaymentAddress #{payment_address.addresses} has NOT enough gas to collect. Refuel gas")
           payment_address.refuel_gas!
         end
       rescue StandardError => e
