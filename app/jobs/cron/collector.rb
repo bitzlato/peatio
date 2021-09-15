@@ -4,15 +4,13 @@ module Jobs
   module Cron
     class Collector
       def self.process
-        return if Rails.env.production?
-
-        # TODO: select only payment addresses with enough balance
+        # TODO: select only payment addresses with enought balance
         PaymentAddress.collection_required.lock.each do |_pa|
           next unless payment_address.has_collectable_balances?
 
           process_address payment_address
         end
-        sleep 300
+        sleep 10
       end
 
       def self.process_address(payment_address)
