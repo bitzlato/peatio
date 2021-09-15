@@ -16,12 +16,12 @@ module Jobs
       def self.process_address(payment_address)
         return unless payment_address.has_collectable_balances?
 
-        Rails.logger.info("PaymentAddress #{payment_address.addresses} has collectable balances")
+        Rails.logger.info("PaymentAddress #{payment_address.address} has collectable balances")
         if payment_address.has_enough_gas_to_collect?
-          Rails.logger.info("PaymentAddress #{payment_address.addresses} has enough gas to collect. Collect it!")
+          Rails.logger.info("PaymentAddress #{payment_address.address} has enough gas to collect. Collect it!")
           payment_address.collect!
         else
-          Rails.logger.info("PaymentAddress #{payment_address.addresses} has NOT enough gas to collect. Refuel gas")
+          Rails.logger.info("PaymentAddress #{payment_address.address} has NOT enough gas to collect. Refuel gas")
           payment_address.refuel_gas!
         end
       rescue StandardError => e
