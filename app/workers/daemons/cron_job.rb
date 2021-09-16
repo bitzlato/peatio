@@ -16,7 +16,8 @@ module Workers
         Jobs::Cron::TransfersPolling,
         Jobs::Cron::PaymentAddressBalancer,
         Jobs::Cron::RemoveInvoicedDeposits,
-        Jobs::Cron::Collector
+        Jobs::Cron::Collector,
+        Jobs::Cron::CurrencyPricer
       ].freeze
 
       def run

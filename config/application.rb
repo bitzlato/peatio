@@ -50,5 +50,7 @@ module Peatio
     config.middleware.use ActionDispatch::Flash
 
     config.active_record.schema_format = :sql
+
+    config.currencies = config_for(:currencies)
   end
 end

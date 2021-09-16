@@ -63,6 +63,7 @@
 - id:                     trst
   name:                   WeTrust
   parent_id:              eth
+  contract_address:       '0x0000000000000000000000000000000000000000'
   type:                   coin
   visible:                true
   subunits:               6
