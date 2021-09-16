@@ -93,8 +93,11 @@ class BitzlatoGateway < AbstractGateway
     end
   end
 
-  def create_transaction!(to_address:, amount:, from_address: nil,
+  def create_transaction!(to_address:,
+                          amount:,
+                          from_address: nil,
                           contract_address: nil,
+                          gas_factor: nil,
                           nonce: nil,
                           secret: nil,
                           meta: {})
