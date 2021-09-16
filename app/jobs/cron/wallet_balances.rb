@@ -4,11 +4,13 @@ module Jobs
   module Cron
     module WalletBalances
       def self.process
-        # Стейджи не имеют доступа в шлюзы
-        return if Rails.env.staging?
+        return if Rails.env.staging?  # Стейджи не имеют доступа в шлюзы
 
         Rails.logger.info('Update wallets balances')
-        Wallet.find_each(&:update_balances!)
+        Wallet.find_each do |wallet|
+          BalancesUpdater.new(blockchain: wallet.blockchain, address: wallet.address).perform
+        end
+
         sleep 30
       end
     end

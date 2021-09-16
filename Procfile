@@ -8,5 +8,6 @@ influx_writer: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb influx
 deposit_intention: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb deposit_intention
 create_order: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb create_order
 cancel_member_orders: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb cancel_member_orders
+balances_updating: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb balances_updating
 
 web: bundle exec rails server -b 0.0.0.0 -p 3000
