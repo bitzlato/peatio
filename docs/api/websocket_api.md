@@ -1,6 +1,6 @@
-# Peatio WebSocket API
+# Bitzlato WebSocket API
 
-Peatio WebSocket API connections are handled by service [rango](https://github.com/bitzlato/rango).
+[Bitzlato WebSocket API](https://github.com/bitzlato/peatio/blob/master/docs/api/websocket_api.md) connections are handled by [rango](https://github.com/bitzlato/rango) service.
 
 ## API
 

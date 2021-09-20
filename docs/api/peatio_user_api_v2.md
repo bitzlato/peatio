@@ -1,4 +1,4 @@
-# Peatio User API v2
+# Bitzlato User API v2
 API for Peatio application.
 
 ## Version: 3.0.0

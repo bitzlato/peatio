@@ -51,7 +51,7 @@ module API
                                 api_version: API_VERSION,
                                 doc_version: Peatio::Application::VERSION,
                                 info: {
-                                  title: "Peatio User API #{API_VERSION}",
+                                  title: "Bitzlato User API #{API_VERSION}",
                                   description: 'API for Peatio application.',
                                   contact_name: Peatio::App.config.official_name,
                                   contact_email: Peatio::App.config.official_email,
