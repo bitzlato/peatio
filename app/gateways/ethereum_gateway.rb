@@ -115,9 +115,9 @@ class EthereumGateway < AbstractGateway
     client.json_rpc(:eth_blockNumber).to_i(16)
   end
 
-  def fetch_transaction(txid, txout = nil)
+  def fetch_transaction(txid, _txout = nil)
     monefy_transaction(
-      TransactionFetcher.new(client).call(txid, txout)
+      TransactionFetcher.new(client).call(txid)
     )
   end
 

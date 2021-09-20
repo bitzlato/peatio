@@ -60,7 +60,7 @@ class EthereumGateway
 
     private
 
-    def build_erc20_transactions(txn_receipt, block_txn, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, follow_txouts: nil)
+    def build_erc20_transactions(txn_receipt, block_txn, contract_addresses: nil, follow_addresses: nil, follow_txids: nil)
       txid = normalize_txid(txn_receipt.fetch('transactionHash'))
       from_address = normalize_address(txn_receipt['from'])
 
@@ -84,8 +84,7 @@ class EthereumGateway
         next unless follow_addresses.nil? || follow_addresses.include?(to_address) || follow_addresses.include?(from_address) ||
                     (follow_txids.present? && follow_txids.include?(txid))
 
-        txout = log['logIndex'].to_i(16)
-        next unless follow_txouts.nil? || follow_txouts.include?(txout)
+        log_index = log['logIndex'].to_i(16)
 
         # BSC has no effectiveGasPrice key
         gas_price = txn_receipt.fetch('effectiveGasPrice', block_txn.fetch('gasPrice')).to_i(16)
@@ -95,11 +94,10 @@ class EthereumGateway
           amount: log.fetch('data').hex,
           from_addresses: [from_address],
           to_address: to_address,
-          txout: txout,
           block_number: txn_receipt.fetch('blockNumber').to_i(16),
           contract_address: log.fetch('address'),
           status: transaction_status(txn_receipt),
-          options: { gas_price: gas_price, gas_used: gas_used },
+          options: { gas_price: gas_price, gas_used: gas_used, log_index: log_index },
           fee: gas_price * gas_used
         }
       end
@@ -139,10 +137,9 @@ class EthereumGateway
       }
     end
 
-    def build_success_eth_transaction(txn_receipt, block_txn, validate_txout = nil)
+    def build_success_eth_transaction(txn_receipt, block_txn)
       txid = normalize_txid(block_txn.fetch('hash'))
-      txout = block_txn.fetch('transactionIndex').to_i(16)
-      logger.warn("Transcation #{txid} has wrong txout #{txout}<>#{validate_txout}") if validate_txout.present? && txout != validate_txout
+      transcation_index = block_txn.fetch('transactionIndex').to_i(16)
       gas_used = txn_receipt.fetch('gasUsed').to_i(16)
       gas_price = txn_receipt.fetch('effectiveGasPrice', block_txn.fetch('gasPrice')).to_i(16)
 
@@ -151,10 +148,9 @@ class EthereumGateway
         amount: block_txn.fetch('value').hex,
         from_addresses: [normalize_address(block_txn['from'])],
         to_address: normalize_address(block_txn['to']),
-        txout: txout,
         block_number: block_txn.fetch('blockNumber').to_i(16),
         status: 'success',
-        options: { gas_price: gas_price, gas_used: gas_used, gas_limit: block_txn.fetch('gas').to_i(16) },
+        options: { gas_price: gas_price, gas_used: gas_used, gas_limit: block_txn.fetch('gas').to_i(16), transcation_index: transcation_index },
         fee: gas_price * gas_used,
         contract_address: nil
       }
