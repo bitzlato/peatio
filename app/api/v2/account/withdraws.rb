@@ -68,7 +68,8 @@ module API
           requires :otp,
                    type: { value: Integer, message: 'account.withdraw.non_integer_otp' },
                    allow_blank: false,
-                   desc: 'OTP to perform action'
+                   desc: 'OTP to perform action',
+                   documentation: { param_type: 'body' }
           requires :beneficiary_id,
                    type: { value: Integer, message: 'account.withdraw.non_integer_beneficiary_id' },
                    allow_blank: false,

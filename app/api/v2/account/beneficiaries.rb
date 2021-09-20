@@ -69,7 +69,8 @@ module API
                      type: String,
                      values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                      as: :currency_id,
-                     desc: 'Beneficiary currency code.'
+                     desc: 'Beneficiary currency code.',
+                     documentation: { param_type: 'body' }
             requires :name,
                      type: String,
                      allow_blank: false,
@@ -80,7 +81,7 @@ module API
                      values: { value: ->(v) { v.size <= 255 }, message: 'account.beneficiary.too_long_description' },
                      desc: 'Human rememberable name which refer beneficiary.'
             requires :data,
-                     type: { value: JSON, message: 'account.beneficiary.non_json_data' },
+                     type: { value: Hash, message: 'account.beneficiary.non_json_data' },
                      allow_blank: false,
                      desc: 'Beneficiary data in JSON format'
           end
@@ -151,7 +152,8 @@ module API
 
             requires :pin,
                      type: { value: Integer, message: 'account.beneficiary.non_integer_pin' },
-                     desc: 'Pin code for beneficiary activation'
+                     desc: 'Pin code for beneficiary activation',
+                     documentation: { param_type: 'body' }
           end
           patch ':id/activate' do
             user_authorize! :update, ::Beneficiary

@@ -121,7 +121,8 @@ module API
           :transfer_links,
           if: ->(withdraw) { withdraw.metadata.key? 'links' },
           documentation: {
-            type: JSON,
+            is_array: true,
+            type: Hash,
             desc: 'Links to confirm withdraw on external resource',
             example: lambda {
               [

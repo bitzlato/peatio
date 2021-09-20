@@ -28,7 +28,7 @@ module API
                    type: String,
                    values: { value: %w[fiat coin], message: 'public.currency.invalid_type' },
                    desc: -> { API::V2::Entities::Currency.documentation[:type][:desc] }
-          optional :search, type: JSON, default: {} do
+          optional :search, type: Hash, default: {} do
             optional :code,
                      type: String,
                      desc: 'Search by currency code using SQL LIKE'

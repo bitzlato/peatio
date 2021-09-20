@@ -10,14 +10,16 @@ module API
           requires :market,
                    type: String,
                    values: { value: -> { ::Market.spot.active.pluck(:symbol) }, message: 'market.spot_market.doesnt_exist_or_not_enabled' },
-                   desc: -> { V2::Entities::Market.documentation[:symbol] }
+                   desc: -> { V2::Entities::Market.documentation[:symbol] },
+                   documentation: { param_type: 'body' }
         end
 
         params :order do
           requires :side,
                    type: String,
                    values: { value: %w[sell buy], message: 'market.order.invalid_side' },
-                   desc: -> { V2::Entities::Order.documentation[:side] }
+                   desc: -> { V2::Entities::Order.documentation[:side] },
+                   documentation: { param_type: 'body' }
           requires :volume,
                    type: { value: BigDecimal, message: 'market.order.non_decimal_volume' },
                    values: { value: ->(v) { v.try(:positive?) }, message: 'market.order.non_positive_volume' },

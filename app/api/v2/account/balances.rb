@@ -19,7 +19,7 @@ module API
                    type: { value: Boolean, message: 'account.balances.invalid_nonzero' },
                    default: false,
                    desc: 'Filter non zero balances.'
-          optional :search, type: JSON, default: {} do
+          optional :search, type: Hash, default: {} do
             optional :currency_code,
                      as: :code,
                      type: String

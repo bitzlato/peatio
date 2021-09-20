@@ -20,12 +20,12 @@ module API
                    default: ::Market::DEFAULT_TYPE
           optional :base_unit,
                    type: String,
-                   values: { value: -> { ::Market.active.pluck(:base_unit) }, message: 'market.market.doesnt_exist' },
-                   desc: -> { V2::Entities::Market.documentation[:base_unit] }
+                   values: { value: -> { ::Market.active.pluck(:base_unit).uniq }, message: 'market.market.doesnt_exist' },
+                   desc: -> { V2::Entities::Market.documentation[:base_unit][:desc] }
           optional :quote_unit,
                    type: String,
-                   values: { value: -> { ::Market.active.pluck(:base_unit) }, message: 'market.market.doesnt_exist' },
-                   desc: -> { V2::Entities::Market.documentation[:quote_unit] }
+                   values: { value: -> { ::Market.active.pluck(:base_unit).uniq }, message: 'market.market.doesnt_exist' },
+                   desc: -> { V2::Entities::Market.documentation[:quote_unit][:desc] }
           optional :state,
                    values: { value: ->(v) { (Array.wrap(v) - Order.state.values).blank? }, message: 'market.order.invalid_state' },
                    desc: 'Filter order by state.'
@@ -141,7 +141,8 @@ module API
           optional :market,
                    type: String,
                    values: {  value: -> { ::Market.active.pluck(:symbol) }, message: 'market.market.doesnt_exist' },
-                   desc: -> { V2::Entities::Market.documentation[:symbol] }
+                   desc: -> { V2::Entities::Market.documentation[:symbol] },
+                   documentation: { param_type: 'body' }
           optional :market_type,
                    values: { value: -> { ::Market::TYPES }, message: 'market.market.invalid_market_type' },
                    desc: -> { V2::Entities::Market.documentation[:type][:desc] },

@@ -75,7 +75,8 @@ module API
         expose(
           :transfer_links,
           documentation: {
-            type: JSON,
+            is_array: true,
+            type: Hash,
             desc: 'Links to p2p page to make deposit transfer',
             example: lambda {
               [

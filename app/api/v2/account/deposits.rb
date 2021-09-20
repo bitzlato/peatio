@@ -14,7 +14,8 @@ module API
           requires :currency,
                    type: String,
                    values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
-                   desc: 'Currency code'
+                   desc: 'Currency code',
+                   documentation: { param_type: 'body' }
           requires :amount,
                    type: BigDecimal,
                    desc: 'The deposit amount.'
