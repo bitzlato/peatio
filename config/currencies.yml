@@ -1,0 +1,16 @@
+production:
+  currency_pricer:
+    quote_currency_code: 'usdt-erc20'
+    vwap_time: '1h'
+staging:
+  currency_pricer:
+    quote_currency_code: 'usdt-erc20'
+    vwap_time: '1h'
+test:
+  currency_pricer:
+    quote_currency_code: 'usdt-erc20'
+    vwap_time: '1h'
+development:
+  currency_pricer:
+    quote_currency_code: 'usd'
+    vwap_time: '1h'

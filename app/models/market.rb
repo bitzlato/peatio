@@ -220,6 +220,11 @@ class Market < ApplicationRecord
     self.engine = Engine.find_by(name: engine_name)
   end
 
+  def vwap(time)
+    query = "SELECT SUM(total) / SUM(amount) AS vwap FROM trades WHERE market=%<market>s AND time > now() - #{time}"
+    Peatio::InfluxDB.client(keyshard: symbol).query(query, params: { market: symbol })&.dig(0, 'values', 0, 'vwap')
+  end
+
   private
 
   def generate_symbol
