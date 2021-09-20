@@ -51,9 +51,9 @@ class BitzlatoGateway < AbstractGateway
         end
         unless deposit.invoiced? || deposit.submitted?
           report_exception(
-            "Deposit #{deposit.id} has skippable status (#{deposit.aasm_state}). Intention: #{intention.as_json}",
+            "Deposit #{deposit.id} has skippable status (#{deposit.aasm_state})",
             true,
-            deposit_id: deposit.id, deposit_state: deposit.aasm_state
+            deposit_id: deposit.id, deposit_state: deposit.aasm_state, intention: intention.as_json
           )
           next
         end
