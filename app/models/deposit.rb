@@ -12,7 +12,6 @@ class Deposit < ApplicationRecord
   include FeeChargeable
 
   extend Enumerize
-  TRANSFER_TYPES = { fiat: 100, crypto: 200 }.freeze
 
   belongs_to :currency, optional: false, touch: false
   belongs_to :member, optional: false
@@ -20,6 +19,8 @@ class Deposit < ApplicationRecord
   has_many :deposit_spreads
 
   acts_as_eventable prefix: 'deposit', on: %i[create update]
+
+  enumerize :transfer_type, in: DEPOSIT_TRANSFER_TYPES
 
   scope :recent, -> { order(id: :desc) }
 
