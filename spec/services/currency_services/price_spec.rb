@@ -26,5 +26,14 @@ RSpec.describe CurrencyServices::Price do
         expect(service.call).to eq 2.5
       end
     end
+
+    context 'when there is no appropriate market' do
+      let(:base_currency) { find_or_create(:currency, id: :btc) }
+      let(:quote_currency) { find_or_create(:currency, id: :eur) }
+
+      it 'returns nil' do
+        expect(service.call).to eq nil
+      end
+    end
   end
 end

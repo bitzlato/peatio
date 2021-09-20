@@ -14,6 +14,10 @@ module CurrencyServices
         secondary_market = Market.where(base_unit: @base_currency.code, quote_unit: intermediate_currency_codes).or(
           Market.where(base_unit: intermediate_currency_codes, quote_unit: @base_currency.code)
         ).spot.take
+        if secondary_market.nil?
+          Rails.logger.warn(message: "Can't calculate currency price. No appropriate markets", currency_code: @base_currency.code)
+          return nil
+        end
         intermediate_currency_code = ([secondary_market.base_unit, secondary_market.quote_unit] - [@base_currency.code])[0]
         primary_price = market_price(base_currency_code: intermediate_currency_code, quote_currency_code: @quote_currency.code)
         secondary_price = market_price(base_currency_code: @base_currency.code, quote_currency_code: intermediate_currency_code)
