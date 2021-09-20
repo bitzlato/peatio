@@ -51,7 +51,7 @@ class BitzlatoGateway < AbstractGateway
         end
         unless deposit.invoiced? || deposit.submitted?
           report_exception(
-            "Deposit #{deposit.id} has skippable status (#{deposit.aasm_state})",
+            "Deposit #{deposit.id} has skippable status (#{deposit.aasm_state}). Intention: #{intention.as_json}",
             true,
             deposit_id: deposit.id, deposit_state: deposit.aasm_state
           )
@@ -152,6 +152,8 @@ class BitzlatoGateway < AbstractGateway
                currency: currency
              )
     end
+  rescue StandardError => e
+    report_exception e, true, { deposit_id: deposit.id, address: address }
   end
 
   def build_client
