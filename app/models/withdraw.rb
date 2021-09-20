@@ -15,8 +15,6 @@ class Withdraw < ApplicationRecord
   serialize :error, JSON unless Rails.configuration.database_support_json
   serialize :metadata, JSON unless Rails.configuration.database_support_json
 
-  TRANSFER_TYPES = { fiat: 100, crypto: 200 }.freeze
-
   belongs_to :blockchain, optional: false, touch: false
   belongs_to :currency, optional: false, touch: false
   belongs_to :member, optional: false, touch: false
@@ -26,6 +24,8 @@ class Withdraw < ApplicationRecord
   belongs_to :beneficiary, optional: true
 
   acts_as_eventable prefix: 'withdraw', on: %i[create update]
+
+  enumerize :transfer_type, in: WITHDRAW_TRANSFER_TYPES
 
   after_initialize :initialize_defaults, if: :new_record?
   before_validation { self.blockchain ||= currency.try(:blockchain) }

@@ -56,7 +56,7 @@ module API
           requires :amount,   type: BigDecimal, desc: 'The deposit amount.'
           optional :state,    type: String, desc: 'The state of deposit.', values: %w[accepted]
           optional :transfer_type,  type: String,
-                                    values: { value: -> { Deposit::TRANSFER_TYPES.keys }, message: 'account.deposit.transfer_type_not_in_list' },
+                                    values: { value: -> { DEPOSIT_TRANSFER_TYPES.keys }, message: 'account.deposit.transfer_type_not_in_list' },
                                     desc: -> { API::V2::Admin::Entities::Deposit.documentation[:transfer_type][:desc] }
         end
         post '/deposits/new' do
