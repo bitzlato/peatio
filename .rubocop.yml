@@ -89,24 +89,8 @@ Naming/PredicateName:
 Naming/VariableNumber:
   Enabled: false
 
-# Offense count: 28
 RSpec/AnyInstance:
-  Exclude:
-    - 'spec/api/v2/account/deposits_spec.rb'
-    - 'spec/api/v2/account/withdraws_spec.rb'
-    - 'spec/gateways/abstract_gateway_spec.rb'
-    - 'spec/gateways/ethereum_gateway/collection_concern_spec.rb'
-    - 'spec/gateways/ethereum_gateway/collector_spec.rb'
-    - 'spec/gateways/ethereum_gateway_spec.rb'
-    - 'spec/models/deposit_spec.rb'
-    - 'spec/models/order_spec.rb'
-    - 'spec/models/transfer_spec.rb'
-    - 'spec/models/wallet_spec.rb'
-    - 'spec/models/withdraw_spec.rb'
-    - 'spec/services/order_services/create_order_spec.rb'
-    - 'spec/services/withdrawer_spec.rb'
-    - 'spec/spec_helper.rb'
-    - 'spec/workers/amqp/deposit_coin_address_spec.rb'
+  Enabled: false
 
 # Offense count: 697
 # Configuration parameters: Prefixes.

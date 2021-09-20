@@ -35,6 +35,7 @@ class PaymentAddress < ApplicationRecord
     event :collect do
       transitions from: %i[pending none done], to: :collecting
       after do
+        touch :collected_at
         blockchain.gateway.collect! self
         done!
       end
@@ -43,6 +44,7 @@ class PaymentAddress < ApplicationRecord
     event :refuel_gas do
       transitions from: %i[pending none done], to: :gas_refueling
       after do
+        touch :gas_refueled_at
         blockchain.gateway.refuel_gas! self
         done!
       end
