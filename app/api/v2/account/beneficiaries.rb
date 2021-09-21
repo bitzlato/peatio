@@ -81,7 +81,7 @@ module API
                      values: { value: ->(v) { v.size <= 255 }, message: 'account.beneficiary.too_long_description' },
                      desc: 'Human rememberable name which refer beneficiary.'
             requires :data,
-                     type: { value: Hash, message: 'account.beneficiary.non_json_data' },
+                     type: { value: JSON, message: 'account.beneficiary.non_json_data' },
                      allow_blank: false,
                      desc: 'Beneficiary data in JSON format'
           end
