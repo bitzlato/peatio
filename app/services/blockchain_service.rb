@@ -84,6 +84,9 @@ class BlockchainService
         # TODO: fetch_transaction if status is pending
         tx = fetch_transaction(tx)
         Transaction.upsert_transaction! tx, reference: (deposit || withdrawal)
+
+        AMQP::Queue.enqueue('balances_updating', { blockchain_id: blockchain.id, address: tx.from_address }) if blockchain.follow_addresses.include?(tx.from_address)
+        AMQP::Queue.enqueue('balances_updating', { blockchain_id: blockchain.id, address: tx.to_address }) if blockchain.follow_addresses.include?(tx.to_address)
       end.count
 
       bn.update!(

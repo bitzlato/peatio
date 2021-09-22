@@ -145,51 +145,6 @@ class Wallet < ApplicationRecord
     self.blockchain = Blockchain.find_by(key: key) || raise("No blockchain with key #{key}")
   end
 
-  def update_balances!
-    # TODO: Получать балансы со шлюза
-    balances = current_balance.each_with_object({}) do |(k, v), a|
-      currency_id = k.is_a?(Money::Currency) ? k.id.downcase : k
-      a[currency_id] = v.nil? ? nil : v.to_d
-    end
-
-    update!(balance: balances, balance_updated_at: Time.zone.now)
-  rescue StandardError => e
-    report_exception(e, true, wallet_id: id)
-  end
-
-  # TODO: Move to wallet balances
-  def current_balance(currency = nil)
-    if blockchain.gateway.is_a? BitzlatoGateway
-      current_balance_for_gateway currency
-    else
-      current_balance_for_wallet currency
-    end
-  end
-
-  def current_balance_for_gateway(currency = nil)
-    if currency.present?
-      blockchain.gateway.load_balance(address, currency.id.upcase)
-    else
-      blockchain.gateway.load_balances
-    end
-  end
-
-  def current_balance_for_wallet(currency = nil)
-    if currency.present?
-      begin
-        currency = currency.money_currency unless currency.is_a? Money::Currency
-        gateway.load_balance(address, currency)
-      rescue Peatio::Wallet::ClientError => e
-        report_exception e, true, wallet_id: id
-        nil
-      end
-    else
-      currencies.each_with_object({}) do |c, balances|
-        balances[c.id] = current_balance(c)
-      end
-    end
-  end
-
   def gateway_wallet_kind_support
     errors.add(:gateway, "'#{gateway.name}' can't be used as a '#{kind}' wallet") unless gateway.support_wallet_kind?(kind)
   end

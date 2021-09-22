@@ -89,6 +89,8 @@ queue:
   # order submit consuming.
   events_processor:
     name: peatio.events.processor
+  balances_updating:
+    name: peatio.balances.updating
 
 binding:
   matching:
@@ -124,6 +126,8 @@ binding:
     queue: cancel_orders
     exchange: ranger
     topics: peatio.ranger.cancel_orders
+  balances_updating:
+    queue: balances_updating
 
 channel:
   trade_executor:
