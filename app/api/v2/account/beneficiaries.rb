@@ -83,7 +83,8 @@ module API
             requires :data,
                      type: { value: JSON, message: 'account.beneficiary.non_json_data' },
                      allow_blank: false,
-                     desc: 'Beneficiary data in JSON format'
+                     desc: 'Beneficiary data in JSON format',
+                     documentation: { type: 'String' }
           end
           post do
             user_authorize! :create, ::Beneficiary

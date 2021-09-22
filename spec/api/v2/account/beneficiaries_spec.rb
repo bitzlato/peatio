@@ -225,14 +225,13 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
   let(:member) { create(:member, :level_3) }
   let(:token) { jwt_for(member) }
 
+  let(:address) { Faker::Blockchain::Bitcoin.address }
   let(:beneficiary_data) do
     {
       currency: :btc,
       name: 'Personal Bitcoin wallet',
       description: 'Multisignature Bitcoin Wallet',
-      data: {
-        address: Faker::Blockchain::Bitcoin.address
-      }
+      data: { address: address }.to_json
     }
   end
 
@@ -307,7 +306,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
     context 'crypto beneficiary' do
       context 'nil address in data' do
         it do
-          beneficiary_data[:data][:address] = nil
+          beneficiary_data[:data] = { address: nil }.to_json
           api_post endpoint, params: beneficiary_data, token: token
           expect(response.status).to eq 422
           expect(response).to include_api_error('account.beneficiary.missing_address_in_data')
@@ -316,8 +315,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
       context 'data without address' do
         it do
-          beneficiary_data[:data].delete(:address)
-          beneficiary_data[:data][:memo] = :memo
+          beneficiary_data[:data] = { memo: :memo }.to_json
 
           api_post endpoint, params: beneficiary_data, token: token
           expect(response.status).to eq 422
@@ -341,7 +339,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
       context 'invalid character in address' do
         before do
-          beneficiary_data[:data][:address] = "'" + Faker::Blockchain::Bitcoin.address
+          beneficiary_data[:data] = { address: "'" + Faker::Blockchain::Bitcoin.address }.to_json
         end
 
         it do
@@ -357,7 +355,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
             create(:beneficiary,
                    member: member,
                    currency_id: beneficiary_data[:currency],
-                   data: { address: beneficiary_data.dig(:data, :address) })
+                   data: { address: address })
           end
 
           it do
@@ -368,17 +366,16 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         end
 
         context 'different currencies' do
+          let(:eth_address) { Faker::Blockchain::Ethereum.address }
           let(:eth_beneficiary_data) do
-            beneficiary_data.merge({
-                                     data: { address: Faker::Blockchain::Ethereum.address }
-                                   })
+            beneficiary_data.merge({ data: { address: eth_address }.to_json })
           end
 
           before do
             create(:beneficiary,
                    member: member,
                    currency_id: :eth,
-                   data: { address: eth_beneficiary_data.dig(:data, :address) })
+                   data: { address: eth_address })
           end
 
           it do
@@ -391,7 +388,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
           let(:address) { Faker::Blockchain::Bitcoin.address }
 
           before do
-            beneficiary_data[:data][:address] = ' ' + address + ' '
+            beneficiary_data[:data] = { address: ' ' + address + ' ' }.to_json
           end
 
           it do
