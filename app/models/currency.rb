@@ -203,7 +203,7 @@ class Currency < ApplicationRecord
   end
 
   def icon_id
-    (token_name || id).to_s.downcase
+    id.to_s.downcase.split(ID_SEPARATOR).first.presence
   end
 
   # subunit (or fractional monetary unit) - a monetary unit
