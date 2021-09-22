@@ -31,7 +31,8 @@ class Transaction < ApplicationRecord
 
   # In ethereum there can be no to_addres if this failed contract transaction
   validates :to_address, presence: true, unless: :failed?
-  validates :txout, presence: true, unless: :failed?
+  # TODO: Нужна только для blockchain
+  # validates :txout, presence: true, unless: :failed?
 
   validates :status, inclusion: { in: STATUSES }
 
