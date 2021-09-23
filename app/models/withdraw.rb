@@ -51,7 +51,7 @@ class Withdraw < ApplicationRecord
   end
 
   validate on: :create, if: ->(w) { w.currency.present? && w.currency.coin? } do
-    errors.add(:rid, 'invlalid address') unless blockchain.valid_address?(rid)
+    errors.add(:rid, 'invalid address') unless blockchain.valid_address?(rid)
   end
 
   scope :completed, -> { where(aasm_state: COMPLETED_STATES) }

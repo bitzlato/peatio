@@ -313,6 +313,15 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         end
       end
 
+      context 'invalid address' do
+        it do
+          beneficiary_data[:data][:address] = 'wrong address'
+          api_post endpoint, params: beneficiary_data, token: token
+          expect(response.status).to eq 422
+          expect(response).to include_api_error('account.beneficiary.invalid_address')
+        end
+      end
+
       context 'data without address' do
         it do
           beneficiary_data[:data] = { memo: :memo }.to_json
@@ -334,18 +343,6 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
           api_post endpoint, params: beneficiary_data, token: token
           expect(response.status).to eq 422
           expect(response).to include_api_error('account.currency.withdrawal_disabled')
-        end
-      end
-
-      context 'invalid character in address' do
-        before do
-          beneficiary_data[:data] = { address: "'" + Faker::Blockchain::Bitcoin.address }.to_json
-        end
-
-        it do
-          api_post endpoint, params: beneficiary_data, token: token
-          expect(response.status).to eq 422
-          expect(response).to include_api_error('account.beneficiary.failed_to_create')
         end
       end
 

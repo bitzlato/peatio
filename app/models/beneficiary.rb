@@ -82,7 +82,7 @@ class Beneficiary < ApplicationRecord
 
   # Validates address field which is required for coin.
   validate if: ->(b) { b.currency.present? && b.currency.coin? } do
-    errors.add(:data, 'invlalid address') if data.blank? || !currency.blockchain.valid_address?(data.symbolize_keys[:address])
+    errors.add(:data, 'invalid address') if data.blank? || !currency.blockchain.valid_address?(data.symbolize_keys[:address])
   end
 
   # Validates that data contains full_name field which is required for fiat.

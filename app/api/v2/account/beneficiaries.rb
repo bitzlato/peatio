@@ -117,8 +117,12 @@ module API
               .create!(declared_params),
                     with: API::V2::Entities::Beneficiary
           rescue ActiveRecord::RecordInvalid => e
-            report_exception(e)
-            error!({ errors: ['account.beneficiary.failed_to_create'] }, 422)
+            if e.message == 'Validation failed: Data invalid address'
+              error!({ errors: ['account.beneficiary.invalid_address'] }, 422)
+            else
+              report_exception(e)
+              error!({ errors: ['account.beneficiary.failed_to_create'] }, 422)
+            end
           end
 
           desc 'Resend beneficiary pin'
