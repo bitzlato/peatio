@@ -90,11 +90,17 @@ module API
                      values: { value: 1..200, message: 'public.order_book.invalid_bid_limit' },
                      default: 20,
                      desc: 'Limit the number of returned buy orders. Default to 20.'
+            optional :exclude_member_id, type: Integer,
+                                         desc: 'ID of member to exclude orders from the presented book'
           end
 
           get ':market/order-book', requirements: { market: /[\w.\-]+/ } do
             asks = OrderAsk.active.with_market(params[:market]).matching_rule.limit(params[:asks_limit])
             bids = OrderBid.active.with_market(params[:market]).matching_rule.limit(params[:bids_limit])
+            if params[:exclude_member_id].present?
+              asks = asks.where.not(member_id: params[:exclude_member_id])
+              bids = bids.where.not(member_id: params[:exclude_member_id])
+            end
             book = OrderBook.new asks, bids
             present book, with: API::V2::Entities::OrderBook
           end

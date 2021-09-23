@@ -190,6 +190,16 @@ describe API::V2::Public::Markets, type: :request do
       expect(result['bids'].size).to eq 5
     end
 
+    it 'returns ask and bid orders on specified market except specific member' do
+      member_id = OrderAsk.last.member_id
+      get "/api/v2/public/markets/#{market}/order-book", params: { exclude_member_id: member_id }
+      expect(response).to be_successful
+
+      result = JSON.parse(response.body)
+      expect(result['asks'].size).to eq 4
+      expect(result['bids'].size).to eq 5
+    end
+
     context 'market name with dot' do
       let!(:currency) { create(:currency, :xagm_cx) }
       let!(:market) { create(:market, :xagm_cxusd) }
