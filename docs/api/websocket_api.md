@@ -149,7 +149,7 @@ Example of order-book increment message:
 ```json
 {
   "eurusd.ob-inc": {
-    "asks": [["15.0", "22.1257"]]
+    "asks": ["15.0", "22.1257"]
   }
 }
 ```
