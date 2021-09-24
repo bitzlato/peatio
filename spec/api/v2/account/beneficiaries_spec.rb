@@ -315,7 +315,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
       context 'invalid address' do
         it do
-          beneficiary_data[:data][:address] = 'wrong address'
+          beneficiary_data[:data] = { address: 'wrong address' }.to_json
           api_post endpoint, params: beneficiary_data, token: token
           expect(response.status).to eq 422
           expect(response).to include_api_error('account.beneficiary.invalid_address')
