@@ -40,6 +40,23 @@ class Account < ApplicationRecord
     Withdraw.where(member_id: member_id, currency_id: currency_id)
   end
 
+  def orders
+    member.orders.with_currency(currency_id)
+  end
+
+  def base_orders
+    member.orders.where(base_unit: :currency_id)
+  end
+
+  def quote_orders
+    member.orders.where(quote_unit: :currency_id)
+  end
+
+  def calculated_locked
+    deposits.where(is_locked: true).sum(:amount) +
+      withdraws.where(is_locked: true).sum(:amount)
+  end
+
   def payment_address
     member.payment_address blockchain
   end
