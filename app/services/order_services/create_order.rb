@@ -139,6 +139,7 @@ module OrderServices
       )
     end
 
+    # OrderAsk
     def calc_sell_compute_locked(ord_type:, volume:, market:)
       case ord_type
       when 'limit'
@@ -151,6 +152,7 @@ module OrderServices
       end
     end
 
+    # OrderBid
     def calc_buy_compute_locked(ord_type:, price:, volume:, market:, member_balance:)
       value = case ord_type
               when 'limit'
