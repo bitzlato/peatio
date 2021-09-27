@@ -3,16 +3,29 @@
 require 'csv'
 
 class Order < ApplicationRecord
-  belongs_to :market, ->(order) { where(type: order.market_type) }, foreign_key: :market_id, primary_key: :symbol, optional: false
-  belongs_to :member, optional: false
+  extend Enumerize
+
   attribute :uuid, :uuid if Rails.configuration.database_adapter.downcase != 'PostgreSQL'.downcase
+
+  attr_readonly :member_id,
+                :bid,
+                :ask,
+                :market_id,
+                :ord_type,
+                :origin_volume,
+                :origin_locked,
+                :created_at
 
   # Error is raised in case market doesn't have enough volume to fulfill the Order.
   InsufficientMarketLiquidity = Class.new(StandardError)
 
-  extend Enumerize
+  PENDING = 'pending'
+  WAIT    = 'wait'
+  DONE    = 'done'
+  CANCEL  = 'cancel'
+  REJECT  = 'reject'
+
   STATES = { pending: 0, wait: 100, done: 200, cancel: -100, reject: -200 }.freeze
-  enumerize :state, in: STATES, scope: true
 
   TYPES = %w[market limit].freeze
 
@@ -22,8 +35,17 @@ class Order < ApplicationRecord
     cancel_bulk: 4
   }.freeze
 
+  belongs_to :market, ->(order) { where(type: order.market_type) }, foreign_key: :market_id, primary_key: :symbol, optional: false
+  belongs_to :member, optional: false
   belongs_to :ask_currency, class_name: 'Currency', foreign_key: :ask
   belongs_to :bid_currency, class_name: 'Currency', foreign_key: :bid
+
+  scope :done, -> { with_state(:done) }
+  scope :active, -> { with_state(:wait) }
+  scope :with_market, ->(market) { where(market_id: market) }
+  scope :spot, -> { where(market_type: 'spot') }
+  scope :qe, -> { where(market_type: 'qe') }
+  scope :with_currency, ->(currency_id) { where 'base_unit=? or quote_unit=?', currency_id }
 
   validates :market_type, presence: true, inclusion: { in: ->(_o) { Market::TYPES } }
 
@@ -53,28 +75,7 @@ class Order < ApplicationRecord
             numericality: { greater_than_or_equal_to: ->(order) { order.market.min_price } },
             if: :is_limit_order?, on: :create
 
-  attr_readonly :member_id,
-                :bid,
-                :ask,
-                :market_id,
-                :ord_type,
-                :origin_volume,
-                :origin_locked,
-                :created_at
-
-  PENDING = 'pending'
-  WAIT    = 'wait'
-  DONE    = 'done'
-  CANCEL  = 'cancel'
-  REJECT  = 'reject'
-
-  scope :done, -> { with_state(:done) }
-  scope :active, -> { with_state(:wait) }
-  scope :with_market, ->(market) { where(market_id: market) }
-  scope :spot, -> { where(market_type: 'spot') }
-  scope :qe, -> { where(market_type: 'qe') }
-
-  # Custom ransackers.
+  enumerize :state, in: STATES, scope: true
 
   ransacker :state, formatter: proc { |v| STATES[v.to_sym] } do |parent|
     parent.table[:state]
