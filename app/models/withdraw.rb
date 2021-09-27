@@ -95,9 +95,9 @@ class Withdraw < ApplicationRecord
     end
 
     event :cancel do
-      transitions from: %i[prepared accepted], to: :canceled
-      after do
-        unless aasm.from_state == :prepared
+      transitions from: %i[prepared], to: :canceled
+      transitions from: %i[accepted], to: :canceled do
+        after do
           account.unlock_funds(sum)
           update!(is_locked: false)
           record_cancel_operations!
