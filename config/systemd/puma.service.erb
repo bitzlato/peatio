@@ -5,6 +5,8 @@ After=syslog.target network.target
 [Service]
 WatchdogSec=10
 Type=notify
+LimitNOFILE=65536
+LimitNPROC=65536
 Environment=RACK_ENV=<%= fetch(:rails_env) %>
 Environment=RAILS_ENV=<%= fetch(:rails_env) %>
 Environment=PWD=<%= current_path %>
