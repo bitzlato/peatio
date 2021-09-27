@@ -115,7 +115,11 @@ class Withdraw < ApplicationRecord
     end
 
     event :transfer do
-      transitions from: %i[processing], to: :transfering
+      transitions from: %i[processing], to: :transfering do
+        guard do
+          account.verify_locks!
+        end
+      end
     end
 
     # TODO: Move to service
