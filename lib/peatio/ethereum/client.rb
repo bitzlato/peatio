@@ -18,6 +18,7 @@ module Ethereum
 
     ExecutionFailed = Class.new ResponseError
     InsufficientFunds = Class.new ResponseError
+    TooManyTransactions = Class.new ResponseError
 
     extend Memoist
 
@@ -41,6 +42,10 @@ module Ethereum
         # https://app.bugsnag.com/bitzlato/peatio/errors/61376fe4f5fee80007cf80a4?filters%5Bapp.release_stage%5D=production&filters%5Bevent.since%5D=30d&filters%5Berror.status%5D=fixed&filters%5Bsearch%5D%5B%5D=Insufficient&filters%5Bsearch%5D%5B%5D=funds
       elsif error['message'].include?('Insufficient funds')
         raise InsufficientFunds.new(error['code'], error['message'], error['data'])
+        # https://app.bugsnag.com/bitzlato/peatio/errors/613f74b84435e700070e23f5?filters[event.since]=30d&filters[error.status]=open&filters[app.release_stage]=production
+        # There are too many transactions in the queue. Your transaction was dropped due to limit. Try increasing the fee. (-32010)
+      elsif error['message'].include?('There are too many transactions in the queue')
+        raise TooManyTransactions.new(error['code'], error['message'], error['data'])
       else
         raise ResponseError.new(error['code'], error['message'], error['data'])
       end
