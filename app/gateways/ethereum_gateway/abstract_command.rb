@@ -5,6 +5,8 @@ class EthereumGateway
     include NumericHelpers
     include Concern
 
+    NoReceiptFetched = Class.new StandardError
+
     STATUS_SUCCESS = '0x1'
     STATUS_FAILED = '0x0'
     ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -29,6 +31,10 @@ class EthereumGateway
       return if tx.nil? || tx.fetch('to').blank?
 
       tx
+    end
+
+    def fetch_receipt!(tx_id)
+      fetch_receipt(tx_id) || raise(NoReceiptFetched, "No receipt fetched for #{tx_id}")
     end
 
     def client_version
