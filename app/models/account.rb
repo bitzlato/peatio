@@ -68,8 +68,7 @@ class Account < ApplicationRecord
   end
 
   def verify_locks!
-    Bugsnag.notify 'Отличается сумма заблокированная на счёте и расчётная' do |b|
-      b.severity = :warn
+    Bugsnag.notify 'Контроль заблокированной для списания суммы' do |b|
       b.meta_data = {
         account_id: id,
         locked: locked,
