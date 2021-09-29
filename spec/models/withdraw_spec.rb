@@ -26,6 +26,16 @@ describe Withdraw do
         expect(subject.sum).to eq subject.account.locked
       end
 
+      context :member_withdraw_disabled do
+        before do
+          subject.member.update! withdraw_disabled_at: Time.zone.now
+        end
+
+        it 'can`t be accepted' do
+          expect { subject.accept! }.to raise_error(AASM::InvalidTransition)
+        end
+      end
+
       context :record_submit_operations! do
         it 'creates two liability operations' do
           expect { subject.accept! }.to change { Operations::Liability.count }.by(2)

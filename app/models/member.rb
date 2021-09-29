@@ -67,6 +67,14 @@ class Member < ApplicationRecord
     end
   end
 
+  def withdraw_disabled?
+    withdraw_disabled_at.present?
+  end
+
+  def withdraw_enabled?
+    !withdraw_disabled?
+  end
+
   def balance_for(currency:, kind:)
     account_code = Operations::Account.find_by(
       type: :liability,

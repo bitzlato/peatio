@@ -761,7 +761,10 @@ CREATE TABLE public.members (
     role character varying(16) NOT NULL,
     state character varying(16) NOT NULL,
     "group" character varying(32) DEFAULT 'vip-0'::character varying NOT NULL,
-    username character varying
+    username character varying,
+    withdraw_disabled_at timestamp without time zone,
+    withdraw_disabled_comment character varying,
+    withdraw_disabled_by integer
 );
 
 
@@ -2674,6 +2677,14 @@ ALTER TABLE ONLY public.currencies
 
 
 --
+-- Name: members fk_rails_cad3e0edf3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.members
+    ADD CONSTRAINT fk_rails_cad3e0edf3 FOREIGN KEY (withdraw_disabled_by) REFERENCES public.members(id);
+
+
+--
 -- Name: deposit_spreads fk_rails_eef3f5807b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2919,6 +2930,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210910085819'),
 ('20210915190259'),
 ('20210916181035'),
-('20210928060422');
+('20210928060422'),
+('20210929165211');
 
 

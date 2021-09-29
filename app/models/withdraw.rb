@@ -33,10 +33,6 @@ class Withdraw < ApplicationRecord
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
 
-  before_create do
-    raise 'Закрыли вывод c бота (Ilia Gribovski)' if member.uid == 'IDEABB4E3F7F'
-  end
-
   # TODO: validate rid by blockchain specs
   #
   validates :rid, :aasm_state, presence: true
@@ -75,7 +71,11 @@ class Withdraw < ApplicationRecord
     state :confirming
 
     event :accept do
-      transitions from: :prepared, to: :accepted
+      transitions from: :prepared, to: :accepted do
+        guard do
+          member.withdraw_enabled?
+        end
+      end
       after do
         account.lock_funds(sum)
         update!(is_locked: true)
@@ -88,7 +88,11 @@ class Withdraw < ApplicationRecord
     end
 
     event :process do
-      transitions from: %i[accepted skipped errored], to: :processing
+      transitions from: %i[accepted skipped errored], to: :processing do
+        guard do
+          member.withdraw_enabled?
+        end
+      end
       after_commit do
         send_coins!
       end
