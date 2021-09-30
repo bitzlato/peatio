@@ -12,10 +12,10 @@ conn = Bunny.new AMQP::Config.connect
 conn.start
 
 ch = conn.create_channel
-id = $PROGRAM_NAME.split(':')[2]
-prefetch = AMQP::Config.channel(id)[:prefetch] || 0
+channel_id = $PROGRAM_NAME.split(':')[2]
+prefetch = AMQP::Config.channel(channel_id)[:prefetch] || 0
 ch.prefetch(prefetch) if prefetch.positive?
-logger.info { "Connected to AMQP broker (prefetch: #{prefetch.positive? ? prefetch : 'default'})" }
+logger.info { "Connected to AMQP broker (channel_id: #{channel_id || :nil}, prefetch: #{prefetch.positive? ? prefetch : 'default'})" }
 
 terminate = proc do
   # logger is forbidden in signal handling, just use puts here
@@ -82,7 +82,6 @@ ARGV.each do |id|
       end
     end
 
-    begin
       # Invoke Worker#process with floating number of arguments.
       args          = [JSON.parse(payload), metadata, delivery_info]
       arity         = worker.method(:process).arity
@@ -92,18 +91,17 @@ ARGV.each do |id|
       # Send confirmation to RabbitMQ that message has been successfully processed.
       # See http://rubybunny.info/articles/queues.html
       ch.ack(delivery_info.delivery_tag)
-    rescue StandardError => e
-      # Ask RabbitMQ to deliver message once again later.
-      # See http://rubybunny.info/articles/queues.html
-      ch.nack(delivery_info.delivery_tag, false, true)
+  rescue StandardError => e
+    # Ask RabbitMQ to deliver message once again later.
+    # See http://rubybunny.info/articles/queues.html
+    ch.nack(delivery_info.delivery_tag, false, true)
 
-      if worker.is_db_connection_error?(e)
-        logger.error(db: :unhealthy, message: e.message)
-        exit(1)
-      end
-
-      report_exception(e)
+    if worker.is_db_connection_error?(e)
+      logger.error(db: :unhealthy, message: e.message)
+      exit(1)
     end
+
+    report_exception(e)
   end
 
   workers << worker
