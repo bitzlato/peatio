@@ -81,10 +81,9 @@ set :systemd_amqp_daemon_instances,
         create_order
         deposit_coin_address
         deposit_intention
-        events_market
         influx_writer
         matching
-        notificator
+        trade_completed
         order_processor
         trade_executor
         withdraw_coin
