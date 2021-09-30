@@ -20,7 +20,7 @@ module AMQP
       end
 
       def exchange(id)
-        exchanges[id] ||= channel.send *AMQP::Config.exchange(id)
+        exchanges[id] ||= channel.send(*AMQP::Config.exchange(id))
       end
 
       def publish(eid, payload, attrs={})
