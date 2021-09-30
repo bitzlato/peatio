@@ -26,7 +26,6 @@ tmp
 /config/withdraw_channels.old.yml
 /config/management_api_v1.yml
 /config/secrets
-/config/bench/*.yml
 
 # Ignore translations.js
 /public/javascripts/translations.js

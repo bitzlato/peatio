@@ -3,7 +3,7 @@
 module Bench
   module TradeExecution
     class Direct
-      include Helpers
+      include ::Bench::Helpers
 
       def initialize(config)
         @config = config
@@ -40,13 +40,19 @@ module Bench
           ask = @ask_injector.pop
           bid = @bid_injector.pop
           break unless ask && bid
+
           volume = ask.volume > bid.volume ? bid.volume : ask.volume
-          @executor.process({ market_id: ask.market_id,
-                              ask_id: ask.id,
-                              bid_id: bid.id,
-                              strike_price: ask.price,
-                              volume: volume,
-                              funds: volume * ask.price })
+          @executor.process(
+            action: 'execute',
+            trade: {
+              market_id: ask.market_id,
+              maker_order_id: ask.id,
+              taker_order_id: bid.id,
+              strike_price: ask.price,
+              amount: volume,
+              total: volume * ask.price
+            }
+          )
         rescue StandardError => e
           Kernel.puts e
           @errors << e

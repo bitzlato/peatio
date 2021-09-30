@@ -4,10 +4,8 @@
 # TODO: Don't sleep in case of last bench.
 # TODO: Remove legacy benchmarks.
 namespace :bench do
-  
   namespace :matching do
-
-  desc 'Matching with amqp messages'  
+    desc 'Matching with amqp messages'
     task :amqp, [:config_load_path] => [:environment] do |_t, args|
       args.with_defaults(:config_load_path => 'config/bench/matching.yml')
 
@@ -51,7 +49,6 @@ namespace :bench do
   end
 
   namespace :trade_execution do
-
     desc 'Trade Execution with amqp messages'
     task :amqp, [:config_load_path] => [:environment] do |_t, args|
       args.with_defaults(:config_load_path => 'config/bench/trade_execution.yml')
