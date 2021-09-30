@@ -1,9 +1,10 @@
-# encoding: UTF-8
 # frozen_string_literal: true
 
 require File.join(ENV.fetch('RAILS_ROOT'), 'config', 'environment')
 
-raise "bindings must be provided." if ARGV.size == 0
+# rubocop:disable Rails/Output
+
+raise 'bindings must be provided.' if ARGV.size.zero?
 
 logger = Rails.logger
 
@@ -11,31 +12,41 @@ conn = Bunny.new AMQP::Config.connect
 conn.start
 
 ch = conn.create_channel
-id = $0.split(':')[2]
+id = $PROGRAM_NAME.split(':')[2]
 prefetch = AMQP::Config.channel(id)[:prefetch] || 0
-ch.prefetch(prefetch) if prefetch > 0
-logger.info { "Connected to AMQP broker (prefetch: #{prefetch > 0 ? prefetch : 'default'})" }
+ch.prefetch(prefetch) if prefetch.positive?
+logger.info { "Connected to AMQP broker (prefetch: #{prefetch.positive? ? prefetch : 'default'})" }
 
 terminate = proc do
   # logger is forbidden in signal handling, just use puts here
-  puts "Terminating threads .."
+  puts 'Terminating threads ..'
   ch.work_pool.kill
-  puts "Stopped."
+  puts 'Stopped.'
 end
 
 at_exit { conn.close }
 
-Signal.trap("INT",  &terminate)
-Signal.trap("TERM", &terminate)
+Signal.trap('INT',  &terminate)
+Signal.trap('TERM', &terminate)
 
 workers = []
 ARGV.each do |id|
   worker = AMQP::Config.binding_worker(id)
   queue  = ch.queue(*AMQP::Config.binding_queue(id))
 
-  Sentry.configure_scope do |scope|
-    scope.set_tags(amqp_worker: worker.class)
-  end if defined? Sentry
+  if defined? Sentry
+    Sentry.configure_scope do |scope|
+      scope.set_tags(amqp_worker: worker.class)
+    end
+  end
+
+  if defined? Bugsnag
+    Bugsnag.configure do |config|
+      config.add_on_error(proc do |event|
+        event.add_metadata(amqp_worker: worker.class)
+      end)
+    end
+  end
 
   if args = AMQP::Config.binding_exchange(id)
     x = ch.send(*args)
@@ -58,23 +69,30 @@ ARGV.each do |id|
   # Enable manual acknowledge mode by setting manual_ack: true.
   queue.subscribe manual_ack: true do |delivery_info, metadata, payload|
     logger.info { "Received: #{payload}" }
-    Sentry.configure_scope do |scope|
-      scope.set_context('amqp_message', { payload: payload, metadata: metadata, delivery_info: delivery_info })
-    end if defined? Sentry
-    begin
+    if defined? Sentry
+      Sentry.configure_scope do |scope|
+        scope.set_context('amqp_message', { payload: payload, metadata: metadata, delivery_info: delivery_info })
+      end
+    end
+    if defined? Bugsnag
+      Bugsnag.configure do |config|
+        config.add_on_error(proc do |event|
+          event.add_metadata(amqp_message: { payload: payload, metadata: metadata, delivery_info: delivery_info })
+        end)
+      end
+    end
 
+    begin
       # Invoke Worker#process with floating number of arguments.
       args          = [JSON.parse(payload), metadata, delivery_info]
       arity         = worker.method(:process).arity
-      resized_args  = arity < 0 ? args : args[0...arity]
+      resized_args  = arity.negative? ? args : args[0...arity]
       worker.process(*resized_args)
 
       # Send confirmation to RabbitMQ that message has been successfully processed.
       # See http://rubybunny.info/articles/queues.html
       ch.ack(delivery_info.delivery_tag)
-
     rescue StandardError => e
-
       # Ask RabbitMQ to deliver message once again later.
       # See http://rubybunny.info/articles/queues.html
       ch.nack(delivery_info.delivery_tag, false, true)
@@ -91,12 +109,14 @@ ARGV.each do |id|
   workers << worker
 end
 
-%w(USR1 USR2).each do |signal|
+%w[USR1 USR2].each do |signal|
   Signal.trap(signal) do
     puts "#{signal} received."
     handler = "on_#{signal.downcase}"
-    workers.each {|w| w.send handler if w.respond_to?(handler) }
+    workers.each { |w| w.send handler if w.respond_to?(handler) }
   end
 end
 
 ch.work_pool.join
+
+# rubocop:enable Rails/Output
