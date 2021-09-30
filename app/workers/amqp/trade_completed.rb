@@ -3,7 +3,7 @@
 module Workers
   module AMQP
     class TradeCompleted < Base
-      FOLLOW_MEMBER_UIDS = ENV.fetch('TRADE_COMPLETED_FOLLOW_MEMBER_UIDS', '').split(',').map(&:to_i)
+      FOLLOW_MEMBER_UIDS = ENV.fetch('TRADE_COMPLETED_FOLLOW_MEMBER_UIDS', '').split(',')
 
       def initialize
         Rails.logger.info "Start TradeCompleted for #{FOLLOW_MEMBER_UIDS.join(',')}"
