@@ -18,8 +18,6 @@ set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:application)}" }
 
 set :disallow_pushing, true
 
-set :db_dump_extra_opts, '--force'
-
 set :bugsnag_api_key, ENV.fetch('BUGSNAG_API_KEY')
 
 default_branch = 'master'
@@ -38,6 +36,7 @@ set :rbenv_ruby, File.read('.ruby-version').strip
 
 set :conditionally_migrate, true # Only attempt migration if db/migrate changed - not related to Webpacker, but a nice thing
 
+set :db_dump_extra_opts, '--force'
 set :db_local_clean, false
 set :db_remote_clean, true
 
@@ -71,7 +70,26 @@ set :systemd_daemon_instances, -> { %i[cron_job] }
 
 # Restricted daemons list for stages
 set :systemd_amqp_daemon_role, :daemons
-set :systemd_amqp_daemon_instances, -> { %i[matching order_processor trade_executor influx_writer] }
+
+# TODO: На стейджах НЕ запускать deposit_coin_address, withdraw_coin, deposit_intention
+#
+set :systemd_amqp_daemon_instances,
+    lambda {
+      %i[
+        balances_updating
+        cancel_member_orders
+        create_order
+        deposit_coin_address
+        deposit_intention
+        events_market
+        influx_writer
+        matching
+        notificator
+        order_processor
+        trade_executor
+        withdraw_coin
+      ]
+    }
 
 after 'deploy:publishing', 'systemd:puma:reload-or-restart'
 after 'deploy:publishing', 'systemd:daemon:reload-or-restart'

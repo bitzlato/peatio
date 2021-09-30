@@ -31,6 +31,10 @@ exchange:
     type: topic
 
 queue:
+  notifications:
+    name: peatio.notification
+    durable: true
+
   matching:
     name: peatio.matching
     durable: true
@@ -72,10 +76,6 @@ queue:
     name: peatio.pusher.member
   withdraw_coin:
     name: peatio.withdraw.coin
-  deposit_collection_fees:
-    name: peatio.deposit.collection_fees
-  deposit_collection:
-    name: peatio.deposit.collection
   deposit_coin_address:
     name: peatio.deposit.coin.address
     durable: true
@@ -85,13 +85,18 @@ queue:
     name: peatio.trade.writer
   trade_error:
     name: peatio.trades.errors
+  balances_updating:
+    name: peatio.balances.updating
+  trade_completed:
+    name:  peatio.trades.completed
+    durable: true
+
   # Queue which used by third-party trading engine for updating balances and
   # order submit consuming.
   events_processor:
     name: peatio.events.processor
-  balances_updating:
-    name: peatio.balances.updating
 
+# Bind amqp daemon to queue and exchange.
 binding:
   matching:
     queue: matching
@@ -122,12 +127,18 @@ binding:
   events_processor:
     queue: events_processor
     exchange: events
+  trade_completed:
+    queue: trade_completed
+    exchange: events
   cancel_member_orders:
     queue: cancel_orders
     exchange: ranger
     topics: peatio.ranger.cancel_orders
   balances_updating:
     queue: balances_updating
+  notificator:
+    queue: notifications
+    exchange: notification
 
 channel:
   trade_executor:

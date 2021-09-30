@@ -527,6 +527,7 @@ GEM
     sd_notify (0.1.1)
     semver2 (3.4.2)
     shellany (0.0.1)
+    slack-notifier (2.4.0)
     slackistrano (4.0.1)
       capistrano (>= 3.8.1)
     sprockets (4.0.2)
@@ -675,6 +676,7 @@ DEPENDENCIES
   scout_apm (~> 2.4)
   sd_notify (~> 0.1.1)
   semver2 (~> 3.4)
+  slack-notifier (~> 2.4)
   slackistrano
   strip_attributes
   timecop (~> 0.9)

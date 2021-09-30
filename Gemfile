@@ -152,3 +152,5 @@ gem 'request_store', '~> 1.5'
 
 gem 'faraday_curl', '~> 0.0.2'
 gem 'faraday-detailed_logger', '~> 2.3'
+
+gem 'slack-notifier', '~> 2.4'

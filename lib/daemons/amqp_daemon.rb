@@ -33,6 +33,7 @@ workers = []
 ARGV.each do |id|
   worker = AMQP::Config.binding_worker(id)
   queue  = ch.queue(*AMQP::Config.binding_queue(id))
+  logger.debug "Bind as '#{id}' with worker '#{worker.class}' to queue '#{queue.name}'"
 
   if defined? Sentry
     Sentry.configure_scope do |scope|
@@ -53,9 +54,12 @@ ARGV.each do |id|
 
     case args.first
     when 'direct'
-      queue.bind x, routing_key: AMQP::Config.routing_key(id)
+      routing_key = AMQP::Config.routing_key(id)
+      logger.debug("Type 'direct' routing_key = #{routing_key}")
+      queue.bind x, routing_key: routing_key
     when 'topic'
       AMQP::Config.topics(id).each do |topic|
+        logger.debug("Type 'topic' routing_key (topic) = #{topic}")
         queue.bind x, routing_key: topic
       end
     else
@@ -96,7 +100,7 @@ ARGV.each do |id|
     # See http://rubybunny.info/articles/queues.html
     ch.nack(delivery_info.delivery_tag, false, true)
 
-    if worker.is_db_connection_error?(e)
+    if is_db_connection_error?(e)
       logger.error(db: :unhealthy, message: e.message)
       exit(1)
     end
