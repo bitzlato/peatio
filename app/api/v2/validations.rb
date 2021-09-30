@@ -77,6 +77,7 @@ module API
       end
 
       class ValidateCurrencyAddressFormat < Grape::Validations::Base
+        remove_const :REASON if defined? REASON
         REASON = 'doesnt_support_cash_address_format'
         def validate_param!(name, params)
           return unless params.key?(name)
