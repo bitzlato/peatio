@@ -16,6 +16,10 @@ production:
   <<: *default
   database: <%= ENV.fetch('INFLUXDB_DATABASE_NAME', "peatio_production") %>
 
+sandbox:
+  <<: *default
+  database: <%= ENV.fetch('INFLUXDB_DATABASE_NAME', "peatio_sandbox") %>
+
 staging:
   <<: *default
   database: <%= ENV.fetch('INFLUXDB_DATABASE_NAME', "peatio_staging") %>

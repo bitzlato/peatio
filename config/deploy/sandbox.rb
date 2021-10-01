@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-set :rails_env, :staging
+set :rails_env, :sandbox
 set :disallow_pushing, false
 set :application, -> { 'peatio-sandbox' }
 set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:application)}" }
