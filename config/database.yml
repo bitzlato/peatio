@@ -33,6 +33,10 @@ production:
   <<: *default
   database: <%= ENV.fetch('DATABASE_NAME', 'peatio_production') %>
 
+sandbox:
+  <<: *default
+  database: <%= ENV.fetch('DATABASE_NAME', 'peatio_sandbox') %>
+
 archive_db:
   <<: *default
   url: <%= ENV['ARCHIVE_DATABASE_URL'] %>
