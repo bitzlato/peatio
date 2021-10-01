@@ -16,7 +16,7 @@ class EthereumGateway
       # Базовую валюту откидывать за вычетом необходимой суммы газа для токенов
       #
       amounts.map do |contract_address, amount|
-        raise unless amount.is_a? Integer # not money
+        raise 'amount must be an Integer' unless amount.is_a? Integer # not money
         next unless amount.positive?
 
         logger.info("Collect #{amount} of #{contract_address || :native} from #{from_address} to #{to_address}")
