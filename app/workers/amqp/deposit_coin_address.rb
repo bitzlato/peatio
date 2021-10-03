@@ -20,8 +20,12 @@ module Workers
 
         member.payment_address(blockchain).tap do |pa|
           pa.with_lock do
-            return if pa.address.present?
-
+            if pa.address.present?
+              Rails.logger.info("Skip coin deposit adress for member_id:#{member.id}, blockchain_id:#{blockchain.id}. It exists")
+              return
+            else
+              Rails.logger.info("Coin deposit adress for member_id:#{member.id}, blockchain_id:#{blockchain.id}")
+            end
             result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
 
             pa.update!(address: result[:address],
