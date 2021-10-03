@@ -72,7 +72,12 @@ class PaymentAddress < ApplicationRecord
   end
 
   def enqueue_address_generation
-    AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain_id }, { persistent: true })
+    # Don't enqueue too often
+    return if enqueued_generation_at.present? && enqueued_generation_at > 1.hour.ago
+
+    Rails.logger.info("enqueue_address_generation for member_id: #{member_id}, blockchain_id: #{blockchain_id}")
+    touch! :enqueued_generation_at
+    AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain_id })
   rescue Bunny::ConnectionClosedError => e
     report_exception e, true, member_id: member.id, blockchain_id: blockchain_id
   end
