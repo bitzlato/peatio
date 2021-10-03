@@ -71,9 +71,9 @@ class PaymentAddress < ApplicationRecord
     where('lower(address)=?', address.downcase).take
   end
 
-  def enqueue_address_generation
+  def enqueue_address_generation(force: false)
     # Don't enqueue too often
-    if enqueued_generation_at.present? && enqueued_generation_at > 1.hour.ago
+    if !force && enqueued_generation_at.present? && enqueued_generation_at > 1.hour.ago
       Rails.logger.info("Skip enqueue_address_generation for member_id: #{member_id}, blockchain_id: #{blockchain_id} (last time enqueued #{enqueued_generation_at})")
       return
     end
