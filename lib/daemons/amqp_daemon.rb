@@ -44,7 +44,7 @@ ARGV.each do |id|
   if defined? Bugsnag
     Bugsnag.configure do |config|
       config.add_on_error(proc do |event|
-        event.add_tab(:amqp_worker, { worker:  worker.class })
+        event.add_metadata(amqp_worker: worker.class)
       end)
     end
   end
