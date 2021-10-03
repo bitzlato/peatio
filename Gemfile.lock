@@ -150,7 +150,7 @@ GEM
     base58 (0.2.3)
     bootsnap (1.7.3)
       msgpack (~> 1.0)
-    bugsnag (6.21.0)
+    bugsnag (6.23.0)
       concurrent-ruby (~> 1.0)
     bugsnag-capistrano (2.1.0)
     builder (3.2.4)
