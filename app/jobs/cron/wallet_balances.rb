@@ -7,7 +7,7 @@ module Jobs
         return if Rails.env.staging?  # Стейджи не имеют доступа в шлюзы
 
         Rails.logger.info('Update wallets balances')
-        Wallet.find_each do |wallet|
+        Wallet.active_retired.find_each do |wallet|
           BalancesUpdater.new(blockchain: wallet.blockchain, address: wallet.address).perform
         end
 
