@@ -79,7 +79,7 @@ class PaymentAddress < ApplicationRecord
     end
 
     Rails.logger.info("enqueue_address_generation for member_id: #{member_id}, blockchain_id: #{blockchain_id}")
-    touch! :enqueued_generation_at
+    touch :enqueued_generation_at
     AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain_id })
   rescue Bunny::ConnectionClosedError => e
     report_exception e, true, member_id: member.id, blockchain_id: blockchain_id
