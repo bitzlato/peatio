@@ -897,7 +897,8 @@ CREATE TABLE public.payment_addresses (
     collected_at timestamp without time zone,
     gas_refueled_at timestamp without time zone,
     last_transfer_try_at timestamp without time zone,
-    last_transfer_status character varying
+    last_transfer_status character varying,
+    enqueued_generation_at timestamp without time zone
 );
 
 
@@ -2931,6 +2932,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210915190259'),
 ('20210916181035'),
 ('20210928060422'),
-('20210929165211');
+('20210929165211'),
+('20211003172753');
 
 

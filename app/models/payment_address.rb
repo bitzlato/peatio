@@ -71,8 +71,16 @@ class PaymentAddress < ApplicationRecord
     where('lower(address)=?', address.downcase).take
   end
 
-  def enqueue_address_generation
-    AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain_id }, { persistent: true })
+  def enqueue_address_generation(force: false)
+    # Don't enqueue too often
+    if !force && enqueued_generation_at.present? && enqueued_generation_at > 1.hour.ago
+      Rails.logger.info("Skip enqueue_address_generation for member_id: #{member_id}, blockchain_id: #{blockchain_id} (last time enqueued #{enqueued_generation_at})")
+      return
+    end
+
+    Rails.logger.info("enqueue_address_generation for member_id: #{member_id}, blockchain_id: #{blockchain_id}")
+    touch :enqueued_generation_at
+    AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, blockchain_id: blockchain_id })
   rescue Bunny::ConnectionClosedError => e
     report_exception e, true, member_id: member.id, blockchain_id: blockchain_id
   end
