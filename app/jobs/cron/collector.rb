@@ -17,8 +17,8 @@ module Jobs
         Rails.logger.info('Check collectable balances on PaymentAddresses')
         PaymentAddress.collection_required.lock.each do |payment_address|
           next if payment_address.last_transfer_try_at.present? && \
-                  payment_address.last_transfer_try_at > ERROR_SLEEP_MINUTES.minutes.ago & \
-                                                         !success_state?(payment_address.last_transfer_status)
+                  payment_address.last_transfer_try_at > ERROR_SLEEP_MINUTES.minutes.ago && \
+                  !success_state?(payment_address.last_transfer_status)
 
           next unless payment_address.has_collectable_balances?
 
