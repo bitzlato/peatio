@@ -4,16 +4,18 @@ module Workers
   module AMQP
     class OrderProcessor < Base
       def initialize
-        Rails.logger.info('Resubmit orders')
-        Order.spot.where(state: ::Order::PENDING).find_each do |order|
-          Order.submit(order.id)
-        rescue StandardError => e
-          ::AMQP::Queue.enqueue(:trade_error, e.message)
-          report_exception e, true, order: order.as_json
+        if ENV.true?('LOAD_PENDING_ORDERS_ON_START')
+          Rails.logger.info('Resubmit orders')
+          Order.spot.where(state: ::Order::PENDING).find_each do |order|
+            Order.submit(order.id)
+          rescue StandardError => e
+            ::AMQP::Queue.enqueue(:trade_error, e.message)
+            report_exception e, true, order: order.as_json
 
-          raise e if is_db_connection_error?(e)
+            raise e if is_db_connection_error?(e)
+          end
+          Rails.logger.info('Orders are resubmited')
         end
-        Rails.logger.info('Orders are resubmited')
       end
 
       def process(payload)
