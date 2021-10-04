@@ -28,6 +28,8 @@ module Workers
             end
             result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
 
+            Rails.logger.info("Coined #{result[:address]} for member_id:#{member.id}, blockchain_id:#{blockchain.id}")
+
             pa.update!(address: result[:address],
                        secret: result[:secret],
                        details: result[:details])

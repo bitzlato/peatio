@@ -10,7 +10,7 @@ class PaymentAddress < ApplicationRecord
 
   vault_lazy_decrypt!
 
-  after_commit :enqueue_address_generation
+  after_commit :enqueue_address_generation, on: :create
 
   validates :address, uniqueness: { scope: :blockchain_id }, if: :address?
 

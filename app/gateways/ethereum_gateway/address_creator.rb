@@ -9,6 +9,7 @@ class EthereumGateway
         secret: secret
       }
     rescue Ethereum::Client::Error => e
+      Rails.logger.error "Error creating address #{e}"
       raise Peatio::Wallet::ClientError, e
     end
   end
