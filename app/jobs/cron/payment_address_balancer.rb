@@ -4,7 +4,7 @@ module Jobs
   module Cron
     class PaymentAddressBalancer
       def self.process
-        return unless Rails.env.production?
+        return unless Rails.env.production? || Rails.env.sandbox?
 
         Rails.logger.info('Update payment addresses balances')
         PaymentAddress.where.not(address: nil).find_each do |payment_address|
