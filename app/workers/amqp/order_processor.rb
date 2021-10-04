@@ -4,6 +4,7 @@ module Workers
   module AMQP
     class OrderProcessor < Base
       def initialize
+        Rails.logger.info("Resubmit orders")
         Order.spot.where(state: ::Order::PENDING).find_each do |order|
           Order.submit(order.id)
         rescue StandardError => e
@@ -12,6 +13,7 @@ module Workers
 
           raise e if is_db_connection_error?(e)
         end
+        Rails.logger.info("Orders are resubmited")
       end
 
       def process(payload)
@@ -23,7 +25,7 @@ module Workers
         end
       rescue StandardError => e
         ::AMQP::Queue.enqueue(:trade_error, e.message)
-        report_exception_to_screen(e)
+        report_exception e, true, payload: payload
 
         raise e if is_db_connection_error?(e)
       end
