@@ -128,6 +128,7 @@ class Order < ApplicationRecord
         AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
       end
     rescue StandardError => e
+      report_exception e, true, order_id: id
       order = find(id)
       order&.update!(state: ::Order::REJECT)
 
