@@ -11,8 +11,6 @@ module GatewayConcern
   # TODO: Move to Settings
   #
   AVAILABLE_GATEWAYS = [
-    HecoGateway,
-    BinanceGateway,
     BitzlatoGateway,
     DummyGateway,
     BitcoinGateway,
