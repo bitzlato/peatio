@@ -193,7 +193,7 @@ class Market < ApplicationRecord
   end
 
   def orders
-    Order.with_market self
+    Order.with_market symbol
   end
 
   # min_amount_by_precision - is the smallest positive number which could be
