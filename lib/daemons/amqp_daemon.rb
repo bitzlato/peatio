@@ -44,7 +44,7 @@ ARGV.each do |id|
   if defined? Bugsnag
     Bugsnag.configure do |config|
       config.add_on_error(proc do |event|
-        event.add_metadata(amqp_worker: worker.class)
+        event.add_metadata(:amqp, :worker, worker.class)
       end)
     end
   end
@@ -81,7 +81,7 @@ ARGV.each do |id|
     if defined? Bugsnag
       Bugsnag.configure do |config|
         config.add_on_error(proc do |event|
-          event.add_metadata(amqp_message: { payload: payload, metadata: metadata, delivery_info: delivery_info })
+          event.add_metadata(:amqp, { message_payload: payload, message_metadata: metadata, message_delivery_info: delivery_info })
         end)
       end
     end
