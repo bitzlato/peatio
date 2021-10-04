@@ -16,7 +16,10 @@ module Workers
           return
         end
 
-        return unless blockchain.gateway_class.implements? :create_address!
+        unless blockchain.gateway_class.implements? :create_address!
+          Rails.logger.warn "Skip deposit coin address for blockchain #{payload}. It does not implement create_address!"
+          return
+        end
 
         member.payment_address(blockchain).tap do |pa|
           pa.with_lock do
@@ -42,6 +45,7 @@ module Workers
       # The system is designed in such way that when user will
       # request list of accounts system will ask to generate address again (if it is not generated of course).
       rescue StandardError => e
+        Rails.logger.error(e)
         raise e if is_db_connection_error?(e)
 
         report_exception(e, true, payload)
