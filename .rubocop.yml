@@ -1,4 +1,4 @@
-require: 
+require:
   - rubocop-rails
   - rubocop-rspec
 inherit_from: .rubocop_todo.yml
@@ -24,6 +24,14 @@ Rails/AddColumnIndex:
 Rails/SquishedSQLHeredocs:
   Exclude:
     - 'db/migrate/*'
+
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - test
+    - production
+    - sandbox
+    - staging
 
 Style/StringConcatenation:
   Enabled: false
