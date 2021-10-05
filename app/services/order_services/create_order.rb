@@ -8,7 +8,6 @@ module OrderServices
 
     def initialize(member:)
       @member = member
-      raise 'disable create orders for member 7' if member.id == 7
     end
 
     ##
