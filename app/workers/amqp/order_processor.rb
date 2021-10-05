@@ -15,6 +15,7 @@ module Workers
             raise e if is_db_connection_error?(e)
           end
           Rails.logger.info('Orders are resubmited')
+        end
       end
 
       def process(payload)
