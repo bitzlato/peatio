@@ -21,7 +21,7 @@ module Workers
       def process(payload)
         case payload['action']
         when 'submit'
-          Order.submit(payload.dig('order', 'id'))
+          Order.submit(payload.dig('order', 'id')) unless ENV.true?('IGNORE_SUBMIT_ORDERS')
         when 'cancel'
           Order.cancel(payload.dig('order', 'id'))
         end

@@ -93,6 +93,7 @@ class Order < ApplicationRecord
   end
 
   before_create unless: -> { Rails.env.test? } do
+    raise 'orders disables' if ENV.true?('DISABLE_CREATE_ORDERS')
     if member_balance < locked
       raise(
         ::Account::AccountError,
