@@ -37,7 +37,7 @@ class PaymentAddress < ApplicationRecord
       before do
         touch :last_transfer_try_at
       end
-      after do
+      after_commit do
         blockchain.gateway.collect! self
         touch :collected_at
         done!
@@ -49,7 +49,7 @@ class PaymentAddress < ApplicationRecord
       before do
         touch :last_transfer_try_at
       end
-      after do
+      after_commit do
         blockchain.gateway.refuel_gas! self
         touch :gas_refueled_at
         done!
