@@ -12,7 +12,6 @@ module API
         mount Public::Tools
         mount Public::TradingFees
         mount Public::Webhooks
-        mount Public::Blockchains
         mount Public::WithdrawLimits
         mount Public::Blockchains
       end
