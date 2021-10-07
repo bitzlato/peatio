@@ -40,9 +40,9 @@ describe Workers::AMQP::CancelMemberOrders do
     it 'cancels all active member orders' do
       Order.any_instance.expects(:trigger_cancellation).times(4)
       subject.process({
-        event: 'close_all_orders',
-        member_uid: member.uid
-      })
+                        event: 'close_all_orders',
+                        member_uid: member.uid
+                      })
     end
   end
 end
