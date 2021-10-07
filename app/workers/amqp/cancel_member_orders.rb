@@ -8,7 +8,7 @@ module Workers
         member_uid = payload[:member_uid]
         member = ::Member.find_by!(uid: member_uid)
 
-        member.orders.active.each(&:cancel!)
+        member.orders.active.each(&:trigger_cancellation)
       rescue ActiveRecord::RecordNotFound => e
         report_exception(e, true, payload)
       end

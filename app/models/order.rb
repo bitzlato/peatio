@@ -117,6 +117,7 @@ class Order < ApplicationRecord
   end
 
   class << self
+    # TODO move to order_processor
     def submit(id)
       ActiveRecord::Base.transaction do
         order = lock.find(id)
@@ -136,6 +137,7 @@ class Order < ApplicationRecord
       raise e
     end
 
+    # TODO move to order_processor
     def cancel(id)
       order = lock.find(id)
       market_engine = order.market.engine
@@ -170,10 +172,6 @@ class Order < ApplicationRecord
         end
       end
     end
-  end
-
-  def cancel!
-    Order.cancel(id)
   end
 
   def trigger_third_party_creation
