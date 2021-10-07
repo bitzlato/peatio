@@ -93,13 +93,16 @@ class Order < ApplicationRecord
   end
 
   before_create unless: -> { Rails.env.test? } do
-    raise 'orders disables' if ENV.true?('DISABLE_CREATE_ORDERS')
     if member_balance < locked
       raise(
         ::Account::AccountError,
         "member_balance > locked = #{member_balance} > #{locked}"
       )
     end
+  end
+
+  before_create do
+    raise 'Orders disabled' if ENV.true?('DISABLE_CREATE_ORDERS')
   end
 
   after_commit on: :update do
@@ -117,42 +120,6 @@ class Order < ApplicationRecord
   end
 
   class << self
-    # TODO move to order_processor
-    def submit(id)
-      ActiveRecord::Base.transaction do
-        order = lock.find(id)
-        return unless order.state == ::Order::PENDING
-
-        order.hold_account!.lock_funds!(order.locked)
-        order.record_submit_operations!
-        order.update!(state: ::Order::WAIT)
-
-        AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
-      end
-    rescue StandardError => e
-      report_exception e, true, order_id: id
-      order = find(id)
-      order&.update!(state: ::Order::REJECT)
-
-      raise e
-    end
-
-    # TODO move to order_processor
-    def cancel(id)
-      order = lock.find(id)
-      market_engine = order.market.engine
-      return unless order.state == ::Order::WAIT
-
-      return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
-
-      ActiveRecord::Base.transaction do
-        order.hold_account!.unlock_funds!(order.locked)
-        order.record_cancel_operations!
-
-        order.update!(state: ::Order::CANCEL)
-      end
-    end
-
     def trigger_bulk_cancel_third_party(engine_driver, filters = {})
       AMQP::Queue.publish(engine_driver,
                           data: filters,
