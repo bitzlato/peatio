@@ -1,0 +1,108 @@
+name: Benchmarks
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  benchmarks:
+    env:
+      RAILS_ENV: development
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_USER: postgres
+      DATABASE_PASS: postgres
+      REDIS_URL: redis://localhost:6379
+      VAULT_TOKEN: changeme
+      JWT_PUBLIC_KEY: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUR3d0RRWUpLb1pJaHZjTkFRRUJCUUFES3dBd0tBSWhBTDBlNnNhMFc4SzN1WS8rRVlrRXdxemo4UTZxc2lwcgp0R1dtYjhPVzhZcDdBZ01CQUFFPQotLS0tLUVORCBQVUJMSUMgS0VZLS0tLS0K
+      MINIMUM_MEMBER_LEVEL_FOR_DEPOSIT: 3
+      MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW: 3
+      MINIMUM_MEMBER_LEVEL_FOR_TRADING: 3
+      CI_NODE_TOTAL: ${{ matrix.ci_node_total }}
+      CI_NODE_INDEX: ${{ matrix.ci_node_index }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.7.4']
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        ports:
+          - 6379:6379
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          # required
+          POSTGRES_PASSWORD: postgres
+      influxdb:
+        image: influxdb:1.7.8
+        ports:
+          - "8083:8083"
+          - "8086:8086"
+      rabbitmq:
+        image: rabbitmq:3.7.6-management
+        volumes:
+          - rabbitmq_data:/var/lib/rabbitmq
+        ports:
+          - "5672:5672"
+          - "15672:15672"
+        options: >-
+          --health-cmd "rabbitmqctl node_health_check"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      vault:
+        image: vault:1.0.1
+        ports:
+          - "8200:8200"
+        env:
+          SKIP_SETCAP: 1
+          VAULT_TOKEN: changeme
+          VAULT_DEV_ROOT_TOKEN_ID: changeme
+          VAULT_ADDR: http://127.0.0.1:8200
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Bundle install
+      run: bundle install
+    - run: cp config/application.example.yml config/application.yml
+    - name: Initialize vault
+      run: ./bin/init_vault
+    - name: Initialize influx db
+      run: bundle exec rails influxdb:create
+    - name: Setup database
+      run: bundle exec rails db:setup
+    - name: Run balances check
+      run: bundle exec rails balances:check
+    # - name: Run AMQP matching benchmark
+    #   run: bundle exec rails bench:matching:amqp
+    - name: Run direct matching benchmark
+      run: bundle exec rails bench:matching:direct
+    # - name: Run AMQP order processing benchmark
+    #   run: bundle exec rails bench:order_processing:amqp
+    - name: Run direct order processing benchmark
+      run: bundle exec rails bench:order_processing:direct
+    # - name: Run AMQP trade execution benchmark
+    #   run: bundle exec rails bench:trade_execution:amqp
+    - name: Run direct trade execution benchmark
+      run: bundle exec rails bench:trade_execution:direct
