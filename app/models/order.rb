@@ -153,11 +153,6 @@ class Order < ApplicationRecord
   end
 
   def trigger_internal_cancellation
-    if ENV.true? 'BUGSNAG_TRIGGER_INTERNAL_CANCELLATION'
-      Bugsnag.notify 'trigger_internal_cancellation' do |b|
-        b.meta_data = { order: as_json }
-      end
-    end
     AMQP::Queue.enqueue(:matching, action: 'cancel', order: to_matching_attributes)
   end
 
