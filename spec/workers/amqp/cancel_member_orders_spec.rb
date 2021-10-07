@@ -38,12 +38,11 @@ describe Workers::AMQP::CancelMemberOrders do
 
   describe '#perform' do
     it 'cancels all active member orders' do
-      expect do
-        subject.process({
-                          event: 'close_all_orders',
-                          member_uid: member.uid
-                        })
-      end.to change { member.orders.active.count }.from(4).to(0)
+      Order.any_instance.expects(:trigger_cancellation).times(4)
+      subject.process({
+        event: 'close_all_orders',
+        member_uid: member.uid
+      })
     end
   end
 end
