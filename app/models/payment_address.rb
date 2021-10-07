@@ -34,6 +34,9 @@ class PaymentAddress < ApplicationRecord
 
     event :collect do
       transitions from: %i[pending none done], to: :collecting
+      guard do
+        last_transfer_try_at.nil? || last_transfer_try_at < 30.minutes.ago
+      end
       before do
         touch :last_transfer_try_at
       end
@@ -46,6 +49,9 @@ class PaymentAddress < ApplicationRecord
 
     event :refuel_gas do
       transitions from: %i[pending none done], to: :gas_refueling
+      guard do
+        last_transfer_try_at.nil? || last_transfer_try_at < 30.minutes.ago
+      end
       before do
         touch :last_transfer_try_at
       end
