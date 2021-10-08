@@ -733,11 +733,18 @@ describe API::V2::Public::Markets, type: :request do
       expect(JSON.parse(response.body).size).to eq 1
     end
 
-    it 'sorts trades in reverse creation order' do
-      get "/api/v2/public/markets/#{market}/trades"
+    it 'sorts trades in reverse order' do
+      get "/api/v2/public/markets/#{market}/trades?order_by=asc"
 
       expect(response).to be_successful
-      expect(JSON.parse(response.body).first['id']).to eq bid_trade.id
+      expect(JSON.parse(response.body).first['id']).to eq ask_trade.id
+    end
+
+    it 'filters trades by timestamp' do
+      get "/api/v2/public/markets/#{market}/trades?timestamp=#{bid_trade.created_at.to_i - 1}"
+
+      expect(JSON.parse(response.body).count).to eq 1
+      expect(JSON.parse(response.body).first['id']).to eq ask_trade.id
     end
 
     it 'gets trades by limit' do
