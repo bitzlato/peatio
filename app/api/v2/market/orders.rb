@@ -125,7 +125,7 @@ module API
             else
               error!({ errors: ['market.order.invaild_id_or_uuid'] }, 422)
             end
-            order.trigger_cancellation
+            order.trigger_cancellation if [::Order::PENDING, ::Order::WAIT].include? order.state
             present order, with: API::V2::Entities::Order
           rescue ActiveRecord::RecordNotFound => e
             # RecordNotFound in rescued by ExceptionsHandler.
@@ -157,14 +157,14 @@ module API
 
           begin
             orders = current_user.orders
-                                 .with_state(:wait)
+                                 .with_state(:wait, :pending)
                                  .tap { |q| q.where!(market_type: params[:market_type]) }
                                  .tap { |q| q.where!(market: params[:market]) if params[:market] }
             if params[:side].present?
               type = params[:side] == 'sell' ? 'OrderAsk' : 'OrderBid'
               orders = orders.where(type: type)
             end
-            orders.map(&:trigger_cancellation)
+            orders.each(&:trigger_cancellation)
             present orders, with: API::V2::Entities::Order
           rescue StandardError
             error!({ errors: ['market.order.cancel_error'] }, 422)
