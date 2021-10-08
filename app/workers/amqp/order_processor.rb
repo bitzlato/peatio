@@ -45,10 +45,19 @@ module Workers
         end
       rescue StandardError => e
         report_exception e, true, order_id: id
-        order = Order.find(id)
-        order&.update!(state: ::Order::REJECT)
+
+        reject_order id
 
         raise e
+      end
+
+      def reject_order(id)
+        order = Order.find(id)
+        order&.update!(state: ::Order::REJECT)
+      rescue StandardError => e
+        Bugsnag.notify e do |b|
+          b.meta_data = { order_id: id }
+        end
       end
 
       def cancel_order(id)
