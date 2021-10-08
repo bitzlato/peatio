@@ -103,7 +103,6 @@ RSpec.configure do |config|
     DatabaseCleaner.start
     AMQP::Queue.stubs(:publish)
     KlineDB.stubs(:kline).returns([])
-    # Currency.any_instance.stubs(:price).returns(1.to_d)
     %w[bitzlato eth-kovan eth-rinkeby btc-testnet].each do |key|
       FactoryBot.find_or_create(:blockchain, key, key: key)
     end

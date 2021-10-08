@@ -2,6 +2,7 @@
 
 FactoryBot.define do
   factory :currency do
+    price { 1.to_d }
     trait :usd do
       code                 { 'usd' }
       name                 { 'US Dollar' }
