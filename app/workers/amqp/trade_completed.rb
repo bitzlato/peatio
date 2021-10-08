@@ -28,7 +28,7 @@ module Workers
       def generate_message(member, payload)
         "Участник #{member.uid} (#{member.email}) совершил сделку (#{payload.side} #{payload.amount} по #{payload.price})' " \
           "на рынке '#{payload.market}' на сумму #{payload.total}" \
-          ", ордер ##{payload.order_id}"
+          ", ордер ##{payload.order_id}, сделка ##{payload.id}"
       end
     end
   end

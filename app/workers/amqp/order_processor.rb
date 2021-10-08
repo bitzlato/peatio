@@ -39,7 +39,7 @@ module Workers
           order = Order.lock.find(id)
           return unless order.state == ::Order::PENDING
 
-          if order.created_at > 1.second.ago
+          if order.created_at < 1.second.ago
             Rails.logger.warn("Order is too old #{order.id} #{order.created_at} (#{Time.zone.now - order.created_at} secs old) reject it")
             return reject_order id
           end
