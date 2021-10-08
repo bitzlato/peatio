@@ -63,7 +63,7 @@ class Trade < ApplicationRecord
       trades_query << 'AND price=%{price_eq}' if options[:price_eq].present?
       trades_query << 'AND price>=%{price_gt}' if options[:price_gt].present?
       trades_query << 'AND price=%{price_lt}' if options[:price_lt].present?
-      trades_query << 'ORDER BY desc'
+      trades_query << (options[:order_by] == 'asc' ? 'ORDER BY asc' : 'ORDER BY desc')
 
       unless limit.to_i.zero?
         trades_query << 'LIMIT %{limit}'

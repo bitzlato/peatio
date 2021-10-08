@@ -129,7 +129,15 @@ module API
                      desc: "If set, returned trades will be sorted in specific order, default to 'desc'."
           end
           get ':market/trades', requirements: { market: /[\w.\-]+/ } do
-            present Trade.public_from_influx(params[:market], params[:limit]), with: API::V2::Entities::PublicTrade
+            options = { order_by: params[:order_by] }
+            if params[:timestamp].present?
+              if params[:order_by] == 'asc'
+                options[:start_time] = params[:timestamp]
+              else
+                options[:end_time] = params[:timestamp]
+              end
+            end
+            present Trade.public_from_influx(params[:market], params[:limit], options), with: API::V2::Entities::PublicTrade
           end
 
           desc 'Get depth or specified market. Both asks and bids are sorted from highest price to lowest.'
