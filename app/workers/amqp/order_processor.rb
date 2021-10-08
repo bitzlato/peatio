@@ -5,6 +5,7 @@ module Workers
     class OrderProcessor < Base
       def initialize
         Rails.logger.info('Resubmit orders')
+        return if ENV.true?('SKIP_SUBMIT_PENDING_ORDERS')
         Order.spot.where(state: ::Order::PENDING).find_each do |order|
           submit_order(order.id)
         rescue StandardError => e
