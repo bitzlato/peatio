@@ -20,10 +20,13 @@ ENV['VAULT_ENABLED'] = 'false'
 $LOAD_PATH.delete_if { |p| File.expand_path(p) == File.expand_path('./lib') }
 
 require File.expand_path('../config/environment', __dir__)
+require 'rspec/mocks'
 require 'rspec/rails'
 require 'rspec/retry'
 require 'webmock/rspec'
 require 'cancan/matchers'
+
+puts 'spec_helper'
 
 ENV['BITZLATO_API_KEY'] =
   { kty: 'EC', alg: 'ES256', crv: 'P-256',
@@ -100,7 +103,7 @@ RSpec.configure do |config|
     DatabaseCleaner.start
     AMQP::Queue.stubs(:publish)
     KlineDB.stubs(:kline).returns([])
-    Currency.any_instance.stubs(:price).returns(1.to_d)
+    # Currency.any_instance.stubs(:price).returns(1.to_d)
     %w[bitzlato eth-kovan eth-rinkeby btc-testnet].each do |key|
       FactoryBot.find_or_create(:blockchain, key, key: key)
     end
