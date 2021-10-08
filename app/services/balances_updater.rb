@@ -22,8 +22,11 @@ class BalancesUpdater
     elsif wallet.present?
       balances = convert_balances(current_balances(wallet))
       wallet.update!({ balance: balances, balance_updated_at: Time.zone.now })
+    else
+      raise e if Rails.env.test?
     end
   rescue StandardError => e
+    raise e if Rails.env.test?
     Rails.logger.warn(message: 'Balances updating error', error: e, payment_address_id: payment_address&.id, wallet_id: wallet&.id)
     report_exception e, true, payment_address_id: payment_address&.id, wallet_id: wallet&.id
   end
