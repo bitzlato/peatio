@@ -95,14 +95,14 @@ group :development do
   gem 'guard'
   gem 'guard-rspec', github: 'caspark/guard-rspec' # Use from github to remove rspec < 4.0 dependencies
   gem 'guard-rubocop'
-  gem 'rspec'
+  gem 'rspec', '~> 3.10'
 end
 
 group :test do
   gem 'database_cleaner-active_record'
   gem 'factory_bot_rails', '~> 5.0', '>= 5.0.2'
   gem 'mocha', '~> 1.8', require: false
-  gem 'rspec-rails', '~> 3.8', '>= 3.8.2'
+  gem 'rspec-rails'
   gem 'rspec-retry',         '~> 0.6'
   gem 'timecop',             '~> 0.9'
   gem 'webmock',             '~> 3.5'
