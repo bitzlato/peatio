@@ -50,10 +50,11 @@ module Bench
       private
 
       def create_order
-        Order.new(construct_order)
-             .tap(&:round_amount_and_price)
-             .tap { |o| o.hold_account!.lock_funds(o.locked) }
-             .tap(&:save)
+        o = Order.new(construct_order)
+                 .tap(&:round_amount_and_price)
+                 .tap(&:save)
+        Order.submit(o.id)
+        o
       end
 
       def construct_order

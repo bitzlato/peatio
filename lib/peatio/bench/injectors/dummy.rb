@@ -18,15 +18,22 @@ module Bench
       def construct_order
         market = @markets.sample || raise("No markets to sample")
         type = config.fetch(:side) { %w[OrderBid OrderAsk].sample }
-        { type:     type,
-          state:    Order::PENDING,
-          member:   @members.sample,
-          market:   market,
-          ask:      market.base_unit,
-          bid:      market.quote_unit,
+        price = config.fetch(:price) { rand(@min_price..@max_price) }
+        volume = rand(@min_volume..@max_volume)
+        locked = type == 'OrderAsk' ? volume : price * volume
+        {
+          type: type,
+          state: Order::PENDING,
+          member: @members.sample,
+          market: market,
+          ask: market.base_unit,
+          bid: market.quote_unit,
           ord_type: :limit,
-          price:    config.fetch(:price) { rand(@min_price..@max_price) },
-          volume:   rand(@min_volume..@max_volume) }
+          price: price,
+          volume: volume,
+          locked: locked,
+          origin_locked: locked
+        }
       end
 
       def default_config

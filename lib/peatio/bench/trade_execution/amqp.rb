@@ -50,8 +50,9 @@ module Bench
       end
 
       private
+
       def trade_execution_queue_status
-        @rmq_http_client.list_queues.find { |q| q[:name] == AMQP::Config.binding_queue(:trade_executor).first }
+        @rmq_http_client.list_queues.find { |q| q[:name] == ::AMQP::Config.binding_queue(:trade_executor).first }
       end
     end
   end

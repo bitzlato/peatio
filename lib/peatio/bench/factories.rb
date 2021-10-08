@@ -64,7 +64,7 @@ module Bench
         if @currency.fiat?
           ::Deposit.create!(construct_fiat_deposit).tap(&:charge!)
         else
-          ::Deposit.create!(construct_coin_deposit).tap { |d| d.with_lock { d.accept! } }
+          ::Deposit.create!(construct_coin_deposit).tap { |d| d.with_lock { d.accept!; d.dispatch! } }
         end
       end
 

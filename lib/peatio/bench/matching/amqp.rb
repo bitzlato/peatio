@@ -51,7 +51,8 @@ module Bench
             loop do
               order = @injector.pop
               break unless order
-              AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
+
+              ::AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
             rescue StandardError => e
               Kernel.puts e
               @errors << e
@@ -118,10 +119,11 @@ module Bench
       end
 
       private
+
       # TODO: Use get queue by name.
       # TODO: Use Faraday instead of RabbitMQ::HTTP::Client.
       def matching_queue_status
-        @rmq_http_client.list_queues.find { |q| q[:name] == AMQP::Config.binding_queue(:matching).first }
+        @rmq_http_client.list_queues.find { |q| q[:name] == ::AMQP::Config.binding_queue(:matching).first }
       end
 
       def queue_status_file_path(name)

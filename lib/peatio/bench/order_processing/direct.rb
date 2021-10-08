@@ -5,7 +5,7 @@
 module Bench
   module OrderProcessing
     class Direct
-      include Helpers
+      include ::Bench::Helpers
 
       def initialize(config)
         @config = config
