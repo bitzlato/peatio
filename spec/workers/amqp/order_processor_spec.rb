@@ -26,7 +26,6 @@ describe Workers::AMQP::OrderProcessor do
       end
 
       it 'insufficient balance' do
-        stub_const('Workers::AMQP::OrderProcessor::ACTUAL_PERIOD', 10.seconds)
         expect do
           processor.send :submit_order, order.id
         end.to raise_error(Account::AccountError)
@@ -34,7 +33,6 @@ describe Workers::AMQP::OrderProcessor do
       end
 
       it 'rejected order' do
-        stub_const('Workers::AMQP::OrderProcessor::ACTUAL_PERIOD', 10.seconds)
         processor.send :submit_order, rejected_order.id
         expect(rejected_order.reload.state).to eq('reject')
       end
@@ -42,7 +40,6 @@ describe Workers::AMQP::OrderProcessor do
 
     if defined? Mysql2
       it 'mysql connection error' do
-        stub_const('Workers::AMQP::OrderProcessor::ACTUAL_PERIOD', 10.seconds)
         ActiveRecord::Base.stubs(:transaction).raises(Mysql2::Error::ConnectionError.new(''))
         expect { processor.send :submit_order, order.id }.to raise_error(Mysql2::Error::ConnectionError)
       end

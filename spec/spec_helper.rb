@@ -26,8 +26,6 @@ require 'rspec/retry'
 require 'webmock/rspec'
 require 'cancan/matchers'
 
-puts 'spec_helper'
-
 ENV['BITZLATO_API_KEY'] =
   { kty: 'EC', alg: 'ES256', crv: 'P-256',
     x: 'wwf6h_sZhv6TXAYz4XrdXZVpLo_uoNESbaEf_zEydus',

@@ -3,6 +3,10 @@
 module Workers
   module AMQP
     class OrderProcessor < Base
+      # Period after that pending order is rejectable
+      #
+      ACTUAL_PERIOD = Rails.env.test? ? 10.seconds : 1.second
+
       def initialize
         Rails.logger.info('Resubmit orders')
         return if ENV.true?('SKIP_SUBMIT_PENDING_ORDERS')
@@ -39,7 +43,7 @@ module Workers
           order = Order.lock.find(id)
           return unless order.state == ::Order::PENDING
 
-          if order.created_at < 1.second.ago
+          if order.created_at < ACTUAL_PERIOD.ago
             Rails.logger.warn("Order is too old #{order.id} #{order.created_at} (#{Time.zone.now - order.created_at} secs old) reject it")
             return reject_order id
           end
