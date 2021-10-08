@@ -6,6 +6,7 @@ module Workers
       def initialize
         Rails.logger.info('Resubmit orders')
         return if ENV.true?('SKIP_SUBMIT_PENDING_ORDERS')
+
         Order.spot.where(state: ::Order::PENDING).find_each do |order|
           submit_order(order.id)
         rescue StandardError => e
@@ -38,6 +39,11 @@ module Workers
           order = Order.lock.find(id)
           return unless order.state == ::Order::PENDING
 
+          if order.created_at > 1.second.ago
+            Rails.logger.warn("Order is too old #{order.id} #{order.created_at} (#{Time.zone.now - order.created_at} secs old) reject it")
+            return reject_order id
+          end
+
           order.hold_account!.lock_funds!(order.locked)
           order.record_submit_operations!
           order.update!(state: ::Order::WAIT)
@@ -63,6 +69,11 @@ module Workers
 
       def cancel_order(id)
         order = Order.lock.find(id)
+        if order.state == ::Order::PENDING
+          Rails.logger.warn("Reject pending order #{id}")
+          reject_order id
+          return
+        end
         return unless order.state == ::Order::WAIT
 
         market_engine = order.market.engine
