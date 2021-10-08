@@ -59,6 +59,7 @@ module Workers
       end
 
       def reject_order(id)
+        Rails.logger.info("Reject order #{id}")
         order = Order.find(id)
         order&.update!(state: ::Order::REJECT)
       rescue StandardError => e
