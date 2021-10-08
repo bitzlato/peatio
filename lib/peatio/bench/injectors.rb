@@ -53,7 +53,7 @@ module Bench
         o = Order.new(construct_order)
                  .tap(&:round_amount_and_price)
                  .tap(&:save)
-        Order.submit(o.id)
+        Workers::AMQP::OrderProcessor.new.process('action' => 'submit', 'order' => { 'id' => o.id })
         o
       end
 
