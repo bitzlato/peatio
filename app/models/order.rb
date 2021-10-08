@@ -42,6 +42,7 @@ class Order < ApplicationRecord
 
   scope :done, -> { with_state(:done) }
   scope :active, -> { with_state(:wait) }
+  scope :open, -> { with_state(:wait, :pending) }
   scope :with_market, ->(market) { where(market_id: market) }
   scope :spot, -> { where(market_type: 'spot') }
   scope :qe, -> { where(market_type: 'qe') }

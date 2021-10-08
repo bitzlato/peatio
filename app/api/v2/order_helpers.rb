@@ -7,6 +7,7 @@ module API
         market.account.insufficient_balance
         market.order.insufficient_market_liquidity
         market.order.invalid_volume_or_price
+        market.order.open_orders_limit
       ].freeze
 
       def create_order(attrs)

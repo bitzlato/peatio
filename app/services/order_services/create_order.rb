@@ -5,6 +5,9 @@ module OrderServices
     include ServiceBase
 
     POSSIBLE_SIDE_VALUES = %i[sell buy].freeze
+    DEFAULT_OPEN_ORDERS_LIMIT = OPEN_ORDERS_LIMITS.fetch('default', 2)
+
+    OpenOrdersLimit = Class.new StandardError
 
     def initialize(member:)
       @member = member
@@ -26,6 +29,7 @@ module OrderServices
       price: nil,
       uuid: UUID.generate
     )
+      check_open_orders_limits! market
       order = create_order(
         market: market,
         side: side,
@@ -51,6 +55,11 @@ module OrderServices
         error_message: 'market.order.invalid_volume_or_price',
         uuid: uuid
       )
+    rescue OpenOrdersLimit => e
+      trigger_amqp_and_failure(
+        error_message: 'market.order.open_orders_limit',
+        uuid: uuid
+      )
     rescue StandardError => e
       report_exception(e, true)
       trigger_amqp_and_failure(
@@ -60,6 +69,13 @@ module OrderServices
     end
 
     private
+
+    def check_open_orders_limits!(market)
+      open_orders_limit = OPEN_ORDERS_LIMITS.fetch(@member.group, DEFAULT_OPEN_ORDERS_LIMIT)
+      open_orders_count = @member.orders.with_market(market).open.count
+
+      raise OpenOrdersLimit, "#{open_orders_count}>=#{open_orders_limit}" if open_orders_count >= open_orders_limit
+    end
 
     def amqp_event_payload_with_uuid(uuid:, payload:)
       {
