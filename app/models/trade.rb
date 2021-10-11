@@ -37,8 +37,6 @@ class Trade < ApplicationRecord
     self.taker_type = taker_order&.side
   end
 
-  after_commit :notify_trade_completed, on: :create
-
   # == Class Methods ========================================================
 
   class << self
@@ -193,11 +191,6 @@ class Trade < ApplicationRecord
   end
 
   private
-
-  def notify_trade_completed
-    EventAPI.notify ['market', market_id, 'trade_completed'].join('.'), \
-                    Serializers::EventAPI::TradeCompleted.call(self)
-  end
 
   def record_liability_debit!
     seller_outcome = amount
