@@ -37,8 +37,6 @@ class Trade < ApplicationRecord
     self.taker_type = taker_order&.side
   end
 
-  after_commit :notify_trade_completed, on: :create
-
   # == Class Methods ========================================================
 
   class << self
@@ -137,8 +135,8 @@ class Trade < ApplicationRecord
     ::AMQP::Queue.enqueue_event('private', maker.uid, 'trade', for_notify(maker))
     ::AMQP::Queue.enqueue_event('private', taker.uid, 'trade', for_notify(taker))
     ::AMQP::Queue.enqueue_event('public', market.symbol, 'trades', { trades: [for_global] })
-    ::AMQP::Queue.enqueue('trade_completed', for_notify(maker).merge(member_uid: taker.uid))
-    ::AMQP::Queue.enqueue('trade_completed', for_notify(taker).merge(member_uid: maker.uid))
+    ::AMQP::Queue.enqueue('trade_completed', for_notify(maker).merge(member_uid: maker.uid))
+    ::AMQP::Queue.enqueue('trade_completed', for_notify(taker).merge(member_uid: taker.uid))
   end
 
   def for_notify(member = nil)
@@ -193,11 +191,6 @@ class Trade < ApplicationRecord
   end
 
   private
-
-  def notify_trade_completed
-    EventAPI.notify ['market', market_id, 'trade_completed'].join('.'), \
-                    Serializers::EventAPI::TradeCompleted.call(self)
-  end
 
   def record_liability_debit!
     seller_outcome = amount
