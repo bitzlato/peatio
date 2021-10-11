@@ -120,7 +120,19 @@ module API
             type: String,
             desc: 'Currency withdrawal possibility status (true/false).'
           }
-        )
+        ) do |currency, _options|
+          currency.withdrawal_enabled && !currency.blockchain.high_transaction_price_at
+        end
+
+        expose(
+          :withdrawal_disabled_reason,
+          documentation: {
+            type: String,
+            desc: 'Reason for currency withdrawal impossibility.'
+          }
+        ) do |currency, _options|
+          currency.blockchain.high_transaction_price_at.present? ? 'Gas price is too high' : ''
+        end
 
         expose(
           :deposit_fee,

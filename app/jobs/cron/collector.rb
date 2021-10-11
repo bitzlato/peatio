@@ -19,8 +19,12 @@ module Jobs
           next if payment_address.last_transfer_try_at.present? && \
                   payment_address.last_transfer_try_at > ERROR_SLEEP_MINUTES.minutes.ago && \
                   !success_state?(payment_address.last_transfer_status)
-
           next unless payment_address.has_collectable_balances?
+
+          if payment_address.blockchain.high_transaction_price_at.present?
+            Rails.logger.warn(message: 'Collecting is skipped. Gas price is too high', payment_address_id: payment_address.id)
+            next
+          end
 
           process_address payment_address
         end
