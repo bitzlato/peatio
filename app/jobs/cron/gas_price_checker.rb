@@ -15,10 +15,10 @@ module Jobs
           gas_price = EthereumGateway::AbstractCommand.new(blockchain.gateway.client).fetch_gas_price
           if gas_price < max_gas_price && !blockchain.high_transaction_price_at.nil?
             blockchain.update!(high_transaction_price_at: nil)
-            Peatio::SlackNotifier.instance.ping "Включаю выводы для #{blockchain.name}. Цена газа #{gas_price * 1_000_000_000} Gwei ниже, чем #{max_gas_price * 1_000_000_000} Gwei."
-          elsif blockchain.high_transaction_price_at.nil?
+            Peatio::SlackNotifier.instance.ping "Включаю выводы для #{blockchain.name}. Цена газа #{gas_price * 1e-9} Gwei ниже, чем #{max_gas_price * 1e-9} Gwei."
+          elsif gas_price > max_gas_price && blockchain.high_transaction_price_at.nil?
             blockchain.update!(high_transaction_price_at: Time.current)
-            Peatio::SlackNotifier.instance.ping "Отключаю выводы для #{blockchain.name}. Цена газа #{gas_price * 1_000_000_000} Gwei выше, чем #{max_gas_price * 1_000_000_000} Gwei."
+            Peatio::SlackNotifier.instance.ping "Отключаю выводы для #{blockchain.name}. Цена газа #{gas_price * 1e-9} Gwei выше, чем #{max_gas_price * 1e-9} Gwei."
           end
         end
 
