@@ -135,8 +135,8 @@ class Trade < ApplicationRecord
     ::AMQP::Queue.enqueue_event('private', maker.uid, 'trade', for_notify(maker))
     ::AMQP::Queue.enqueue_event('private', taker.uid, 'trade', for_notify(taker))
     ::AMQP::Queue.enqueue_event('public', market.symbol, 'trades', { trades: [for_global] })
-    ::AMQP::Queue.enqueue('trade_completed', for_notify(maker).merge(member_uid: taker.uid))
-    ::AMQP::Queue.enqueue('trade_completed', for_notify(taker).merge(member_uid: maker.uid))
+    ::AMQP::Queue.enqueue('trade_completed', for_notify(maker).merge(member_uid: maker.uid))
+    ::AMQP::Queue.enqueue('trade_completed', for_notify(taker).merge(member_uid: taker.uid))
   end
 
   def for_notify(member = nil)
