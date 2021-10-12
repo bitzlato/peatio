@@ -38,6 +38,26 @@ describe OrderServices::CreateOrder do
   end
 
   describe '#perform' do
+    context 'meet active orders limit' do
+      let(:account) { create(:account, :usd, balance: 10_000_000.to_d) }
+      let(:open_orders_count) { DEFAULT_OPEN_ORDERS_LIMIT }
+      let!(:open_orders) { 10.times.each { create(:order_bid, :btc_usd, member: account.member, price: '100', volume: '10.0', state: :wait) } }
+      let(:params) do
+        {
+          market: market,
+          side: 'buy', # buy/sell
+          volume: '0.001'.to_d,
+          ord_type: 'market' # limit/market
+        }
+      end
+
+      it do
+        result = service.perform(**params)
+        expect(result).to be_failed
+        expect(result.errors.first).to eq('market.order.open_orders_limit')
+      end
+    end
+
     context 'insufficient liquidity' do
       context 'buy btc' do
         let(:account) { create(:account, :usd, balance: 10_000_000.to_d) }

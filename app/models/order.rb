@@ -43,7 +43,7 @@ class Order < ApplicationRecord
   scope :done, -> { with_state(:done) }
   scope :active, -> { with_state(:wait) }
   scope :open, -> { with_state(:wait, :pending) }
-  scope :with_market, ->(market) { where(market_id: market) }
+  scope :with_market, ->(market) { where(market_id: market.is_a?(Market) ? market.symbol : market) }
   scope :spot, -> { where(market_type: 'spot') }
   scope :qe, -> { where(market_type: 'qe') }
   scope :with_currency, ->(currency_id) { where 'base_unit=? or quote_unit=?', currency_id }

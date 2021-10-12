@@ -5,7 +5,7 @@ module OrderServices
     include ServiceBase
 
     POSSIBLE_SIDE_VALUES = %i[sell buy].freeze
-    DEFAULT_OPEN_ORDERS_LIMIT = OPEN_ORDERS_LIMITS.fetch('default', 2)
+    DEFAULT_OPEN_ORDERS_LIMIT = OPEN_ORDERS_LIMITS.fetch('default')
 
     OpenOrdersLimit = Class.new StandardError
 
@@ -72,9 +72,9 @@ module OrderServices
 
     def check_open_orders_limits!(market)
       open_orders_limit = OPEN_ORDERS_LIMITS.fetch(@member.group, DEFAULT_OPEN_ORDERS_LIMIT)
-      open_orders_count = @member.orders.with_market(market).open.count
+      open_orders_count = @member.orders.with_market(market.symbol).open.count
 
-      raise OpenOrdersLimit, "#{open_orders_count}>=#{open_orders_limit}" if open_orders_count >= open_orders_limit
+      raise OpenOrdersLimit, "You meet active orders limit #{open_orders_count}>=#{open_orders_limit} for market #{market}" if open_orders_count >= open_orders_limit
     end
 
     def amqp_event_payload_with_uuid(uuid:, payload:)

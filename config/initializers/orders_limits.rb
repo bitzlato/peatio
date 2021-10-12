@@ -4,7 +4,7 @@
 #
 # key is group name
 OPEN_ORDERS_LIMITS = {
-  'market-makers' => 20,
+  'market-makers' => 50,
   'vip-3' => 20,
-  'other' => 5
+  'default' => 5
 }.freeze
