@@ -1,15 +1,21 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
+  sequence(:wallet_name) do |n|
+    "wallet-name-#{n}"
+  end
+
   factory :wallet do
+    name { generate :wallet_name }
+
     trait :eth_deposit do
       after(:create) do |w|
         CurrencyWallet.create(currency_id: 'eth', wallet_id: w.id)
       end
 
       association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
-      name               { 'Ethereum Deposit Wallet' }
-      address            { '0x828058628DF254Ebf252e0b1b5393D1DED91E369' }
+      name { 'Ethereum Deposit Wallet' }
+      address { Faker::Blockchain::Ethereum.address }
       kind               { 'deposit' }
       max_balance        { 0.0 }
       status             { 'active' }
@@ -23,8 +29,8 @@ FactoryBot.define do
       end
 
       association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
-      name               { 'Ethereum Hot Wallet' }
-      address            { '0xb6a61c43DAe37c0890936D720DC42b5CBda990F9' }
+      name { 'Ethereum Hot Wallet' }
+      address { Faker::Blockchain::Ethereum.address }
       kind               { 'hot' }
       max_balance        { 100.0 }
       status             { 'active' }
@@ -38,8 +44,8 @@ FactoryBot.define do
       end
 
       association :blockchain, strategy: :find_or_create, key: 'eth-rinkeby'
-      name               { 'Ethereum Warm Wallet' }
-      address            { '0x2b9fBC10EbAeEc28a8Fc10069C0BC29E45eBEB9C' }
+      name { 'Ethereum Warm Wallet' }
+      address { Faker::Blockchain::Ethereum.address }
       kind               { 'warm' }
       max_balance        { 1000.0 }
       status             { 'active' }

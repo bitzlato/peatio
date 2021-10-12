@@ -34,8 +34,10 @@ RSpec.describe BalancesUpdater do
     end
 
     context 'with address of wallet' do
-      let(:wallet) { find(:wallet, name: 'Ethereum Deposit Wallet') }
+      let(:wallet) { create :wallet, :eth_hot, name: generate(:wallet_name), balance: { 'eth' => '0.1' } }
       let(:address) { wallet.address }
+
+      it { expect(wallet.currencies).to include(Currency.find('eth')) }
 
       it 'updates wallet balances' do
         service.perform
