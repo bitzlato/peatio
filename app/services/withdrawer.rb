@@ -62,6 +62,9 @@ class Withdrawer
       # TODO: repeat withdraw for Busy
       withdraw.fail!
       logger.warn e.as_json.merge(id: withdraw.id)
+    rescue EthereumGateway::InsufficientFunds
+      withdraw.fail!
+      logger.warn(message: 'Insufficient funds', withdraw_id: withdraw.id)
     rescue StandardError => e
       logger.warn id: withdraw.id, message: 'Setting withdraw state to errored.'
       report_exception e, true, withdraw_id: withdraw.id

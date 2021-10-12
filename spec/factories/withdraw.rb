@@ -39,7 +39,7 @@ FactoryBot.define do
   factory :eth_withdraw, class: 'Withdraws::Coin' do
     currency { Currency.find(:eth) }
     member { create(:member, :level_3) }
-    rid { Faker::Blockchain::Bitcoin.address }
+    rid { Faker::Blockchain::Ethereum.address }
     sum { 10.to_d }
     type { 'Withdraws::Coin' }
 

@@ -41,6 +41,19 @@ describe Withdrawer do
     end
   end
 
+  context 'when insufficient funds error is raised' do
+    let(:account) { create(:account, :eth, balance: 100) }
+    let(:withdraw) { create(:eth_withdraw, currency: account.currency, member: account.member).tap(&:accept!).tap(&:process!) }
+
+    it 'fails withdraw' do
+      EthereumGateway::AbstractCommand.any_instance.expects(:fetch_gas_price).returns(0)
+      EthereumGateway::GasEstimator.any_instance.expects(:call).returns(0)
+      EthereumGateway::TransactionCreator.any_instance.expects(:call).raises(Ethereum::Client::ResponseError.new(400, 'Insufficient funds. The account you tried to send transaction from does not have enough funds.'))
+      subject.call(withdraw)
+      expect(withdraw.aasm_state).to eq 'failed'
+    end
+  end
+
   context 'withdrawal with empty rid' do # TODO: Finalize me.
     it 'returns nil and fail withdrawal' do
       # expect(Workers::AMQP::WithdrawCoin.new.process(processing_withdrawal.as_json)).to be(nil)
