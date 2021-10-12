@@ -4,6 +4,7 @@ module Jobs
   module Cron
     class GasPriceChecker
       JOB_TIMEOUT = 30.seconds
+      THRESHOLD_DEVIATION_RATIO = 0.02
 
       def self.process(job_timeout = JOB_TIMEOUT)
         return if Rails.env.staging?  # Стейджи не имеют доступа в шлюзы
@@ -12,8 +13,8 @@ module Jobs
           max_gas_price = Rails.configuration.blockchains.dig(blockchain.key, 'max_gas_price')
           next if !blockchain.gateway.is_a?(EthereumGateway) || max_gas_price.nil? || (blockchain.high_transaction_price_at.present? && blockchain.high_transaction_price_at > 5.minutes.ago)
 
-          min_threshold = max_gas_price * 0.98
-          max_threshold = max_gas_price * 1.02
+          min_threshold = max_gas_price * (1 - THRESHOLD_DEVIATION_RATIO)
+          max_threshold = max_gas_price * (1 + THRESHOLD_DEVIATION_RATIO)
           gas_price = EthereumGateway::AbstractCommand.new(blockchain.gateway.client).fetch_gas_price
           if gas_price < min_threshold && !blockchain.high_transaction_price_at.nil?
             blockchain.update!(high_transaction_price_at: nil)
