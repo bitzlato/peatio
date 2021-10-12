@@ -1131,7 +1131,8 @@ CREATE TABLE public.trading_fees (
     taker numeric(7,6) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    market_type character varying DEFAULT 'spot'::character varying NOT NULL
+    market_type character varying DEFAULT 'spot'::character varying NOT NULL,
+    open_orders_limit integer DEFAULT 5 NOT NULL
 );
 
 
@@ -2698,7 +2699,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2935,6 +2936,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210924153647'),
 ('20210928060422'),
 ('20210929165211'),
-('20211003172753');
+('20211003172753'),
+('20211012131251');
 
 

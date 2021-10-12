@@ -28,7 +28,6 @@ module OrderServices
       price: nil,
       uuid: UUID.generate
     )
-      check_open_orders_limits! market
       order = create_order(
         market: market,
         side: side,
@@ -69,12 +68,6 @@ module OrderServices
 
     private
 
-    def check_open_orders_limits!(market)
-      open_orders_count = @member.orders.with_market(market.symbol).open.count
-
-      raise OpenOrdersLimit, "You meet active orders limit #{open_orders_count}>=#{@member.open_orders_limit} for market #{market}" if open_orders_count >= @member.open_orders_limit
-    end
-
     def amqp_event_payload_with_uuid(uuid:, payload:)
       {
         uuid: uuid,
@@ -109,6 +102,11 @@ module OrderServices
         market_id: market.symbol,
         market_type: ::Market::DEFAULT_TYPE
       )
+
+      open_orders_count = @member.orders.with_market(market.symbol).open.count
+
+      raise OpenOrdersLimit, "You met open orders limit (#{open_orders_count}>=#{trading_fee.open_orders_limit}) for market #{market}" if open_orders_count >= trading_fee.open_orders_limit
+
       maker_fee = trading_fee.maker
       taker_fee = trading_fee.taker
       locked_value, order_subclass = nil
