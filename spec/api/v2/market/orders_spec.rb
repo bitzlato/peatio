@@ -482,19 +482,23 @@ describe API::V2::Market::Orders, type: :request do
         end
       end
 
-      it 'creates buy order' do
-        create(:order_ask, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
+      context 'with vip-3 member' do
+        let(:member) { create(:member, :level_3, group: 'vip-3') }
 
-        member.get_account(:usd).update(balance: 10)
+        it 'creates buy order' do
+          create(:order_ask, :btc_usd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
 
-        api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.5', ord_type: 'market' }
+          member.get_account(:usd).update(balance: 10)
 
-        expect do
           api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.5', ord_type: 'market' }
-        end.to change(OrderBid, :count).by(1)
 
-        expect(response).to be_successful
-        expect(JSON.parse(response.body)['id']).to eq OrderBid.last.id
+          expect do
+            api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '0.5', ord_type: 'market' }
+          end.to change(OrderBid, :count).by(1)
+
+          expect(response).to be_successful
+          expect(JSON.parse(response.body)['id']).to eq OrderBid.last.id
+        end
       end
 
       describe '#compute_locked' do
