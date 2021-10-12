@@ -320,11 +320,6 @@ describe Order, '#trigger_private_event' do
       }
     end
 
-    it 'doesnt push event for active market order' do
-      ::AMQP::Queue.expects(:enqueue_event).with(:order, data).never
-      subject.trigger_private_event
-    end
-
     it 'pushes event for completed market order' do
       subject.expects(:trigger_private_event)
       subject.update!(state: 'done')

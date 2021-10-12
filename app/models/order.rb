@@ -172,9 +172,6 @@ class Order < ApplicationRecord
   end
 
   def trigger_private_event
-    # skip market type orders, they should not appear on trading-ui
-    return unless ord_type == 'limit' || state == 'done'
-
     ::AMQP::Queue.enqueue_event('private', member&.uid, 'order', for_notify)
   end
 
