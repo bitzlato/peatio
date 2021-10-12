@@ -12,7 +12,7 @@ module Workers
         market = ::Market.active.find_spot_by_symbol(order_data[:market])
 
         service = ::OrderServices::CreateOrder.new(member: member)
-        order = service.perform(
+        service.perform(
           market: market,
           **order_data.slice(:side, :ord_type, :price, :volume, :uuid)
         )
