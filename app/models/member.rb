@@ -33,6 +33,10 @@ class Member < ApplicationRecord
     Trade.where('maker_id = ? OR taker_id = ?', id, id)
   end
 
+  def open_orders_limit
+    OPEN_ORDERS_LIMITS.fetch(group, OPEN_ORDERS_LIMITS.fetch('default', 1))
+  end
+
   def role
     super&.inquiry
   end
