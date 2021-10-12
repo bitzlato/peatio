@@ -105,7 +105,7 @@ ARGV.each do |id|
       exit(1)
     end
 
-    report_exception(e)
+    report_exception(e, true, { message_payload: payload, message_metadata: metadata, message_delivery_info: delivery_info })
   end
 
   workers << worker
