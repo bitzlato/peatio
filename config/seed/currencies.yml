@@ -51,7 +51,7 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               3
-  blockchain_key: bitzlato
+  blockchain_key: eth-rinkeby
   options:
     # ETH tx fees configurations.
     #

@@ -46,7 +46,6 @@ class Order < ApplicationRecord
   scope :with_market, ->(market) { where(market_id: market.is_a?(Market) ? market.symbol : market) }
   scope :spot, -> { where(market_type: 'spot') }
   scope :qe, -> { where(market_type: 'qe') }
-  scope :with_currency, ->(currency_id) { where 'base_unit=? or quote_unit=?', currency_id }
 
   validates :market_type, presence: true, inclusion: { in: ->(_o) { Market::TYPES } }
 
