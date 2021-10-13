@@ -40,7 +40,7 @@ module Ethereum
         # {\"jsonrpc\":\"2.0\",\"error\":{\"code\":-32016,\"message\":\"The execution failed due to an exception.\",\"data\":\"Bad instruction fe\"},\"id\":10}\n"
       elsif error['message'].include?('The execution failed due to an exception')
         # https://app.bugsnag.com/bitzlato/peatio/errors/61376fe4f5fee80007cf80a4?filters%5Bapp.release_stage%5D=production&filters%5Bevent.since%5D=30d&filters%5Berror.status%5D=fixed&filters%5Bsearch%5D%5B%5D=Insufficient&filters%5Bsearch%5D%5B%5D=funds
-      elsif error['message'].include?('Insufficient funds')
+      elsif error['message'].downcase.include?('insufficient funds')
         raise InsufficientFunds.new(error['code'], error['message'], error['data'])
         # https://app.bugsnag.com/bitzlato/peatio/errors/613f74b84435e700070e23f5?filters[event.since]=30d&filters[error.status]=open&filters[app.release_stage]=production
         # There are too many transactions in the queue. Your transaction was dropped due to limit. Try increasing the fee. (-32010)

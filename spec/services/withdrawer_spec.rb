@@ -48,7 +48,7 @@ describe Withdrawer do
     it 'fails withdraw' do
       EthereumGateway::AbstractCommand.any_instance.expects(:fetch_gas_price).returns(0)
       EthereumGateway::GasEstimator.any_instance.expects(:call).returns(0)
-      EthereumGateway::TransactionCreator.any_instance.expects(:call).raises(Ethereum::Client::ResponseError.new(400, 'Insufficient funds. The account you tried to send transaction from does not have enough funds.'))
+      EthereumGateway::TransactionCreator.any_instance.expects(:call).raises(Ethereum::Client::InsufficientFunds.new('-32010', 'Insufficient funds. The account you tried to send transaction from does not have enough funds.'))
       subject.call(withdraw)
       expect(withdraw.aasm_state).to eq 'failed'
     end

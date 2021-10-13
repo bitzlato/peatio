@@ -16,7 +16,6 @@ class EthereumGateway < AbstractGateway
   Error = Class.new StandardError
   NoHotWallet = Class.new Error
   NoAddressesToEstimate = Class.new Error
-  InsufficientFunds = Class.new Error
 
   def enable_block_fetching?
     true
@@ -100,12 +99,6 @@ class EthereumGateway < AbstractGateway
             subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee,
             nonce: nonce)
     )
-  rescue Ethereum::Client::ResponseError => e
-    if e.message.include?('Insufficient funds')
-      raise InsufficientFunds
-    else
-      raise e
-    end
   end
 
   def fetch_block_transactions(block_number)
