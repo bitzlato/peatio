@@ -40,45 +40,6 @@ class Account < ApplicationRecord
     Withdraw.where(member_id: member_id, currency_id: currency_id)
   end
 
-  def orders
-    member.orders.with_currency(currency_id)
-  end
-
-  def base_orders
-    member.orders.where(base_unit: :currency_id)
-  end
-
-  def quote_orders
-    member.orders.where(quote_unit: :currency_id)
-  end
-
-  def calculated_locked
-    deposits.where(is_locked: true).sum(:amount) +
-      withdraws.where(is_locked: true).sum(:amount) +
-      locked_in_orders
-  end
-
-  def locked_in_orders
-    OrderAsk.active.where(member_id: id).where(quote_unit: currency_id).sum(:locked) +
-      OrderBid.active.where(member_id: id).where(base_unit: currency_id).sum(:locked)
-  end
-
-  def verify_locks
-    account.locked == calculated_locked
-  end
-
-  def verify_locks!
-    Bugsnag.notify 'Контроль заблокированной для списания суммы' do |b|
-      b.meta_data = {
-        account_id: id,
-        locked: locked,
-        calculated_locked: calculated_locked,
-        locked_in_orders: locked_in_orders
-      }
-    end
-    true # Пока всегда отдаём true
-  end
-
   def payment_address
     member.payment_address blockchain
   end

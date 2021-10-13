@@ -41,14 +41,6 @@ describe Account do
   it { expect { subject.lock_funds('0'.to_d) }.to raise_error(Account::AccountError) }
   it { expect { subject.unlock_funds('0'.to_d) }.to raise_error(Account::AccountError) }
 
-  describe 'verify_locks' do
-    let(:account) { create(:account) }
-
-    it do
-      account.verify_locks!
-    end
-  end
-
   describe 'double operation' do
     let(:strike_volume) { '10.0'.to_d }
     let(:account) { create(:account) }
