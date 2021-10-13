@@ -20,7 +20,7 @@ module Workers
           market: market,
           **order_data.slice(:side, :ord_type, :price, :volume, :uuid)
         )
-      rescue StandardError, ActiveRecord::RecordNotFound, KeyError => e
+      rescue StandardError, ActiveRecord::RecordNotFound => e
         report_exception(e, true, payload)
       end
     end
