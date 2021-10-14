@@ -21,7 +21,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: Bundler audtio
+      - name: Bundler audit
         run: bin/bundler-audit --update
       # Add or Replace any other Linters here
       - name: Run linters
