@@ -69,8 +69,9 @@ module API
 
           deposit = Deposit.find(params[:id])
 
-          if deposit.public_send("may_#{params[:action]}?")
-            deposit.public_send("#{params[:action]}!")
+          action = ::Deposit.aasm.events.map(&:name).map(&:to_s).find { |a| a == params[:action] }
+          if action.present? && deposit.public_send("may_#{action}?")
+            deposit.public_send("#{action}!")
             present deposit, with: API::V2::Admin::Entities::Deposit
           else
             body errors: ["admin.deposit.cannot_#{params[:action]}"]

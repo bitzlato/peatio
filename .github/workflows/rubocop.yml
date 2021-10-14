@@ -23,6 +23,8 @@ jobs:
           bundler-cache: true
       - name: Bundler audit
         run: bin/bundler-audit --update
+      - name: Run brakeman
+        run: bin/brakeman
       # Add or Replace any other Linters here
       - name: Run linters
         run: |

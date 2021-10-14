@@ -38,24 +38,6 @@ module Workers
       def wait
         Kernel.sleep self.class.sleep_time
       end
-
-      def lock(klass, timeout)
-        res = ActiveRecord::Base.connection.exec_query("SELECT GET_LOCK('Peatio_#{klass}',#{timeout})")
-
-        # response from this query will look like this [{"GET_LOCK(id,10)"=>1}]
-        # returns 1 if the lock was obtained successfully, 0 if the attempt timed out
-        if res.to_a[0].values[0] == 1
-          begin
-            yield
-          rescue StandardError => e
-            report_exception(e)
-          ensure
-            ActiveRecord::Base.connection.exec_query("SELECT RELEASE_LOCK('Peatio_#{klass}')")
-          end
-        else
-          raise GetLockError, "Peatio_#{klass} is already running"
-        end
-      end
     end
   end
 end

@@ -62,8 +62,9 @@ module API
 
             beneficiary = Beneficiary.find(params[:id])
 
-            if beneficiary.public_send("may_#{params[:action]}?")
-              beneficiary.public_send("#{params[:action]}!")
+            action = ::Beneficiary.aasm.events.map(&:name).map(&:to_s).find { |a| a == params[:action] }
+            if action.present? && beneficiary.public_send("may_#{action}?")
+              beneficiary.public_send("#{action}!")
               present beneficiary, with: API::V2::Admin::Entities::Beneficiary
             else
               body errors: ["admin.beneficiary.cannot_#{params[:action]}"]

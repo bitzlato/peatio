@@ -139,9 +139,10 @@ module API
               end
             end
 
-            if adjustment.public_send("may_#{params[:action]}?")
+            action = Adjustment.aasm.events.map(&:name).map(&:to_s).find { |a| a == params[:action] }
+            if action.present? && adjustment.public_send("may_#{action}?")
               # TODO: Add behaviour in case of errors on action.
-              adjustment.public_send("#{params[:action]}!", validator: current_user)
+              adjustment.public_send("#{action}!", validator: current_user)
               present adjustment, with: API::V2::Admin::Entities::Adjustment
             else
               body errors: ["admin.adjustment.cannot_perform_#{params[:action]}_action"]
