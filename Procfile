@@ -10,6 +10,5 @@ create_order: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb create_
 cancel_member_orders: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb cancel_member_orders
 balances_updating: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb balances_updating
 notificator: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb notificator
-events_market: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb events_market
 
 web: bundle exec rails server -b 0.0.0.0 -p 3000
