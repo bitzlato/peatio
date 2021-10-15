@@ -16,6 +16,7 @@ module Jobs
           min_threshold = max_gas_price * (1 - THRESHOLD_DEVIATION_RATIO)
           max_threshold = max_gas_price * (1 + THRESHOLD_DEVIATION_RATIO)
           gas_price = EthereumGateway::AbstractCommand.new(blockchain.gateway.client).fetch_gas_price
+          Rails.logger.info("Current gas price for #{blockchain.name}: #{gas_price * 1e-9} Gwei")
           if gas_price < min_threshold && !blockchain.high_transaction_price_at.nil?
             blockchain.update!(high_transaction_price_at: nil)
             Peatio::SlackNotifier.instance.ping "Включил выводы для #{blockchain.name}. Цена газа #{gas_price * 1e-9} Gwei ниже, чем #{min_threshold * 1e-9} Gwei."
