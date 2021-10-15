@@ -28,7 +28,13 @@ module Workers
       end
 
       def process(service)
-        service.process while running
+        while running
+          begin
+            service.process
+          rescue StandardEror => e
+            report_exception e, true, service: service
+          end
+        end
       end
 
       def stop
