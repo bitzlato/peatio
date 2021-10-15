@@ -16,23 +16,30 @@ module Workers
       def process(payload)
         payload = Hashie::Mash.new(payload)
 
-        member_uid = payload.fetch(:member_uid)
-
-        if FOLLOW_MEMBER_UIDS.include?('all') || FOLLOW_MEMBER_UIDS.include?(member_uid)
-          member = Member.find_by!(uid: member_uid)
-          message = generate_follow_message member, payload
-          Peatio::SlackNotifier.instance.ping message
-        end
-
-        other_member_uid = payload.fetch(:other_member_uid)
-        if BARGAINER_UID.present? && member_uid == BARGAINER_UID && other_member_uid != BARGAINER_UID
-          member ||= Member.find_by!(uid: member_uid)
-          message = generate_bargainer_message member, payload
-          Peatio::SlackNotifier.instance.ping message
-        end
+        notify_followed payload
+        notify_bargainer payload
       end
 
       private
+
+      def notify_followed(payload)
+        member_uid = payload.fetch(:member_uid)
+        return unless FOLLOW_MEMBER_UIDS.include?('all') || FOLLOW_MEMBER_UIDS.include?(member_uid)
+
+        member = Member.find_by!(uid: member_uid)
+        message = generate_follow_message member, payload
+        Peatio::SlackNotifier.instance.ping message
+      end
+
+      def notify_bargainer(payload)
+        other_member_uid = payload.fetch(:other_member_uid)
+        member_uid = payload.fetch(:member_uid)
+        return unless BARGAINER_UID.present? && member_uid == BARGAINER_UID && other_member_uid != BARGAINER_UID
+
+        member = Member.find_by!(uid: member_uid)
+        message = generate_bargainer_message member, payload
+        Peatio::SlackNotifier.instance.ping message
+      end
 
       def liza_order_url(order_id)
         return order_id if LIZA_ROOT_URL.nil?
