@@ -13,7 +13,7 @@ describe Workers::AMQP::TradeCompleted do
 
     it do
       expect(
-        subject.send(:generate_message, member, payload)
+        subject.send(:generate_follow_message, member, payload)
       ).to include 'совершил сделку'
     end
   end
