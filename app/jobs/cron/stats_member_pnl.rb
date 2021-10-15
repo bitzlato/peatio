@@ -12,16 +12,23 @@ module Jobs::Cron
         filter_trades = if exclude_user_ids.empty?
                           ''
                         else
-                          "AND (trades.taker_id != trades.maker_id OR trades.taker_id NOT IN (#{exclude_user_ids.join(',')}))"
+                          "AND (trades.taker_id != trades.maker_id OR #{ActiveRecord::Base.sanitize_sql_for_conditions(['trades.taker_id NOT IN (?)', exclude_user_ids])})"
                         end
 
+        batch_size = batch_size.to_i
+        trade_condition = ActiveRecord::Base.sanitize_sql_for_conditions(['id > ?', idx['Trade']])
+        adjustment_condition = ActiveRecord::Base.sanitize_sql_for_conditions(['updated_at > ?', idx['Adjustment']])
+        transfer_condition = ActiveRecord::Base.sanitize_sql_for_conditions(['id > ?', idx['Transfer']])
+        withdraw_condition = ActiveRecord::Base.sanitize_sql_for_conditions(['completed_at > ?', idx['Withdraw']])
+        deposit_coin_condition = ActiveRecord::Base.sanitize_sql_for_conditions(['created_at > ?', idx['DepositCoin']])
+        deposit_fiat_condition = ActiveRecord::Base.sanitize_sql_for_conditions(['completed_at > ?', idx['DepositFiat']])
         query = "
-        (SELECT 'Trade', id, updated_at as ts FROM trades WHERE id > #{idx['Trade']} #{filter_trades} ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
-        (SELECT 'Adjustment', id, updated_at as ts FROM adjustments WHERE updated_at > '#{idx['Adjustment']}' AND currency_id = '#{currency.id}' AND state = 2 ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
-        (SELECT 'Transfer', id, updated_at as ts FROM transfers WHERE id > #{idx['Transfer']} ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
-        (SELECT 'Withdraw', id, completed_at as ts FROM withdraws WHERE completed_at > '#{idx['Withdraw']}' AND currency_id = '#{currency.id}' AND aasm_state = 'succeed' ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
-        (SELECT 'Deposit', id, created_at as ts FROM deposits WHERE created_at > '#{idx['DepositCoin']}' AND currency_id = '#{currency.id}' AND type = 'Deposits::Coin' ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
-        (SELECT 'Deposit', id, completed_at as ts FROM deposits WHERE completed_at > '#{idx['DepositFiat']}' AND currency_id = '#{currency.id}' AND type = 'Deposits::Fiat' AND aasm_state = 'accepted' ORDER BY ts,id LIMIT #{batch_size})
+        (SELECT 'Trade', id, updated_at as ts FROM trades WHERE #{trade_condition} #{filter_trades} ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
+        (SELECT 'Adjustment', id, updated_at as ts FROM adjustments WHERE #{adjustment_condition} AND currency_id = '#{currency.id}' AND state = 2 ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
+        (SELECT 'Transfer', id, updated_at as ts FROM transfers WHERE #{transfer_condition} ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
+        (SELECT 'Withdraw', id, completed_at as ts FROM withdraws WHERE #{withdraw_condition} AND currency_id = '#{currency.id}' AND aasm_state = 'succeed' ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
+        (SELECT 'Deposit', id, created_at as ts FROM deposits WHERE #{deposit_coin_condition} AND currency_id = '#{currency.id}' AND type = 'Deposits::Coin' ORDER BY ts,id LIMIT #{batch_size}) UNION ALL
+        (SELECT 'Deposit', id, completed_at as ts FROM deposits WHERE #{deposit_fiat_condition} AND currency_id = '#{currency.id}' AND type = 'Deposits::Fiat' AND aasm_state = 'accepted' ORDER BY ts,id LIMIT #{batch_size})
         ORDER BY ts,id ASC LIMIT #{batch_size};"
 
         trade_idx = adjustment_idx = transfer_idx = withdraw_idx = deposit_fiat_idx = deposit_coin_idx = nil
@@ -255,8 +262,9 @@ module Jobs::Cron
         transfer = {}
         queries = []
 
+        reference_id_condition = ActiveRecord::Base.sanitize_sql_for_conditions(['reference_id = ?', reference_id])
         q = 'SELECT currency_id, member_id, reference_type, reference_id, SUM(credit-debit) as total FROM liabilities ' \
-            "WHERE reference_type = 'Transfer' AND reference_id = #{reference_id} " \
+            "WHERE reference_type = 'Transfer' AND #{reference_id_condition} " \
             'GROUP BY currency_id, member_id, reference_type, reference_id'
         liabilities = ActiveRecord::Base.connection.select_all(q)
         liabilities.each do |l|

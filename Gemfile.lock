@@ -150,6 +150,7 @@ GEM
     base58 (0.2.3)
     bootsnap (1.7.3)
       msgpack (~> 1.0)
+    brakeman (5.1.1)
     bugsnag (6.23.0)
       concurrent-ruby (~> 1.0)
     bugsnag-capistrano (2.1.0)
@@ -587,6 +588,7 @@ DEPENDENCIES
   arel-is-blank (~> 1.0.0)
   bitzlato!
   bootsnap (>= 1.1.0)
+  brakeman
   bugsnag
   bugsnag-capistrano
   bullet (~> 5.9)
