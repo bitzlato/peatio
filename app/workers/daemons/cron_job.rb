@@ -33,6 +33,7 @@ module Workers
             service.process
           rescue StandardEror => e
             report_exception e, true, service: service
+            sleep 30
           end
         end
       end
