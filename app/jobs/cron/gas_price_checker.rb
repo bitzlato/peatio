@@ -24,6 +24,9 @@ module Jobs
             blockchain.update!(high_transaction_price_at: Time.current)
             Peatio::SlackNotifier.instance.ping "Отключил выводы для #{blockchain.name}. Цена газа #{gas_price * 1e-9} Gwei выше, чем #{max_threshold * 1e-9} Gwei."
           end
+        rescue StandardError => e
+          report_exception e, true, { service: 'GasPriceChecker' }
+          next
         end
 
         sleep job_timeout
