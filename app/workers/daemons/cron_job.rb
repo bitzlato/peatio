@@ -31,7 +31,7 @@ module Workers
         while running
           begin
             service.process
-          rescue StandardEror => e
+          rescue StandardError => e
             report_exception e, true, service: service
             sleep 30
           end
