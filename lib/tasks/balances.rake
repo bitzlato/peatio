@@ -11,14 +11,14 @@ namespace :balances do
     eth_currency = Currency.find(:eth)
     market = Market.find_by(symbol: 'eth_btc')
 
-    member = Member.find_or_create_by!(level: 3, role: :member, uid: 'MEMBER', state: :active)
+    member = Member.find_or_create_by!(level: 3, role: :member, uid: 'MEMBER', state: :active, group: 'vip-3')
     member.accounts.find_or_create_by!(currency: btc_currency)
     member.accounts.find_or_create_by!(currency: eth_currency)
     deposits = concurrency_level.times.map { Deposit.new(type: Deposit.name, member: member, currency: eth_currency, amount: 1000) }
-    beneficiary = member.beneficiaries.create!(currency: eth_currency, name: 'Beneficiary', state: :active, data: { address: 'add7355' })
+    beneficiary = member.beneficiaries.create!(currency: eth_currency, name: 'Beneficiary', state: :active, data: { address: Faker::Blockchain::Ethereum.address })
     withdraws = concurrency_level.times.map { Withdraws::Coin.new(beneficiary: beneficiary, sum: 10, member: member, currency: eth_currency) }
 
-    member2 = Member.find_or_create_by!(level: 3, role: :member, uid: 'MEMBER2', state: :active)
+    member2 = Member.find_or_create_by!(level: 3, role: :member, uid: 'MEMBER2', state: :active, group: 'vip-3')
     member2.accounts.find_or_create_by!(currency: btc_currency)
     member2.accounts.find_or_create_by!(currency: eth_currency)
     deposits2 = concurrency_level.times.map { Deposit.new(type: Deposit.name, member: member2, currency: btc_currency, amount: 1000) }
