@@ -3,6 +3,7 @@
 # TODO: Rename to DepositAddress
 class PaymentAddress < ApplicationRecord
   extend PaymentAddressTotals
+  include BlockchainAddressConcern
   include Vault::EncryptedModel
   include AASM
 

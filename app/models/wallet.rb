@@ -2,6 +2,7 @@
 
 class Wallet < ApplicationRecord
   extend Enumerize
+  include BlockchainAddressConcern
 
   serialize :balance, JSON unless Rails.configuration.database_support_json
   serialize :plain_settings, JSON unless Rails.configuration.database_support_json

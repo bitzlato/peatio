@@ -41,6 +41,7 @@ class EthereumGateway < AbstractGateway
         gas_factor: blockchain.client_options[:gas_factor],
         gas_wallet_address: fee_wallet.address,
         gas_wallet_secret: fee_wallet.secret,
+        gas_wallet_private_key: fee_wallet.blockchain_address.try(:private_key),
         target_address: target_address,
         contract_addresses: coins,
         gas_limits: gas_limits
@@ -66,6 +67,7 @@ class EthereumGateway < AbstractGateway
                           to_address:,
                           amount:,
                           secret:,
+                          private_key:,
                           contract_address: nil,
                           subtract_fee: false, # nil means auto
                           nonce: nil,
@@ -93,6 +95,7 @@ class EthereumGateway < AbstractGateway
             to_address: to_address,
             amount: amount.base_units,
             secret: secret,
+            private_key: private_key,
             gas_limit: gas_limit,
             gas_price: gas_price,
             contract_address: contract_address,

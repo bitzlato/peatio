@@ -268,6 +268,46 @@ ALTER SEQUENCE public.block_numbers_id_seq OWNED BY public.block_numbers.id;
 
 
 --
+-- Name: blockchain_addresses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.blockchain_addresses (
+    id bigint NOT NULL,
+    address_type character varying NOT NULL,
+    address public.citext NOT NULL,
+    private_key_hex_encrypted character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: COLUMN blockchain_addresses.private_key_hex_encrypted; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.blockchain_addresses.private_key_hex_encrypted IS 'Is must be NOT NULL but vault-rails does not support it';
+
+
+--
+-- Name: blockchain_addresses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.blockchain_addresses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: blockchain_addresses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.blockchain_addresses_id_seq OWNED BY public.blockchain_addresses.id;
+
+
+--
 -- Name: blockchain_nodes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -329,6 +369,8 @@ CREATE TABLE public.blockchains (
     height_updated_at timestamp without time zone,
     client_version character varying,
     high_transaction_price_at timestamp without time zone,
+    address_type character varying,
+    chain_id integer,
     disable_collection boolean DEFAULT false NOT NULL
 );
 
@@ -1132,8 +1174,7 @@ CREATE TABLE public.trading_fees (
     taker numeric(7,6) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    market_type character varying DEFAULT 'spot'::character varying NOT NULL,
-    open_orders_limit integer DEFAULT 5 NOT NULL
+    market_type character varying DEFAULT 'spot'::character varying NOT NULL
 );
 
 
@@ -1431,6 +1472,13 @@ ALTER TABLE ONLY public.block_numbers ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: blockchain_addresses id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_addresses ALTER COLUMN id SET DEFAULT nextval('public.blockchain_addresses_id_seq'::regclass);
+
+
+--
 -- Name: blockchain_nodes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1665,6 +1713,14 @@ ALTER TABLE ONLY public.beneficiaries
 
 ALTER TABLE ONLY public.block_numbers
     ADD CONSTRAINT block_numbers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: blockchain_addresses blockchain_addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_addresses
+    ADD CONSTRAINT blockchain_addresses_pkey PRIMARY KEY (id);
 
 
 --
@@ -1967,6 +2023,13 @@ CREATE INDEX index_block_numbers_on_blockchain_id ON public.block_numbers USING 
 --
 
 CREATE UNIQUE INDEX index_block_numbers_on_blockchain_id_and_number ON public.block_numbers USING btree (blockchain_id, number);
+
+
+--
+-- Name: index_blockchain_addresses_on_address_and_address_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_blockchain_addresses_on_address_and_address_type ON public.blockchain_addresses USING btree (address, address_type);
 
 
 --
@@ -2707,7 +2770,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2947,7 +3010,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210928060422'),
 ('20210929165211'),
 ('20211003172753'),
-('20211012131251'),
-('20211019114204');
+('20211018193526'),
+('20211019114204'),
+('20211020085635');
 
 

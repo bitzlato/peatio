@@ -5,11 +5,12 @@ class EthereumGateway
     Error = Class.new StandardError
 
     # @param amount - in base units (cents)
-    def call(amount:,
+    def call(amount:, # rubocop:disable Metrics/ParameterLists
              from_address:,
              to_address:,
-             secret:,
-             gas_limit:, nonce: nil,
+             gas_limit:, secret: nil,
+             private_key: nil,
+             nonce: nil,
              contract_address: nil,
              subtract_fee: false,
              gas_price: nil,
@@ -18,6 +19,7 @@ class EthereumGateway
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
       raise 'No gas limit' if gas_limit.nil?
       raise Error, 'zero amount transction' if amount.zero?
+      raise 'Must be secret ether private_key' if (secret.present? && private_key.present?) || (secret.nil? && private_key.nil?)
 
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
@@ -29,6 +31,7 @@ class EthereumGateway
                                                        to_address: to_address,
                                                        contract_address: contract_address,
                                                        secret: secret,
+                                                       private_key: private_key,
                                                        nonce: nonce,
                                                        gas_limit: gas_limit,
                                                        gas_price: gas_price)
@@ -38,6 +41,7 @@ class EthereumGateway
                                                      to_address: to_address,
                                                      subtract_fee: subtract_fee,
                                                      secret: secret,
+                                                     private_key: private_key,
                                                      nonce: nonce,
                                                      gas_limit: gas_limit,
                                                      gas_price: gas_price)
@@ -50,7 +54,10 @@ class EthereumGateway
                                 to_address:,
                                 amount:,
                                 secret:,
-                                gas_limit:, gas_price:, nonce: nil,
+                                private_key:,
+                                gas_limit:,
+                                gas_price:,
+                                nonce: nil,
                                 subtract_fee: false)
 
       raise 'amount must be an integer' unless amount.is_a? Integer
@@ -65,16 +72,32 @@ class EthereumGateway
         raise Error, "Amount is not positive (#{amount}) for #{from_address} to #{to_address}"
       end
       txid = validate_txid!(
-        client
-        .json_rpc(:personal_sendTransaction,
-                  [{
-                    from: normalize_address(from_address),
-                    to: normalize_address(to_address),
-                    nonce: nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
-                    value: '0x' + amount.to_s(16),
-                    gas: '0x' + gas_limit.to_i.to_s(16),
-                    gasPrice: '0x' + gas_price.to_i.to_s(16)
-                  }.compact, secret])
+        if private_key.present?
+          tx = Eth::Tx.new({
+                             gas_limit: gas_limit,
+                             gas_price: gas_price,
+                             nonce: nonce,
+                             to: normalize_address(to_adress),
+                             value: value
+                           })
+          tx.sign private_key
+          client
+            .json_rpc(:eth_sendRawTransaction, [tx.hex])
+        elsif secret.present?
+          client
+            .json_rpc(:personal_sendTransaction,
+                      [{
+                        from: normalize_address(from_address),
+                        to: normalize_address(to_address),
+                        nonce: nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
+                        value: '0x' + amount.to_s(16),
+                        gas: '0x' + gas_limit.to_i.to_s(16),
+                        gasPrice: '0x' + gas_price.to_i.to_s(16)
+                      }.compact,
+                       secret])
+        else
+          raise 'No secret or private_key'
+        end
       )
 
       Peatio::Transaction.new(
@@ -94,20 +117,39 @@ class EthereumGateway
                                   to_address:,
                                   amount:,
                                   contract_address:,
-                                  secret:, gas_limit:, gas_price:, nonce: nil)
+                                  secret:,
+                                  private_key:,
+                                  gas_limit:,
+                                  gas_price:,
+                                  nonce: nil)
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
       logger.info("Create erc20 transaction #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       txid = validate_txid!(
-        client.json_rpc(:personal_sendTransaction,
-                        [{
-                          from: normalize_address(from_address),
-                          nonce: nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
-                          to: contract_address,
-                          data: data,
-                          gas: '0x' + gas_limit.to_i.to_s(16),
-                          gasPrice: '0x' + gas_price.to_i.to_s(16)
-                        }.compact, secret])
+        if private_key.present?
+          tx = Eth::Tx.new({
+                             to: contract_address,
+                             gas_limit: gas_limit,
+                             gas_price: gas_price,
+                             nonce: nonce,
+                             data: data
+                           })
+          tx.sign private_key
+          client
+            .json_rpc(:eth_sendRawTransaction, [tx.hex])
+        elsif secret.present?
+          client.json_rpc(:personal_sendTransaction,
+                          [{
+                            from: normalize_address(from_address),
+                            nonce: nonce.nil? ? nil : '0x' + nonce.to_i.to_s(16),
+                            to: contract_address,
+                            data: data,
+                            gas: '0x' + gas_limit.to_i.to_s(16),
+                            gasPrice: '0x' + gas_price.to_i.to_s(16)
+                          }.compact, secret])
+        else
+          raise 'No secret or private_key'
+        end
       )
       Peatio::Transaction.new(
         from_address: from_address,
