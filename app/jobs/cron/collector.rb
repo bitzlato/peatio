@@ -16,6 +16,7 @@ module Jobs
         # TODO: select only payment addresses with enough balance
         Rails.logger.info('Check collectable balances on PaymentAddresses')
         PaymentAddress.collection_required.lock.each do |payment_address|
+          next if payment_address.blockchain.disable_collection
           next if payment_address.last_transfer_try_at.present? && \
                   payment_address.last_transfer_try_at > ERROR_SLEEP_MINUTES.minutes.ago && \
                   !success_state?(payment_address.last_transfer_status)
