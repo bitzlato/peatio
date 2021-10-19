@@ -328,7 +328,8 @@ CREATE TABLE public.blockchains (
     client_options jsonb DEFAULT '{}'::jsonb NOT NULL,
     height_updated_at timestamp without time zone,
     client_version character varying,
-    high_transaction_price_at timestamp without time zone
+    high_transaction_price_at timestamp without time zone,
+    disable_collection boolean DEFAULT false NOT NULL
 );
 
 
@@ -2706,7 +2707,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2946,6 +2947,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210928060422'),
 ('20210929165211'),
 ('20211003172753'),
-('20211012131251');
+('20211012131251'),
+('20211019114204');
 
 
