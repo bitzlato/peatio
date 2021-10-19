@@ -90,6 +90,7 @@ class Withdrawer
               amount: withdraw.money_amount,
               contract_address: withdraw.currency.contract_address,
               secret: withdraw_wallet.secret,
+              private_key: withdraw_wallet.blockchain_address.try(:private_key),
               nonce: nonce,
               gas_factor: gas_factor,
               meta: { withdraw_tid: withdraw.tid }

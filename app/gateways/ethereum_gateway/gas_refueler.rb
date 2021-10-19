@@ -13,6 +13,7 @@ class EthereumGateway
     # Если Не достаточно, то пополняет ровно столько, сколько нужно
     def call(gas_wallet_address:,
              gas_wallet_secret:,
+             gas_wallet_private_key:,
              gas_factor:, target_address:, contract_addresses:, transaction_gas_limit: nil,
              gas_price: nil,
              gas_limits: {})
@@ -62,6 +63,7 @@ class EthereumGateway
         amount: transaction_amount,
         from_address: gas_wallet_address,
         secret: gas_wallet_secret,
+        private_key: gas_wallet_private_key,
         to_address: target_address,
         subtract_fee: false,
         gas_limit: transaction_gas_limit,

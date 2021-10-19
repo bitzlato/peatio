@@ -73,6 +73,8 @@ gem 'pry-byebug', '~> 3.7'
 
 gem 'money', github: 'bitzlato/money', branch: 'main'
 
+gem 'eth'
+
 group :development, :test do
   gem 'bullet',       '~> 5.9'
   gem 'bump',         '~> 0.7'
