@@ -4,6 +4,46 @@ require 'csv'
 require 'peatio/import'
 
 namespace :import do
+  UnknownAddress = Class.new StandardError
+
+  def import_private_key(file, address_type, secret: nil)
+    address_type ||= 'ethereum'
+    raw_address = '0x' + JSON.parse(File.read(file)).fetch('address')
+    puts "Import address #{raw_address}"
+    address_owner = PaymentAddress.find_by_address(raw_address) || Wallet.find_by_address(raw_address)
+    raise UnknownAddress, "Unknown address owner for #{raw_address}" if address_owner.nil? && secret.nil?
+    puts "Address owner is #{address_owner.class}##{address_owner.id}"
+    secret ||= address_owner.secret
+    decrypted_key = Eth::Key.decrypt File.read(file), secret
+
+    address = decrypted_key.address
+    ba = BlockchainAddress.find_by(address: address, address_type: address_type)
+    if ba.present?
+      puts "Address #{address} already exists"
+    else
+      BlockchainAddress.create!(address: address, address_type: address_type, private_key_hex: decrypted_key.private_hex)
+    end
+  end
+
+  desc 'Import specific private key'
+  task :private_key, [:file, :secret, :address_type] => [:environment] do |_, args|
+    import_private_key args[:file], args[:address_type], secret: args[:secret]
+  end
+
+  desc 'Import all private keys to blockchain addresses from selected path'
+  task :private_keys, [:path, :address_type] => [:environment] do |_, args|
+    path = Pathname.new(args[:path])
+    puts "Load keys from #{path}"
+    Dir.foreach(path) do |filename|
+      next if filename == '.' or filename == '..'
+
+      import_private_key path.join(filename), args[:address_type]
+    rescue UnknownAddress => e
+      puts e.message
+    end
+
+  end
+
   # Detailed instruction https://github.com/rubykube/peatio/blob/master/docs/tasks/import.md
   # Required fields for import users:
   # - uid
