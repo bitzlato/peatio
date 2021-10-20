@@ -59,7 +59,7 @@ gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
 gem 'scout_apm', '~> 2.4', require: false
 gem 'validates_lengths_from_database', '~> 0.7.0'
 gem 'validate_url', '~> 1.0.4'
-gem 'vault', '~> 0.12', require: false
+gem 'vault', '~> 0.16', require: false
 gem 'vault-rails', '~> 0.7.1'
 
 gem 'adequate_crypto_address'
