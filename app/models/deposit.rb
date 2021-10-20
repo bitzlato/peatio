@@ -33,6 +33,7 @@ class Deposit < ApplicationRecord
   end
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
+  after_commit :trigger_private_event
 
   validates :tid, presence: true, uniqueness: { case_sensitive: false }
   validates :aasm_state, :type, presence: true
@@ -191,6 +192,14 @@ class Deposit < ApplicationRecord
 
   def recorded_transaction
     blockchain.transactions.find_by(txid: txid, txout: txout)
+  end
+
+  def for_notify
+    API::V2::Entities::Deposit.represent(self).as_json
+  end
+
+  def trigger_private_event
+    ::AMQP::Queue.enqueue_event('private', member&.uid, 'deposit', for_notify)
   end
 
   private
