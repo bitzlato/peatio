@@ -38,10 +38,8 @@ module Workers
       end
 
       def process_address(payment_address)
-        return unless payment_address.has_collectable_balances?
-
         Rails.logger.info("PaymentAddress #{payment_address.address} has collectable balances")
-        if payment_address.has_enough_gas_to_collect?
+        if (payment_address.blockchain.allowance_enabled && payment_address.allowance_enabled) || payment_address.has_enough_gas_to_collect?
           Rails.logger.info("PaymentAddress #{payment_address.address} has enough gas to collect. Collect it!")
           payment_address.collect!
           payment_address.update last_transfer_status: COLLECTED_STATUS

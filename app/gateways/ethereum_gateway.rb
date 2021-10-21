@@ -119,6 +119,28 @@ class EthereumGateway < AbstractGateway
     Approver.new(client).call(from_address: address, spender: spender_address, secret: secret, gas_limit: gas_limit, contract_address: contract_address, nonce: nonce, gas_price: gas_price)
   end
 
+  def transfer_from!(address:, secret:, blockchain_address:, contract_address:, amount:, nonce: nil, gas_factor: nil)
+    gas_factor = gas_factor || blockchain.client_options[:gas_factor].to_d || 1
+    gas_factor = 1.01 if gas_factor.to_d < 1
+    gas_price = (AbstractCommand.new(client).fetch_gas_price * gas_factor).to_i
+    gas_limit ||= estimated_gas(contract_addresses: [contract_address].compact,
+                                account_native: false,
+                                gas_limits: gas_limits)
+    FromTransferer.new(client)
+                  .call(from_address: fee_wallet.address,
+                        secret: secret,
+                        blockchain_address: blockchain_address,
+                        contract_address: contract_address,
+                        sender: address,
+                        recipient: hot_wallet.address,
+                        amount: amount,
+                        chain_id: blockchain.chain_id,
+                        gas_limit: gas_limit,
+                        nonce: nonce,
+                        gas_price: gas_price,
+                        gas_factor: gas_factor)
+  end
+
   def fetch_block_transactions(block_number)
     BlockFetcher
       .new(client)

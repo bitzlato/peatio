@@ -17,7 +17,7 @@ class EthereumGateway
       raise 'wrong blockchain' unless payment_address.blockchain_id == blockchain.id
 
       amounts = load_balances(payment_address.address)
-                .select { |_currency, amount| is_amount_collectable?(amount) }
+                .select { |currency, amount| (is_amount_collectable?(amount) && (!payment_address.blockchain.allowance_enabled || (payment_address.blockchain.allowance_enabled && payment_address.fee_wallet_approved?(currency.id)))) }
                 .each_with_object({}) { |(_key, amount), hash| hash[amount.currency.contract_address] = amount.base_units }
 
       # Remove native currency if there are tokens to transfer
@@ -27,16 +27,29 @@ class EthereumGateway
       blockchain_address = payment_address.blockchain_address
       if amounts.any?
         logger.info("Collect from payment_address #{payment_address.address} amounts: #{amounts}")
-        EthereumGateway::Collector
-          .new(client)
-          .call(from_address: payment_address.address,
-                to_address: hot_wallet.address,
-                amounts: amounts,
-                gas_limits: gas_limits,
-                gas_factor: gas_factor,
-                blockchain_address: blockchain_address,
-                secret: payment_address.secret,
-                chain_id: blockchain.chain_id)
+        if payment_address.blockchain.allowance_enabled
+          EthereumGateway::AllowanceCollector
+            .new(client)
+            .call(from_address: payment_address.address,
+                  to_address: hot_wallet.address,
+                  amounts: amounts,
+                  spender_address: fee_wallet.address,
+                  spender_secret: fee_wallet.secret,
+                  blockchain_address: fee_wallet.blockchain_address,
+                  gas_limits: gas_limits,
+                  gas_factor: gas_factor)
+        else
+          EthereumGateway::Collector
+            .new(client)
+            .call(from_address: payment_address.address,
+                  to_address: hot_wallet.address,
+                  amounts: amounts,
+                  gas_limits: gas_limits,
+                  gas_factor: gas_factor,
+                  blockchain_address: blockchain_address,
+                  secret: payment_address.secret,
+                  chain_id: blockchain.chain_id)
+        end
       else
         logger.warn("No collectable amount to collect from #{payment_address.address}")
       end

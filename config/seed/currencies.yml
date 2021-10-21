@@ -51,7 +51,7 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               3
-  blockchain_key: eth-rinkeby
+  blockchain_key: eth-ropsten
   options:
     # ETH tx fees configurations.
     #
@@ -91,6 +91,37 @@
     # ERC20 configuration.
     erc20_contract_address: '0x0000000000000000000000000000000000000000' # Always wrap this value in quotes!
 
+- id:                     usdt-erc20
+  name:                   Tether USD
+  parent_id:              eth
+  contract_address:       '0x110a13FC3efE6A245B50102D2d79B3E76125Ae83'
+  type:                   coin
+  visible:                true
+  subunits:               6
+  deposit_enabled:        true
+  withdrawal_enabled:     true
+  # Deposits with less amount are skipped during blockchain synchronization.
+  # We advise to set value 10 times bigger than the network fee to prevent losses.
+  # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.
+  min_deposit_amount:     2
+  min_collection_amount:  2
+  withdraw_limit_24h:     300
+  withdraw_limit_72h:     600
+  deposit_fee:            0
+  withdraw_fee:           0
+  position:               5
+  blockchain_key: eth-ropsten
+  options:
+    # ERC20 tx fees configurations.
+    #
+    # Maximum amount of gas you're willing to spend on a particular transaction.
+    gas_limit: 90_000
+    # Internal price that is paid for running a contract on the Ethereum network.
+    gas_price: 1_000_000_000
+    #
+    # ERC20 configuration.
+    erc20_contract_address: '0x110a13FC3efE6A245B50102D2d79B3E76125Ae83' # Always wrap this value in quotes!
+
 - id:                     bnb-bep20
   name:                   BNB-BEP20
   subunits:               18
@@ -106,7 +137,7 @@
   withdraw_limit_72h:     0.5
   deposit_fee:            0
   withdraw_fee:           0
-  position:               5
+  position:               6
   blockchain_key: bsc-testnet
   options:
     # ETH tx fees configurations.
@@ -133,7 +164,7 @@
   withdraw_limit_72h:     0.5
   deposit_fee:            0
   withdraw_fee:           0
-  position:               6
+  position:               7
   blockchain_key: bsc-testnet
   options:
     # Maximum amount of gas you're willing to spend on a particular transaction.
