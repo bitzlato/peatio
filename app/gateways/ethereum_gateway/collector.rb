@@ -8,8 +8,10 @@ class EthereumGateway
     NoAmounts = Class.new StandardError
 
     # Collect all tokens and coins from payment_address to hot wallet
-    def call(from_address:, to_address:, amounts:, secret:, private_key:, gas_limits:, gas_factor: 1)
+    def call(from_address:, to_address:, amounts:, gas_limits:, secret: nil, private_key: nil, gas_factor: 1)
       raise NoAmounts if amounts.empty?
+
+      raise 'Must be secret or private_key' if (secret.nil? && private_key.nil?) || (secret.present? && private_key.present?)
 
       # TODO: Сообщать о том что не хватает газа ДО выполнения, так как он потратися
       # Не выводить базовую валюту пока не счету есть токены

@@ -41,7 +41,7 @@ class EthereumGateway < AbstractGateway
         gas_factor: blockchain.client_options[:gas_factor],
         gas_wallet_address: fee_wallet.address,
         gas_wallet_secret: fee_wallet.secret,
-        gas_wallet_private_key: fee_wallet.blockchain_address.try(:private_key),
+        gas_wallet_private_key: ENV.true?('USE_PRIVATE_KEY') ? fee_wallet.private_key : nil,
         target_address: target_address,
         contract_addresses: coins,
         gas_limits: gas_limits

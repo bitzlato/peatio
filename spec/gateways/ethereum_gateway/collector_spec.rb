@@ -27,7 +27,8 @@ describe ::EthereumGateway::Collector do
       .with(from_address: from_address,
             to_address: to_address,
             amount: contract_amount,
-            secret: nil,
+            secret: :secret,
+            private_key: nil,
             subtract_fee: false,
             gas_limit: 1,
             gas_factor: gas_factor,
@@ -40,7 +41,8 @@ describe ::EthereumGateway::Collector do
       .with(from_address: from_address,
             to_address: to_address,
             amount: native_amount,
-            secret: nil,
+            secret: :secret,
+            private_key: nil,
             gas_factor: 1,
             subtract_fee: true,
             gas_limit: 2,
@@ -52,6 +54,7 @@ describe ::EthereumGateway::Collector do
                  to_address: to_address,
                  gas_limits: { contract_address => 1, nil => 2 },
                  amounts: { contract_address => contract_amount, nil => native_amount },
-                 secret: nil)
+                 private_key: nil,
+                 secret: :secret)
   end
 end

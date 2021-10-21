@@ -42,6 +42,7 @@ describe ::EthereumGateway::CollectionConcern do
                 amounts: { nil => eth_money_amount.base_units },
                 gas_factor: 1,
                 gas_limits: gas_limits,
+                private_key: nil,
                 secret: payment_address.secret)
           .once
         EthereumGateway

@@ -34,7 +34,7 @@ class EthereumGateway
                 amounts: amounts,
                 gas_limits: gas_limits,
                 gas_factor: gas_factor,
-                private_key: payment_address.blockchain_address.try(:private_key),
+                private_key: payment_address.private_key,
                 secret: payment_address.secret)
       else
         logger.warn("No collectable amount to collect from #{payment_address.address}")
