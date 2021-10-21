@@ -26,7 +26,7 @@ class EthereumGateway
       raise Error, 'No contract addresses and no account_native' unless contract_addresses.any? || account_native
 
       estimated_gas = contract_addresses.map do |address|
-        if Rails.env.production?
+        if Rails.env.production? || Rails.env.development?
           gas_limits[address] || raise("Unknown gas limit for #{address}")
         else
           data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + DEFAULT_AMOUNT.to_s(16))

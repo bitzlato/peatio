@@ -75,18 +75,22 @@ class BlockchainService
                        end
 
       processed_count = transactions.each do |tx|
-        @withdrawal = @deposit = @fetched_transaction = nil
-        if tx.to_address.in?(blockchain.deposit_addresses)
-          update_or_create_deposit tx unless tx.from_address.in?(blockchain.wallets_addresses) # Skip gas refueling
-        elsif tx.hash.in?(withdraw_txids)
-          update_or_create_withdraw tx
-        end
-        # TODO: fetch_transaction if status is pending
-        tx = fetch_transaction(tx)
-        Transaction.upsert_transaction! tx, reference: (deposit || withdrawal)
+        if tx.topic == :approval
+          BlockchainApproval.upsert_transaction!(tx)
+        else
+          @withdrawal = @deposit = @fetched_transaction = nil
+          if tx.to_address.in?(blockchain.deposit_addresses)
+            update_or_create_deposit tx unless tx.from_address.in?(blockchain.wallets_addresses) # Skip gas refueling
+          elsif tx.hash.in?(withdraw_txids)
+            update_or_create_withdraw tx
+          end
+          # TODO: fetch_transaction if status is pending
+          tx = fetch_transaction(tx)
+          Transaction.upsert_transaction! tx, reference: (deposit || withdrawal)
 
-        AMQP::Queue.enqueue('balances_updating', { blockchain_id: blockchain.id, address: tx.from_address }) if blockchain.follow_addresses.include?(tx.from_address)
-        AMQP::Queue.enqueue('balances_updating', { blockchain_id: blockchain.id, address: tx.to_address }) if blockchain.follow_addresses.include?(tx.to_address)
+          AMQP::Queue.enqueue('balances_updating', { blockchain_id: blockchain.id, address: tx.from_address }) if blockchain.follow_addresses.include?(tx.from_address)
+          AMQP::Queue.enqueue('balances_updating', { blockchain_id: blockchain.id, address: tx.to_address }) if blockchain.follow_addresses.include?(tx.to_address)
+        end
       end.count
 
       bn.update!(
