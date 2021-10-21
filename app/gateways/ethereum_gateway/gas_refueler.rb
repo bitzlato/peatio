@@ -12,9 +12,8 @@ class EthereumGateway
     # Если на балансе средст достаточно,то пополнять отказывается
     # Если Не достаточно, то пополняет ровно столько, сколько нужно
     def call(gas_wallet_address:,
-             gas_wallet_secret:,
-             gas_wallet_private_key:,
-             gas_factor:, target_address:, contract_addresses:, transaction_gas_limit: nil,
+             gas_factor:, target_address:, contract_addresses:, gas_wallet_secret: nil,
+             gas_wallet_private_key: nil, transaction_gas_limit: nil,
              gas_price: nil,
              gas_limits: {})
       balance_on_target_address = load_basic_balance target_address
