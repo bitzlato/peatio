@@ -19,10 +19,10 @@ module Jobs
           Rails.logger.info("Current gas price for #{blockchain.name}: #{gas_price * 1e-9} Gwei")
           if gas_price < min_threshold && !blockchain.high_transaction_price_at.nil?
             blockchain.update!(high_transaction_price_at: nil)
-            Peatio::SlackNotifier.instance.ping "Включил выводы для #{blockchain.name}. Цена газа #{gas_price * 1e-9} Gwei ниже, чем #{min_threshold * 1e-9} Gwei."
+            Peatio::SlackNotifier.gas_price.ping "Включил выводы для #{blockchain.name}. Цена газа #{gas_price * 1e-9} Gwei ниже, чем #{min_threshold * 1e-9} Gwei."
           elsif gas_price > max_threshold && blockchain.high_transaction_price_at.nil?
             blockchain.update!(high_transaction_price_at: Time.current)
-            Peatio::SlackNotifier.instance.ping "Отключил выводы для #{blockchain.name}. Цена газа #{gas_price * 1e-9} Gwei выше, чем #{max_threshold * 1e-9} Gwei."
+            Peatio::SlackNotifier.gas_price.ping "Отключил выводы для #{blockchain.name}. Цена газа #{gas_price * 1e-9} Gwei выше, чем #{max_threshold * 1e-9} Gwei."
           end
         rescue StandardError => e
           report_exception e, true, { service: 'GasPriceChecker' }

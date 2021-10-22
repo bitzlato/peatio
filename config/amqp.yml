@@ -136,9 +136,6 @@ binding:
     topics: peatio.ranger.cancel_orders
   balances_updating:
     queue: balances_updating
-  notificator:
-    queue: notifications
-    exchange: notification
 
 channel:
   trade_executor:
