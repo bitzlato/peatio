@@ -9,7 +9,7 @@ module Workers
 
       def initialize
         Rails.logger.info "Start TradeCompleted for #{FOLLOW_MEMBER_UIDS.join(', ')}"
-        Peatio::SlackNotifier.instance.ping "* Начинаю следить за сделками участников #{FOLLOW_MEMBER_UIDS.join(', ')} и проторговщиком #{BARGAINER_UID}" if Rails.env.production?
+        Peatio::SlackNotifier.bargainer.ping "* Начинаю следить за сделками участников #{FOLLOW_MEMBER_UIDS.join(', ')} и проторговщиком #{BARGAINER_UID}" if Rails.env.production?
         super
       end
 
@@ -28,7 +28,7 @@ module Workers
 
         member = Member.find_by!(uid: member_uid)
         message = generate_follow_message member, payload
-        Peatio::SlackNotifier.instance.ping message
+        Peatio::SlackNotifier.bargainer.ping message
       end
 
       def notify_bargainer(payload)
@@ -38,7 +38,7 @@ module Workers
 
         member = Member.find_by!(uid: member_uid)
         message = generate_bargainer_message member, payload
-        Peatio::SlackNotifier.instance.ping message
+        Peatio::SlackNotifier.bargainer.ping message
       end
 
       def liza_order_url(order_id)

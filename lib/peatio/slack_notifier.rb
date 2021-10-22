@@ -9,21 +9,32 @@ module Peatio
     end
   end
   class SlackNotifier
-    include Singleton
     attr_reader :notifier
     delegate :ping, :post, to: :notifier
 
-    def initialize
-      @notifier = build_notifier
+    def self.gas_price
+      new ENV.fetch('SLACK_GAS_PRICE_CHANNEL')
+    end
+
+    def self.bargainer
+      new ENV.fetch('SLACK_BARGAINER_CHANNEL')
+    end
+
+    def self.notifications
+      new ENV.fetch('SLACK_NOTIFICATIONS_CHANNEL')
+    end
+
+    def initialize(channel)
+      @notifier = build_notifier(channel)
     end
 
     private
 
-    def build_notifier
+    def build_notifier(channel)
       return FakeNotifier if Rails.env.test?
       return FakeNotifier unless ENV.key? 'SLACK_WEBHOOK_URL'
       Slack::Notifier.new ENV.fetch('SLACK_WEBHOOK_URL') do
-        defaults channel: ENV.fetch('SLACK_CHANNEL')
+        defaults channel: channel
       end
     end
   end
