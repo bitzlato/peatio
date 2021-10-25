@@ -50,7 +50,8 @@ module API
           as: :state,
           documentation: {
             type: String,
-            desc: 'Transaction state.'
+            desc: 'Transaction state.',
+            values: (::Deposit.aasm(:default).states.map(&:to_s) + ::Withdraw.aasm(:default).states.map(&:to_s)).compact
           }
         )
 
@@ -93,7 +94,8 @@ module API
           :type,
           documentation: {
             type: String,
-            desc: 'Type of transaction'
+            desc: 'Type of transaction',
+            values: %w[Withdraws::Coin Withdraws::Fiat Deposits::Coin Deposits::Fiat]
           }
         ) do |transaction, _options|
           transaction[:type].constantize.superclass.to_s
