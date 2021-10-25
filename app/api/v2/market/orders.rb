@@ -110,6 +110,26 @@ module API
           present order, with: API::V2::Entities::Order
         end
 
+        desc 'Create a couple of Sell/Buy orders.',
+             success: API::V2::Entities::Order
+        params do
+          requires :orders, type: Array[JSON], documentation: { params_type: 'body' } do
+            use :enabled_markets, :order
+          end
+        end
+        post '/orders/batch' do
+          user_authorize! :create, ::Order
+
+          paired_orders_params = params[:orders].first(2)
+          paired_orders_params.each do |order_params|
+            error!({ errors: ['market.order.market_order_price'] }, 422) if order_params[:ord_type] == 'market' && order_params.key?(:price)
+          end
+          orders = paired_orders_params.map do |order_params|
+            create_order(order_params)
+          end
+          present orders, with: API::V2::Entities::Order
+        end
+
         desc 'Cancel an order.'
         params do
           use :order_id
