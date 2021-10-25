@@ -11,7 +11,6 @@ module Workers
         Jobs::Cron::Ticker,
         Jobs::Cron::StatsMemberPnl,
         # Jobs::Cron::AML,
-        Jobs::Cron::Refund,
         Jobs::Cron::WalletBalances,
         Jobs::Cron::TransfersPolling,
         Jobs::Cron::PaymentAddressBalancer,
