@@ -10,8 +10,8 @@ module API
         before { withdraws_must_be_permitted! }
 
         desc 'Get your transactions history.',
-             is_array: true
-
+             is_array: true,
+             success: API::V2::Entities::Transactions
         params do
           optional :currency,
                    type: String,
