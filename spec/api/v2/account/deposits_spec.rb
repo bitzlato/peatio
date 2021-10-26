@@ -283,11 +283,6 @@ describe API::V2::Account::Deposits, type: :request do
           end
         end
 
-        it 'exposes non-remote addresses' do
-          member.payment_address(blockchain).update!(remote: true)
-          api_get "/api/v2/account/deposit_address/#{currency.id}", token: token
-          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":null,"state":"pending"}'
-        end
       end
     end
 
