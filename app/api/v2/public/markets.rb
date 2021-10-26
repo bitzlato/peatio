@@ -107,7 +107,7 @@ module API
 
           desc 'Get recent trades on market, each trade is included only once. Trades are sorted in reverse creation order.',
                is_array: true,
-               success: API::V2::Entities::Trade
+               success: API::V2::Entities::PublicTrade
           params do
             requires :market,
                      type: String,
