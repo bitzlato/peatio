@@ -14,6 +14,7 @@ class PaymentAddress < ApplicationRecord
   after_commit :enqueue_address_generation, on: :create
 
   validates :address, uniqueness: { scope: :blockchain_id }, if: :address?
+  validates :blockchain_id, uniqueness: { scope: :member_id }, unless: :archived_at?
 
   vault_attribute :details, serialize: :json, default: {}
   vault_attribute :secret
