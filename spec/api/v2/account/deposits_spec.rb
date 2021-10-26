@@ -282,7 +282,6 @@ describe API::V2::Account::Deposits, type: :request do
             expect(response.body).to eq '{"currencies":["eth","trst","ring","xagm.cx"],"address":"' + address.downcase + '","state":"active"}'
           end
         end
-
       end
     end
 
