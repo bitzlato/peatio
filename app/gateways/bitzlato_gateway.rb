@@ -102,6 +102,7 @@ class BitzlatoGateway < AbstractGateway
                           gas_factor: nil,
                           nonce: nil,
                           secret: nil,
+                          private_key: nil,
                           meta: {})
     raise 'amount must be a Money' unless amount.is_a? Money
 
