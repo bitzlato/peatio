@@ -942,7 +942,8 @@ CREATE TABLE public.payment_addresses (
     gas_refueled_at timestamp without time zone,
     last_transfer_try_at timestamp without time zone,
     last_transfer_status character varying,
-    enqueued_generation_at timestamp without time zone
+    enqueued_generation_at timestamp without time zone,
+    archived_at timestamp without time zone
 );
 
 
@@ -2432,6 +2433,13 @@ CREATE INDEX index_payment_addresses_on_member_id ON public.payment_addresses US
 
 
 --
+-- Name: index_payment_addresses_on_member_id_and_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_payment_addresses_on_member_id_and_blockchain_id ON public.payment_addresses USING btree (member_id, blockchain_id) WHERE (archived_at IS NULL);
+
+
+--
 -- Name: index_refunds_on_deposit_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2770,7 +2778,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -3012,6 +3020,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211003172753'),
 ('20211018193526'),
 ('20211019114204'),
-('20211020085635');
+('20211020085635'),
+('20211025132500');
 
 
