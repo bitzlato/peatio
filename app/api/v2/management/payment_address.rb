@@ -32,11 +32,7 @@ module API
           wallet = Wallet.active_deposit_wallet(currency.id)
           error!({ errors: ['account.wallet.not_found'] }, 422) if wallet.blank?
 
-          pa = if params[:remote].nil?
-                 member.payment_address!(wallet.id)
-               else
-                 member.payment_address!(wallet.id, params[:remote])
-               end
+          pa = member.payment_address!(wallet.id)
 
           begin
             pa.with_lock do

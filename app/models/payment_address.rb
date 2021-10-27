@@ -14,6 +14,7 @@ class PaymentAddress < ApplicationRecord
   after_commit :enqueue_address_generation, on: :create
 
   validates :address, uniqueness: { scope: :blockchain_id }, if: :address?
+  validates :blockchain_id, uniqueness: { scope: :member_id }, unless: :archived_at?
 
   vault_attribute :details, serialize: :json, default: {}
   vault_attribute :secret
@@ -21,6 +22,7 @@ class PaymentAddress < ApplicationRecord
   scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
   scope :with_balances, -> { where 'EXISTS ( SELECT * FROM jsonb_each_text(balances) AS each(KEY,val) WHERE "val"::decimal >= 0)' }
   scope :collection_required, -> { with_balances.where(collection_state: %i[none pending done]) }
+  scope :active, -> { where(archived_at: nil) }
 
   # TODO: Migrate association from wallet to blockchain and remove Wallet.deposit*
   belongs_to :member
