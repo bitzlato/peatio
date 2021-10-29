@@ -32,6 +32,7 @@ class Withdraw < ApplicationRecord
   before_validation(on: :create) { self.rid ||= beneficiary.rid if beneficiary.present? }
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
+  after_commit :trigger_private_event
 
   # TODO: validate rid by blockchain specs
   #
@@ -276,6 +277,14 @@ class Withdraw < ApplicationRecord
 
   def money_amount
     currency.money_currency.to_money_from_decimal amount
+  end
+
+  def for_notify
+    API::V2::Entities::Withdraw.represent(self).as_json
+  end
+
+  def trigger_private_event
+    ::AMQP::Queue.enqueue_event('private', member&.uid, 'withdraw', for_notify)
   end
 
   private
