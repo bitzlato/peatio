@@ -70,7 +70,8 @@ module API
                      values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                      as: :currency_id,
                      desc: 'Beneficiary currency code.',
-                     documentation: { param_type: 'body' }
+                     documentation: { param_type: 'body' },
+                     coerce_with: ->(c) { c.downcase }
             requires :name,
                      type: String,
                      allow_blank: false,
