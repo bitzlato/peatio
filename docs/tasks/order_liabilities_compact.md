@@ -14,13 +14,13 @@ Due to the size of the liabilities table, it is recommended to run this job ever
 For process order liabilities compaction job:
 
 ```bash
-bundle exec rake job job:liabilities:compact_orders
+bundle exec rails job:liabilities:compact_orders
 ```
 
 It will compact liabilities for orders from previous week. Also you can specify timerange (e.g.):
 
 ```bash
-bundle exec rake job job:liabilities:compact_orders['2020-12-09 00:00:00','2020-12-10 00:00:00']
+bundle exec rails "job:liabilities:compact_orders[2020-12-09 00:00:00,2020-12-10 00:00:00]"
 ```
 
 New DB Job record:

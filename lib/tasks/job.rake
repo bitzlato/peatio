@@ -51,24 +51,6 @@ namespace :job do
         { pointer: time, counter: count }
       end
     end
-
-    def order_insert
-      'INSERT INTO orders (id, uuid, remote_id, bid, ask, market_id, price, ' \
-      'volume, origin_volume, maker_fee, taker_fee, state, type, member_id, ord_type, ' \
-      'locked, origin_locked, funds_received, trades_count, created_at, updated_at) VALUES ' \
-    end
-
-    def order_values(order)
-      order['remote_id'] = order['remote_id'].nil? ? 'NULL' : order['remote_id']
-      order['uuid'] = UUID::Type.new.quoted_id(order['uuid'])
-      "(#{order['id']}, #{order['uuid']}, #{order['remote_id']}, " \
-      "'#{order['bid']}', '#{order['ask']}', '#{order['market_id']}', " \
-      "#{order['price']}, #{order['volume']}, #{order['origin_volume']}, " \
-      "#{order['maker_fee']}, #{order['taker_fee']}, #{order['state']}, " \
-      "'#{order['type']}', #{order['member_id']}, '#{order['ord_type']}', " \
-      "#{order['locked']}, #{order['origin_locked']}, #{order['funds_received']}, " \
-      "#{order['trades_count']}, '#{order['created_at']}', '#{order['updated_at']}')"
-    end
   end
 
   namespace :liabilities do
