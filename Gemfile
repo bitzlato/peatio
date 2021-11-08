@@ -135,7 +135,7 @@ group :deploy do
   gem 'capistrano-rails-console', require: false
   gem 'capistrano-rbenv', require: false
   gem 'capistrano-shell', require: false
-  gem 'capistrano-systemd-multiservice', github: 'groovenauts/capistrano-systemd-multiservice', require: false
+  gem 'capistrano-systemd-multiservice', github: 'brandymint/capistrano-systemd-multiservice', require: false
   gem 'capistrano-tasks', github: 'brandymint/capistrano-tasks', require: false
   # gem 'capistrano-master-key', require: false, github: 'virgoproz/capistrano-master-key'
   gem 'bugsnag-capistrano', require: false
