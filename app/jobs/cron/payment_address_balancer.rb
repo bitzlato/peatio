@@ -7,7 +7,7 @@ module Jobs
         return unless Rails.env.production? || Rails.env.sandbox?
 
         Rails.logger.info('Update payment addresses balances')
-        PaymentAddress.where.not(address: nil).find_each do |payment_address|
+        PaymentAddress.active.where.not(address: nil).find_each do |payment_address|
           BalancesUpdater.new(blockchain: payment_address.blockchain, address: payment_address.address).perform
         end
 
