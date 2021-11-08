@@ -132,7 +132,8 @@ module Matching
       ::AMQP::Queue.enqueue_event('public', @market.symbol, 'ob-snap', {
                                     'asks' => ask_orders.limit_orders.map { |k, v| [k.to_s, v.map(&:volume).sum.to_s] }[0..300],
                                     'bids' => bid_orders.limit_orders.map { |k, v| [k.to_s, v.map(&:volume).sum.to_s] }.reverse[0..300],
-                                    'sequence' => @sequence_number
+                                    'sequence' => @sequence_number,
+                                    'ts' => Time.now.getutc.to_f
                                   })
     end
 

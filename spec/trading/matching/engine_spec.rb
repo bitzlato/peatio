@@ -663,11 +663,14 @@ describe Matching::Engine do
     before { subject.initializing = false }
 
     it 'publishes increment of orderbook' do
-      ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['10.0', '5.0'], 'sequence' => 2 })
-      ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'bids' => ['10.0', '5.0'], 'sequence' => 3 })
+      time = Time.now
+      Timecop.freeze(time) do
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['10.0', '5.0'], 'sequence' => 2, 'ts' => time.getutc.to_f })
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'bids' => ['10.0', '5.0'], 'sequence' => 3, 'ts' => time.getutc.to_f })
 
-      subject.publish_increment(market.symbol, :ask, ask.price, ask.volume)
-      subject.publish_increment(market.symbol, :bid, bid.price, bid.volume)
+        subject.publish_increment(market.symbol, :ask, ask.price, ask.volume)
+        subject.publish_increment(market.symbol, :bid, bid.price, bid.volume)
+      end
     end
   end
 
@@ -683,12 +686,16 @@ describe Matching::Engine do
       subject.submit(bid1)
       subject.submit(bid2)
 
-      ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
-                                                   'asks' => [['12.0', '1.0'], ['14.0', '1.0']],
-                                                   'bids' => [['11.0', '2.0'], ['10.0', '2.0']],
-                                                   'sequence' => 1
-                                                 })
-      subject.publish_snapshot
+      time = Time.now
+      Timecop.freeze(time) do
+        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+                                                     'asks' => [['12.0', '1.0'], ['14.0', '1.0']],
+                                                     'bids' => [['11.0', '2.0'], ['10.0', '2.0']],
+                                                     'sequence' => 1,
+                                                     'ts' => time.getutc.to_f
+                                                   })
+        subject.publish_snapshot
+      end
     end
 
     context 'periodic publish snapshot time' do
@@ -698,13 +705,17 @@ describe Matching::Engine do
         subject.snapshot_time = Time.now - 80.seconds
         subject.submit(ask1)
         subject.submit(bid1)
-        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
-                                                     'asks' => [['14.0', '1.0']],
-                                                     'bids' => [['11.0', '2.0']],
-                                                     'sequence' => 1
-                                                   })
-        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
-        subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        time = Time.now
+        Timecop.freeze(time) do
+          ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+                                                       'asks' => [['14.0', '1.0']],
+                                                       'bids' => [['11.0', '2.0']],
+                                                       'sequence' => 1,
+                                                       'ts' => time.getutc.to_f
+                                                     })
+          ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2, 'ts' => time.getutc.to_f })
+          subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        end
         expect(subject.increment_count).to eq(1)
       end
 
@@ -712,13 +723,17 @@ describe Matching::Engine do
         subject.snapshot_time = Time.now - 80.seconds
         subject.submit(ask1)
         subject.submit(bid1)
-        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
-                                                     'asks' => [['14.0', '1.0']],
-                                                     'bids' => [['11.0', '2.0']],
-                                                     'sequence' => 1
-                                                   })
-        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
-        subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        time = Time.now
+        Timecop.freeze(time) do
+          ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+                                                       'asks' => [['14.0', '1.0']],
+                                                       'bids' => [['11.0', '2.0']],
+                                                       'sequence' => 1,
+                                                       'ts' => time.getutc.to_f
+                                                     })
+          ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2, 'ts' => time.getutc.to_f })
+          subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        end
       end
 
       it 'publishes snapshot of orderbook (snapshot_time > 10s and increment count => 20)' do
@@ -726,13 +741,17 @@ describe Matching::Engine do
         subject.increment_count = 20
         subject.submit(ask1)
         subject.submit(bid1)
-        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
-                                                     'asks' => [['14.0', '1.0']],
-                                                     'bids' => [['11.0', '2.0']],
-                                                     'sequence' => 1
-                                                   })
-        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
-        subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        time = Time.now
+        Timecop.freeze(time) do
+          ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-snap', {
+                                                       'asks' => [['14.0', '1.0']],
+                                                       'bids' => [['11.0', '2.0']],
+                                                       'sequence' => 1,
+                                                       'ts' => time.getutc.to_f
+                                                     })
+          ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2, 'ts' => time.getutc.to_f })
+          subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        end
       end
 
       it 'shouldnt publish snapshot of orderbook (snapshot_time <= 1m and increment count < 20)' do
@@ -744,8 +763,11 @@ describe Matching::Engine do
                                                      'bids' => [['11.0', '2.0']],
                                                      'sequence' => 1
                                                    }).never
-        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
-        subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        time = Time.now
+        Timecop.freeze(time) do
+          ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2, 'ts' => time.getutc.to_f })
+          subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        end
       end
 
       it 'shouldnt publish snapshot of orderbook (snapshot_time < 10s and increment count => 20)' do
@@ -757,8 +779,11 @@ describe Matching::Engine do
                                                      'asks' => [['14.0', '1.0']],
                                                      'bids' => [['11.0', '2.0']]
                                                    }).never
-        ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2 })
-        subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        time = Time.now
+        Timecop.freeze(time) do
+          ::AMQP::Queue.expects(:enqueue_event).with('public', market.symbol, 'ob-inc', { 'asks' => ['11.0', '2.0'], 'sequence' => 2, 'ts' => time.getutc.to_f })
+          subject.publish_increment(market.symbol, :ask, bid1.price, bid1.volume)
+        end
       end
     end
   end
