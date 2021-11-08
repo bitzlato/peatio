@@ -151,7 +151,8 @@ module Matching
       @sequence_number += 1
       ::AMQP::Queue.enqueue_event('public', market, 'ob-inc', {
                                     "#{side}s" => [price.to_s, amount.to_s],
-                                    'sequence' => @sequence_number
+                                    'sequence' => @sequence_number,
+                                    'ts' => Time.now.getutc.to_f
                                   })
     end
 
