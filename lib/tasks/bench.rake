@@ -135,5 +135,29 @@ namespace :bench do
 
       benches.each {|b| Kernel.pp b.result}
     end
+
+    require 'benchmark'
+    desc 'Order Processing Simple Bench'
+    task :simple, [:config_load_path] => [:environment] do |t, args|
+      time = 0
+      b = nil
+      c = nil
+      callback = lambda do |_name, start, finish, _id, payload|
+        duration = finish.to_f - start.to_f
+        time += duration
+      end
+
+      Order.update_all state: Order::WAIT
+      orders = Order.open.limit(1000).map { |order| {'action' => 'cancel', 'order' => { 'id' => order.id }}}
+
+      order_processor = ::Workers::AMQP::OrderProcessor.new
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        b = Benchmark.measure { orders.each { |o| order_processor.process(o) } }
+      end
+
+      puts time, b
+    end
+
   end
 end
