@@ -204,7 +204,8 @@ class Order < ApplicationRecord
       at: at,
       created_at: created_at.to_i,
       updated_at: updated_at.to_i,
-      trades_count: trades_count
+      trades_count: trades_count,
+      uuid: uuid
     }
   end
 
