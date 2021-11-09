@@ -10,11 +10,11 @@ set :systemd_daemon_instances, -> { %i[cron_job blockchain] }
 server ENV['PRODUCTION_SERVER'],
        user: fetch(:user),
        port: '22',
-       roles: %w[app db daemons].freeze,
+       roles: %w[app amqp_daemons].freeze,
        ssh_options: { forward_agent: true }
 
 server ENV['PRODUCTION_SERVER2'],
        user: fetch(:user),
        port: '22',
-       roles: %w[app].freeze,
+       roles: %w[db daemons].freeze,
        ssh_options: { forward_agent: true }
