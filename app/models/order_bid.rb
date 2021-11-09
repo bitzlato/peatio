@@ -13,6 +13,12 @@ class OrderBid < Order
         .sum(:volume)
         .to_a
     end
+
+    def top_price(market_id)
+      where(market_id: market_id, market_type: ::Market::DEFAULT_TYPE, state: :wait)
+        .where.not(ord_type: :market)
+        .maximum(:price)
+    end
   end
   # @deprecated
   def hold_account

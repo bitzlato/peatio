@@ -12,6 +12,12 @@ class OrderAsk < Order
         .sum(:volume)
         .to_a
     end
+
+    def top_price(market_id)
+      where(market_id: market_id, market_type: ::Market::DEFAULT_TYPE, state: :wait)
+        .where.not(ord_type: :market)
+        .minimum(:price)
+    end
   end
   # @deprecated
   def hold_account

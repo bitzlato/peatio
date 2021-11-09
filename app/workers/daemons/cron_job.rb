@@ -17,7 +17,8 @@ module Workers
         Jobs::Cron::RemoveInvoicedDeposits,
         Jobs::Cron::Collector,
         Jobs::Cron::CurrencyPricer,
-        Jobs::Cron::GasPriceChecker
+        Jobs::Cron::GasPriceChecker,
+        Jobs::Cron::BargainerJob
       ].freeze
 
       def run
