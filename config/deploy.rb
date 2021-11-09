@@ -69,7 +69,7 @@ set :systemd_daemon_role, :daemons
 set :systemd_daemon_instances, -> { %i[cron_job] }
 
 # Restricted daemons list for stages
-set :systemd_amqp_daemon_role, :daemons
+set :systemd_amqp_daemon_role, :amqp_daemons
 
 # TODO: На стейджах НЕ запускать deposit_coin_address, withdraw_coin, deposit_intention
 #
@@ -109,7 +109,7 @@ end
 # Removed rake, bundle, gem
 # Added rails.
 # rake has its own dotenv requirement in Rakefile
-set :dotenv_hook_commands, %w[bundle rake rails ruby]
+set :dotenv_hook_commands, %w[rake rails ruby]
 
 Capistrano::DSL.stages.each do |stage|
   after stage, 'dotenv:hook'
