@@ -12,3 +12,9 @@ server ENV['PRODUCTION_SERVER'],
        port: '22',
        roles: %w[app db daemons].freeze,
        ssh_options: { forward_agent: true }
+
+server ENV['PRODUCTION_SERVER2'],
+       user: fetch(:user),
+       port: '22',
+       roles: %w[app].freeze,
+       ssh_options: { forward_agent: true }
