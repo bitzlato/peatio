@@ -1,0 +1,2 @@
+config/deploy/*.rb   export-ignore
+config/deploy/            export-ignore

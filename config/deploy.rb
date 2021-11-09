@@ -50,15 +50,7 @@ if Gem.loaded_specs.key?('capistrano-sentry')
   after 'deploy:published', 'sentry:notice_deployment'
 end
 
-set :puma_init_active_record, true
-set :puma_control_app, true
-set :puma_threads, [4, 16]
 set :puma_tag, fetch(:application)
-set :puma_daemonize, false
-set :puma_preload_app, false
-set :puma_prune_bundler, true
-set :puma_init_active_record, true
-set :puma_workers, 0
 set :puma_start_task, 'systemd:puma:start'
 
 set :assets_roles, []
