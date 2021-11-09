@@ -44,3 +44,4 @@ require 'capistrano/systemd/multiservice'
 install_plugin Capistrano::Systemd::MultiService.new_service('puma', service_type: 'user')
 install_plugin Capistrano::Systemd::MultiService.new_service('daemon', service_type: 'user')
 install_plugin Capistrano::Systemd::MultiService.new_service('amqp_daemon', service_type: 'user')
+install_plugin Capistrano::Systemd::MultiService.new_service('market_amqp_daemon', service_type: 'user')
