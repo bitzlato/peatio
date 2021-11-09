@@ -5,11 +5,14 @@ module Workers
     class OrderProcessor < Base
       ACTUAL_PERIOD = Rails.env.production? ? 1.second : 10.seconds
 
-      def initialize
+      def initialize(market_symbol=nil)
+        @market_symbol = market_symbol
         Rails.logger.info('Resubmit orders')
         return if ENV.true?('SKIP_SUBMIT_PENDING_ORDERS')
 
-        Order.spot.where(state: ::Order::PENDING).find_each do |order|
+        orders = Order.spot.where(state: ::Order::PENDING)
+        orders = orders.with_market(market_symbol) if market_symbol.present?
+        orders.find_each do |order|
           submit_order(order.id)
         rescue StandardError => e
           ::AMQP::Queue.enqueue(:trade_error, e.message)
@@ -21,6 +24,7 @@ module Workers
       end
 
       def process(payload)
+        raise "Wrong market #{@market_symbol} for #{payload}" if @market_symbol.present? && payload['market_id']!=@market_symbol
         case payload['action']
         when 'submit'
           submit_order(payload.dig('order', 'id'))
