@@ -80,12 +80,12 @@ set :systemd_amqp_daemon_instances,
       ]
     }
 
-markets = ["btc_usdterc20", "btc_mcrerc20", "eth_btc", "eth_usdterc20", "eth_usdcerc20", "eth_mcrerc20", "usdterc20_mcrerc20", "usdterc20_usdtbep20", "usdterc20_usdcerc20", "usdcerc20_usdcbep20", "bnbbep20_usdtbep20", "bnbbep20_usdcbep20", "usdthrc20_usdtbep20", "usdthrc20_usdterc20", "usdchrc20_usdcerc20", "usdchrc20_usdcbep20", "hthrc20_usdthrc20", "hthrc20_usdchrc20", "mdterc20_mcrerc20", "mdterc20_usdterc20"]
+markets = %w[btc_usdterc20 btc_mcrerc20 eth_btc eth_usdterc20 eth_usdcerc20 eth_mcrerc20 usdterc20_mcrerc20 usdterc20_usdtbep20 usdterc20_usdcerc20 usdcerc20_usdcbep20 bnbbep20_usdtbep20 bnbbep20_usdcbep20 usdthrc20_usdtbep20 usdthrc20_usdterc20 usdchrc20_usdcerc20 usdchrc20_usdcbep20 hthrc20_usdthrc20 hthrc20_usdchrc20 mdterc20_mcrerc20 mdterc20_usdterc20]
 
 set :systemd_market_amqp_daemon_instances,
-  lambda {
-    markets.map { |market| %i[ order_processor matching trade_executor ].map { |worker| worker + ':' + market } }
-  }
+    lambda {
+      markets.map { |market| %w[order_processor matching trade_executor].map { |worker| worker + ':' + market } }
+    }
 
 after 'deploy:publishing', 'systemd:puma:reload-or-restart'
 after 'deploy:publishing', 'systemd:daemon:reload-or-restart'

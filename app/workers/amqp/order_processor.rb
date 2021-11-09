@@ -5,7 +5,7 @@ module Workers
     class OrderProcessor < Base
       ACTUAL_PERIOD = Rails.env.production? ? 1.second : 10.seconds
 
-      def initialize(market_symbol=nil)
+      def initialize(market_symbol = nil)
         @market_symbol = market_symbol
         Rails.logger.info('Resubmit orders')
         return if ENV.true?('SKIP_SUBMIT_PENDING_ORDERS')
@@ -24,7 +24,8 @@ module Workers
       end
 
       def process(payload)
-        raise "Wrong market #{@market_symbol} for #{payload}" if @market_symbol.present? && payload['market_id']!=@market_symbol
+        raise "Wrong market #{@market_symbol} for #{payload}" if @market_symbol.present? && payload['market_id'] != @market_symbol
+
         case payload['action']
         when 'submit'
           submit_order(payload.dig('order', 'id'))
