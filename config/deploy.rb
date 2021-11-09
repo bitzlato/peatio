@@ -84,12 +84,7 @@ markets = ["btc_usdterc20", "btc_mcrerc20", "eth_btc", "eth_usdterc20", "eth_usd
 
 set :systemd_market_amqp_daemon_instances,
   lambda {
-  markets.map { |market|
-    %i[
-      order_processor
-      matching
-      trade_executor
-    ].map { |worker| worker + ':' + market }
+    markets.map { |market| %i[ order_processor matching trade_executor ].map { |worker| worker + ':' + market } }
   }
 
 after 'deploy:publishing', 'systemd:puma:reload-or-restart'
