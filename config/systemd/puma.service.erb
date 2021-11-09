@@ -18,6 +18,7 @@ ExecStart=/home/<%= fetch(:user) %>/.rbenv/bin/rbenv exec bundle exec puma -C <%
 #
 # USR1 restart workers in phases, a rolling restart. This will not reload configuration file.
 # ExecReload=/bin/kill -USR1 $MAINPID
+#
 ExecReload=/home/<%= fetch(:user) %>/.rbenv/bin/rbenv exec bundle exec pumactl -S <%= shared_path %>/tmp/pids/puma.state -F <%= shared_path %>/puma.rb restart
 ExecStop=/home/<%= fetch(:user) %>/.rbenv/bin/rbenv exec bundle exec pumactl -S <%= shared_path %>/tmp/pids/puma.state stop
 

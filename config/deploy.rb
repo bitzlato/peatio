@@ -52,6 +52,7 @@ end
 
 set :puma_tag, fetch(:application)
 set :puma_start_task, 'systemd:puma:start'
+set :puma_init_active_record, true
 
 set :assets_roles, []
 
