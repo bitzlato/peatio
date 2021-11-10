@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 class Bargainer
-  def call(market:, member:, volume:)
-    Rails.logger.debug { { message: 'Market trade creating is started', market_symbol: market.symbol, member_id: member.id, volume: volume, service: 'bargainer' } }
+  def call(market:, member:, min_volume:, max_volume:, price_deviation:)
+    Rails.logger.debug { { message: 'Market trade creating is started', market_symbol: market.symbol, member_id: member.id, min_volume: min_volume, max_volume: max_volume, price_deviation: price_deviation, service: 'bargainer' } }
 
     service = ::OrderServices::CreateOrder.new(member: member)
-    price = average_price(market)
+    volume = Random.rand(max_volume - min_volume) + min_volume
+    volume = market.round_amount(volume.to_d)
+    price = average_price(market, price_deviation)
     if price.nil?
       cancel_member_orders(member, market)
       return
@@ -18,12 +20,12 @@ class Bargainer
     end
     cancel_member_orders(member, market)
 
-    Rails.logger.debug { { message: 'Market trade creating is finished', market_symbol: market.symbol, member_id: member.id, volume: volume, service: 'bargainer' } }
+    Rails.logger.debug { { message: 'Market trade creating is finished', market_symbol: market.symbol, member_id: member.id, volume: volume, price: price, service: 'bargainer' } }
   end
 
   private
 
-  def average_price(market)
+  def average_price(market, price_deviation)
     order_ask_price = OrderAsk.top_price(market.symbol)
     order_bid_price = OrderBid.top_price(market.symbol)
     if order_ask_price.nil? || order_bid_price.nil?
@@ -31,8 +33,10 @@ class Bargainer
       return nil
     end
 
-    price = market.round_price((order_ask_price + order_bid_price) / 2)
-    if price == order_ask_price || price == order_bid_price
+    price = (order_ask_price + order_bid_price) / 2
+    price *= 1 + ((Random.rand(2.0) - 1) * price_deviation)
+    price = market.round_price(price)
+    if price >= order_ask_price || price <= order_bid_price
       Rails.logger.warn { { message: 'Order book spread is too narrow', order_ask_price: order_ask_price, order_bid_price: order_bid_price, market_symbol: market.symbol, service: 'bargainer' } }
       return nil
     end
