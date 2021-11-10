@@ -333,7 +333,7 @@ describe API::V2::Market::Orders, type: :request do
 
     it 'creates a buy order' do
       member.get_account(:usd).update(balance: 100_000)
-      AMQP::Queue.expects(:enqueue).with(:order_processor, is_a(Hash), is_a(Hash))
+      AMQP::Queue.expects(:enqueue).with(:order_processor, is_a(Hash), is_a(Hash), nil)
 
       expect do
         api_post '/api/v2/market/orders', token: token, params: { market: 'btc_usd', side: 'buy', volume: '12.13', price: '2014' }
