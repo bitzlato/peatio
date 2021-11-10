@@ -4,7 +4,7 @@ set :rails_env, :sandbox
 set :disallow_pushing, false
 set :application, -> { 'peatio-sandbox' }
 set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:application)}" }
-
+set :markets, %w[eth_bnb]
 set :systemd_daemon_instances, -> { %i[cron_job blockchain] }
 
 set :systemd_amqp_daemon_instances,
