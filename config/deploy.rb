@@ -114,3 +114,12 @@ set :dotenv_hook_commands, %w[rake rails ruby]
 Capistrano::DSL.stages.each do |stage|
   after stage, 'dotenv:hook'
 end
+
+namespace :systemd do
+  desc 'Statuses of systemd units on every servers'
+  task :statuses do
+    on roles(:all) do
+      execute 'systemctl --user status'
+    end
+  end
+end
