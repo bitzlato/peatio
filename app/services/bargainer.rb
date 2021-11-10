@@ -16,8 +16,13 @@ class Bargainer
     sides = %w[buy sell].shuffle
     sides.each do |side|
       result = service.perform(market: market, side: side, ord_type: 'limit', volume: volume, price: price)
-      Rails.logger.error { { message: 'Order creating is failed', side: side, error_message: result.errors.first, market_symbol: market.symbol, service: 'bargainer' } } if result.failed?
+      if result.successful?
+        Rails.logger.info { { message: 'Order is created', market_symbol: market.symbol, order_id: result.data.id, service: 'bargainer' } }
+      else
+        Rails.logger.error { { message: 'Order creating is failed', side: side, error_message: result.errors.first, market_symbol: market.symbol, service: 'bargainer' } }
+      end
     end
+    sleep 0.2
     cancel_member_orders(member, market)
 
     Rails.logger.info { { message: 'Market trade creating is finished', market_symbol: market.symbol, member_id: member.id, volume: volume, price: price, service: 'bargainer' } }
