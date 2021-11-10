@@ -8,10 +8,8 @@ class Bargainer
     volume = Random.rand(max_volume - min_volume) + min_volume
     volume = market.round_amount(volume.to_d)
     price = average_price(market, price_deviation)
-    if price.nil?
-      cancel_member_orders(member, market)
-      return
-    end
+    cancel_member_orders(member, market)
+    return if price.nil?
 
     sides = %w[buy sell].shuffle
     sides.each do |side|
