@@ -26,7 +26,7 @@ module Matching
       AMQP::Queue.enqueue(:order_processor,
                           { action: 'cancel', order: @payload[:order] },
                           { persistent: false },
-                          Peatio::App.config.market_specific_workers ? order.market_id : nil)
+                          Peatio::App.config.market_specific_workers ? @payload.dig(:order, 'market_id') || raise("Unknown market for #{@payload}") : nil)
     end
 
     def execute
