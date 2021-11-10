@@ -68,7 +68,6 @@ set :systemd_market_amqp_daemon_role, :market_amqp_daemons
 # TODO: На стейджах НЕ запускать deposit_coin_address, withdraw_coin, deposit_intention
 #
 set :systemd_amqp_daemon_instances,
-    lambda {
       %i[
         balances_updating
         cancel_member_orders
@@ -78,10 +77,10 @@ set :systemd_amqp_daemon_instances,
         influx_writer
         trade_completed
         withdraw_coin
+        matching
+        trade_executor
       ]
-    }
 
-# set :market_amqp_daemons, %w[order_processor matching trade_executor]
 set :market_amqp_daemons, %w[order_processor]
 
 set :systemd_market_amqp_daemon_instances, lambda {
