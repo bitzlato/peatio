@@ -24,13 +24,14 @@ module Workers
       end
 
       def process(payload)
-
         case payload['action']
         when 'submit'
           raise "Wrong market '#{@market_symbol}' for #{payload}" if @market_symbol.present? && payload.dig('order', 'market_id') != @market_symbol
+
           submit_order(payload.dig('order', 'id'))
         when 'cancel'
           raise "Wrong market '#{@market_symbol}' for #{payload}" if @market_symbol.present? && payload.dig('order', 'market') != @market_symbol
+
           cancel_order(payload.dig('order', 'id'))
         end
       rescue StandardError => e
