@@ -24,7 +24,7 @@ module Workers
       end
 
       def process(payload)
-        raise "Wrong market #{@market_symbol} for #{payload}" if @market_symbol.present? && payload['market_id'] != @market_symbol
+        raise "Wrong market '#{@market_symbol}' for #{payload}" if @market_symbol.present? && payload.dig('order', 'market_id') != @market_symbol
 
         case payload['action']
         when 'submit'
