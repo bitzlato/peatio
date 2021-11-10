@@ -18,5 +18,5 @@ server ENV['PRODUCTION_SERVER'],
 server ENV['PRODUCTION_SERVER2'],
        user: fetch(:user),
        port: '22',
-       roles: %w[db daemons].freeze,
+       roles: %w[db daemons market_amqp_daemon].freeze,
        ssh_options: { forward_agent: true }
