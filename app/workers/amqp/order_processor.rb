@@ -3,7 +3,7 @@
 module Workers
   module AMQP
     class OrderProcessor < Base
-      ACTUAL_PERIOD = Rails.env.test? ? 10.seconds : 1.second
+      ACTUAL_PERIOD = Rails.env.production? ? 1.second : 10.seconds
 
       def initialize
         Rails.logger.info('Resubmit orders')
