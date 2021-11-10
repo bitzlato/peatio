@@ -5,7 +5,7 @@ module Workers
     class TradeExecutor < Base
       def initialize(market = nil)
         @market = market # Setupt but not used
-        super
+        super()
       end
 
       def process(payload)
