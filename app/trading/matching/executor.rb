@@ -25,7 +25,8 @@ module Matching
     def publish_cancel
       AMQP::Queue.enqueue(:order_processor,
                           { action: 'cancel', order: @payload[:order] },
-                          { persistent: false })
+                          { persistent: false },
+                          Peatio::App.config.market_specific_workers ? order.market_id : nil)
     end
 
     def execute

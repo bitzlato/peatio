@@ -81,8 +81,8 @@ set :systemd_amqp_daemon_instances,
       ]
     }
 
-
-set :market_amqp_daemons, %w[order_processor matching trade_executor]
+# set :market_amqp_daemons, %w[order_processor matching trade_executor]
+set :market_amqp_daemons, %w[order_processor]
 
 set :systemd_market_amqp_daemon_instances, lambda {
   (fetch(:markets) || raise('No :markets settings defined'))
