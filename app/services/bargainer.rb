@@ -2,7 +2,7 @@
 
 class Bargainer
   def call(market:, member:, min_volume:, max_volume:, price_deviation:)
-    Rails.logger.debug { { message: 'Market trade creating is started', market_symbol: market.symbol, member_id: member.id, min_volume: min_volume, max_volume: max_volume, price_deviation: price_deviation, service: 'bargainer' } }
+    Rails.logger.info { { message: 'Market trade creating is started', market_symbol: market.symbol, member_id: member.id, min_volume: min_volume, max_volume: max_volume, price_deviation: price_deviation, service: 'bargainer' } }
 
     service = ::OrderServices::CreateOrder.new(member: member)
     volume = Random.rand(max_volume - min_volume) + min_volume
@@ -20,7 +20,7 @@ class Bargainer
     end
     cancel_member_orders(member, market)
 
-    Rails.logger.debug { { message: 'Market trade creating is finished', market_symbol: market.symbol, member_id: member.id, volume: volume, price: price, service: 'bargainer' } }
+    Rails.logger.info { { message: 'Market trade creating is finished', market_symbol: market.symbol, member_id: member.id, volume: volume, price: price, service: 'bargainer' } }
   end
 
   private
