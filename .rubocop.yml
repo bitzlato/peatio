@@ -270,3 +270,5 @@ Rails/Date:
   Exclude:
     - 'spec/factories/operations.rb'
 
+Metrics/BlockLength:
+  IgnoredMethods: ['describe']

@@ -4,15 +4,13 @@ require 'rake'
 
 Peatio::Application.load_tasks
 
-module Jobs
-  module Cron
+module Workers
+  module Daemons
     module LiabilitiesCompactor
-      JOB_TIMEOUT = 24.hours
+      @sleep_time = 24.hours
 
-      def self.process(job_timeout = JOB_TIMEOUT)
+      def process
         Rake::Task['job:liabilities:compact_orders'].invoke
-
-        sleep job_timeout
       end
     end
   end

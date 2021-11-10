@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
-module Jobs
-  module Cron
-    class KLine
-      def self.process
+module Workers
+  module Daemons
+    class KLine < Base
+      @sleep_time = 2
+
+      def process
         Market.active.each do |market|
           ::KLineService::AVAILABLE_POINT_PERIODS.each do |period|
             service = ::KLineService[market.symbol, period]
@@ -16,7 +18,6 @@ module Jobs
                                         event_name, point)
           end
         end
-        sleep 2
       end
     end
   end

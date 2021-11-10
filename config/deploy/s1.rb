@@ -4,7 +4,7 @@ set :rails_env, :staging
 set :disallow_pushing, false
 set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:application)}" }
 
-set :systemd_daemon_instances, -> { %i[cron_job] }
+set :systemd_daemon_instances, -> { %i[bargainer_job currency_pricer k_line liabilities_compactor remove_invoiced_deposits stats_member_pnl ticker] }
 
 set :systemd_amqp_daemon_instances,
     %i[

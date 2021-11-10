@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-describe Jobs::Cron::StatsMemberPnl do
+describe Workers::Daemons::StatsMemberPnl do
+  subject(:worker) { described_class.new }
+
   let!(:member_platform) { create(:member, :level_3) }
   let!(:member) { create(:member, :level_3) }
   let!(:maker) { create(:member, role: 'maker') }
@@ -38,19 +40,19 @@ describe Jobs::Cron::StatsMemberPnl do
   end
 
   before do
-    described_class.stubs(:exclude_roles).returns(['maker'])
+    worker.stubs(:exclude_roles).returns(['maker'])
   end
 
   context 'conversion_market' do
     it 'when there is no market' do
       expect do
-        described_class.conversion_market('test1', 'btc')
+        worker.conversion_market('test1', 'btc')
       end.to raise_error('There is no market test1/btc')
     end
 
     it 'when market exists' do
       market = Market.first
-      expect(described_class.conversion_market(market.base_unit, market.quote_unit)).to eq market.symbol
+      expect(worker.conversion_market(market.base_unit, market.quote_unit)).to eq market.symbol
     end
   end
 
@@ -63,7 +65,7 @@ describe Jobs::Cron::StatsMemberPnl do
     it 'when there is no trades' do
       market = Market.spot.find_by(base_unit: 'btc', quote_unit: 'usd')
       expect do
-        described_class.price_at(coin_deposit.currency_id, market.quote_unit, liability.created_at)
+        worker.price_at(coin_deposit.currency_id, market.quote_unit, liability.created_at)
       end.to raise_error("There is no trades on market #{coin_deposit.currency_id}_#{market.quote_unit}")
     end
 
@@ -75,12 +77,12 @@ describe Jobs::Cron::StatsMemberPnl do
       end
 
       it 'return trade price' do
-        res = described_class.price_at(coin_deposit.currency_id, trade.market.quote_unit, trade.created_at + 3.hours)
+        res = worker.price_at(coin_deposit.currency_id, trade.market.quote_unit, trade.created_at + 3.hours)
         expect(res).to eq trade.price
       end
 
       it 'when pnl currency id equal to currency id' do
-        res = described_class.price_at(coin_deposit.currency_id, coin_deposit.currency_id, trade.created_at + 3.hours)
+        res = worker.price_at(coin_deposit.currency_id, coin_deposit.currency_id, trade.created_at + 3.hours)
         expect(res).to eq 1.0
       end
     end
@@ -105,12 +107,12 @@ describe Jobs::Cron::StatsMemberPnl do
         let!(:pnl) { create(:stats_member_pnl) }
 
         before do
-          described_class.stubs(:price_at).returns(123)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(123)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(1)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(1)
 
           expect(StatsMemberPnl.last.member_id).to eq coin_withdraw.member_id
           expect(StatsMemberPnl.last.currency_id).to eq coin_withdraw.currency_id
@@ -139,12 +141,12 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         before do
-          described_class.stubs(:price_at).returns(1.0)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(1.0)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(0)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(0)
 
           expect(StatsMemberPnl.last.member_id).to eq coin_withdraw.member_id
           expect(StatsMemberPnl.last.currency_id).to eq coin_withdraw.currency_id
@@ -169,14 +171,14 @@ describe Jobs::Cron::StatsMemberPnl do
         let(:btc_eth_price) { 100.0 }
 
         before do
-          described_class.stubs(:price_at).returns(btc_eth_price)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(btc_eth_price)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
           adjustment.accept!(validator: member)
           adjustment_maker.accept!(validator: member)
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(1)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(1)
           expect(StatsMemberPnl.last.member_id).to eq member.id
           expect(StatsMemberPnl.last.currency_id).to eq adjustment.currency_id
           expect(StatsMemberPnl.last.pnl_currency_id).to eq 'eth'
@@ -197,13 +199,13 @@ describe Jobs::Cron::StatsMemberPnl do
         let(:btc_eth_price) { 100.0 }
 
         before do
-          described_class.stubs(:price_at).returns(btc_eth_price)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(btc_eth_price)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
           adjustment.accept!(validator: member)
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(1)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(1)
           expect(StatsMemberPnl.last.member_id).to eq member.id
           expect(StatsMemberPnl.last.currency_id).to eq adjustment.currency_id
           expect(StatsMemberPnl.last.pnl_currency_id).to eq 'eth'
@@ -220,7 +222,7 @@ describe Jobs::Cron::StatsMemberPnl do
           adjustment2 = create(:adjustment, currency_id: 'btc', amount: -half, receiving_account_number: "btc-202-#{member.uid}")
           adjustment2.accept!(validator: member)
 
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(0)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(0)
 
           expect(StatsMemberPnl.last.member_id).to eq member.id
           expect(StatsMemberPnl.last.currency_id).to eq adjustment.currency_id
@@ -244,8 +246,8 @@ describe Jobs::Cron::StatsMemberPnl do
         let!(:pnl) { create(:stats_member_pnl) }
 
         before do
-          described_class.stubs(:price_at).returns(1.0)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(1.0)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
           [coin_deposit, coin_deposit_maker].each do |d|
             d.accept!
             d.process!
@@ -253,7 +255,7 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(1)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(1)
           expect(StatsMemberPnl.last.member_id).to eq coin_deposit.member_id
           expect(StatsMemberPnl.last.currency_id).to eq coin_deposit.currency_id
           expect(StatsMemberPnl.last.pnl_currency_id).to eq 'eth'
@@ -274,15 +276,15 @@ describe Jobs::Cron::StatsMemberPnl do
         let!(:pnl) { create(:stats_member_pnl) }
 
         before do
-          described_class.stubs(:price_at).returns(1.0)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(1.0)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
           fiat_deposit.accept!
           coin_deposit.accept!
           coin_deposit.process!
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(2)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(2)
 
           stats_member_pnl_btc = StatsMemberPnl.find_by(currency_id: coin_deposit.currency_id, member: coin_deposit.member)
           stats_member_pnl_usd = StatsMemberPnl.find_by(currency_id: fiat_deposit.currency_id, member: fiat_deposit.member)
@@ -320,14 +322,14 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         before do
-          described_class.stubs(:price_at).returns(1.0.to_f)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(1.0.to_f)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
           coin_deposit.accept!
           coin_deposit.process!
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(0)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(0)
           expect(StatsMemberPnl.last.member_id).to eq coin_deposit.member_id
           expect(StatsMemberPnl.last.pnl_currency_id).to eq 'eth'
           expect(StatsMemberPnl.last.currency_id).to eq coin_deposit.currency_id
@@ -375,12 +377,12 @@ describe Jobs::Cron::StatsMemberPnl do
         end
 
         before do
-          described_class.stubs(:price_at).returns(btc_eth_price)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(btc_eth_price)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(0)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(0)
 
           total_fees = trade.total * trade.order_fee(trade.maker_order)
           expect(StatsMemberPnl.all[0].member_id).to eq trade.maker_order.member.id
@@ -431,12 +433,12 @@ describe Jobs::Cron::StatsMemberPnl do
         let!(:pnl) { create(:stats_member_pnl) }
 
         before do
-          described_class.stubs(:price_at).returns(1.0.to_f)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(1.0.to_f)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(4)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(4)
           total_fees = trade.total * trade.order_fee(trade.maker_order)
 
           pnl1 = StatsMemberPnl.find_by(member_id: trade.maker_order.member.id, currency_id: trade.maker_order.income_currency.id, pnl_currency_id: 'eth')
@@ -487,12 +489,12 @@ describe Jobs::Cron::StatsMemberPnl do
         let!(:pnl) { create(:stats_member_pnl) }
 
         before do
-          described_class.stubs(:price_at).returns(1.0.to_f)
-          described_class.stubs(:pnl_currencies).returns([Currency.find('eth')])
+          worker.stubs(:price_at).returns(1.0.to_f)
+          worker.stubs(:pnl_currencies).returns([Currency.find('eth')])
         end
 
         it do
-          expect { described_class.process }.to change(StatsMemberPnl, :count).by(0)
+          expect { worker.process }.to change(StatsMemberPnl, :count).by(0)
         end
       end
     end
@@ -500,12 +502,12 @@ describe Jobs::Cron::StatsMemberPnl do
 
   context 'process' do
     before do
-      described_class.stubs(:pnl_currencies).returns([Market.first.quote_unit, Market.second.quote_unit].map { |id| Currency.find(id) })
+      worker.stubs(:pnl_currencies).returns([Market.first.quote_unit, Market.second.quote_unit].map { |id| Currency.find(id) })
     end
 
     context 'no liabilities' do
       it do
-        described_class.process
+        worker.process
         expect(StatsMemberPnl.count).to eq 0
       end
     end
@@ -515,14 +517,14 @@ describe Jobs::Cron::StatsMemberPnl do
       let!(:pnl) { create(:stats_member_pnl) }
 
       before do
-        described_class.stubs(:price_at).returns(1.0.to_f)
+        worker.stubs(:price_at).returns(1.0.to_f)
         coin_deposit.accept!
         coin_deposit.process!
         coin_deposit.dispatch!
       end
 
       it do
-        expect { described_class.process }.to change(StatsMemberPnl, :count).by(2)
+        expect { worker.process }.to change(StatsMemberPnl, :count).by(2)
 
         expect(StatsMemberPnl.second.member_id).to eq coin_deposit.member_id
         expect(StatsMemberPnl.second.currency_id).to eq coin_deposit.currency_id
@@ -551,20 +553,20 @@ describe Jobs::Cron::StatsMemberPnl do
       let!(:pnl) { create(:stats_member_pnl) }
 
       before do
-        described_class.stubs(:price_at).returns(1.0.to_f)
+        worker.stubs(:price_at).returns(1.0.to_f)
         coin_deposit.accept!
         coin_deposit.process!
       end
 
       it do
-        expect { described_class.process }.to change(StatsMemberPnl, :count).by(2)
+        expect { worker.process }.to change(StatsMemberPnl, :count).by(2)
       end
     end
   end
 
   context 'scenario1_internal_sell' do
     before do
-      described_class.stubs(:pnl_currencies).returns([Currency.find('usd')])
+      worker.stubs(:pnl_currencies).returns([Currency.find('usd')])
     end
 
     def scenario1_internal_sell_with_partial_refund(msrc, mdst)
@@ -661,15 +663,15 @@ describe Jobs::Cron::StatsMemberPnl do
 
     it 'excludes makers' do
       scenario1_internal_sell_with_partial_refund(maker2, maker)
-      described_class.process
+      worker.process
       expect(StatsMemberPnl.count).to eq(0)
     end
 
     it do
       scenario1_internal_sell_with_partial_refund(member_platform, member)
-      described_class.stubs(:price_at).with('usd', 'usd', anything).returns(1)
-      described_class.stubs(:price_at).with('btc', 'usd', anything).returns(10_000)
-      described_class.process
+      worker.stubs(:price_at).with('usd', 'usd', anything).returns(1)
+      worker.stubs(:price_at).with('btc', 'usd', anything).returns(10_000)
+      worker.process
       expect(StatsMemberPnl.count).to eq(4)
 
       musd = StatsMemberPnl.find_by(member_id: member.id, pnl_currency_id: 'usd', currency_id: 'usd')
@@ -774,9 +776,9 @@ describe Jobs::Cron::StatsMemberPnl do
 
     it do
       scenario2_internal_sell
-      described_class.stubs(:price_at).with('usd', 'usd', anything).returns(1)
-      described_class.stubs(:price_at).with('btc', 'usd', anything).returns(10_000)
-      described_class.process
+      worker.stubs(:price_at).with('usd', 'usd', anything).returns(1)
+      worker.stubs(:price_at).with('btc', 'usd', anything).returns(10_000)
+      worker.process
 
       expect(StatsMemberPnl.count).to eq(4)
       musd = StatsMemberPnl.find_by(member_id: member.id, pnl_currency_id: 'usd', currency_id: 'usd')
@@ -803,22 +805,22 @@ describe Jobs::Cron::StatsMemberPnl do
 
   context 'parse_conversion_paths' do
     it do
-      expect(described_class.parse_conversion_paths(nil)).to eq({})
-      expect(described_class.parse_conversion_paths('')).to eq({})
-      expect(described_class.parse_conversion_paths('usdt/abc:usdt/usd,usd/abc')).to eq(
+      expect(worker.parse_conversion_paths(nil)).to eq({})
+      expect(worker.parse_conversion_paths('')).to eq({})
+      expect(worker.parse_conversion_paths('usdt/abc:usdt/usd,usd/abc')).to eq(
         'usdt/abc' => [['usdt', 'usd', false], ['usd', 'abc', false]]
       )
-      expect(described_class.parse_conversion_paths('usdt/abc:usdt/usd,usd/abc;usdt/def:usdt/usd,def/abc,abc/usd')).to eq(
+      expect(worker.parse_conversion_paths('usdt/abc:usdt/usd,usd/abc;usdt/def:usdt/usd,def/abc,abc/usd')).to eq(
         'usdt/abc' => [['usdt', 'usd', false], ['usd', 'abc', false]],
         'usdt/def' => [['usdt', 'usd', false], ['def', 'abc', false], ['abc', 'usd', false]]
       )
-      expect(described_class.parse_conversion_paths('usdt/abc:_usd/usdt,usd/abc')).to eq(
+      expect(worker.parse_conversion_paths('usdt/abc:_usd/usdt,usd/abc')).to eq(
         'usdt/abc' => [['usd', 'usdt', true], ['usd', 'abc', false]]
       )
-      expect { described_class.parse_conversion_paths('usdt/abc,abc/usd') }.to raise_error(StandardError)
-      expect { described_class.parse_conversion_paths(':usdt/abc,abc/usd') }.to raise_error(StandardError)
-      expect { described_class.parse_conversion_paths('usdtabc:usdt/usd,usd/abc') }.to raise_error(StandardError)
-      expect { described_class.parse_conversion_paths('usdt/abc:usdtusd,usdabc') }.to raise_error(StandardError)
+      expect { worker.parse_conversion_paths('usdt/abc,abc/usd') }.to raise_error(StandardError)
+      expect { worker.parse_conversion_paths(':usdt/abc,abc/usd') }.to raise_error(StandardError)
+      expect { worker.parse_conversion_paths('usdtabc:usdt/usd,usd/abc') }.to raise_error(StandardError)
+      expect { worker.parse_conversion_paths('usdt/abc:usdtusd,usdabc') }.to raise_error(StandardError)
     end
   end
 
@@ -829,22 +831,22 @@ describe Jobs::Cron::StatsMemberPnl do
     end
 
     it do
-      expect(described_class.price_at('btc', 'eth', 0)).to eq(0.95)
-      expect(described_class.price_at('btc', 'usd', 0)).to eq(10_000)
+      expect(worker.price_at('btc', 'eth', 0)).to eq(0.95)
+      expect(worker.price_at('btc', 'usd', 0)).to eq(10_000)
     end
 
     it 'uses direct markets prices' do
-      described_class.stubs(:conversion_paths).returns(
+      worker.stubs(:conversion_paths).returns(
         'btc/abc' => [['btc', 'eth', false], ['btc', 'usd', false]]
       )
-      expect(described_class.price_at('btc', 'abc', 0)).to eq(9500)
+      expect(worker.price_at('btc', 'abc', 0)).to eq(9500)
     end
 
     it 'reverses a market price' do
-      described_class.stubs(:conversion_paths).returns(
+      worker.stubs(:conversion_paths).returns(
         'btc/abc' => [['btc', 'eth', true], ['btc', 'usd', false]]
       )
-      expect(described_class.price_at('btc', 'abc', 0)).to be_within(0.0001).of(10_526.3157)
+      expect(worker.price_at('btc', 'abc', 0)).to be_within(0.0001).of(10_526.3157)
     end
   end
 end

@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-module Jobs
-  module Cron
-    class Collector
+module Workers
+  module Daemons
+    class Collector < Base
+      @sleep_time = 10
+
       # Сколько минут подождать если мы уже пытались сделать операцию
       # и она провалилась
       # Если мы уже собирали
@@ -12,7 +14,7 @@ module Jobs
       REFUELED_STATUS = 'refueled'
       SUCCESS_STATES = [COLLECTED_STATUS, REFUELED_STATUS].freeze
 
-      def self.process
+      def process
         # TODO: select only payment addresses with enough balance
         Rails.logger.info('Check collectable balances on PaymentAddresses')
         PaymentAddress.collection_required.lock.each do |payment_address|
@@ -29,14 +31,13 @@ module Jobs
 
           process_address payment_address
         end
-        sleep 10
       end
 
-      def self.success_state?(status)
+      def success_state?(status)
         status.blank? || SUCCESS_STATES.include?(status)
       end
 
-      def self.process_address(payment_address)
+      def process_address(payment_address)
         return unless payment_address.has_collectable_balances?
 
         Rails.logger.info("PaymentAddress #{payment_address.address} has collectable balances")
