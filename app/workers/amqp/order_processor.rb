@@ -7,6 +7,8 @@ module Workers
 
       def initialize(market_symbol = nil)
         @market_symbol = market_symbol
+        raise 'Wrong market specific settings' unless market_symbol.present? == Peatio::App.config.market_specific_workers
+
         Rails.logger.info('Resubmit orders')
         return if ENV.true?('SKIP_SUBMIT_PENDING_ORDERS')
 
