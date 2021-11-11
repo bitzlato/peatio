@@ -55,7 +55,6 @@ module Workers
         end
       rescue StandardError => e
         report_exception e, true, order_id: id
-
         reject_order_in_transaction id
 
         raise e
@@ -68,19 +67,15 @@ module Workers
           if order.state == ::Order::PENDING
             order&.update!(state: ::Order::REJECT)
           else
-            report_exception 'Wrong order status when reject', order_id: id, order: order
+            report_exception 'Wrong order status when reject', true, order_id: id, order: order
           end
         end
-      rescue StandardError => e
-        report_exception e, order_id: id
       end
 
       def reject_order(id)
         Rails.logger.info { "Reject order #{id}" }
         order = Order.find(id)
         order&.update!(state: ::Order::REJECT)
-      rescue StandardError => e
-        report_exception e, order_id: id
       end
 
       def cancel_order(id)
