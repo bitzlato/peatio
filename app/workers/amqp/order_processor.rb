@@ -52,7 +52,8 @@ module Workers
 
           if order.created_at < ACTUAL_PERIOD.ago
             Rails.logger.warn { "Order is too old #{order.id} #{order.created_at} (#{Time.zone.now - order.created_at} secs old) reject it" }
-            return reject_order id
+            reject_order id
+            return
           end
 
           order.hold_account!.lock_funds!(order.locked)
@@ -63,36 +64,42 @@ module Workers
         end
       rescue StandardError => e
         report_exception e, true, order_id: id
-
-        reject_order id
+        reject_order_in_transaction id
 
         raise e
+      end
+
+      def reject_order_in_transaction(id)
+        ActiveRecord::Base.transaction do
+          Rails.logger.info { "Reject order #{id}" }
+          order = Order.lock.find(id)
+          if order.state == ::Order::PENDING
+            order&.update!(state: ::Order::REJECT)
+          else
+            report_exception 'Wrong order status when reject', true, order_id: id, order: order
+          end
+        end
       end
 
       def reject_order(id)
         Rails.logger.info { "Reject order #{id}" }
         order = Order.find(id)
         order&.update!(state: ::Order::REJECT)
-      rescue StandardError => e
-        Bugsnag.notify e do |b|
-          b.meta_data = { order_id: id }
-        end
       end
 
       def cancel_order(id)
-        order = Order.find(id)
-        if order.state == ::Order::PENDING
-          Rails.logger.warn { "Reject pending order #{id}" }
-          reject_order id
-          return
-        end
-        return unless order.state == ::Order::WAIT
-
-        market_engine = order.market.engine
-        return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
-
         ActiveRecord::Base.transaction do
           order = Order.lock.find(id)
+          if order.state == ::Order::PENDING
+            Rails.logger.warn { "Reject pending order #{id}" }
+            reject_order id
+            return
+          end
+          return unless order.state == ::Order::WAIT
+
+          market_engine = order.market.engine
+          return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
+
           order.hold_account!.unlock_funds!(order.locked)
           order.record_cancel_operations!
 

@@ -172,7 +172,7 @@ class Deposit < ApplicationRecord
   end
 
   def enqueue_deposit_intention!
-    AMQP::Queue.enqueue(:deposit_intention, { deposit_id: id }, { persistent: true })
+    AMQP::Queue.enqueue(:deposit_intention, { deposit_id: id }, { persistent: false })
   end
 
   def process!

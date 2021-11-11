@@ -11,14 +11,14 @@ set :markets, %w[btc_usdterc20 btc_mcrerc20 eth_btc eth_usdterc20 eth_usdcerc20 
 server ENV['PRODUCTION_SERVER'],
        user: fetch(:user),
        port: '22',
-       roles: %w[app amqp_daemons].freeze,
+       roles: %w[db app amqp_daemons].freeze,
        primary: true,
        ssh_options: { forward_agent: true }
 
 server ENV['PRODUCTION_SERVER2'],
        user: fetch(:user),
        port: '22',
-       roles: %w[db daemons].freeze,
+       roles: %w[daemons].freeze,
        ssh_options: { forward_agent: true }
 
 server ENV['PRODUCTION_SERVER3'],
