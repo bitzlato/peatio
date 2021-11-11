@@ -35,7 +35,7 @@ Signal.trap('TERM', &terminate)
 
 workers = ARGV.map do |arg|
   binding_id, market = arg.split(':')
-  raise 'Wrong market specific settings' unless market.present? == Peatio::App.config.market_specific_workers
+  raise "Wrong market specific settings for #{arg}" unless market.present? == Peatio::App.config.market_specific_workers
   market = market.downcase if market.present?
   worker = AMQP::Config.binding_worker(binding_id, Array(market))
   queue  = ch.queue(*AMQP::Config.binding_queue(binding_id, market))
