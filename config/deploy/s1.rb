@@ -5,6 +5,7 @@ set :disallow_pushing, false
 set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:application)}" }
 
 append :systemd_amqp_daemon_instances, fetch(:market_amqp_daemons)
+set :systemd_daemon_instances, -> { %i[cron_job] }
 
 server '217.182.138.99',
        user: fetch(:user),
