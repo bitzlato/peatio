@@ -106,6 +106,7 @@ module Workers
                               .map { |args| [args[1][:trade][:maker_order_id], args[1][:trade][:taker_order_id]] }
                               .flatten.uniq
 
+            # TODO Cancel not accepted orders
             orders = Order.where('created_at < ?', accept.minutes.ago).where(id: order_ids)
             if orders.exists?
               # there're very old orders matched, need human intervention
