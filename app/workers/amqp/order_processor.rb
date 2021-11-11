@@ -43,7 +43,8 @@ module Workers
 
           if order.created_at < ACTUAL_PERIOD.ago
             Rails.logger.warn { "Order is too old #{order.id} #{order.created_at} (#{Time.zone.now - order.created_at} secs old) reject it" }
-            return reject_order id
+            reject_order id
+            return
           end
 
           order.hold_account!.lock_funds!(order.locked)
@@ -55,9 +56,23 @@ module Workers
       rescue StandardError => e
         report_exception e, true, order_id: id
 
-        reject_order id
+        reject_order_in_transaction id
 
         raise e
+      end
+
+      def reject_order_in_transaction(id)
+        ActiveRecord::Base.transaction do
+          Rails.logger.info { "Reject order #{id}" }
+          order = Order.lock.find(id)
+          if order.state == ::Order::PENDING
+            order&.update!(state: ::Order::REJECT)
+          else
+            report_exception 'Wrong order status when reject', order_id: id, order: order
+          end
+        end
+      rescue StandardError => e
+        report_exception e, order_id: id
       end
 
       def reject_order(id)
@@ -65,9 +80,7 @@ module Workers
         order = Order.find(id)
         order&.update!(state: ::Order::REJECT)
       rescue StandardError => e
-        Bugsnag.notify e do |b|
-          b.meta_data = { order_id: id }
-        end
+        report_exception e, order_id: id
       end
 
       def cancel_order(id)
