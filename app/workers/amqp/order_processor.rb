@@ -71,19 +71,18 @@ module Workers
       end
 
       def cancel_order(id)
-        order = Order.find(id)
-        if order.state == ::Order::PENDING
-          Rails.logger.warn { "Reject pending order #{id}" }
-          reject_order id
-          return
-        end
-        return unless order.state == ::Order::WAIT
-
-        market_engine = order.market.engine
-        return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
-
         ActiveRecord::Base.transaction do
           order = Order.lock.find(id)
+          if order.state == ::Order::PENDING
+            Rails.logger.warn { "Reject pending order #{id}" }
+            reject_order id
+            return
+          end
+          return unless order.state == ::Order::WAIT
+
+          market_engine = order.market.engine
+          return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
+
           order.hold_account!.unlock_funds!(order.locked)
           order.record_cancel_operations!
 
