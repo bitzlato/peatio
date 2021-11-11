@@ -224,7 +224,7 @@ module OrderServices
 
         AMQP::Queue.enqueue(:order_processor,
                             { action: 'submit', order: order.attributes },
-                            { persistent: true })
+                            { persistent: false })
       else
         order.trigger_third_party_creation
       end
