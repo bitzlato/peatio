@@ -8,10 +8,8 @@ class Bargainer
     volume = Random.rand(max_volume - min_volume) + min_volume
     volume = market.round_amount(volume.to_d)
     price = average_price(market, price_deviation)
-    if price.nil?
-      cancel_member_orders(member, market)
-      return
-    end
+    cancel_member_orders(member, market)
+    return if price.nil?
 
     sides = %w[buy sell].shuffle
     sides.each do |side|
@@ -22,7 +20,7 @@ class Bargainer
         Rails.logger.error { { message: 'Order creating is failed', side: side, error_message: result.errors.first, market_symbol: market.symbol, service: 'bargainer' } }
       end
     end
-    sleep 0.2
+    sleep 0.02
     cancel_member_orders(member, market)
 
     Rails.logger.info { { message: 'Market trade creating is finished', market_symbol: market.symbol, member_id: member.id, volume: volume, price: price, service: 'bargainer' } }

@@ -15,7 +15,7 @@ module Jobs
         member = Member.find_by!(uid: ENV['BARGAINER_UID'])
         Bargainer.new.call(market: market, member: member, min_volume: MIN_VOLUME, max_volume: MAX_VOLUME, price_deviation: PRICE_DEVIATION)
 
-        sleep job_timeout
+        sleep(job_timeout + Random.rand(10) - 5)
       end
     end
   end

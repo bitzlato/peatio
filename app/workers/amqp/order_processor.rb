@@ -9,7 +9,7 @@ module Workers
         @market_symbol = market_symbol
         raise 'Wrong market specific settings' unless market_symbol.present? == Peatio::App.config.market_specific_workers
 
-        Rails.logger.info('Resubmit orders')
+        Rails.logger.info { 'Resubmit orders' }
         return if ENV.true?('SKIP_SUBMIT_PENDING_ORDERS')
 
         orders = Order.spot.where(state: ::Order::PENDING)
@@ -22,7 +22,7 @@ module Workers
 
           raise e if is_db_connection_error?(e)
         end
-        Rails.logger.info('Orders are resubmited')
+        Rails.logger.info { 'Orders are resubmited' }
       end
 
       def process(payload)
@@ -51,7 +51,7 @@ module Workers
           return unless order.state == ::Order::PENDING
 
           if order.created_at < ACTUAL_PERIOD.ago
-            Rails.logger.warn("Order is too old #{order.id} #{order.created_at} (#{Time.zone.now - order.created_at} secs old) reject it")
+            Rails.logger.warn { "Order is too old #{order.id} #{order.created_at} (#{Time.zone.now - order.created_at} secs old) reject it" }
             return reject_order id
           end
 
@@ -70,7 +70,7 @@ module Workers
       end
 
       def reject_order(id)
-        Rails.logger.info("Reject order #{id}")
+        Rails.logger.info { "Reject order #{id}" }
         order = Order.find(id)
         order&.update!(state: ::Order::REJECT)
       rescue StandardError => e
@@ -82,7 +82,7 @@ module Workers
       def cancel_order(id)
         order = Order.find(id)
         if order.state == ::Order::PENDING
-          Rails.logger.warn("Reject pending order #{id}")
+          Rails.logger.warn { "Reject pending order #{id}" }
           reject_order id
           return
         end
