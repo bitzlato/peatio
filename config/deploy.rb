@@ -59,7 +59,7 @@ set :assets_roles, []
 set :init_system, :systemd
 
 set :systemd_daemon_role, :daemons
-set :systemd_daemon_instances, -> { %i[blockchain cron_job] }
+set :systemd_daemon_instances, -> { %i[cron_job] }
 
 # Restricted daemons list for stages
 set :systemd_amqp_daemon_role, :amqp_daemons
@@ -79,10 +79,9 @@ set :systemd_amqp_daemon_instances,
       withdraw_coin
       matching
       trade_executor
-      order_processor
     ]
 
-set :market_amqp_daemons, %w[]
+set :market_amqp_daemons, %w[order_processor]
 
 set :systemd_market_amqp_daemon_instances, lambda {
   (fetch(:markets) || raise('No :markets settings defined'))

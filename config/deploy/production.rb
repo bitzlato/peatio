@@ -6,6 +6,12 @@ fetch(:default_env)[:rails_env] = :production
 set :puma_bind, %w[tcp://0.0.0.0:9200]
 set :puma_workers, 4
 set :puma_threads, [4, 5]
+
+# Временно имеем order_processor в amqp_daemon
+append :systemd_amqp_daemon_instances, :order_processor
+# set :market_amqp_daemons, %w[order_processor]
+set :market_amqp_daemons, %w[]
+
 set :markets, %w[btc_usdterc20 btc_mcrerc20 eth_btc eth_usdterc20 eth_usdcerc20 eth_mcrerc20 usdterc20_mcrerc20 usdterc20_usdtbep20 usdterc20_usdcerc20 usdcerc20_usdcbep20 bnbbep20_usdtbep20 bnbbep20_usdcbep20 usdthrc20_usdtbep20 usdthrc20_usdterc20 usdchrc20_usdcerc20 usdchrc20_usdcbep20 hthrc20_usdthrc20 hthrc20_usdchrc20 mdterc20_mcrerc20 mdterc20_usdterc20]
 
 server ENV['PRODUCTION_SERVER'],
