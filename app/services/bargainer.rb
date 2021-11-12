@@ -9,7 +9,10 @@ class Bargainer
     volume = market.round_amount(volume.to_d)
     price = average_price(market, price_deviation)
     cancel_member_orders(member, market)
-    return if price.nil?
+    if price.nil?
+      Rails.logger.info { { message: 'No price to bargain. Cancel process', service: 'bargainer' } }
+      return
+    end
 
     sides = %w[buy sell].shuffle
     sides.each do |side|
@@ -48,7 +51,13 @@ class Bargainer
   end
 
   def cancel_member_orders(member, market)
-    orders = member.orders.with_state(:wait, :pending).where(market_type: ::Market::DEFAULT_TYPE, market: market.symbol)
-    orders.each(&:trigger_cancellation)
+    member
+      .orders
+      .with_state(:wait, :pending)
+      .where(market_type: ::Market::DEFAULT_TYPE, market: market.symbol)
+      .find_each do |order|
+      Rails.logger.info { { message: 'Cancel order', order_id: order.id, current_state: order.state, service: 'bargainer' } }
+      order.trigger_cancellation
+    end
   end
 end

@@ -153,6 +153,7 @@ class Order < ApplicationRecord
   end
 
   def trigger_internal_cancellation
+    # TODO: Зачем для отмены передавать все параметры? Достаточно только ID. Осталное можно подгрузить уже в order_processor
     AMQP::Queue.enqueue(:matching, action: 'cancel', order: to_matching_attributes)
   end
 
