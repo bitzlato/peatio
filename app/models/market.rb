@@ -138,7 +138,12 @@ class Market < ApplicationRecord
   before_validation(on: :create) { self.symbol = generate_symbol }
   before_validation(on: :create) { self.position = Market.count + 1 if position.blank? }
 
-  after_commit { AMQP::Queue.enqueue(:matching, action: 'new', market: symbol) }
+  after_commit do
+    AMQP::Queue.enqueue(:matching,
+                        { action: 'new', market: symbol },
+                        {},
+                        Peatio::App.config.market_specific_workers ? symbol : nil)
+  end
   after_commit :wipe_cache
   after_create { insert_position(self) }
 

@@ -38,7 +38,10 @@ module Matching
         order.with_lock do
           next unless order.state == Order::WAIT
 
-          AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
+          AMQP::Queue.enqueue(:matching,
+                              { action: 'submit', order: order.to_matching_attributes },
+                              {},
+                              Peatio::App.config.market_specific_workers ? order.market_id : nil)
         end
       end
       report_exception_to_screen(e)

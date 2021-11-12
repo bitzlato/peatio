@@ -160,7 +160,14 @@ class Order < ApplicationRecord
 
     touch :canceling_at
     # TODO: Зачем для отмены передавать все параметры? Достаточно только ID. Осталное можно подгрузить уже в order_processor
-    AMQP::Queue.enqueue(:matching, action: 'cancel', order: to_matching_attributes)
+    if Peatio::App.config.market_specific_workers
+      AMQP::Queue.enqueue(:matching,
+                          { action: 'cancel', order: to_matching_attributes },
+                          {},
+                          market_id)
+    else
+      AMQP::Queue.enqueue(:matching, { action: 'cancel', order: to_matching_attributes })
+    end
   end
 
   def trigger_third_party_cancellation
