@@ -25,16 +25,16 @@ module AMQP
         eid && exchange(eid)
       end
 
-      def binding_queue(id)
-        queue data[:binding][id][:queue]
+      def binding_queue(id, market = nil)
+        queue data[:binding][id][:queue], market
       end
 
-      def binding_worker(id)
-        ::Workers::AMQP.const_get(id.to_s.camelize).new
+      def binding_worker(id, args = [])
+        ::Workers::AMQP.const_get(id.to_s.camelize).new(*args)
       end
 
-      def routing_key(id)
-        binding_queue(id).first
+      def routing_key(id, market = nil)
+        binding_queue(id, market).first
       end
 
       def topics(id)
@@ -45,8 +45,8 @@ module AMQP
         (data[:channel] && data[:channel][id]) || {}
       end
 
-      def queue(id)
-        name = data[:queue][id][:name]
+      def queue(id, market = nil)
+        name = [data[:queue][id][:name], market].compact.join('.')
         settings = { durable: data[:queue][id][:durable] }
         [name, settings]
       end

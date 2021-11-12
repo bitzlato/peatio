@@ -59,33 +59,39 @@ set :assets_roles, []
 set :init_system, :systemd
 
 set :systemd_daemon_role, :daemons
-set :systemd_daemon_instances, -> { %i[cron_job] }
+set :systemd_daemon_instances, -> { %i[blockchain cron_job] }
 
 # Restricted daemons list for stages
 set :systemd_amqp_daemon_role, :amqp_daemons
+set :systemd_market_amqp_daemon_role, :market_amqp_daemons
 
 # TODO: На стейджах НЕ запускать deposit_coin_address, withdraw_coin, deposit_intention
 #
 set :systemd_amqp_daemon_instances,
-    lambda {
-      %i[
-        balances_updating
-        cancel_member_orders
-        create_order
-        deposit_coin_address
-        deposit_intention
-        influx_writer
-        matching
-        trade_completed
-        order_processor
-        trade_executor
-        withdraw_coin
-      ]
-    }
+    %i[
+      balances_updating
+      cancel_member_orders
+      create_order
+      deposit_coin_address
+      deposit_intention
+      influx_writer
+      trade_completed
+      withdraw_coin
+      matching
+      trade_executor
+    ]
+
+set :market_amqp_daemons, %w[order_processor]
+
+set :systemd_market_amqp_daemon_instances, lambda {
+  (fetch(:markets) || raise('No :markets settings defined'))
+    .map { |market| fetch(:market_amqp_daemons).map { |worker| worker + ':' + market } }.flatten
+}
 
 after 'deploy:publishing', 'systemd:puma:reload-or-restart'
 after 'deploy:publishing', 'systemd:daemon:reload-or-restart'
 after 'deploy:publishing', 'systemd:amqp_daemon:reload-or-restart'
+after 'deploy:publishing', 'systemd:market_amqp_daemon:reload-or-restart'
 
 if defined? Slackistrano
   Rake::Task['deploy:starting'].prerequisites.delete('slack:deploy:starting')
@@ -106,4 +112,13 @@ set :dotenv_hook_commands, %w[rake rails ruby]
 
 Capistrano::DSL.stages.each do |stage|
   after stage, 'dotenv:hook'
+end
+
+namespace :systemd do
+  desc 'Statuses of systemd units on every servers'
+  task :statuses do
+    on roles(:all) do
+      execute 'systemctl --user status'
+    end
+  end
 end

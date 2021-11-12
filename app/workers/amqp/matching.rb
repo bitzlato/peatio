@@ -12,8 +12,15 @@ module Workers
       end
 
       def initialize(options = {})
-        @options = options
-        reload 'all'
+        if options.is_a? String
+          @market = options
+          @options = {}
+          reload @market
+        else
+          @options = options
+          @market = nil
+          reload 'all'
+        end
       end
 
       def process(payload, _metadata, _delivery_info)
@@ -27,7 +34,11 @@ module Workers
         when 'reload'
           reload payload[:market]
         when 'new'
-          initialize_engine Market.find_spot_by_symbol(payload[:market])
+          if @market.present?
+            Rails.logger.warn("Can't initialize engine in market specific worker")
+          else
+            initialize_engine Market.find_spot_by_symbol(payload[:market])
+          end
         else
           Rails.logger.fatal { "Unknown action: #{payload[:action]}" }
         end
@@ -43,6 +54,8 @@ module Workers
 
       def reload(market)
         if market == 'all'
+          return if @market.present?
+
           # NOTE: Run matching engine for disabled markets.
           Market.find_each(&method(:initialize_engine))
           Rails.logger.info { 'All engines reloaded.' }
@@ -93,6 +106,7 @@ module Workers
                               .map { |args| [args[1][:trade][:maker_order_id], args[1][:trade][:taker_order_id]] }
                               .flatten.uniq
 
+            # TODO: Cancel not accepted orders
             orders = Order.where('created_at < ?', accept.minutes.ago).where(id: order_ids)
             if orders.exists?
               # there're very old orders matched, need human intervention
