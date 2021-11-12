@@ -14,3 +14,5 @@ Rails.configuration.database_support_json = \
 
 Rails.configuration.database_adapter = \
   ActiveRecord::Base.configurations[Rails.env]['adapter']
+
+ActiveRecord::Base.logger = nil if ENV['DISABLE_ACTIVE_RECORD_LOGGING']
