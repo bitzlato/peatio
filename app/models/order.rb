@@ -149,7 +149,7 @@ class Order < ApplicationRecord
   end
 
   def trigger_cancellation
-    market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
+    AMQP::Queue.enqueue(:order_processor, { action: 'cancel_matching', order: { id: id } }, { persistent: false })
   end
 
   def trigger_internal_cancellation

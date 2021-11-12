@@ -26,6 +26,8 @@ module Workers
           submit_order(payload.dig('order', 'id'))
         when 'cancel'
           cancel_order(payload.dig('order', 'id'))
+        when 'cancel_matching'
+          cancel_order_matching(payload.dig('order', 'id'))
         end
       rescue StandardError => e
         ::AMQP::Queue.enqueue(:trade_error, e.message)
@@ -96,6 +98,11 @@ module Workers
 
           order.update!(state: ::Order::CANCEL)
         end
+      end
+
+      def cancel_order_matching(id)
+        order = Order.find(id)
+        order.market.engine.peatio_engine? ? order.trigger_internal_cancellation : order.trigger_third_party_cancellation
       end
     end
   end

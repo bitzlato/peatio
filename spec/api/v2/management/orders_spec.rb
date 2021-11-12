@@ -134,27 +134,15 @@ describe API::V2::Management::Orders, type: :request do
   describe 'POST /api/v2/management/orders/:id/cancel' do
     let!(:peatio_order) { create(:order_ask, :btc_usd, member: member1, state: Order::WAIT) }
     let(:data) { {} }
-    let!(:third_party_order) { create(:order_ask, :btc_eth, member: member1, state: Order::WAIT) }
 
     def request(order_id)
       post_json "/api/v2/management/orders/#{order_id}/cancel", multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
     it 'cancels an order on peatio market' do
-      AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: peatio_order.to_matching_attributes)
-      AMQP::Queue.expects(:publish).with(finex_engine.driver, data: peatio_order.as_json_for_third_party, type: 3).never
+      AMQP::Queue.expects(:enqueue).with(:order_processor, { action: 'cancel_matching', order: { id: peatio_order.id } }, { persistent: false })
       request(peatio_order.id)
       expect(response).to have_http_status :ok
-    end
-
-    context 'third party order cancel' do
-      it 'cancel an order on third party market' do
-        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: third_party_order.to_matching_attributes).never
-        AMQP::Queue.expects(:publish).with(finex_engine.driver, data: third_party_order.as_json_for_third_party, type: 3)
-
-        request(third_party_order.id)
-        expect(response).to have_http_status :ok
-      end
     end
 
     context 'invalid params' do

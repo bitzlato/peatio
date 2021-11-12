@@ -199,7 +199,7 @@ describe API::V2::Admin::Orders, type: :request do
     end
 
     it 'cancels specified order' do
-      AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes)
+      AMQP::Queue.expects(:enqueue).with(:order_processor, { action: 'cancel_matching', order: { id: order.id } }, { persistent: false })
       expect do
         api_post "/api/v2/admin/orders/#{order.id}/cancel", token: token
         result = JSON.parse(response.body)
@@ -234,7 +234,7 @@ describe API::V2::Admin::Orders, type: :request do
 
     it 'cancels all my orders for specific market' do
       level_3_member.orders.where(market: 'btc_eth').each do |o|
-        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
+        AMQP::Queue.expects(:enqueue).with(:order_processor, { action: 'cancel_matching', order: { id: o.id } }, { persistent: false })
       end
 
       expect do
@@ -248,7 +248,7 @@ describe API::V2::Admin::Orders, type: :request do
 
     it 'cancels all asks for specific market' do
       level_3_member.orders.where(type: 'OrderAsk', market_id: 'btc_usd').each do |o|
-        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
+        AMQP::Queue.expects(:enqueue).with(:order_processor, { action: 'cancel_matching', order: { id: o.id } }, { persistent: false })
       end
 
       expect do

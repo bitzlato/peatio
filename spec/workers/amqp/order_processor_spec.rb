@@ -70,4 +70,26 @@ describe Workers::AMQP::OrderProcessor do
       end
     end
   end
+
+  describe '#process' do
+    let(:member) { create(:member, :level_3) }
+    let(:order) { create(:order_bid, :btc_usd, price: '12.32'.to_d, volume: '3.14', origin_volume: '12.13', locked: '20.1082', origin_locked: '38.0882', member: member) }
+
+    context 'when action is cancel_matching' do
+      it do
+        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes)
+        AMQP::Queue.expects(:publish).with(order.market.engine.driver, data: order.as_json_for_third_party, type: 3).never
+        processor.process('action' => 'cancel_matching', 'order' => { 'id' => order.id })
+      end
+    end
+
+    context 'when action is cancel_matching for third party order' do
+      it do
+        order.market.engine.update(driver: 'finex-spot')
+        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes).never
+        AMQP::Queue.expects(:publish).with(order.market.engine.driver, data: order.as_json_for_third_party, type: 3)
+        processor.process('action' => 'cancel_matching', 'order' => { 'id' => order.id })
+      end
+    end
+  end
 end

@@ -532,7 +532,7 @@ describe API::V2::Market::Orders, type: :request do
       end
 
       it 'cancels specified order by id' do
-        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes)
+        AMQP::Queue.expects(:enqueue).with(:order_processor, { action: 'cancel_matching', order: { id: order.id } }, { persistent: false })
 
         expect do
           api_post "/api/v2/market/orders/#{order.id}/cancel", token: token
@@ -542,24 +542,7 @@ describe API::V2::Market::Orders, type: :request do
       end
 
       it 'cancels specified order by uuid' do
-        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes)
-
-        expect do
-          api_post "/api/v2/market/orders/#{order.uuid}/cancel", token: token
-          expect(response).to be_successful
-          expect(JSON.parse(response.body)['uuid']).to eq order.uuid
-        end.not_to change(Order, :count)
-      end
-    end
-
-    context 'third party order' do
-      before do
-        order.market.engine.update(driver: 'finex-spot')
-      end
-
-      it 'cancels specified order by uuid' do
-        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes).never
-        AMQP::Queue.expects(:publish).with(order.market.engine.driver, data: order.as_json_for_third_party, type: 3)
+        AMQP::Queue.expects(:enqueue).with(:order_processor, { action: 'cancel_matching', order: { id: order.id } }, { persistent: false })
 
         expect do
           api_post "/api/v2/market/orders/#{order.uuid}/cancel", token: token
@@ -608,7 +591,7 @@ describe API::V2::Market::Orders, type: :request do
 
     it 'cancels all my orders' do
       member.orders.each do |o|
-        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
+        AMQP::Queue.expects(:enqueue).with(:order_processor, { action: 'cancel_matching', order: { id: o.id } }, { persistent: false })
       end
 
       expect do
@@ -620,32 +603,9 @@ describe API::V2::Market::Orders, type: :request do
       end.not_to change(Order, :count)
     end
 
-    context 'third party order' do
-      before do
-        Market.find_spot_by_symbol('btc_usd').engine.update(driver: 'finex-spot')
-        Market.find_spot_by_symbol('btc_eth').engine.update(driver: 'finex-spot')
-      end
-
-      it 'cancels all my orders on market with third party engine' do
-        AMQP::Queue.expects(:enqueue).never
-
-        member.orders.each do |o|
-          AMQP::Queue.expects(:publish).with(o.market.engine.driver, data: o.as_json_for_third_party, type: 3)
-        end
-
-        expect do
-          api_post '/api/v2/market/orders/cancel', token: token
-          expect(response).to be_successful
-
-          result = JSON.parse(response.body)
-          expect(result.size).to eq 3
-        end.not_to change(Order, :count)
-      end
-    end
-
     it 'cancels all my orders for specific market' do
       member.orders.where(market: 'btc_eth').each do |o|
-        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
+        AMQP::Queue.expects(:enqueue).with(:order_processor, { action: 'cancel_matching', order: { id: o.id } }, { persistent: false })
       end
 
       expect do
@@ -659,7 +619,7 @@ describe API::V2::Market::Orders, type: :request do
 
     it 'cancels all my asks' do
       member.orders.where(type: 'OrderAsk').each do |o|
-        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
+        AMQP::Queue.expects(:enqueue).with(:order_processor, { action: 'cancel_matching', order: { id: o.id } }, { persistent: false })
       end
 
       expect do
