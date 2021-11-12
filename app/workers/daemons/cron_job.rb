@@ -10,15 +10,14 @@ module Workers
         Jobs::Cron::KLine,
         Jobs::Cron::Ticker,
         Jobs::Cron::StatsMemberPnl,
-        # Jobs::Cron::AML,
         Jobs::Cron::WalletBalances,
         Jobs::Cron::TransfersPolling,
         Jobs::Cron::PaymentAddressBalancer,
         Jobs::Cron::RemoveInvoicedDeposits,
         Jobs::Cron::Collector,
         Jobs::Cron::CurrencyPricer,
-        Jobs::Cron::GasPriceChecker
-        # Jobs::Cron::BargainerJob
+        Jobs::Cron::GasPriceChecker,
+        Jobs::Cron::BargainerJob
       ].freeze
 
       def run
