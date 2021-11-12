@@ -5,8 +5,8 @@ module EventAPI
       middlewares.each do |middleware|
         returned_value = middleware.call(*arguments)
         case returned_value
-          when Array then arguments = returned_value
-          else return returned_value
+        when Array then arguments = returned_value
+        else return returned_value
         end
       rescue StandardError => e
         report_exception(e)
@@ -14,9 +14,7 @@ module EventAPI
       end
     end
 
-    def middlewares=(list)
-      @middlewares = list
-    end
+    attr_writer :middlewares
 
     def middlewares
       @middlewares ||= []
@@ -33,7 +31,7 @@ module EventAPI
 
       def notify(partial_event_name, event_payload)
         tokens = ['model']
-        tokens << record.class.event_api_settings.fetch(:prefix) { record.class.name.underscore.gsub(/\//, '_') }
+        tokens << record.class.event_api_settings.fetch(:prefix) { record.class.name.underscore.gsub(%r{/}, '_') }
         tokens << partial_event_name.to_s
         full_event_name = tokens.join('.')
         EventAPI.notify(full_event_name, event_payload)
@@ -58,8 +56,8 @@ module EventAPI
         after  = current_record.as_json_for_event_api.compact
 
         notify :updated, \
-          record:  after,
-          changes: before.delete_if { |attribute, value| after[attribute] == value }
+               record: after,
+               changes: before.delete_if { |attribute, value| after[attribute] == value }
       end
     end
 
@@ -70,9 +68,7 @@ module EventAPI
         # We add «after_commit» callbacks immediately after inclusion.
         %i[create update].each do |event|
           after_commit on: event, prepend: true do
-            if self.class.event_api_settings[:on]&.include?(event)
-              event_api.public_send("notify_record_#{event}d")
-            end
+            event_api.public_send("notify_record_#{event}d") if self.class.event_api_settings[:on]&.include?(event)
           end
         end
       end
@@ -101,7 +97,6 @@ module EventAPI
   # To continue processing by further middlewares return array with event name and payload.
   # To stop processing event return any value which isn't an array.
   module Middlewares
-
     class << self
       def application_name
         Rails.application.class.name.split('::').first.underscore
@@ -122,17 +117,17 @@ module EventAPI
     class GenerateJWT
       def call(event_name, event_payload)
         jwt_payload = {
-            iss:   Middlewares.application_name,
-            jti:   SecureRandom.uuid,
-            iat:   Time.now.to_i,
-            exp:   Time.now.to_i + 60,
-            event: event_payload
+          iss: Middlewares.application_name,
+          jti: SecureRandom.uuid,
+          iat: Time.now.to_i,
+          exp: Time.now.to_i + 60,
+          event: event_payload
         }
 
         private_key = OpenSSL::PKey.read(Base64.urlsafe_decode64(ENV.fetch('EVENT_API_JWT_PRIVATE_KEY')))
         algorithm   = ENV.fetch('EVENT_API_JWT_ALGORITHM')
         jwt         = JWT::Multisig.generate_jwt jwt_payload, \
-                                                   { Middlewares.application_name.to_sym => private_key },
+                                                 { Middlewares.application_name.to_sym => private_key },
                                                  { Middlewares.application_name.to_sym => algorithm }
 
         [event_name, jwt]
@@ -164,7 +159,7 @@ module EventAPI
         [event_name, event_payload]
       end
 
-    private
+      private
 
       def bunny_session
         Bunny::Session.new(rabbitmq_credentials).tap do |session|
@@ -187,8 +182,8 @@ module EventAPI
       def rabbitmq_credentials
         return ENV['EVENT_API_RABBITMQ_URL'] if ENV['EVENT_API_RABBITMQ_URL'].present?
 
-        { host:     ENV.fetch('EVENT_API_RABBITMQ_HOST'),
-          port:     ENV.fetch('EVENT_API_RABBITMQ_PORT'),
+        { host: ENV.fetch('EVENT_API_RABBITMQ_HOST'),
+          port: ENV.fetch('EVENT_API_RABBITMQ_PORT'),
           username: ENV.fetch('EVENT_API_RABBITMQ_USERNAME'),
           password: ENV.fetch('EVENT_API_RABBITMQ_PASSWORD') }
       end
@@ -203,8 +198,10 @@ module EventAPI
     end
   end
 
-  middlewares << Middlewares::IncludeEventMetadata.new
-  middlewares << Middlewares::GenerateJWT.new
-  middlewares << Middlewares::PrintToScreen.new
-  middlewares << Middlewares::PublishToRabbitMQ.new
+  if ENV.true? 'EVENT_API_ENABLE'
+    middlewares << Middlewares::IncludeEventMetadata.new
+    middlewares << Middlewares::GenerateJWT.new
+    middlewares << Middlewares::PrintToScreen.new
+    middlewares << Middlewares::PublishToRabbitMQ.new
+  end
 end
