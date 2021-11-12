@@ -79,9 +79,10 @@ set :systemd_amqp_daemon_instances,
       withdraw_coin
       matching
       trade_executor
+      order_processor
     ]
 
-set :market_amqp_daemons, %w[order_processor]
+set :market_amqp_daemons, %w[]
 
 set :systemd_market_amqp_daemon_instances, lambda {
   (fetch(:markets) || raise('No :markets settings defined'))
