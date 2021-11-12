@@ -209,9 +209,15 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
+    datadog_api_client (1.4.0)
+      typhoeus (~> 1.0, >= 1.0.1)
+    ddtrace (0.53.0)
+      ffi (~> 1.0)
+      msgpack
     diff-lcs (1.4.4)
     digest-sha3 (1.1.0)
     digest-sha3-patched (1.1.1)
+    dogstatsd-ruby (5.3.2)
     dotenv (2.7.6)
     dry-configurable (0.13.0)
       concurrent-ruby (~> 1.0)
@@ -257,6 +263,8 @@ GEM
       money-tree (~> 0.10.0)
       rlp (~> 0.7.3)
       scrypt (~> 3.0.6)
+    ethon (0.15.0)
+      ffi (>= 1.15.0)
     eventmachine (1.2.7)
     factory_bot (5.2.0)
       activesupport (>= 4.2.0)
@@ -567,6 +575,8 @@ GEM
     thor (0.20.3)
     thread_safe (0.3.6)
     timecop (0.9.4)
+    typhoeus (1.4.0)
+      ethon (>= 0.9.0)
     tzinfo (1.2.9)
       thread_safe (~> 0.1)
     unicode-display_width (2.0.0)
@@ -627,7 +637,10 @@ DEPENDENCIES
   cash-addr (~> 0.2.0)
   composite_primary_keys
   database_cleaner-active_record
+  datadog_api_client
+  ddtrace
   digest-sha3 (~> 1.1.0)
+  dogstatsd-ruby
   dotenv
   em-synchrony (~> 1.0)
   email_validator (~> 1.6.0)
