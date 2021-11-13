@@ -14,11 +14,13 @@ module Workers
       def initialize(options = {})
         if options.is_a? String
           raise 'Wrong market specific settings' unless Peatio::App.config.market_specific_workers
+
           @market = options
           @options = {}
           reload @market
         else
           raise 'Wrong market specific settings' if Peatio::App.config.market_specific_workers
+
           @options = options
           @market = nil
           reload 'all'
