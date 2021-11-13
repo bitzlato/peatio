@@ -10,8 +10,12 @@ class Bargainer
     price = average_price(market, price_deviation)
     cancel_member_orders(member, market)
     if price.nil?
-      Rails.logger.info { { message: 'No price to bargain. Cancel process', service: 'bargainer' } }
-      return
+      if Rails.env.sandbox?
+        price = market.trades.last.price
+      else
+        Rails.logger.info { { message: 'No price to bargain. Cancel process', service: 'bargainer' } }
+        return
+      end
     end
 
     sides = %w[buy sell].shuffle

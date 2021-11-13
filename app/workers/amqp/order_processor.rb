@@ -60,7 +60,10 @@ module Workers
           order.record_submit_operations!
           order.update!(state: ::Order::WAIT)
 
-          ::AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
+          ::AMQP::Queue.enqueue(:matching,
+                                { action: 'submit', order: order.to_matching_attributes },
+                                {},
+                                Peatio::App.config.market_specific_workers ? order.market_id : nil)
         end
       rescue StandardError => e
         report_exception e, true, order_id: id
