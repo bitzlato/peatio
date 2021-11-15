@@ -62,6 +62,10 @@ class Member < ApplicationRecord
     end
   end
 
+  def rates_limits
+    { 'second' => 100, 'minut' => 1000 }
+  end
+
   # @deprecated
   def touch_accounts
     Currency.find_each do |currency|
