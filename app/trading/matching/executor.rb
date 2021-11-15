@@ -44,7 +44,7 @@ module Matching
                               Peatio::App.config.market_specific_workers ? order.market_id : nil)
         end
       end
-      report_exception_to_screen(e)
+      report_exception e, true, e.options
       false
     end
 
@@ -69,8 +69,8 @@ module Matching
       raise_error(3003, "Maker order state isn\'t equal to «wait» (#{@maker_order.state}).") unless @maker_order.state == Order::WAIT
       raise_error(3004, "Taker order state isn\'t equal to «wait» (#{@taker_order.state}).") unless @taker_order.state == Order::WAIT
       raise_error(3005, 'Not enough funds.') unless @total > ZERO && [@maker_order.volume, @taker_order.volume].min >= @amount
-      raise_error(3006, 'Order is canceling .') if @taker_order.canceling_at?
-      raise_error(3006, 'Order is canceling .') if @maker_order.canceling_at?
+      raise_error(3006, "Taker order is canceling (#{@taker_order.id}).") if @taker_order.canceling_at?
+      raise_error(3006, "Market order is canceling (#{@maker_order.id}).") if @maker_order.canceling_at?
     end
 
     def create_trade_and_strike_orders
