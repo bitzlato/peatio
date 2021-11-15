@@ -83,9 +83,7 @@ module Matching
           @taker_order = orders.find { |order| order.id == @trade_payload[:taker_order_id] }
         end
 
-        # TODO Проверять что заявка отменена (canceling_at)
-
-        # TODO Аккаунты берутся дважды. Создавать аккаунт на прием монет в момент приема заявки.
+        # TODO: Аккаунты берутся дважды. Создавать аккаунт на прием монет в момент приема заявки.
         # Check if accounts exists or create them.
         @maker_order.member.get_account(@maker_order.income_currency)
         @taker_order.member.get_account(@taker_order.income_currency)
