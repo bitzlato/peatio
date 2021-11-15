@@ -198,10 +198,8 @@ module EventAPI
     end
   end
 
-  if ENV.true? 'EVENT_API_ENABLE'
-    middlewares << Middlewares::IncludeEventMetadata.new
-    middlewares << Middlewares::GenerateJWT.new
-    middlewares << Middlewares::PrintToScreen.new
-    middlewares << Middlewares::PublishToRabbitMQ.new
-  end
+  middlewares << Middlewares::IncludeEventMetadata.new
+  middlewares << Middlewares::GenerateJWT.new
+  middlewares << Middlewares::PrintToScreen.new
+  middlewares << Middlewares::PublishToRabbitMQ.new
 end
