@@ -151,14 +151,14 @@ class Order < ApplicationRecord
   end
 
   def trigger_cancellation
-    market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
-  end
-
-  def trigger_internal_cancellation
     # TODO: Если событие потерялось, то заявка никогда не отменится
     return if canceling_at?
 
     touch :canceling_at
+    market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
+  end
+
+  def trigger_internal_cancellation
     # TODO: Зачем для отмены передавать все параметры? Достаточно только ID. Осталное можно подгрузить уже в order_processor
     if Peatio::App.config.market_specific_workers
       AMQP::Queue.enqueue(:matching,
