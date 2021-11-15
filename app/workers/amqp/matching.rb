@@ -49,6 +49,8 @@ module Workers
       end
 
       def submit(order)
+        return if Order.find(order.id).canceling_at?
+
         engines[order.market].submit(order)
       end
 
