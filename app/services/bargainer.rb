@@ -59,6 +59,7 @@ class Bargainer
       .orders
       .with_state(:wait, :pending)
       .where(market_type: ::Market::DEFAULT_TYPE, market: market.symbol)
+      .where(canceling_at: nil)
       .find_each do |order|
       Rails.logger.info { { message: 'Cancel order', order_id: order.id, current_state: order.state, service: 'bargainer' } }
       order.trigger_cancellation
