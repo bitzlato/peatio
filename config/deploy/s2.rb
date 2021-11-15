@@ -6,8 +6,20 @@ set :application, -> { 'peatio-' + fetch(:stage).to_s }
 
 set :systemd_daemon_instances, -> { %i[cron_job] }
 
-# Возвращает market-демонов в обычный пул
-append :systemd_amqp_daemon_instances, fetch(:market_amqp_daemons)
+set :systemd_amqp_daemon_instances,
+    %i[
+      balances_updating
+      cancel_member_orders
+      create_order
+      deposit_coin_address
+      deposit_intention
+      influx_writer
+      trade_completed
+      withdraw_coin
+      trade_executor
+      matching
+      order_processor
+    ]
 
 server '87.98.150.101',
        user: fetch(:user),
