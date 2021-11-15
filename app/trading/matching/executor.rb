@@ -69,6 +69,8 @@ module Matching
       raise_error(3003, "Maker order state isn\'t equal to «wait» (#{@maker_order.state}).") unless @maker_order.state == Order::WAIT
       raise_error(3004, "Taker order state isn\'t equal to «wait» (#{@taker_order.state}).") unless @taker_order.state == Order::WAIT
       raise_error(3005, 'Not enough funds.') unless @total > ZERO && [@maker_order.volume, @taker_order.volume].min >= @amount
+      raise_error(3006, 'Order is canceling .') if @taker_order.canceling_at?
+      raise_error(3006, 'Order is canceling .') if @maker_order.canceling_at?
     end
 
     def create_trade_and_strike_orders
@@ -81,6 +83,9 @@ module Matching
           @taker_order = orders.find { |order| order.id == @trade_payload[:taker_order_id] }
         end
 
+        # TODO Проверять что заявка отменена (canceling_at)
+
+        # TODO Аккаунты берутся дважды. Создавать аккаунт на прием монет в момент приема заявки.
         # Check if accounts exists or create them.
         @maker_order.member.get_account(@maker_order.income_currency)
         @taker_order.member.get_account(@taker_order.income_currency)
