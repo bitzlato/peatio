@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Bargainer
-  def call(market:, member:, min_volume:, max_volume:, price_deviation:)
+  def call(market:, member:, min_volume:, max_volume:, price_deviation:, arbitrage_max_spread:)
     Rails.logger.info { { message: 'Market trade creating is started', market_symbol: market.symbol, member_id: member.id, min_volume: min_volume, max_volume: max_volume, price_deviation: price_deviation, service: 'bargainer' } }
 
     service = ::OrderServices::CreateOrder.new(member: member)
-    volume = Random.rand(max_volume - min_volume) + min_volume
+    volume = Random.rand(min_volume..max_volume)
     volume = market.round_amount(volume.to_d)
-    price = average_price(market, price_deviation)
+    price = average_price(market, price_deviation, arbitrage_max_spread)
     cancel_member_orders(member, market)
     if price.nil?
       if Rails.env.sandbox?
@@ -35,16 +35,20 @@ class Bargainer
 
   private
 
-  def average_price(market, price_deviation)
+  def average_price(market, price_deviation, arbitrage_max_spread)
     order_ask_price = OrderAsk.top_price(market.symbol)
     order_bid_price = OrderBid.top_price(market.symbol)
     if order_ask_price.nil? || order_bid_price.nil?
       Rails.logger.warn { { message: "Can't calculate price", order_ask_price: order_ask_price, order_bid_price: order_bid_price, market_symbol: market.symbol, service: 'bargainer' } }
       return nil
     end
+    if (order_ask_price - order_bid_price) / (order_ask_price + order_bid_price) > arbitrage_max_spread
+      Rails.logger.warn { { message: 'Order book spread is too wide', order_ask_price: order_ask_price, order_bid_price: order_bid_price, market_symbol: market.symbol, service: 'bargainer' } }
+      return nil
+    end
 
     price = (order_ask_price + order_bid_price) / 2
-    price *= 1 + ((Random.rand(2.0) - 1) * price_deviation)
+    price *= 1 + Random.rand(-price_deviation..price_deviation)
     price = market.round_price(price)
     if price >= order_ask_price || price <= order_bid_price
       Rails.logger.warn { { message: 'Order book spread is too narrow', order_ask_price: order_ask_price, order_bid_price: order_bid_price, market_symbol: market.symbol, service: 'bargainer' } }
