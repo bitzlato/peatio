@@ -5,7 +5,7 @@ class OrderAsk < Order
 
   class << self
     def get_depth(market_id)
-      where(market_id: market_id, market_type: ::Market::DEFAULT_TYPE, state: :wait)
+      where(market_id: market_id, market_type: ::Market::DEFAULT_TYPE, state: :wait, canceling_at: nil)
         .where.not(ord_type: :market)
         .order(price: :asc)
         .group(:price)
@@ -14,7 +14,7 @@ class OrderAsk < Order
     end
 
     def top_price(market_id)
-      where(market_id: market_id, market_type: ::Market::DEFAULT_TYPE, state: :wait)
+      where(market_id: market_id, market_type: ::Market::DEFAULT_TYPE, state: :wait, canceling_at: nil)
         .where.not(ord_type: :market)
         .minimum(:price)
     end
