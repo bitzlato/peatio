@@ -68,6 +68,9 @@ queue:
   order_processor:
     name: peatio.order.processor
     durable: true
+  order_cancellator:
+    name: peatio.order.cancellator
+    durable: true
   market_ticker:
     name: peatio.trade.market_ticker
   pusher_market:
@@ -110,9 +113,6 @@ binding:
     queue: create_order
     exchange: ranger
     topics: peatio.ranger.new_orders
-  order_cancellator:
-    queue: order_cancellator
-    exchange: matching
   order_cancellator:
     queue: order_cancellator
     exchange: matching

@@ -46,8 +46,9 @@ module AMQP
       end
 
       def queue(id, market = nil)
-        name = [data[:queue][id][:name], market].compact.join('.')
-        settings = { durable: data[:queue][id][:durable] }
+        queue_settings = data.fetch(:queue).fetch(id)
+        name = [queue_settings.fetch(:name), market].compact.join('.')
+        settings = { durable: queue_settings.fetch(:durable) }
         [name, settings]
       end
 
