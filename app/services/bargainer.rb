@@ -2,7 +2,17 @@
 
 class Bargainer
   def call(market:, member:, min_volume:, max_volume:, price_deviation:, arbitrage_max_spread:)
-    Rails.logger.info { { message: 'Market trade creating is started', market_symbol: market.symbol, member_id: member.id, min_volume: min_volume, max_volume: max_volume, price_deviation: price_deviation, service: 'bargainer' } }
+    Rails.logger.info do
+      {
+        message: 'Market trade creating is started',
+        market_symbol: market.symbol,
+        member_id: member.id,
+        min_volume: min_volume,
+        max_volume: max_volume,
+        price_deviation: price_deviation,
+        service: 'bargainer'
+      }
+    end
 
     service = ::OrderServices::CreateOrder.new(member: member)
     volume = Random.rand(min_volume..max_volume)
