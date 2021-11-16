@@ -2,7 +2,7 @@
 
 module Workers
   module Daemons
-    class Blockchain < Base
+    class BlockchainProcessor < Base
       class Runner
         attr_reader :ts, :thread
 
@@ -17,7 +17,7 @@ module Workers
             bc_service = BlockchainService.new(@blockchain)
 
             unless @blockchain.gateway.enable_block_fetching?
-              Rails.logger.info { "Skip #{blockchain.name} block processing." }
+              Rails.logger.info { "Skip #{@blockchain.name} block processing." }
               return
             end
             Rails.logger.info { "Processing #{@blockchain.name} blocks." }
