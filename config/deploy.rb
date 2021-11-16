@@ -59,7 +59,7 @@ set :assets_roles, []
 set :init_system, :systemd
 
 set :systemd_daemon_role, :daemons
-set :systemd_daemon_instances, -> { %i[cron_job] }
+set :systemd_daemon_instances, -> { %i[blockchain cron_job] }
 
 # Restricted daemons list for stages
 set :systemd_amqp_daemon_role, :amqp_daemons
