@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-module Jobs::Cron
-  class StatsMemberPnl
-    Error = Class.new(StandardError)
+module Workers
+  module Daemons
+    class StatsMemberPnl < Base
+      Error = Class.new(StandardError)
 
-    class << self
       def process_currency(pnl_currency, currency, batch_size = 1000)
         queries = []
         idx = last_idx(pnl_currency, currency)
@@ -319,9 +319,7 @@ module Jobs::Cron
             end
           end
 
-          def price_of_transfer(a_total, b_total)
-            b_total / a_total
-          end
+          price_of_transfer = ->(a_total, b_total) { b_total / a_total }
 
           store.each do |member_id, stats|
             next if exclude_user_ids.include?(member_id)
@@ -335,7 +333,7 @@ module Jobs::Cron
             end
             next if stats[b][:total_amount].zero?
 
-            price = price_of_transfer(stats[a][:total_amount], stats[b][:total_amount])
+            price = price_of_transfer.call(stats[a][:total_amount], stats[b][:total_amount])
 
             a_total_credit_value = stats[a][:total_credit] * price
             b_total_credit_value = stats[b][:total_credit]

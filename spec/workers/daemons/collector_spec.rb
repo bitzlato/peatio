@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Jobs::Cron::Collector do
+describe Workers::Daemons::Collector do
   let!(:payment_address) { create :payment_address, :eth_address, balances: { eth: 1 } }
 
   it do
@@ -12,7 +12,7 @@ describe Jobs::Cron::Collector do
     EthereumGateway.any_instance.stubs(:has_enough_gas_to_collect?).returns true
     PaymentAddress.any_instance.expects(:collect!)
 
-    expect { described_class.process }.not_to raise_error
+    expect { described_class.new.process }.not_to raise_error
   end
 
   it 'refuels' do
@@ -20,6 +20,6 @@ describe Jobs::Cron::Collector do
     EthereumGateway.any_instance.stubs(:has_enough_gas_to_collect?).returns false
     PaymentAddress.any_instance.expects(:refuel_gas!)
 
-    expect { described_class.process }.not_to raise_error
+    expect { described_class.new.process }.not_to raise_error
   end
 end

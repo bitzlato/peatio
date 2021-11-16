@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
-module Jobs
-  module Cron
-    class GasPriceChecker
-      JOB_TIMEOUT = 30.seconds
+module Workers
+  module Daemons
+    class GasPriceChecker < Base
+      @sleep_time = 30.seconds
+
       THRESHOLD_DEVIATION_RATIO = 0.02
 
-      def self.process(job_timeout = JOB_TIMEOUT)
+      def process
         return if Rails.env.staging?  # Стейджи не имеют доступа в шлюзы
 
         Blockchain.active.find_each do |blockchain|
@@ -28,8 +29,6 @@ module Jobs
           report_exception e, true, { service: 'GasPriceChecker' }
           next
         end
-
-        sleep job_timeout
       end
     end
   end

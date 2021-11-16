@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module Jobs
-  module Cron
-    class BargainerJob
+module Workers
+  module Daemons
+    class BargainerJob < Base
       TIMEOUT_RANGE = (3.0..10.0).freeze
 
       MIN_VOLUME = 0.0005
@@ -10,7 +10,7 @@ module Jobs
       PRICE_DEVIATION = 0.001
       ARBITRAGE_MAX_SPREAD = 0.022
 
-      def self.process(timeout_range = TIMEOUT_RANGE)
+      def process(timeout_range = TIMEOUT_RANGE)
         Rails.logger.info { 'Start bargainer process' }
         market = Market.find_by!(symbol: ENV.fetch('BARGAINER_MARKET_SYMBOL', 'btc_usdterc20'))
         member = Member.find_by!(uid: ENV['BARGAINER_UID'])

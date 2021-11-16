@@ -19,13 +19,18 @@ module Workers
       end
 
       def run
+        Rails.logger.info { { message: 'Start cron job', service: self.class.name } }
+
         while running
           begin
             process
           rescue ScriptError => e
             raise e if is_db_connection_error?(e)
 
-            report_exception(e)
+            report_exception(e, true, service: self.class.name)
+          rescue StandardError => e
+            report_exception(e, true, service: self.class.name)
+            sleep 30
           end
           wait
         end
@@ -36,7 +41,7 @@ module Workers
       end
 
       def wait
-        Kernel.sleep self.class.sleep_time
+        Kernel.sleep self.class.sleep_time.to_i
       end
     end
   end

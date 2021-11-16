@@ -369,8 +369,8 @@ CREATE TABLE public.blockchains (
     height_updated_at timestamp without time zone,
     client_version character varying,
     high_transaction_price_at timestamp without time zone,
-    disable_collection boolean DEFAULT false NOT NULL,
     address_type character varying,
+    disable_collection boolean DEFAULT false NOT NULL,
     chain_id integer
 );
 
@@ -935,9 +935,9 @@ CREATE TABLE public.payment_addresses (
     details_encrypted character varying(1024),
     member_id bigint,
     remote boolean DEFAULT false NOT NULL,
+    blockchain_id bigint NOT NULL,
     balances jsonb DEFAULT '{}'::jsonb,
     balances_updated_at timestamp without time zone,
-    blockchain_id bigint NOT NULL,
     collection_state character varying DEFAULT 'none'::character varying NOT NULL,
     collected_at timestamp without time zone,
     gas_refueled_at timestamp without time zone,
@@ -1297,8 +1297,8 @@ CREATE TABLE public.wallets (
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
-    enable_invoice boolean DEFAULT false NOT NULL,
     plain_settings json,
+    enable_invoice boolean DEFAULT false NOT NULL,
     blockchain_id bigint NOT NULL,
     use_as_fee_source boolean DEFAULT false NOT NULL,
     balance_updated_at timestamp without time zone
@@ -2406,13 +2406,6 @@ CREATE INDEX index_orders_on_updated_at ON public.orders USING btree (updated_at
 
 
 --
--- Name: index_orders_on_uuid; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_orders_on_uuid ON public.orders USING btree (uuid);
-
-
---
 -- Name: index_payment_addresses_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2779,7 +2772,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -2915,7 +2908,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200414155144'),
 ('20200420141636'),
 ('20200504183201'),
-('20200513153429'),
 ('20200527130534'),
 ('20200603164002'),
 ('20200622185615'),
@@ -2961,7 +2953,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210722125206'),
 ('20210727101029'),
 ('20210803084921'),
-('20210803134756'),
 ('20210806112457'),
 ('20210806112458'),
 ('20210806131828'),

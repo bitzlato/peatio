@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
-module Jobs
-  module Cron
-    class Ticker
-      def self.process
+module Workers
+  module Daemons
+    class Ticker < Base
+      @sleep_time = 5
+
+      def process
         @tickers = {}
         @cache_tickers = {}
         Market.spot.active.each do |market|
@@ -15,13 +17,9 @@ module Jobs
         Rails.logger.info { "Publish tickers: #{@tickers}" }
         Rails.cache.write(:markets_tickers, @cache_tickers)
         ::AMQP::Queue.enqueue_event('public', 'global', 'tickers', @tickers)
-        sleep 5
       end
 
-      def self.format_ticker(ticker)
-        permitted_keys = %i[low high open last volume amount
-                            avg_price price_change_percent]
-
+      def format_ticker(ticker)
         { at: ticker[:at],
           ticker: ticker }
       end
