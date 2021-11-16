@@ -105,19 +105,17 @@ class Order < ApplicationRecord
     raise 'Orders disabled' if ENV.true?('DISABLE_CREATE_ORDERS')
   end
 
-  if ENV.true? 'EVENT_API_ENABLE'
-    after_commit on: :update do
-      next unless ord_type == 'limit'
+  after_commit on: :update do
+    next unless ord_type == 'limit'
 
-      event = case state
-              when 'cancel' then 'order_canceled'
-              when 'done'   then 'order_completed'
-              else 'order_updated'
-              end
+    event = case state
+            when 'cancel' then 'order_canceled'
+            when 'done'   then 'order_completed'
+            else 'order_updated'
+            end
 
-      Serializers::EventAPI.const_get(event.camelize).call(self).tap do |payload|
-        EventAPI.notify ['market', market_id, event].join('.'), payload
-      end
+    Serializers::EventAPI.const_get(event.camelize).call(self).tap do |payload|
+      EventAPI.notify ['market', market_id, event].join('.'), payload
     end
   end
 
