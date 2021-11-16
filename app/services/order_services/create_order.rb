@@ -39,7 +39,7 @@ module OrderServices
         volume: volume.to_d,
         uuid: uuid
       )
-      OrdersRater.instance.order @member.uid, order.id
+      # OrdersRater.instance.order @member.uid, order.id
       order = submit_and_return_order(order)
       success(data: order)
     rescue ::Order::InsufficientMarketLiquidity => e
@@ -55,6 +55,11 @@ module OrderServices
     rescue ActiveRecord::RecordInvalid => e
       trigger_amqp_and_failure(
         error_message: 'market.order.invalid_volume_or_price',
+        uuid: uuid
+      )
+    rescue OrdersRatesLimit => e
+      trigger_amqp_and_failure(
+        error_message: 'market.order.orders_rates_limit',
         uuid: uuid
       )
     rescue OpenOrdersLimit => e
@@ -75,7 +80,7 @@ module OrderServices
     def validate_orders_rates!
       rates = OrdersRater.instance.rates(@member.uid)
       @member.rates_limits.each_pair do |period, limit|
-        raise OrdersRatesLimit, "Orders #{period} rates limit exceed (#{limit})" if rates[period] >= limit
+        raise OrdersRatesLimit, "Orders #{period} rates limit exceed (#{limit})" if rates.fetch(period) >= limit
       end
     end
 

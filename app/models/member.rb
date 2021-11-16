@@ -11,6 +11,8 @@ class Member < ApplicationRecord
   has_many :deposits, -> { order(id: :desc) }
   has_many :beneficiaries, -> { order(id: :desc) }
 
+  belongs_to :member_group, primary_key: :key, foreign_key: :group
+
   scope :enabled, -> { where(state: 'active') }
 
   before_validation :downcase_email
@@ -23,18 +25,20 @@ class Member < ApplicationRecord
   before_create { self.group = group.strip.downcase }
   after_create { AirdropService.new(self).perform if ENV.true? 'AUTO_AIRDROP_FOR_NEW_MEMBERS' }
 
+  delegate :open_orders_limit, :rates_limits, to: :mandatory_member_group
+
   class << self
     def groups
-      TradingFee.distinct.pluck(:group)
+      (TradingFee.distinct.pluck(:group) + MemberGroup.distinct.pluck(:key)).uniq.sort
     end
+  end
+
+  def mandatory_member_group
+    member_group || MemberGroup.default
   end
 
   def trades
     Trade.where('maker_id = ? OR taker_id = ?', id, id)
-  end
-
-  def open_orders_limit
-    OPEN_ORDERS_LIMITS.fetch(group, OPEN_ORDERS_LIMITS.fetch('default', 1))
   end
 
   def role
@@ -60,10 +64,6 @@ class Member < ApplicationRecord
     when Currency
       accounts.find_by(currency: model_or_id_or_code)
     end
-  end
-
-  def rates_limits
-    { 'second' => 100, 'minut' => 1000 }
   end
 
   # @deprecated

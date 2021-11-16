@@ -19,7 +19,7 @@ class OrdersRater
   # @param period - minut, second
   def rates(uid)
     PERIODS.keys.each_with_object({}) do |period, ag|
-      ag[period] = @redis.eval "return #redis.call('keys', '" [prefix, uid, period, '*'].join(SEP) + "')"
+      ag[period] = @redis.eval "return #redis.call('keys', '" + [PREFIX, uid, period, '*'].join(SEP) + "')"
     end
   end
 
