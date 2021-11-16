@@ -1,24 +1,23 @@
 # frozen_string_literal: true
 
 class Bargainer
-  def call(market:, member:, min_volume:, max_volume:, price_deviation:, arbitrage_max_spread:)
+  def call(market:, member:, volume_range:, price_deviation:, max_spread:)
     Rails.logger.info do
       {
         message: 'Market trade creating is started',
         market_symbol: market.symbol,
         member_id: member.id,
-        min_volume: min_volume,
-        max_volume: max_volume,
+        volume_range: volume_range,
         price_deviation: price_deviation,
         service: 'bargainer'
       }
     end
 
-    service = ::OrderServices::CreateOrder.new(member: member)
-    volume = Random.rand(min_volume..max_volume)
-    volume = market.round_amount(volume.to_d)
-    price = average_price(market, price_deviation, arbitrage_max_spread)
     cancel_member_orders(member, market)
+    service = ::OrderServices::CreateOrder.new(member: member)
+    volume = Random.rand(volume_range)
+    volume = market.round_amount(volume.to_d)
+    price = average_price(market, price_deviation, max_spread)
     if price.nil?
       if Rails.env.sandbox?
         price = market.trades.last.price
@@ -45,14 +44,14 @@ class Bargainer
 
   private
 
-  def average_price(market, price_deviation, arbitrage_max_spread)
+  def average_price(market, price_deviation, max_spread)
     order_ask_price = OrderAsk.top_price(market.symbol)
     order_bid_price = OrderBid.top_price(market.symbol)
     if order_ask_price.nil? || order_bid_price.nil?
       Rails.logger.warn { { message: "Can't calculate price", order_ask_price: order_ask_price, order_bid_price: order_bid_price, market_symbol: market.symbol, service: 'bargainer' } }
       return nil
     end
-    if (order_ask_price - order_bid_price) / (order_ask_price + order_bid_price) > arbitrage_max_spread
+    if (order_ask_price - order_bid_price) / (order_ask_price + order_bid_price) > max_spread
       Rails.logger.warn { { message: 'Order book spread is too wide', order_ask_price: order_ask_price, order_bid_price: order_bid_price, market_symbol: market.symbol, service: 'bargainer' } }
       return nil
     end
