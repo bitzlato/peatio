@@ -81,6 +81,7 @@ queue:
     durable: true
   deposit_intention:
     name: peatio.deposit.intention
+    durable: true
   influx_writer:
     name: peatio.trade.writer
   trade_error:
