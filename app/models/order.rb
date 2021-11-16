@@ -149,10 +149,12 @@ class Order < ApplicationRecord
   end
 
   def trigger_cancellation
-    # TODO: Если событие потерялось, то заявка никогда не отменится
-    return if canceling_at?
-
-    touch :canceling_at
+    with_lock do
+      return if canceling_at?
+      return unless [::Order::PENDING, ::Order::WAIT].include? state
+      # TODO: Если событие потерялось, то заявка никогда не отменится
+      touch :canceling_at
+    end
     market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
   end
 
