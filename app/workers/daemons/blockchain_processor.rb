@@ -4,16 +4,16 @@ module Workers
   module Daemons
     class BlockchainProcessor < Base
       class Runner
-        attr_reader :ts, :thread
+        attr_reader :timestamp, :thread
 
-        def initialize(blockchain, ts)
+        def initialize(blockchain, timestamp)
           @blockchain = blockchain
-          @ts = ts
+          @timestamp = timestamp
           @thread = nil
         end
 
         def start
-          @thread ||= Thread.new do
+          @thread ||= Thread.new do # rubocop:disable Naming/MemoizedInstanceVariableName
             bc_service = BlockchainService.new(@blockchain)
 
             unless @blockchain.gateway.enable_block_fetching?
@@ -60,10 +60,10 @@ module Workers
 
       def run
         @runner_pool = ::Blockchain.active.each_with_object({}) do |b, pool|
-          max_ts = [b.currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
+          max_timestamp = [b.currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
 
           logger.warn { "Creating the runner for #{b.key}" }
-          pool[b.key] = Runner.new(b, max_ts).tap(&:start)
+          pool[b.key] = Runner.new(b, max_timestamp).tap(&:start)
         end
 
         while running
@@ -77,23 +77,23 @@ module Workers
             # Recreate active blockchain runners by comparing runner &
             # maximum blockchain & currencies updated_at timestamp.
             ::Blockchain.active.each do |b|
-              max_ts = [b.currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
+              max_timestamp = [b.currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
 
               if @runner_pool[b.key].blank?
                 logger.warn { "Starting the new runner for #{b.key} (no runner found in pool)" }
-                @runner_pool[b.key] = Runner.new(b, max_ts).tap(&:start)
-              elsif @runner_pool[b.key].ts < max_ts
-                logger.warn { "Recreating a runner for #{b.key} (#{Time.at(@runner_pool[b.key].ts)} < #{Time.at(max_ts)})" }
+                @runner_pool[b.key] = Runner.new(b, max_timestamp).tap(&:start)
+              elsif @runner_pool[b.key].timestamp < max_timestamp
+                logger.warn { "Recreating a runner for #{b.key} (#{Time.at(@runner_pool[b.key].timestamp)} < #{Time.at(max_timestamp)})" }
                 @runner_pool.delete(b.key).stop
-                @runner_pool[b.key] = Runner.new(b, max_ts).tap(&:start)
+                @runner_pool[b.key] = Runner.new(b, max_timestamp).tap(&:start)
               else
-                logger.warn { "The runner for #{b.key} is up to date (#{Time.at(@runner_pool[b.key].ts)} >= #{Time.at(max_ts)})" }
+                logger.warn { "The runner for #{b.key} is up to date (#{Time.at(@runner_pool[b.key].timestamp)} >= #{Time.at(max_timestamp)})" }
               end
             end
 
             logger.info { 'Current runners timestamps:' }
             logger.info do
-              @runner_pool.transform_values(&:ts)
+              @runner_pool.transform_values(&:timestamp)
             end
 
             # Check for blockchain config changes in 30 seconds.
