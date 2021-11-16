@@ -8,7 +8,7 @@ module Workers
       def process
         return unless Rails.env.production?
 
-        Blockchain.active.find_each do |b|
+        ::Blockchain.active.find_each do |b|
           poll_deposits b if b.gateway_class.implements? :poll_deposits!
           poll_withdraws b if b.gateway_class.implements? :poll_withdraws!
         end
