@@ -148,11 +148,13 @@ class Order < ApplicationRecord
     AMQP::Queue.publish(market.engine.driver, data: as_json_for_third_party, type: THIRD_PARTY_ORDER_ACTION_TYPE[:submit_single])
   end
 
-  def trigger_cancellation
+  def trigger_cancellation(force = false)
     # TODO: Если событие потерялось, то заявка никогда не отменится
-    return if canceling_at?
-
-    touch :canceling_at
+    if canceling_at?
+      return unless force
+    else
+      touch :canceling_at
+    end
     market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
   end
 
