@@ -5,16 +5,31 @@ module Workers
     class BargainerJob < Base
       TIMEOUT_RANGE = (3.0..10.0).freeze
 
-      MIN_VOLUME = 0.0005
-      MAX_VOLUME = 0.001
-      PRICE_DEVIATION = 0.001
-      ARBITRAGE_MAX_SPREAD = 0.022
-
       def process(timeout_range = TIMEOUT_RANGE)
         Rails.logger.info { 'Start bargainer process' }
-        market = Market.find_by!(symbol: ENV.fetch('BARGAINER_MARKET_SYMBOL', 'btc_usdterc20'))
-        member = Member.find_by!(uid: ENV['BARGAINER_UID'])
-        Bargainer.new.call(market: market, member: member, min_volume: MIN_VOLUME, max_volume: MAX_VOLUME, price_deviation: PRICE_DEVIATION, arbitrage_max_spread: ARBITRAGE_MAX_SPREAD)
+
+        bargainer = Bargainer.new
+        member = Member.find_by!(uid: ENV.fetch('BARGAINER_UID'))
+        Rails.configuration.bargainers.each do |bargainer_config|
+          market = Market.find_by(symbol: bargainer_config.fetch('market_symbol'))
+          if market.nil?
+            Rails.logger.warn { { message: 'Makret is not found', market_symbol: bargainer_config.fetch('market_symbol'), service: 'bargainer' } }
+            next
+          elsif market.state != 'enabled'
+            Rails.logger.warn do
+              { message: 'Makret is not enabled. Bargain is skipped', market_symbol: market.symbol, market_state: market.state, service: 'bargainer' }
+            end
+            next
+          end
+
+          bargainer.call(
+            market: market,
+            member: member,
+            volume_range: bargainer_config.fetch('min_volume')..bargainer_config.fetch('max_volume'),
+            price_deviation: bargainer_config.fetch('price_deviation'),
+            max_spread: bargainer_config.fetch('max_spread')
+          )
+        end
 
         sleep rand timeout_range
       end

@@ -9,7 +9,7 @@ RSpec.describe Bargainer do
       member = create(:member)
       create(:order_ask, :btc_eth, price: 5000)
       create(:order_bid, :btc_eth, price: 4900)
-      service.call(market: market, member: member, min_volume: 0.0005, max_volume: 0.001, price_deviation: 0.001, arbitrage_max_spread: 0.022)
+      service.call(market: market, member: member, volume_range: 0.0005..0.001, price_deviation: 0.001, max_spread: 0.022)
       expect(member.orders.count).to eq 2
     end
   end

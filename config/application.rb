@@ -53,5 +53,6 @@ module Peatio
 
     config.currencies = config_for(:currencies)
     config.blockchains = config_for(:blockchains)
+    config.bargainers = config_for(:bargainers)
   end
 end
