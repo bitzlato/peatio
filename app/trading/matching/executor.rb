@@ -23,10 +23,9 @@ module Matching
     end
 
     def publish_cancel
-      AMQP::Queue.enqueue(:order_processor,
-                          { action: 'cancel', order: @payload[:order] },
-                          { persistent: false },
-                          Peatio::App.config.market_specific_workers ? @payload.dig(:order, 'market') || raise("Unknown market for #{@payload}") : nil)
+      AMQP::Queue.enqueue(:order_cancellator,
+                          { order: @payload[:order] },
+                          { persistent: false })
     end
 
     def execute

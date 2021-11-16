@@ -110,6 +110,9 @@ binding:
     queue: create_order
     exchange: ranger
     topics: peatio.ranger.new_orders
+  order_cancellator:
+    queue: order_cancellator
+    exchange: matching
   order_processor:
     queue: order_processor
     exchange: matching
@@ -139,6 +142,8 @@ binding:
     queue: balances_updating
 
 channel:
+  order_cancellator:
+    prefetch: 5
   trade_executor:
     prefetch: 5
   order_processor:

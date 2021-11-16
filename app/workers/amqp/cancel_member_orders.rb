@@ -2,7 +2,6 @@
 
 module Workers
   module AMQP
-    # TODO: move to order_processor with bulk_cancel event?
     class CancelMemberOrders < Base
       def process(payload)
         payload.symbolize_keys!
