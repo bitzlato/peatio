@@ -6,7 +6,7 @@ Peatio::Application.load_tasks
 
 module Workers
   module Daemons
-    module LiabilitiesCompactor
+    class LiabilitiesCompactor < Base
       @sleep_time = 24.hours
 
       def process
