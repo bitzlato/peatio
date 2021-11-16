@@ -3,9 +3,8 @@
 module Workers
   module AMQP
     class OrderCancellator < OrderProcessor
-      def initialize
+      def initialize # rubocop:disable Lint/MissingSuper
         Rails.logger.info 'Start order cancellator'
-        super
       end
 
       def process(payload)
