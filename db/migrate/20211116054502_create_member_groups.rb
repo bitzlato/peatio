@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CreateMemberGroups < ActiveRecord::Migration[5.2]
-  DEFAULT_RATES_LIMITS = { 'second' => 10, 'minit' => 100 }.freeze
+  DEFAULT_RATES_LIMITS = { 'second' => 10, 'minut' => 100 }.freeze
 
   OPEN_ORDERS_LIMITS = {
     'market-makers' => 50,
