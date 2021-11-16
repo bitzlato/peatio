@@ -113,6 +113,9 @@ binding:
   order_cancellator:
     queue: order_cancellator
     exchange: matching
+  order_cancellator:
+    queue: order_cancellator
+    exchange: matching
   order_processor:
     queue: order_processor
     exchange: matching
