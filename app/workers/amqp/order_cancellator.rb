@@ -3,6 +3,11 @@
 module Workers
   module AMQP
     class OrderCancellator < OrderProcessor
+      def initialize
+        Rails.logger.info 'Start order cancellator'
+        super
+      end
+
       def process(payload)
         cancel_order(payload.dig('order', 'id'))
       rescue StandardError => e
