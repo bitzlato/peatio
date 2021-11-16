@@ -70,7 +70,7 @@ module OrderServices
     private
 
     def check_open_orders_limits!(market)
-      open_orders_count = @member.orders.with_market(market.symbol).open.count
+      open_orders_count = @member.orders.with_market(market.symbol).open.where(canceling_at: nil).count
 
       raise OpenOrdersLimit, "You meet active orders limit #{open_orders_count}>=#{@member.open_orders_limit} for market #{market}" if open_orders_count >= @member.open_orders_limit
     end
