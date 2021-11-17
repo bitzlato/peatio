@@ -10,7 +10,7 @@ module Workers
       @sleep_time = 24.hours
 
       def process
-        Rake::Task['job:liabilities:compact_orders'].invoke
+        Rake::Task['job:liabilities:compact_orders'].execute
       end
     end
   end
