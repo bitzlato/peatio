@@ -44,6 +44,10 @@ class AbstractGateway
     true
   end
 
+  def self.supports_allowance?
+    false
+  end
+
   def latest_block_number
     nil
   end

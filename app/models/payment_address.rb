@@ -100,7 +100,7 @@ class PaymentAddress < ApplicationRecord
   end
 
   def update_balances!
-    Jobs::Cron::PaymentAddressBalancer.update_balances self
+    BalancesUpdater.new(blockchain: blockchain, address: address).perform
   end
 
   def format_address(format)
@@ -144,5 +144,9 @@ class PaymentAddress < ApplicationRecord
 
   def currency
     wallet.native_currency
+  end
+
+  def fee_wallet_approved?(currency_id)
+    BlockchainApproval.where(currency_id: currency_id, blockchain: blockchain, owner_address: address, spender_address: blockchain.fee_wallet&.address).success.any?
   end
 end

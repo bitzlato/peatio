@@ -49,3 +49,16 @@
     address:         https://testnet.blockchain.info/address/#{address}
     transaction:     https://testnet.blockchain.info/tx/#{txid}
   status:            active
+
+- key:               bsc-testnet
+  name:              BSC Testnet
+  gateway_klass:     EthereumGateway
+  height:            13300000
+  min_confirmations: 6
+  explorer:
+    address:         https://testnet.bscscan.com/address/#{address}
+    transaction:     https://testnet.bscscan.com/tx/#{txid}
+    contract_address: https://testent.bscscan.com/token/#{contract_address}
+  status:            active
+  client_options:
+    gas_factor:      1
