@@ -77,6 +77,7 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
   config.include Rails.application.routes.url_helpers
+  config.include RSpec::JsonExpectations::Matchers
 
   # See https://github.com/DatabaseCleaner/database_cleaner#rspec-with-capybara-example
   config.before(:suite) do
