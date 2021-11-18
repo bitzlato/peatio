@@ -10,7 +10,8 @@ class EthereumGateway
     STATUS_SUCCESS = '0x1'
     STATUS_FAILED = '0x0'
     ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-    TOKEN_EVENT_IDENTIFIER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+    TRANSFER_TOKEN_EVENT_IDENTIFIER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef' # Transfer(address,address,uint256)
+    APPROVAL_TOKEN_EVENT_IDENTIFIER = '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925' # Approval(address,address,uint256)
 
     attr_reader :client
 
@@ -80,7 +81,7 @@ class EthereumGateway
 
       txn_receipt.fetch('logs').each_with_object([]) do |log, formatted_txs|
         next if log['blockHash'].blank? && log['blockNumber'].blank?
-        next if log.fetch('topics').blank? || log.fetch('topics')[0] != TOKEN_EVENT_IDENTIFIER
+        next if log.fetch('topics').blank? || [TRANSFER_TOKEN_EVENT_IDENTIFIER, APPROVAL_TOKEN_EVENT_IDENTIFIER].exclude?(log.fetch('topics')[0])
 
         contract_address = log.fetch('address')
         next unless contract_addresses.nil? || contract_addresses.include?(contract_address)
@@ -104,7 +105,8 @@ class EthereumGateway
           contract_address: log.fetch('address'),
           status: transaction_status(txn_receipt),
           options: { gas_price: gas_price, gas_used: gas_used, log_index: log_index },
-          fee: gas_price * gas_used
+          fee: gas_price * gas_used,
+          topic: log.dig('topics', 0) == APPROVAL_TOKEN_EVENT_IDENTIFIER ? :approval : :transfer
         }
       end
     end

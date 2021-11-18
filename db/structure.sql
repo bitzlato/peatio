@@ -308,6 +308,44 @@ ALTER SEQUENCE public.blockchain_addresses_id_seq OWNED BY public.blockchain_add
 
 
 --
+-- Name: blockchain_approvals; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.blockchain_approvals (
+    id bigint NOT NULL,
+    currency_id character varying(10) NOT NULL,
+    txid public.citext NOT NULL,
+    owner_address public.citext NOT NULL,
+    spender_address public.citext NOT NULL,
+    block_number integer,
+    status integer DEFAULT 0 NOT NULL,
+    options json,
+    blockchain_id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: blockchain_approvals_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.blockchain_approvals_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: blockchain_approvals_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.blockchain_approvals_id_seq OWNED BY public.blockchain_approvals.id;
+
+
+--
 -- Name: blockchain_nodes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -371,6 +409,7 @@ CREATE TABLE public.blockchains (
     high_transaction_price_at timestamp without time zone,
     address_type character varying,
     disable_collection boolean DEFAULT false NOT NULL,
+    allowance_enabled boolean DEFAULT false NOT NULL,
     chain_id integer
 );
 
@@ -1514,6 +1553,13 @@ ALTER TABLE ONLY public.blockchain_addresses ALTER COLUMN id SET DEFAULT nextval
 
 
 --
+-- Name: blockchain_approvals id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_approvals ALTER COLUMN id SET DEFAULT nextval('public.blockchain_approvals_id_seq'::regclass);
+
+
+--
 -- Name: blockchain_nodes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1763,6 +1809,14 @@ ALTER TABLE ONLY public.block_numbers
 
 ALTER TABLE ONLY public.blockchain_addresses
     ADD CONSTRAINT blockchain_addresses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: blockchain_approvals blockchain_approvals_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_approvals
+    ADD CONSTRAINT blockchain_approvals_pkey PRIMARY KEY (id);
 
 
 --
@@ -2080,6 +2134,34 @@ CREATE UNIQUE INDEX index_block_numbers_on_blockchain_id_and_number ON public.bl
 --
 
 CREATE UNIQUE INDEX index_blockchain_addresses_on_address_and_address_type ON public.blockchain_addresses USING btree (address, address_type);
+
+
+--
+-- Name: index_blockchain_approvals_on_blockchain_id_and_txid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_blockchain_approvals_on_blockchain_id_and_txid ON public.blockchain_approvals USING btree (blockchain_id, txid);
+
+
+--
+-- Name: index_blockchain_approvals_on_currency_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_blockchain_approvals_on_currency_id ON public.blockchain_approvals USING btree (currency_id);
+
+
+--
+-- Name: index_blockchain_approvals_on_owner_address; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_blockchain_approvals_on_owner_address ON public.blockchain_approvals USING btree (owner_address);
+
+
+--
+-- Name: index_blockchain_approvals_on_txid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_blockchain_approvals_on_txid ON public.blockchain_approvals USING btree (txid);
 
 
 --
@@ -2800,6 +2882,14 @@ ALTER TABLE ONLY public.blockchain_nodes
 
 
 --
+-- Name: blockchain_approvals fk_rails_a26b217d2c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_approvals
+    ADD CONSTRAINT fk_rails_a26b217d2c FOREIGN KEY (blockchain_id) REFERENCES public.blockchains(id);
+
+
+--
 -- Name: currencies fk_rails_a7ead03da9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3067,8 +3157,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211003172753'),
 ('20211018193526'),
 ('20211019114204'),
+('20211019140943'),
 ('20211020085635'),
 ('20211025132500'),
+('20211026141101'),
 ('20211112205804'),
 ('20211116054502');
 

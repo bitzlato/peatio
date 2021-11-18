@@ -104,6 +104,25 @@ class EthereumGateway < AbstractGateway
     )
   end
 
+  def self.supports_allowance?
+    true
+  end
+
+  def approve!(address:, secret:, spender_address:, contract_address:, nonce: nil, gas_factor: nil)
+    gas_factor = gas_factor || blockchain.client_options[:gas_factor].to_d || 1
+    gas_factor = 1.01 if gas_factor.to_d < 1
+    gas_price = (AbstractCommand.new(client).fetch_gas_price * gas_factor).to_i
+    gas_limit ||= GasEstimator
+                  .new(client)
+                  .call(from_address: address,
+                        to_address: contract_address,
+                        contract_addresses: [contract_address].compact,
+                        account_native: false,
+                        gas_limits: gas_limits,
+                        gas_price: gas_price)
+    Approver.new(client).call(from_address: address, spender: spender_address, secret: secret, gas_limit: gas_limit, contract_address: contract_address, nonce: nonce, gas_price: gas_price)
+  end
+
   def fetch_block_transactions(block_number)
     BlockFetcher
       .new(client)
