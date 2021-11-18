@@ -32,7 +32,7 @@ module Workers
             report_exception(e, true, service: self.class.name)
             sleep 30
           end
-          wait
+          wait(self.class.sleep_time.to_i)
         end
       end
 
@@ -40,8 +40,12 @@ module Workers
         method_not_implemented
       end
 
-      def wait
-        Kernel.sleep self.class.sleep_time.to_i
+      def wait(seconds)
+        while seconds.positive?
+          sleep(1)
+          seconds -= 1
+          break unless @running
+        end
       end
     end
   end
