@@ -102,3 +102,11 @@
     #
     # Bitcoind gateway client settings.
     uri:          http://user:password@127.0.0.1:18332
+
+- name:             BSC Deposit
+  blockchain_key:   bsc-testnet
+  currency_ids:     bnb-bep20,usdt-bep20
+  kind:             deposit
+  status:           active
+  settings:
+    uri: http://127.0.0.1:8545

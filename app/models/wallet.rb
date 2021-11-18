@@ -163,7 +163,7 @@ class Wallet < ApplicationRecord
   end
 
   def generate_settings
-    return unless address.blank? && settings[:uri].present? && currencies.present?
+    return unless address.blank? && settings['uri'].present? && currencies.present?
 
     result = create_address!.reverse_merge details: {}
   rescue StandardError => e

@@ -17,6 +17,7 @@ gem 'rails', '~> 5.2.4.5'
 gem 'ransack', '~> 2.3.2'
 gem 'rbtree', '~> 0.4.2'
 gem 'redis', '~> 4.1.2', require: ['redis', 'redis/connection/hiredis']
+gem 'redlock', '~> 1.2'
 
 gem 'grape', '~> 1.5', '>= 1.5.3'
 gem 'grape-entity', '~> 0.9.0'
@@ -73,7 +74,7 @@ gem 'pry-byebug', '~> 3.7'
 
 gem 'money', github: 'bitzlato/money', branch: 'main'
 
-gem 'eth'
+gem 'eth', '~> 0.4.16'
 
 group :development, :test do
   gem 'bullet',       '~> 5.9'

@@ -2,6 +2,7 @@
 
 module EthereumHelpers
   extend Memoist
+  include EthereumGateway::Concern
 
   def ethereum_client
     @ethereum_client ||= Ethereum::Client.new(node_uri)
@@ -11,14 +12,23 @@ module EthereumHelpers
     'http://127.0.0.1:8545'
   end
 
-  def stub_balance_fetching(balance:, address:, id:)
+  def stub_balance_fetching(currency:, balance:, address:, id:)
     response = { jsonrpc: '2.0', result: '0x' + (balance.to_s 16), id: id }
-    stub_request(:post, node_uri)
-      .with(body: { jsonrpc: '2.0',
-                    id: 1,
-                    method: :eth_getBalance,
-                    params: [address, 'latest'] }.to_json)
-      .to_return(body: response.to_json)
+    if currency.contract_address.nil?
+      stub_request(:post, node_uri)
+        .with(body: { jsonrpc: '2.0',
+                      id: id,
+                      method: :eth_getBalance,
+                      params: [normalize_address(address), 'latest'] }.to_json)
+        .to_return(body: response.to_json)
+    else
+      stub_request(:post, node_uri)
+        .with(body: { jsonrpc: '2.0',
+                      id: id,
+                      method: :eth_call,
+                      params: [{ to: currency.contract_address, data: abi_encode('balanceOf(address)', normalize_address(address)) }, 'latest'] }.to_json)
+        .to_return(body: response.to_json)
+    end
   end
 
   def stub_gas_fetching(gas_price:, id:)
@@ -47,7 +57,7 @@ module EthereumHelpers
       .to_return(body: { result: '0x' + estimated_gas.to_s(16), error: nil, id: id }.to_json)
   end
 
-  def stub_personal_send_transaction(from_address:, to_address:, value:, gas_price:, gas:, id:)
+  def stub_personal_send_transaction(from_address:, secret:, to_address:, value:, gas_price:, gas:, id:, txid:)
     request_body = { jsonrpc: '2.0',
                      id: id,
                      method: :personal_sendTransaction,
@@ -61,6 +71,26 @@ module EthereumHelpers
     stub_request(:post, node_uri)
       .with(body: request_body.to_json)
       .to_return(body: { result: txid, error: nil, id: id }.to_json)
+  end
+
+  def stub_send_raw_transaction(id:, txid:, data: '')
+    request_body = { jsonrpc: '2.0',
+                     id: id,
+                     method: :eth_sendRawTransaction,
+                     params: [data] }
+    stub_request(:post, node_uri)
+      .with(body: request_body.to_json)
+      .to_return(body: { result: txid, error: nil, id: id }.to_json)
+  end
+
+  def stub_get_transaction_count(id:, address:, count:)
+    request_body = { jsonrpc: '2.0',
+                     id: id,
+                     method: :eth_getTransactionCount,
+                     params: [address, 'latest'] }
+    stub_request(:post, node_uri)
+      .with(body: request_body.to_json)
+      .to_return(body: { id: id, jsonrpc: '2.0', result: "0x#{count.to_s(16)}" }.to_json)
   end
 end
 

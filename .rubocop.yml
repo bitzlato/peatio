@@ -5,19 +5,20 @@ require:
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-   NewCops: enable
-   Exclude:
-     - 'node_modules/**/*'
-     - 'vendor/**/*'
-     - 'bin/*'
-     - 'log/**/*'
-     - 'public/**/*'
-     - 'tmp/**/*'
-     - '.git/**/*'
-     - 'storage/**/*'
-     - 'lib/**/*'
-     - db/schema.rb
-     - Guardfile
+  NewCops: enable
+  Exclude:
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - 'bin/*'
+    - 'log/**/*'
+    - 'public/**/*'
+    - 'tmp/**/*'
+    - '.git/**/*'
+    - 'storage/**/*'
+    - 'lib/**/*'
+    - db/schema.rb
+    - Guardfile
+  DisplayStyleGuide: true
 
 Rails/AddColumnIndex:
   Enabled: false

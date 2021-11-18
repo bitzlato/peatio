@@ -21,12 +21,11 @@ describe ::EthereumGateway::CollectionConcern do
     let(:eth_money_amount) { 2.to_money('eth') }
     let(:balances) { { Money::Currency.find('eth') => eth_money_amount } }
     let(:payment_address) { create :payment_address, blockchain: blockchain }
-    let(:gas_limits) { { nil => nil } }
+    let(:gas_limits) { blockchain.currencies.map { |c| [c.contract_address, c.gas_limit] }.to_h }
 
     context 'there are native and tokens on the address' do
       before do
         stub_gas_fetching gas_price: 1, id: 1
-        stub_balance_fetching address: payment_address.address, balance: 1, id: 2
       end
 
       it 'collects tokens first' do
@@ -42,8 +41,9 @@ describe ::EthereumGateway::CollectionConcern do
                 amounts: { nil => eth_money_amount.base_units },
                 gas_factor: 1,
                 gas_limits: gas_limits,
-                private_key: nil,
-                secret: payment_address.secret)
+                blockchain_address: nil,
+                secret: payment_address.secret,
+                chain_id: nil)
           .once
         EthereumGateway
           .any_instance

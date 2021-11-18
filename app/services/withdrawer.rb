@@ -90,7 +90,7 @@ class Withdrawer
               amount: withdraw.money_amount,
               contract_address: withdraw.currency.contract_address,
               secret: withdraw_wallet.secret,
-              private_key: ENV.true?('USE_PRIVATE_KEY') ? withdraw_wallet.private_key : nil,
+              blockchain_address: withdraw_wallet.blockchain_address,
               nonce: nonce,
               gas_factor: gas_factor,
               meta: { withdraw_tid: withdraw.tid }

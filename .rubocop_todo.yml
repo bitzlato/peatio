@@ -38,7 +38,6 @@ Lint/MissingSuper:
 Lint/NonLocalExitFromIterator:
   Exclude:
     - 'app/gateways/ethereum_gateway/deposit_collector.rb'
-    - 'app/workers/amqp/deposit_coin_address.rb'
 
 # Offense count: 2
 Lint/ReturnInVoidContext:
@@ -391,7 +390,6 @@ Style/GuardClause:
     - 'app/api/v2/helpers.rb'
     - 'app/api/v2/management/jwt_authentication_middleware.rb'
     - 'app/api/v2/validations.rb'
-    - 'app/gateways/ethereum_gateway/gas_estimator.rb'
     - 'app/models/currency.rb'
     - 'app/models/order.rb'
     - 'app/trading/matching/order_book.rb'

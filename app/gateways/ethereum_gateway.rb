@@ -10,12 +10,12 @@ class EthereumGateway < AbstractGateway
   extend Concern
   include CollectionConcern
   include BalancesConcern
+  include EstimationGasConcern
 
   IDLE_TIMEOUT = 1
 
   Error = Class.new StandardError
   NoHotWallet = Class.new Error
-  NoAddressesToEstimate = Class.new Error
 
   def enable_block_fetching?
     true
@@ -41,10 +41,11 @@ class EthereumGateway < AbstractGateway
         gas_factor: blockchain.client_options[:gas_factor],
         gas_wallet_address: fee_wallet.address,
         gas_wallet_secret: fee_wallet.secret,
-        gas_wallet_private_key: ENV.true?('USE_PRIVATE_KEY') ? fee_wallet.private_key : nil,
+        gas_wallet_blockchain_address: fee_wallet.blockchain_address,
         target_address: target_address,
         contract_addresses: coins,
-        gas_limits: gas_limits
+        gas_limits: gas_limits,
+        chain_id: blockchain.chain_id
       )
     )
 
@@ -63,11 +64,16 @@ class EthereumGateway < AbstractGateway
       .call(secret)
   end
 
+  def create_private_address!
+    key = Eth::Key.new
+    BlockchainAddress.create!(address: key.address, address_type: 'ethereum', private_key_hex: key.private_hex)
+  end
+
   def create_transaction!(from_address:,
                           to_address:,
                           amount:,
                           secret:,
-                          private_key:,
+                          blockchain_address: nil,
                           contract_address: nil,
                           subtract_fee: false, # nil means auto
                           nonce: nil,
@@ -79,15 +85,9 @@ class EthereumGateway < AbstractGateway
     gas_factor = gas_factor || blockchain.client_options[:gas_factor].to_d || 1
     gas_factor = 1.01 if gas_factor.to_d < 1
     gas_price = (AbstractCommand.new(client).fetch_gas_price * gas_factor).to_i
-    gas_limit ||= GasEstimator
-                  .new(client)
-                  .call(from_address: from_address,
-                        to_address: to_address,
-                        contract_addresses: [contract_address].compact,
-                        account_native: contract_address.nil?,
-                        gas_limits: gas_limits,
-                        gas_price: gas_price)
-
+    gas_limit ||= estimated_gas(contract_addresses: [contract_address].compact,
+                                account_native: contract_address.nil?,
+                                gas_limits: gas_limits)
     monefy_transaction(
       TransactionCreator
       .new(client)
@@ -95,12 +95,13 @@ class EthereumGateway < AbstractGateway
             to_address: to_address,
             amount: amount.base_units,
             secret: secret,
-            private_key: private_key,
+            blockchain_address: blockchain_address,
             gas_limit: gas_limit,
             gas_price: gas_price,
             contract_address: contract_address,
             subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee,
-            nonce: nonce)
+            nonce: nonce,
+            chain_id: blockchain.chain_id)
     )
   end
 
@@ -112,14 +113,9 @@ class EthereumGateway < AbstractGateway
     gas_factor = gas_factor || blockchain.client_options[:gas_factor].to_d || 1
     gas_factor = 1.01 if gas_factor.to_d < 1
     gas_price = (AbstractCommand.new(client).fetch_gas_price * gas_factor).to_i
-    gas_limit ||= GasEstimator
-                  .new(client)
-                  .call(from_address: address,
-                        to_address: contract_address,
-                        contract_addresses: [contract_address].compact,
-                        account_native: false,
-                        gas_limits: gas_limits,
-                        gas_price: gas_price)
+    gas_limit ||= estimated_gas(contract_addresses: [contract_address].compact,
+                                account_native: false,
+                                gas_limits: gas_limits)
     Approver.new(client).call(from_address: address, spender: spender_address, secret: secret, gas_limit: gas_limit, contract_address: contract_address, nonce: nonce, gas_price: gas_price)
   end
 

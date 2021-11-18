@@ -53,6 +53,7 @@
 - key:               bsc-testnet
   name:              BSC Testnet
   gateway_klass:     EthereumGateway
+  server:            http://127.0.0.1:8545
   height:            13300000
   min_confirmations: 6
   explorer:
@@ -60,5 +61,6 @@
     transaction:     https://testnet.bscscan.com/tx/#{txid}
     contract_address: https://testent.bscscan.com/token/#{contract_address}
   status:            active
+  address_type:      ethereum
   client_options:
     gas_factor:      1
