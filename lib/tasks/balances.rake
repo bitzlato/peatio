@@ -12,6 +12,8 @@ namespace :balances do
     market = Market.find_by(symbol: 'eth_btc')
 
     member = Member.find_or_create_by!(level: 3, role: :member, uid: 'MEMBER', state: :active, group: 'vip-3')
+    member_group = MemberGroup.find_or_create_by!(key: member.group)
+    member_group.update!(open_orders_limit: 4)
     member.accounts.find_or_create_by!(currency: btc_currency)
     member.accounts.find_or_create_by!(currency: eth_currency)
     deposits = concurrency_level.times.map { Deposit.new(type: Deposit.name, member: member, currency: eth_currency, amount: 1000) }
