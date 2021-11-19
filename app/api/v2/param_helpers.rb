@@ -27,6 +27,14 @@ module API
                  default: 'id',
                  desc: 'Name of the field, which result will be ordered by.'
       end
+
+      params :enabled_markets do
+        requires :market,
+                 type: String,
+                 values: { value: -> { ::Market.spot.active.pluck(:symbol) }, message: 'market.spot_market.doesnt_exist_or_not_enabled' },
+                 desc: -> { V2::Entities::Market.documentation[:symbol] },
+                 documentation: { param_type: 'body' }
+      end
     end
   end
 end
