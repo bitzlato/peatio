@@ -19,12 +19,8 @@ class Bargainer
     volume = market.round_amount(volume.to_d)
     price = average_price(market, price_deviation, max_spread)
     if price.nil?
-      if Rails.env.sandbox?
-        price = market.trades.last.price
-      else
-        Rails.logger.info { { message: 'No price to bargain. Cancel process', service: 'bargainer' } }
-        return
-      end
+      Rails.logger.info { { message: 'No price to bargain. Cancel process', service: 'bargainer' } }
+      return
     end
 
     sides = %w[buy sell].shuffle
