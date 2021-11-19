@@ -264,13 +264,27 @@ describe API::V2::Account::Deposits, type: :request do
 
         it 'expose data about eth address' do
           api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
-          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":"' + blockchain.normalize_address(address) + '","state":"active"}'
+
+          expect(response_body).to include_json(
+            {
+              currencies: UnorderedArray('eth', 'trst', 'ring'),
+              address: blockchain.normalize_address(address),
+              state: 'active'
+            }
+          )
         end
 
         it 'pending user address state' do
           member.payment_address(blockchain).update!(address: nil)
           api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
-          expect(response.body).to eq '{"currencies":["eth","trst","ring"],"address":null,"state":"pending"}'
+
+          expect(response_body).to include_json(
+            {
+              currencies: UnorderedArray('trst', 'eth', 'ring'),
+              address: nil,
+              state: 'pending'
+            }
+          )
         end
 
         context 'currency code with dot' do
@@ -279,7 +293,13 @@ describe API::V2::Account::Deposits, type: :request do
           it 'returns information about specified deposit address' do
             api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
             expect(response).to have_http_status :ok
-            expect(response.body).to eq '{"currencies":["eth","trst","ring","xagm.cx"],"address":"' + address.downcase + '","state":"active"}'
+            expect(response_body).to include_json(
+              {
+                currencies: UnorderedArray('eth', 'trst', 'ring', 'xagm.cx'),
+                address: address.downcase,
+                state: 'active'
+              }
+            )
           end
         end
       end
