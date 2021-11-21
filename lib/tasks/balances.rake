@@ -7,28 +7,28 @@ namespace :balances do
 
     concurrency_level = 4
 
-    btc_currency = Currency.find(:btc)
+    trst_currency = Currency.find(:trst)
     eth_currency = Currency.find(:eth)
-    market = Market.find_by(symbol: 'eth_btc')
+    market = Market.find_by!(symbol: 'trst_eth')
 
-    member = Member.find_or_create_by!(level: 3, role: :member, uid: 'MEMBER', state: :active, group: 'vip-3')
+    member = Member.find_or_create_by!(level: 3, role: :member, uid: 'MEMBER', state: :active)
     member_group = MemberGroup.find_or_create_by!(key: member.group)
-    member_group.update!(open_orders_limit: 4)
-    member.accounts.find_or_create_by!(currency: btc_currency)
+    member_group.update!(open_orders_limit: concurrency_level)
+    member.accounts.find_or_create_by!(currency: trst_currency)
     member.accounts.find_or_create_by!(currency: eth_currency)
     deposits = concurrency_level.times.map { Deposit.new(type: Deposit.name, member: member, currency: eth_currency, amount: 1000) }
     beneficiary = member.beneficiaries.create!(currency: eth_currency, name: 'Beneficiary', state: :active, data: { address: Faker::Blockchain::Ethereum.address })
     withdraws = concurrency_level.times.map { Withdraws::Coin.new(beneficiary: beneficiary, sum: 10, member: member, currency: eth_currency) }
 
-    member2 = Member.find_or_create_by!(level: 3, role: :member, uid: 'MEMBER2', state: :active, group: 'vip-3')
-    member2.accounts.find_or_create_by!(currency: btc_currency)
+    member2 = Member.find_or_create_by!(level: 3, role: :member, uid: 'MEMBER2', state: :active)
+    member2.accounts.find_or_create_by!(currency: trst_currency)
     member2.accounts.find_or_create_by!(currency: eth_currency)
-    deposits2 = concurrency_level.times.map { Deposit.new(type: Deposit.name, member: member2, currency: btc_currency, amount: 1000) }
-    beneficiary2 = member2.beneficiaries.create!(currency: btc_currency, name: 'Beneficiary 2', state: :active, data: { address: 'add7355' })
-    withdraws2 = concurrency_level.times.map { Withdraws::Coin.new(beneficiary: beneficiary2, sum: 10, member: member2, currency: btc_currency) }
+    deposits2 = concurrency_level.times.map { Deposit.new(type: Deposit.name, member: member2, currency: trst_currency, amount: 1000) }
+    beneficiary2 = member2.beneficiaries.create!(currency: trst_currency, name: 'Beneficiary 2', state: :active, data: { address: Faker::Blockchain::Ethereum.address })
+    withdraws2 = concurrency_level.times.map { Withdraws::Coin.new(beneficiary: beneficiary2, sum: 10, member: member2, currency: trst_currency) }
 
-    ask_create_order_service = OrderServices::CreateOrder.new(member: member)
-    bid_create_order_service = OrderServices::CreateOrder.new(member: member2)
+    ask_create_order_service = OrderServices::CreateOrder.new(member: member2)
+    bid_create_order_service = OrderServices::CreateOrder.new(member: member)
     matching = Workers::AMQP::Matching.new
     order_processor = Workers::AMQP::OrderProcessor.new
     trade_executor = Workers::AMQP::TradeExecutor.new
@@ -77,7 +77,7 @@ namespace :balances do
     wait_for_it = false
     threads.each(&:join)
 
-    %i[btc eth].each do |currency_id|
+    %i[eth trst].each do |currency_id|
       locked_deposits_amount = Deposit.where(is_locked: true, currency_id: currency_id).sum(:amount)
       locked_withdraws_sum = Withdraw.where(is_locked: true, currency_id: currency_id).sum(:sum)
       locked_orders_amount = OrderAsk.active.where(ask: currency_id).sum(:locked) + OrderBid.active.where(bid: currency_id).sum(:locked)
