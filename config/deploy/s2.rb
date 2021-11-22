@@ -19,6 +19,7 @@ set :systemd_amqp_daemon_instances,
       trade_executor
       matching
       order_processor
+      order_cancellator
     ]
 
 server '87.98.150.101',

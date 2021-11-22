@@ -6,17 +6,6 @@
   min_confirmations: 1                      # Minimal confirmations needed for withdraw and deposit confirmation.
   status:            disabled
 
-- key:               prt-kovan
-  name:              Ethereum Kovan
-  gateway_klass:     EthereumGateway                 # API client name.
-  server:            http://127.0.0.1:8545  # Public Ethereum node endpoint. IMPORTANT: full syncmode.
-  height:            2500000                # Initial block number from which sync will be started.
-  min_confirmations: 6                      # Minimal confirmations needed for withdraw and deposit confirmation.
-  explorer:
-    address:         https://kovan.etherscan.io/address/#{address}
-    transaction:     https://kovan.etherscan.io/tx/#{txid}
-  status:            disabled
-
 - key:               eth-rinkeby
   name:              Ethereum Rinkeby
   gateway_klass:     EthereumGateway                 # API client name.
@@ -26,7 +15,7 @@
   explorer:
     address:         https://rinkeby.etherscan.io/address/#{address}
     transaction:     https://rinkeby.etherscan.io/tx/#{txid}
-  status:            active
+  status:            disabled
 
 - key:               eth-mainnet
   name:              Ethereum Mainet
@@ -48,6 +37,17 @@
   explorer:
     address:         https://testnet.blockchain.info/address/#{address}
     transaction:     https://testnet.blockchain.info/tx/#{txid}
+  status:            disabled
+
+- key:               eth-ropsten
+  name:              Ethereum Ropsten
+  gateway_klass:     EthereumGateway                 # API client name.
+  height:            11400000                # Initial block number from which sync will be started.
+  min_confirmations: 6                      # Minimal confirmations needed for withdraw and deposit confirmation.
+  explorer:
+    address:         https://ropsten.etherscan.io/address/#{address}
+    transaction:     https://ropsten.etherscan.io/tx/#{txid}
+    contract_address: https://ropsten.etherscan.io/token/#{contract_address}
   status:            active
 
 - key:               bsc-testnet
