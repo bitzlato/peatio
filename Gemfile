@@ -91,8 +91,9 @@ group :development do
   gem 'foreman'
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'rubocop'
+  gem 'rubocop-performance'
   gem 'rubocop-rails'
-  gem 'rubocop-rspec', '~> 2.4'
+  gem 'rubocop-rspec'
   gem 'ruby-prof',  '~> 0.17.0', require: false
 
   gem 'guard'
