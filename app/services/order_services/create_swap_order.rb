@@ -22,7 +22,7 @@ module OrderServices
         failure(errors: create_order_result.errors)
       end
     rescue ActiveRecord::RecordInvalid => _e
-      failure(errors: ['market.swap.invalid_volume_or_price'])
+      failure(errors: ['market.swap_order.invalid_volume_or_price'])
     rescue StandardError => e
       report_exception(e, true)
       failure(errors: [e.message])

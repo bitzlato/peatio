@@ -10,9 +10,14 @@ module API
         market.order.open_orders_limit
       ].freeze
 
-      def create_order(attrs)
+      ORDER_CREATE_SERVICES = {
+        order: ::OrderServices::CreateOrder,
+        swap_order: ::OrderServices::CreateSwapOrder
+      }.freeze
+
+      def create_order(attrs, order_create_service: :order)
         market = ::Market.active.find_spot_by_symbol(attrs[:market])
-        service = ::OrderServices::CreateOrder.new(member: current_user)
+        service = ORDER_CREATE_SERVICES[order_create_service].new(member: current_user)
         service_params = attrs.merge(market: market).symbolize_keys
 
         result = service.perform(**service_params)

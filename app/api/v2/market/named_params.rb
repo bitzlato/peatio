@@ -75,6 +75,21 @@ module API
                    default: 'desc',
                    desc: "If set, returned trades will be sorted in specific order, default to 'desc'."
         end
+
+        params :swap_order do
+          requires :side,
+                   type: String,
+                   values: { value: %w[sell buy], message: 'market.swap_order.invalid_side' },
+                   desc: -> { V2::Entities::SwapOrder.documentation[:side] },
+                   documentation: { param_type: 'body' }
+          requires :volume,
+                   type: { value: BigDecimal, message: 'market.swap_order.non_decimal_volume' },
+                   values: { value: ->(v) { v.try(:positive?) }, message: 'market.swap_order.non_positive_volume' }
+          requires :price,
+                   type: { value: BigDecimal, message: 'market.swap_order.non_decimal_price' },
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'market.swap_order.non_positive_price' },
+                   desc: -> { V2::Entities::SwapOrder.documentation[:price] }
+        end
       end
     end
   end
