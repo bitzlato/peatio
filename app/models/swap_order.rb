@@ -8,12 +8,8 @@ class SwapOrder < ApplicationRecord
                 :market_id,
                 :created_at
 
-  # rubocop:disable Rails/InverseOf
-  # rubocop:disable Rails/RedundantForeignKey
-  belongs_to :market, foreign_key: :market_id, primary_key: :symbol, optional: false
-  belongs_to :member, optional: false
-  # rubocop:enable Rails/RedundantForeignKey
-  # rubocop:enable Rails/InverseOf
+  belongs_to :market, primary_key: :symbol, optional: false, inverse_of: false
+  belongs_to :member, optional: false, inverse_of: false
 
   enum side: { sell: 0, buy: 1 }
 
