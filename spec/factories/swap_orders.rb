@@ -6,9 +6,9 @@ FactoryBot.define do
     uuid { UUID.generate }
 
     trait :btc_usd do
-      # after(:create) do |swap_order|
-      #   create(:order_bid, :btc_usd, price: swap_order.price, volume: swap_order.volume, origin_volume: '12.13', member: swap_order.member, trades_count: 1)
-      # end
+      after(:create) do |swap_order|
+        create(:order_bid, :btc_usd, uuid: swap_order.uuid, price: swap_order.price, volume: swap_order.volume, origin_volume: '12.13', member: swap_order.member, trades_count: 1)
+      end
 
       side { :sell }
       market { Market.find_spot_by_symbol(:btc_usd) }
@@ -24,7 +24,7 @@ FactoryBot.define do
 
     trait :btc_usd do
       after(:create) do |swap_order|
-        create(:order_ask, :btc_usd, price: swap_order.price, volume: swap_order.volume, origin_volume: '12.13', member: swap_order.member, trades_count: 1)
+        create(:order_ask, :btc_usd, puuid: swap_order.uuid, rice: swap_order.price, volume: swap_order.volume, origin_volume: '12.13', member: swap_order.member, trades_count: 1)
       end
 
       side { :buy }
