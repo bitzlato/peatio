@@ -39,10 +39,12 @@ admin_permissions:
     read:
       - Trade
       - Order
+      - SwapOrder
     create:
       - Deposits::Fiat
     update:
       - Order
+      - SwapOrder
   admin:
     manage:
       - Operations::Account
@@ -63,16 +65,18 @@ admin_permissions:
       - Market
       - TradingFee
       - Wallet
-      - Adjustment 
+      - Adjustment
       - InternalTransfer
       - WhitelistedSmartContract
     read:
       - Trade
       - Order
+      - SwapOrder
     create:
       - Deposits::Fiat
     update:
       - Order
+      - SwapOrder
   technical:
     read:
       - Operations::Account
@@ -81,6 +85,7 @@ admin_permissions:
       - Operations::Liability
       - Trade
       - Order
+      - SwapOrder
       - Member
       - InternalTransfer
     manage:
@@ -93,6 +98,7 @@ admin_permissions:
       - Wallet
     update:
       - Order
+      - SwapOrder
   accountant:
     read:
       - Operations::Account
@@ -115,6 +121,7 @@ admin_permissions:
       - Wallet
       - Trade
       - Order
+      - SwapOrder
       - Adjustment
       - InternalTransfer
     create:
@@ -137,6 +144,7 @@ admin_permissions:
       - Market
       - Trade
       - Order
+      - SwapOrder
   support:
     read:
       - Operations::Account
@@ -154,6 +162,7 @@ admin_permissions:
       - Market
       - Trade
       - Order
+      - SwapOrder
       - InternalTransfer
   reporter:
     read:
@@ -194,9 +203,12 @@ user_permissions:
     read:
       - Operations::Account
       - Order
+      - SwapOrder
       - Trade
       - StatsMemberPnl
     create:
       - Order
+      - SwapOrder
     update:
       - Order
+      - SwapOrder

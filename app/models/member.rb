@@ -4,6 +4,7 @@ require 'securerandom'
 
 class Member < ApplicationRecord
   has_many :orders
+  has_many :swap_orders
   has_many :accounts
   has_many :stats_member_pnl
   has_many :payment_addresses
