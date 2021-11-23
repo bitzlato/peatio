@@ -21,13 +21,6 @@ describe API::V2::Market::SwapOrders, type: :request do
       expect(response_body['id']).to eq swap_order.id
     end
 
-    it 'gets specified swap order by uuid' do
-      api_get "/api/v2/market/swap_orders/#{swap_order.uuid}", token: token
-
-      expect(response).to be_successful
-      expect(response_body['uuid']).to eq swap_order.uuid
-    end
-
     context 'unauthorized' do
       before do
         Ability.stubs(:user_permissions).returns([])
@@ -44,12 +37,6 @@ describe API::V2::Market::SwapOrders, type: :request do
       api_get '/api/v2/market/swap_orders/1234', token: token
       expect(response.code).to eq '404'
       expect(response).to include_api_error('record.not_found')
-    end
-
-    it 'raises error' do
-      api_get '/api/v2/market/swap_orders/1234asd', token: token
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('market.swap_order.invaild_id_or_uuid')
     end
   end
 

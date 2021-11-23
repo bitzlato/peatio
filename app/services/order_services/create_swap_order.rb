@@ -8,9 +8,9 @@ module OrderServices
       @member = member
     end
 
-    def perform(market:, side:, volume:, price:, uuid: UUID.generate)
+    def perform(market:, side:, volume:, price:)
       params = {
-        market: market, side: side, price: price, volume: volume, uuid: uuid
+        market: market, side: side, price: price, volume: volume
       }
 
       return failure(errors: ['market.swap_order.outdated_price']) unless market.valid_swap_price?(price)
@@ -21,6 +21,9 @@ module OrderServices
       ActiveRecord::Base.transaction do
         swap_order = SwapOrder.create!(params.merge(member: @member, state: SwapOrder::STATES[:pending]))
         create_order_result = CreateOrder.new(member: @member).perform(params.merge(ord_type: 'limit'))
+
+        swap_order.update!(order: create_order_result.data)
+
         raise ActiveRecord::Rollback if create_order_result.failed?
       end
 

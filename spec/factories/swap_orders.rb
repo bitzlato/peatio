@@ -3,11 +3,10 @@
 FactoryBot.define do
   factory :swap_order_bid, class: 'SwapOrder' do
     member
-    uuid { UUID.generate }
 
     trait :btc_usd do
-      after(:create) do |swap_order|
-        create(:order_bid, :btc_usd, uuid: swap_order.uuid, price: swap_order.price, volume: swap_order.volume, origin_volume: '12.13', member: swap_order.member, trades_count: 1)
+      before(:create) do |swap_order|
+        swap_order.order = create(:order_bid, :btc_usd, price: swap_order.price, volume: swap_order.volume, origin_volume: '12.13', member: swap_order.member, trades_count: 1)
       end
 
       side { :sell }
@@ -20,11 +19,10 @@ FactoryBot.define do
 
   factory :swap_order_ask, class: 'SwapOrder' do
     member
-    uuid { UUID.generate }
 
     trait :btc_usd do
       after(:create) do |swap_order|
-        create(:order_ask, :btc_usd, puuid: swap_order.uuid, rice: swap_order.price, volume: swap_order.volume, origin_volume: '12.13', member: swap_order.member, trades_count: 1)
+        swap_order.order = create(:order_ask, :btc_usd, price: swap_order.price, volume: swap_order.volume, origin_volume: '12.13', member: swap_order.member, trades_count: 1)
       end
 
       side { :buy }
