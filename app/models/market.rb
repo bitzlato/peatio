@@ -41,6 +41,8 @@ class Market < ApplicationRecord
   # qe - market used by Finex for quick exchange
   DEFAULT_TYPE = 'spot'
 
+  SWAP_PRICE_DEVIATION = 0.02
+
   # == Attributes ===========================================================
 
   attr_readonly :base_unit, :quote_unit, :type
@@ -228,6 +230,12 @@ class Market < ApplicationRecord
   def vwap(time)
     query = "SELECT SUM(total) / SUM(amount) AS vwap FROM trades WHERE market=%<market>s AND time > now() - #{time}"
     Peatio::InfluxDB.client(keyshard: symbol).query(query, params: { market: symbol })&.dig(0, 'values', 0, 'vwap')
+  end
+
+  def valid_swap_price?(price)
+    return false if swap_price.nil?
+
+    (1 - (price / swap_price)).abs < SWAP_PRICE_DEVIATION
   end
 
   def swap_price

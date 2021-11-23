@@ -7,6 +7,7 @@ describe API::V2::Market::SwapOrders, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
 
   before do
+    Market.any_instance.stubs(:valid_swap_price?).returns(true)
     Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['SwapOrder'], 'create' => ['SwapOrder'], 'update' => ['SwapOrder'] } })
   end
 
@@ -175,6 +176,13 @@ describe API::V2::Market::SwapOrders, type: :request do
       api_post '/api/v2/market/swap_orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: 'test' }
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.swap_order.non_decimal_price')
+    end
+
+    it 'validates outdated price' do
+      Market.any_instance.stubs(:valid_swap_price?).with(102.1).returns(false)
+      api_post '/api/v2/market/swap_orders', token: token, params: { market: 'btc_usd', side: 'sell', volume: '12.13', price: '102.1' }
+      expect(response.code).to eq '422'
+      expect(response).to include_api_error('market.swap_order.outdated_price')
     end
   end
 end

@@ -13,6 +13,8 @@ module OrderServices
         market: market, side: side, price: price, volume: volume, uuid: uuid
       }
 
+      return failure(errors: ['market.swap_order.outdated_price']) unless market.valid_swap_price?(price)
+
       swap_order = nil
       create_order_result = nil
 

@@ -26,6 +26,10 @@ describe OrderServices::CreateSwapOrder do
     create(:order_bid, :btc_usd, price: '100', volume: '10.0', state: :wait)
   end
 
+  before do
+    Market.any_instance.stubs(:valid_swap_price?).returns(true)
+  end
+
   shared_examples 'creates an swap order without exceptions' do
     it 'creates an swap order and limit order' do
       result = nil
@@ -105,6 +109,24 @@ describe OrderServices::CreateSwapOrder do
         result = service.perform(**params)
         expect(result).to be_failed
         expect(result.errors.first).to eq 'market.swap_order.invalid_volume_or_price'
+      end
+    end
+
+    context 'outdated price' do
+      let(:params) do
+        {
+          market: market,
+          side: 'sell',
+          volume: '1'.to_d,
+          price: 102.1
+        }
+      end
+
+      it 'return errors' do
+        Market.any_instance.stubs(:valid_swap_price?).with(102.1).returns(false)
+        result = service.perform(**params)
+        expect(result).to be_failed
+        expect(result.errors.first).to eq 'market.swap_order.outdated_price'
       end
     end
   end
