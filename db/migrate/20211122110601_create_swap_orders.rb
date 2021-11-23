@@ -9,7 +9,7 @@ class CreateSwapOrders < ActiveRecord::Migration[5.2]
       t.integer :state, null: false
       t.decimal :price, precision: 32, scale: 16, null: false
       t.decimal :volume, precision: 32, scale: 16, null: false
-      t.integer :side, default: 0
+      t.integer :side, default: 0, null: false
       t.timestamps
     end
   end
