@@ -11,6 +11,7 @@ stats_member_pnl: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb stats_m
 ticker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb ticker
 transfers_polling: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb transfers_polling
 wallet_balances: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb wallet_balances
+swap_order_status_checker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb swap_order_status_checker
 
 balances_updating: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb balances_updating
 cancel_member_orders: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb cancel_member_orders
