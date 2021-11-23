@@ -19,7 +19,7 @@ module Workers
       end
 
       def run
-        Rails.logger.info { { message: 'Start cron job', service: self.class.name } }
+        Rails.logger.info { { message: 'Start worker', service: self.class.name } }
 
         while running
           begin
