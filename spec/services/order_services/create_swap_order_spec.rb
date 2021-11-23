@@ -36,6 +36,7 @@ describe OrderServices::CreateSwapOrder do
       expect(result.data).to be_a_kind_of(SwapOrder)
       expect(result.data.order).to be_present
       expect(result.data.order).to be_ord_type
+      expect(result.data.uuid).to eq(result.data.order.uuid)
     end
   end
 
