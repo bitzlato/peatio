@@ -77,13 +77,14 @@ describe OrderServices::CreateSwapOrder do
       end
 
       before do
-        # rubocop:disable Style/OpenStructUse
-        OrderServices::CreateOrder.any_instance.stubs(:perform).returns(OpenStruct.new(data: nil, errors: ['err']))
-        # rubocop:enable Style/OpenStructUse
+        OrderServices::CreateOrder.any_instance.stubs(:perform).returns(ServiceBase::Result.new(errors: ['err']))
       end
 
       it 'return errors' do
-        result = service.perform(**params)
+        result = nil
+        expect do
+          result = service.perform(**params)
+        end.not_to change(SwapOrder, :count)
         expect(result).to be_failed
         expect(result.errors.first).to eq 'err'
       end
@@ -102,7 +103,7 @@ describe OrderServices::CreateSwapOrder do
       it 'return errors' do
         result = service.perform(**params)
         expect(result).to be_failed
-        expect(result.errors.first).to eq 'market.swap.invalid_volume_or_price'
+        expect(result.errors.first).to eq 'market.swap_order.invalid_volume_or_price'
       end
     end
   end
