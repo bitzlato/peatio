@@ -19,7 +19,7 @@ class Bargainer
     volume = market.round_amount(volume.to_d)
     price = average_price(market, price_deviation, max_spread)
     if price.nil?
-      Rails.logger.info { { message: 'No price to bargain. Cancel process', service: 'bargainer' } }
+      Rails.logger.info { { message: 'No price to bargain. Cancel process', market_symbol: market.symbol, service: 'bargainer' } }
       return
     end
 
@@ -32,7 +32,7 @@ class Bargainer
         Rails.logger.error { { message: 'Order creating is failed', side: side, error_message: result.errors.first, market_symbol: market.symbol, service: 'bargainer' } }
       end
     end
-    sleep 0.03
+    sleep 0.04
     cancel_member_orders(member, market)
 
     Rails.logger.info { { message: 'Market trade creating is finished', market_symbol: market.symbol, member_id: member.id, volume: volume, price: price, service: 'bargainer' } }
@@ -70,7 +70,7 @@ class Bargainer
       .where(market_type: ::Market::DEFAULT_TYPE, market: market.symbol)
       .where(canceling_at: nil)
       .find_each do |order|
-      Rails.logger.info { { message: 'Cancel order', order_id: order.id, current_state: order.state, service: 'bargainer' } }
+      Rails.logger.info { { message: 'Cancel order', market_symbol: market.symbol, order_id: order.id, current_state: order.state, service: 'bargainer' } }
       order.trigger_cancellation
     end
   end
