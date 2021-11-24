@@ -14,6 +14,7 @@ module API
         mount Public::Webhooks
         mount Public::WithdrawLimits
         mount Public::Blockchains
+        mount Public::Swap
       end
     end
   end

@@ -248,11 +248,11 @@ class Market < ApplicationRecord
     vwap('5m')
   end
 
-  def price_in(price, unit)
+  def price_in(price_in_base, unit)
     if base_unit == unit
-      price
+      price_in_base
     elsif quote_unit == unit
-      round_price((1 / price).to_d)
+      round_price((1 / price_in_base).to_d)
     else
       raise "Wrong unit: #{unit}"
     end
