@@ -20,10 +20,13 @@ module API
                    desc: -> { API::V2::Management::Entities::Market.documentation[:quote_unit][:desc] }
         end
         get '/swap/price' do
-          market = ::Market.find_by_currencies(params[:from_currency], params[:to_currency])
-          error!({ errors: ['market.swap.no_appropriate_market'] }, 422) unless market
+          from_currency = ::Currency.find(params[:from_currency])
+          to_currency = ::Currency.find(params[:to_currency])
+          swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency)
 
-          swap_price = market.price_in(market.swap_price, params[:from_currency])
+          error!({ errors: ['market.swap.no_appropriate_market'] }, 422) unless swap_price_service.market?
+
+          swap_price = swap_price_service.request_price
           error!({ errors: ['market.swap.no_swap_price'] }, 422) unless swap_price
 
           price = SwapPrice.new(swap_price)

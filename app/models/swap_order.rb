@@ -13,7 +13,7 @@ class SwapOrder < ApplicationRecord
   belongs_to :market, primary_key: :symbol, optional: false, inverse_of: false
   belongs_to :member, optional: false, inverse_of: false
 
-  STATES = { wait: 0, done: 100, cancel: -100 }.freeze
+  STATES = { pending: 0, wait: 100, done: 200, cancel: -100 }.freeze
   enumerize :state, in: STATES, scope: true
 
   scope :open, -> { with_state(:wait) }

@@ -774,16 +774,4 @@ describe API::V2::Public::Markets, type: :request do
       expect(response).to include_api_error('public.trade.invalid_limit')
     end
   end
-
-  describe ':market/swap_price' do
-    let(:market) { Market.find_spot_by_symbol('btc_usd') }
-
-    it 'return swap price' do
-      Market.any_instance.stubs(:swap_price).returns(15.1)
-      api_get "/api/v2/public/markets/#{market.symbol}/swap_price"
-
-      expect(response.code).to eq '200'
-      expect(response_body).to include_json({ price: 15.1 })
-    end
-  end
 end

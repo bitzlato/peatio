@@ -42,7 +42,7 @@ describe OrderServices::CreateSwapOrder do
 
   describe '#perform' do
     before do
-      Market.any_instance.stubs(:swap_price).returns(reference_price)
+      CurrencyServices::SwapPrice.any_instance.stubs(:price_in_base).returns(reference_price)
     end
 
     context 'change btc to usd' do
@@ -90,7 +90,8 @@ describe OrderServices::CreateSwapOrder do
 
         expect do
           result = service.perform(**params)
-        end.not_to change(SwapOrder, :count)
+        end.to change(SwapOrder, :count)
+        expect(SwapOrder.last.state).to eq('cancel')
         expect(result).to be_failed
         expect(result.errors.first).to eq 'err'
       end
@@ -102,7 +103,7 @@ describe OrderServices::CreateSwapOrder do
           from_currency: market.base,
           to_currency: market.quote,
           volume: '1'.to_d,
-          price: 102.1
+          price: '102.1'.to_d
         }
       end
 

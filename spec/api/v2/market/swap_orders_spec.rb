@@ -5,10 +5,11 @@ describe API::V2::Market::SwapOrders, type: :request do
   let(:level_0_member) { create(:member, :level_0) }
   let(:token) { jwt_for(member) }
   let(:level_0_member_token) { jwt_for(level_0_member) }
-  let(:swap_price) { 2014 }
+  let(:reference_price) { 2014.to_d }
 
   before do
-    Market.any_instance.stubs(:swap_price).returns(swap_price)
+    CurrencyServices::SwapPrice.any_instance.stubs(:price_in_base).returns(reference_price)
+
     Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['SwapOrder'], 'create' => ['SwapOrder'], 'update' => ['SwapOrder'] } })
   end
 
@@ -66,7 +67,7 @@ describe API::V2::Market::SwapOrders, type: :request do
       AMQP::Queue.expects(:enqueue).with(:order_processor, is_a(Hash), is_a(Hash), nil)
 
       expect do
-        api_post '/api/v2/market/swap_orders', token: token, params: { from_currency: 'usd', to_currency: 'btc', volume: '1', price: (1 / swap_price.to_d) }
+        api_post '/api/v2/market/swap_orders', token: token, params: { from_currency: 'usd', to_currency: 'btc', volume: '1', price: (1 / reference_price.to_d) }
         expect(response).to be_successful
 
         swap_order = SwapOrder.last
@@ -121,13 +122,6 @@ describe API::V2::Market::SwapOrders, type: :request do
       expect(response).to include_api_error('market.order.invalid_volume_or_price')
     end
 
-    it 'validates volume precision' do
-      member.get_account(:usd).update(balance: 1)
-      api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '0.123456789', price: '2014' })
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('market.order.invalid_volume_or_price')
-    end
-
     it 'validates enough funds' do
       OrderAsk.expects(:create!).raises(::Account::AccountError)
       member.get_account(:btc).update(balance: 1)
@@ -149,7 +143,7 @@ describe API::V2::Market::SwapOrders, type: :request do
     end
 
     it 'validates outdated price' do
-      Market.any_instance.stubs(:valid_swap_price?).with(102.1, swap_price).returns(false)
+      Market.any_instance.stubs(:valid_swap_price?).with(102.1, reference_price).returns(false)
       api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '102.1' })
       expect(response.code).to eq '422'
       expect(response).to include_api_error('market.swap_order.outdated_price')
