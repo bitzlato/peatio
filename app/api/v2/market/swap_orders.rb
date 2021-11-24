@@ -25,13 +25,13 @@ module API
           desc 'Create a Sell/Buy order.',
                success: API::V2::Entities::SwapOrder
           params do
-            use :enabled_markets, :swap_order
+            use :swap_order
           end
           post do
             user_authorize! :create, ::SwapOrder
 
-            order = create_order(params, order_create_service: :swap_order)
-            present order, with: API::V2::Entities::SwapOrder
+            swap_order = create_swap_order(params)
+            present swap_order, with: API::V2::Entities::SwapOrder
           end
         end
       end

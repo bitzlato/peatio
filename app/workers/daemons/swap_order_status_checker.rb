@@ -7,7 +7,19 @@ module Workers
 
       def process
         SwapOrder.open.includes(:order).find_each do |swap_order|
-          swap_order.update!(state: swap_order.order.state)
+          order = swap_order.order
+          state = case order.state
+                  when 'cancel', 'reject'
+                    'cancel'
+                  when 'done'
+                    'done'
+                  when 'pending', 'wait'
+                    'wait'
+                  else
+                    raise "Unsupported order state: #{order.state}"
+                  end
+
+          swap_order.update!(state: state)
         end
       end
     end

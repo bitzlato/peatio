@@ -2,38 +2,21 @@
 
 class SwapOrder < ApplicationRecord
   extend Enumerize
-  attribute :uuid, :uuid if Rails.configuration.database_adapter.downcase != 'PostgreSQL'.downcase
 
   attr_readonly :member_id,
                 :market_id,
                 :created_at
 
+  belongs_to :from_currency, class_name: 'Currency', foreign_key: :from_unit, inverse_of: false
+  belongs_to :to_currency, class_name: 'Currency', foreign_key: :to_unit, inverse_of: false
   belongs_to :order, dependent: false, inverse_of: false
   belongs_to :market, primary_key: :symbol, optional: false, inverse_of: false
   belongs_to :member, optional: false, inverse_of: false
 
-  enum side: { sell: 0, buy: 1 }
-
-  STATES = Order::STATES
-
+  STATES = { wait: 0, done: 100, cancel: -100 }.freeze
   enumerize :state, in: STATES, scope: true
 
-  scope :done, -> { with_state(:done) }
-  scope :active, -> { with_state(:wait) }
-  scope :open, -> { with_state(:wait, :pending) }
+  scope :open, -> { with_state(:wait) }
 
   validates :price, :volume, presence: true
-
-  validates :price,
-            precision: { less_than_or_eq_to: ->(o) { o.market.price_precision } },
-            on: :create
-
-  validates :price,
-            numericality: { less_than_or_equal_to: ->(order) { order.market.max_price } },
-            if: ->(order) { order.market.max_price.nonzero? },
-            on: :create
-
-  validates :price,
-            numericality: { greater_than_or_equal_to: ->(order) { order.market.min_price } },
-            on: :create
 end

@@ -2,14 +2,15 @@
 
 describe OrderServices::CreateSwapOrder do
   let(:market) { Market.find_spot_by_symbol('btc_usd') }
-  let(:service) { described_class.new(member: account.member) }
   let(:account) { create(:account, :usd, balance: 10.to_d) }
+  let(:reference_price) { 15.1.to_d }
+  let(:service) { described_class.new(member: account.member) }
   let(:default_params) do
     {
       market: market,
-      side: 'buy', # buy/sell
-      volume: '1'.to_d,
-      ord_type: 'market' # limit/market
+      from_currency: market.base,
+      to_currency: market.quote,
+      volume: '1'.to_d
     }
   end
 
@@ -26,10 +27,6 @@ describe OrderServices::CreateSwapOrder do
     create(:order_bid, :btc_usd, price: '100', volume: '10.0', state: :wait)
   end
 
-  before do
-    Market.any_instance.stubs(:valid_swap_price?).returns(true)
-  end
-
   shared_examples 'creates an swap order without exceptions' do
     it 'creates an swap order and limit order' do
       result = nil
@@ -44,27 +41,31 @@ describe OrderServices::CreateSwapOrder do
   end
 
   describe '#perform' do
-    context 'buy btc' do
+    before do
+      Market.any_instance.stubs(:swap_price).returns(reference_price)
+    end
+
+    context 'change btc to usd' do
       include_examples 'creates an swap order without exceptions' do
         let(:params) do
           {
-            market: market,
-            side: 'buy',
+            from_currency: market.base,
+            to_currency: market.quote,
             volume: '1'.to_d,
-            price: '10'.to_d
+            price: reference_price.to_d
           }
         end
       end
     end
 
-    context 'sell btc' do
+    context 'change usd to btc' do
       include_examples 'creates an swap order without exceptions' do
         let(:params) do
           {
-            market: market,
-            side: 'sell',
-            volume: '1'.to_d,
-            price: '15'.to_d
+            from_currency: market.quote,
+            to_currency: market.base,
+            volume: '5'.to_d,
+            price: (1 / reference_price).to_d
           }
         end
       end
@@ -73,10 +74,10 @@ describe OrderServices::CreateSwapOrder do
     context 'faild create order' do
       let(:params) do
         {
-          market: market,
-          side: 'sell',
+          from_currency: market.base,
+          to_currency: market.quote,
           volume: '1'.to_d,
-          price: '15'.to_d
+          price: reference_price
         }
       end
 
@@ -86,6 +87,7 @@ describe OrderServices::CreateSwapOrder do
 
       it 'return errors' do
         result = nil
+
         expect do
           result = service.perform(**params)
         end.not_to change(SwapOrder, :count)
@@ -94,35 +96,17 @@ describe OrderServices::CreateSwapOrder do
       end
     end
 
-    context 'validation error' do
-      let(:params) do
-        {
-          market: market,
-          side: 'sell',
-          volume: '1'.to_d,
-          price: -1
-        }
-      end
-
-      it 'return errors' do
-        result = service.perform(**params)
-        expect(result).to be_failed
-        expect(result.errors.first).to eq 'market.swap_order.invalid_volume_or_price'
-      end
-    end
-
     context 'outdated price' do
       let(:params) do
         {
-          market: market,
-          side: 'sell',
+          from_currency: market.base,
+          to_currency: market.quote,
           volume: '1'.to_d,
           price: 102.1
         }
       end
 
       it 'return errors' do
-        Market.any_instance.stubs(:valid_swap_price?).with(102.1).returns(false)
         result = service.perform(**params)
         expect(result).to be_failed
         expect(result.errors.first).to eq 'market.swap_order.outdated_price'

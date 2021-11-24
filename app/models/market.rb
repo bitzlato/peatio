@@ -165,6 +165,10 @@ class Market < ApplicationRecord
     def find_by_symbol_and_type(market_symbol, market_type)
       Market.find_by!(symbol: market_symbol, type: market_type)
     end
+
+    def find_by_currencies(base_unit, quote_unit)
+      Market.where(base_unit: base_unit, quote_unit: quote_unit).or(Market.where(base_unit: quote_unit, quote_unit: base_unit)).first
+    end
   end
 
   # == Instance Methods =====================================================
@@ -232,14 +236,26 @@ class Market < ApplicationRecord
     Peatio::InfluxDB.client(keyshard: symbol).query(query, params: { market: symbol })&.dig(0, 'values', 0, 'vwap')
   end
 
-  def valid_swap_price?(price)
-    return false if swap_price.nil?
+  def valid_swap_price?(price, reference_price = nil)
+    reference_price ||= swap_price
 
-    (1 - (price / swap_price)).abs < SWAP_PRICE_DEVIATION
+    return false if reference_price.nil?
+
+    (1 - (price / reference_price)).abs < SWAP_PRICE_DEVIATION
   end
 
   def swap_price
-    trades.last&.price
+    vwap('5m')
+  end
+
+  def price_in(price, unit)
+    if base_unit == unit
+      price
+    elsif quote_unit == unit
+      round_price((1 / price).to_d)
+    else
+      raise "Wrong unit: #{unit}"
+    end
   end
 
   private

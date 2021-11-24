@@ -77,11 +77,12 @@ module API
         end
 
         params :swap_order do
-          requires :side,
-                   type: String,
-                   values: { value: %w[sell buy], message: 'market.swap_order.invalid_side' },
-                   desc: -> { V2::Entities::SwapOrder.documentation[:side] },
-                   documentation: { param_type: 'body' }
+          requires :from_currency,
+                   values: { value: -> { ::Currency.ids }, message: 'market.currency_doesnt_exist' },
+                   desc: -> { API::V2::Management::Entities::Market.documentation[:base_unit][:desc] }
+          requires :to_currency,
+                   values: { value: -> { ::Currency.ids }, message: 'market.currency_doesnt_exist' },
+                   desc: -> { API::V2::Management::Entities::Market.documentation[:quote_unit][:desc] }
           requires :volume,
                    type: { value: BigDecimal, message: 'market.swap_order.non_decimal_volume' },
                    values: { value: ->(v) { v.try(:positive?) }, message: 'market.swap_order.non_positive_volume' }

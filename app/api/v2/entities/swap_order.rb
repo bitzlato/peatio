@@ -13,14 +13,6 @@ module API
         )
 
         expose(
-          :side,
-          documentation: {
-            type: String,
-            desc: "Either 'sell' or 'buy'."
-          }
-        )
-
-        expose(
           :price,
           documentation: {
             type: BigDecimal,
@@ -34,9 +26,9 @@ module API
           documentation: {
             type: String,
             desc: "One of 'wait', 'done', or 'cancel'."\
-                  "An order in 'wait' is an active order, waiting fulfillment;"\
-                  "a 'done' order is an order fulfilled;"\
-                  "'cancel' means the order has been canceled."
+                  "An swap order in 'wait' is an active order, waiting fulfillment;"\
+                  "a 'done' swap order is an swap order fulfilled;"\
+                  "'cancel' means the swap order has been canceled."
           }
         )
 

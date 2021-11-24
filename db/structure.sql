@@ -1201,13 +1201,14 @@ ALTER SEQUENCE public.stats_member_pnl_idx_id_seq OWNED BY public.stats_member_p
 
 CREATE TABLE public.swap_orders (
     id bigint NOT NULL,
+    from_unit character varying NOT NULL,
+    to_unit character varying NOT NULL,
     order_id bigint,
     member_id bigint NOT NULL,
     market_id character varying(20) NOT NULL,
     state integer NOT NULL,
     price numeric(32,16) NOT NULL,
     volume numeric(32,16) NOT NULL,
-    side integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -2651,6 +2652,13 @@ CREATE INDEX index_revenues_on_reference_type_and_reference_id ON public.revenue
 
 
 --
+-- Name: index_swap_orders_on_from_unit; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_swap_orders_on_from_unit ON public.swap_orders USING btree (from_unit);
+
+
+--
 -- Name: index_swap_orders_on_market_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2669,6 +2677,13 @@ CREATE INDEX index_swap_orders_on_member_id ON public.swap_orders USING btree (m
 --
 
 CREATE INDEX index_swap_orders_on_order_id ON public.swap_orders USING btree (order_id);
+
+
+--
+-- Name: index_swap_orders_on_to_unit; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_swap_orders_on_to_unit ON public.swap_orders USING btree (to_unit);
 
 
 --
