@@ -6,9 +6,13 @@ describe API::V2::Market::SwapOrders, type: :request do
   let(:token) { jwt_for(member) }
   let(:level_0_member_token) { jwt_for(level_0_member) }
   let(:reference_price) { 2014.to_d }
+  let(:swap_config) { Rails.application.config_for(:swap) }
+  let(:daily_limit) { swap_config['daily_limit'] }
+  let(:weekly_limit) { swap_config['weekly_limit'] }
 
   before do
-    CurrencyServices::SwapPrice.any_instance.stubs(:price_in_base).returns(reference_price)
+    CurrencyServices::SwapPrice.any_instance.stubs(:price).returns(reference_price)
+    CurrencyServices::Price.any_instance.stubs(:call).returns(1)
 
     Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['SwapOrder'], 'create' => ['SwapOrder'], 'update' => ['SwapOrder'] } })
   end
@@ -50,6 +54,18 @@ describe API::V2::Market::SwapOrders, type: :request do
       }
     end
 
+    context 'unauthorized' do
+      before do
+        Ability.stubs(:user_permissions).returns([])
+      end
+
+      it 'renders unauthorized error' do
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
+        expect(response).to have_http_status :forbidden
+        expect(response).to include_api_error('user.ability.not_permitted')
+      end
+    end
+
     it 'creates a sell swap order on peatio engine' do
       member.get_account(:btc).update(balance: 100)
 
@@ -76,77 +92,98 @@ describe API::V2::Market::SwapOrders, type: :request do
       end.to change(OrderBid, :count).by(1)
     end
 
-    context 'unauthorized' do
+    context 'validate request params' do
       before do
-        Ability.stubs(:user_permissions).returns([])
+        OrderServices::CreateSwapOrder.any_instance.expects(:perform).never
       end
 
-      it 'renders unauthorized error' do
+      it 'validates missing params' do
+        member.get_account(:usd).update(balance: 100_000)
+        api_post '/api/v2/market/swap_orders', token: token
+        expect(response).to have_http_status(:unprocessable_entity)
+
+        # TODO: Grape validation transform swap_order to swaporder
+        expect(response).to include_api_error('market.swaporder.missing_volume')
+        expect(response).to include_api_error('market.swaporder.missing_price')
+      end
+
+      it 'validates volume positiveness' do
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '-1.1', price: '2014' })
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.swap_order.non_positive_volume')
+      end
+
+      it 'validates volume to be a number' do
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: 'test', price: '2014' })
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.swap_order.non_decimal_volume')
+      end
+
+      it 'validates price positiveness' do
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '-1.1' })
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.swap_order.non_positive_price')
+      end
+
+      it 'validates price to be a number' do
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: 'test' })
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.swap_order.non_decimal_price')
+      end
+    end
+
+    context 'service validation' do
+      it 'validates volume greater than min_amount' do
+        member.get_account(:btc).update(balance: 1)
+        m = Market.find_spot_by_symbol(:btc_usd)
+        m.update(min_amount: 1.0)
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '0.1', price: '2014' })
+
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.order.invalid_volume_or_price')
+      end
+
+      it 'validates enough funds' do
+        OrderAsk.expects(:create!).raises(::Account::AccountError)
+        member.get_account(:btc).update(balance: 1)
         api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
-        expect(response).to have_http_status :forbidden
-        expect(response).to include_api_error('user.ability.not_permitted')
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.account.insufficient_balance')
       end
-    end
 
-    it 'validates missing params' do
-      member.get_account(:usd).update(balance: 100_000)
-      api_post '/api/v2/market/swap_orders', token: token
-      expect(response).to have_http_status(:unprocessable_entity)
+      it 'validates outdated price' do
+        Market.any_instance.stubs(:valid_swap_price?).with(102.1, reference_price).returns(false)
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '102.1' })
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.swap_order.outdated_price')
+      end
 
-      # TODO: Grape validation transform swap_order to swaporder
-      expect(response).to include_api_error('market.swaporder.missing_volume')
-      expect(response).to include_api_error('market.swaporder.missing_price')
-    end
+      it 'validate no unified currency' do
+        CurrencyServices::SwapPrice.any_instance.stubs(:unified_currency).returns(nil)
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.swap_order.no_unified_currency')
+      end
 
-    it 'validates volume positiveness' do
-      old_count = OrderAsk.count
-      api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '-1.1', price: '2014' })
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('market.swap_order.non_positive_volume')
-      expect(OrderAsk.count).to eq old_count
-    end
+      it 'validate no unified price currency' do
+        CurrencyServices::SwapPrice.any_instance.stubs(:unified_price).returns(nil)
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.swap_order.no_unified_price')
+      end
 
-    it 'validates volume to be a number' do
-      api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: 'test', price: '2014' })
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('market.swap_order.non_decimal_volume')
-    end
+      it 'validate daily limit' do
+        SwapOrder.stubs(:daily_unified_total_amount_for).returns(daily_limit)
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
+        expect(response).to include_api_error('market.swap_order.reached_daily_limit')
+      end
 
-    it 'validates volume greater than min_amount' do
-      member.get_account(:btc).update(balance: 1)
-      m = Market.find_spot_by_symbol(:btc_usd)
-      m.update(min_amount: 1.0)
-      api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '0.1', price: '2014' })
-
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('market.order.invalid_volume_or_price')
-    end
-
-    it 'validates enough funds' do
-      OrderAsk.expects(:create!).raises(::Account::AccountError)
-      member.get_account(:btc).update(balance: 1)
-      api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('market.account.insufficient_balance')
-    end
-
-    it 'validates price positiveness' do
-      api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '-1.1' })
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('market.swap_order.non_positive_price')
-    end
-
-    it 'validates price to be a number' do
-      api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: 'test' })
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('market.swap_order.non_decimal_price')
-    end
-
-    it 'validates outdated price' do
-      Market.any_instance.stubs(:valid_swap_price?).with(102.1, reference_price).returns(false)
-      api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '102.1' })
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('market.swap_order.outdated_price')
+      it 'validate weekly limit' do
+        SwapOrder.stubs(:weekly_unified_total_amount_for).returns(weekly_limit)
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
+        expect(response.code).to eq '422'
+        expect(response).to include_api_error('market.swap_order.reached_weekly_limit')
+      end
     end
   end
 end

@@ -14,6 +14,17 @@ module OrderServices
       return failure(errors: ['market.swap_order.invalid_market']) unless swap_price_service.market?
       return failure(errors: ['market.swap_order.outdated_price']) unless swap_price_service.valid_price?(price)
 
+      unified_currency = swap_price_service.unified_currency
+      return failure(errors: ['market.swap_order.no_unified_currency']) unless unified_currency
+
+      unified_price = swap_price_service.unified_price
+      return failure(errors: ['market.swap_order.no_unified_price']) unless unified_price
+
+      unified_total_amount = volume * unified_price
+
+      return failure(errors: ['market.swap_order.reached_weekly_limit']) if (unified_total_amount + SwapOrder.weekly_unified_total_amount_for(@member)) > config['weekly_limit']
+      return failure(errors: ['market.swap_order.reached_daily_limit']) if (unified_total_amount + SwapOrder.daily_unified_total_amount_for(@member)) > config['daily_limit']
+
       order_volume = swap_price_service.conver_amount_to_base(volume)
 
       swap_order = nil
@@ -25,14 +36,17 @@ module OrderServices
         state: SwapOrder::STATES[:pending],
         from_currency: from_currency,
         to_currency: to_currency,
-        price: price,
-        volume: volume
+        price: swap_price_service.request_price,
+        volume: volume,
+        unified_price: unified_price,
+        unified_total_amount: unified_total_amount,
+        unified_currency: unified_currency
       )
 
       create_order_result = CreateOrder.new(member: @member).perform(
         market: swap_price_service.market,
         side: swap_price_service.side,
-        price: swap_price_service.price_in_base,
+        price: swap_price_service.price,
         volume: order_volume,
         ord_type: 'limit'
       )
@@ -49,6 +63,12 @@ module OrderServices
     rescue StandardError => e
       report_exception(e, true)
       failure(errors: [e.message])
+    end
+
+    private
+
+    def config
+      Rails.application.config_for(:swap)
     end
   end
 end

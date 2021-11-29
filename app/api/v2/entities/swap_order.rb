@@ -8,7 +8,7 @@ module API
           :id,
           documentation: {
             type: Integer,
-            desc: 'Unique order id.'
+            desc: 'Unique swap order id.'
           }
         )
 
@@ -47,7 +47,7 @@ module API
           format_with: :iso8601,
           documentation: {
             type: String,
-            desc: 'Order create time in iso8601 format.'
+            desc: 'Swap Order create time in iso8601 format.'
           }
         )
 
@@ -56,16 +56,15 @@ module API
           format_with: :iso8601,
           documentation: {
             type: String,
-            desc: 'Order updated time in iso8601 format.'
+            desc: 'Swap Order updated time in iso8601 format.'
           }
         )
 
         expose(
           :volume,
-          as: :remaining_volume,
           documentation: {
             type: BigDecimal,
-            desc: "The remaining volume, see 'volume'."
+            desc: 'Swap order volume.'
           }
         )
       end

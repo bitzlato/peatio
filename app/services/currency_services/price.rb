@@ -9,7 +9,7 @@ module CurrencyServices
     end
 
     def call(vwap_time: nil)
-      vwap_time = vwap_time || @vwap_time
+      vwap_time ||= @vwap_time
 
       price = market_price(base_currency_code: @base_currency.code, quote_currency_code: @quote_currency.code, vwap_time: vwap_time)
       if price.nil?

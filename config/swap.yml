@@ -1,0 +1,25 @@
+production:
+  unified_currency_code: 'usdt-erc20'
+  vwap_time: '1h'
+  daily_limit: 200
+  weekly_limit: 1000
+sandbox:
+  unified_currency_code: 'bnb'
+  vwap_time: '1h'
+  daily_limit: 200
+  weekly_limit: 1000
+staging:
+  unified_currency_code: 'usdt-erc20'
+  vwap_time: '1h'
+  daily_limit: 200
+  weekly_limit: 1000
+test:
+  unified_currency_code: 'usd'
+  vwap_time: '1h'
+  daily_limit: 200
+  weekly_limit: 1000
+development:
+  unified_currency_code: 'usdt-erc20'
+  vwap_time: '1h'
+  daily_limit: 200
+  weekly_limit: 1000

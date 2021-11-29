@@ -15,6 +15,9 @@ FactoryBot.define do
       state { :wait }
       price { '1'.to_d }
       volume { '1'.to_d }
+      unified_price { '1'.to_d }
+      unified_total_amount { '1'.to_d }
+      unified_currency { market.quote }
     end
   end
 
@@ -32,6 +35,9 @@ FactoryBot.define do
       state { :wait }
       price { '1'.to_d }
       volume { '1'.to_d }
+      unified_price { '1'.to_d }
+      unified_total_amount { '1'.to_d }
+      unified_currency { market.quote }
     end
   end
 end
