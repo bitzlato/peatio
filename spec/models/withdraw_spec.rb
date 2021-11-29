@@ -598,7 +598,7 @@ describe Withdraw do
   context 'verify_limits' do
     let!(:member) { create(:member, group: 'vip-1', level: 1) }
     let!(:withdraw_limit) { create(:withdraw_limit, group: 'vip-1', kyc_level: 1, limit_24_hour: 6, limit_1_month: 10) }
-    let(:withdraw) { build(:btc_withdraw, :with_deposit_liability, member: member, sum: 0.5.to_d) }
+    let(:withdraw) { create(:btc_withdraw, :with_deposit_liability, member: member, sum: 0.5.to_d) }
 
     before do
       Currency.any_instance.unstub(:price)

@@ -196,15 +196,20 @@ class Withdraw < ApplicationRecord
   end
 
   class << self
-    def sum_query
-      'SELECT sum(w.sum * c.price) as sum FROM withdraws as w ' \
+    def sanitize_execute_sum_queries(member_id, id = nil)
+      sum_query =
+        'SELECT sum(w.sum * c.price) as sum FROM withdraws as w ' \
         'INNER JOIN currencies as c ON c.id=w.currency_id ' \
-        'where w.member_id = ? AND w.aasm_state IN (?) AND w.created_at > ?;'
-    end
-
-    def sanitize_execute_sum_queries(member_id)
-      squery_24h = ActiveRecord::Base.sanitize_sql_for_conditions([sum_query, member_id, SUCCEED_PROCESSING_STATES, 24.hours.ago])
-      squery_1m = ActiveRecord::Base.sanitize_sql_for_conditions([sum_query, member_id, SUCCEED_PROCESSING_STATES, 1.month.ago])
+        'where w.member_id = ? AND w.aasm_state IN (?) AND w.created_at > ?'
+      params_24h = [member_id, SUCCEED_PROCESSING_STATES, 24.hours.ago]
+      params_1m = [member_id, SUCCEED_PROCESSING_STATES, 1.month.ago]
+      if id.present?
+        sum_query = "#{sum_query} AND w.id <> ?"
+        params_24h << id
+        params_1m << id
+      end
+      squery_24h = ActiveRecord::Base.sanitize_sql_for_conditions([sum_query, *params_24h])
+      squery_1m = ActiveRecord::Base.sanitize_sql_for_conditions([sum_query, *params_1m])
       sum_withdraws_24_hours = ActiveRecord::Base.connection.exec_query(squery_24h).to_hash.first['sum'].to_d
       sum_withdraws_1_month = ActiveRecord::Base.connection.exec_query(squery_1m).to_hash.first['sum'].to_d
       [sum_withdraws_24_hours, sum_withdraws_1_month]
@@ -236,7 +241,7 @@ class Withdraw < ApplicationRecord
 
     # Withdraw limits in USD and withdraw sum in currency.
     # Convert withdraw sums with price from the currency model.
-    sum_24_hours, sum_1_month = Withdraw.sanitize_execute_sum_queries(member_id)
+    sum_24_hours, sum_1_month = Withdraw.sanitize_execute_sum_queries(member_id, id)
 
     sum_24_hours + (sum * currency.get_price) <= limits.limit_24_hour &&
       sum_1_month + (sum * currency.get_price) <= limits.limit_1_month
