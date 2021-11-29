@@ -27,7 +27,7 @@ module Workers
         Rails.logger.error do
           { message: e.message, deposit_id: payload[:deposit_id], service: :deposit_intention }
         end
-        report_exception(e)
+        report_exception(e, true, payload)
         raise e
       rescue StandardError => e
         Rails.logger.error do
@@ -35,7 +35,7 @@ module Workers
         end
         raise e if is_db_connection_error?(e)
 
-        report_exception(e)
+        report_exception(e, true, payload)
       end
     end
   end
