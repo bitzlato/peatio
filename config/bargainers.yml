@@ -3,92 +3,92 @@ production:
     min_volume: 0.0005
     max_volume: 0.001
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: btc_mcrerc20
     min_volume: 0.0005
     max_volume: 0.001
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: eth_btc
     min_volume: 0.0035
     max_volume: 0.015
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: eth_usdterc20
     min_volume: 0.0035
     max_volume: 0.015
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: eth_usdcerc20
     min_volume: 0.0035
     max_volume: 0.015
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: eth_mcrerc20
     min_volume: 0.0035
     max_volume: 0.015
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: usdterc20_mcrerc20
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: usdterc20_usdtbep20
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.0005
-    max_spread: 0.02
+    max_spread: 0.011
   - market_symbol: usdterc20_usdcerc20
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.0005
-    max_spread: 0.02
+    max_spread: 0.011
   - market_symbol: usdcerc20_usdcbep20
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.0005
-    max_spread: 0.02
+    max_spread: 0.011
   - market_symbol: bnbbep20_usdtbep20
     min_volume: 0.03
     max_volume: 0.1
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: bnbbep20_usdcbep20
     min_volume: 0.03
     max_volume: 0.1
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: usdthrc20_usdtbep20
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.0005
-    max_spread: 0.02
+    max_spread: 0.011
   - market_symbol: usdthrc20_usdterc20
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.0005
-    max_spread: 0.02
+    max_spread: 0.011
   - market_symbol: usdchrc20_usdcerc20
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.0005
-    max_spread: 0.02
+    max_spread: 0.011
   - market_symbol: usdchrc20_usdcbep20
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.0005
-    max_spread: 0.02
+    max_spread: 0.011
   - market_symbol: hthrc20_usdthrc20
     min_volume: 0.9
     max_volume: 4.5
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: hthrc20_usdchrc20
     min_volume: 0.9
     max_volume: 4.5
     price_deviation: 0.001
-    max_spread: 0.022
+    max_spread: 0.011
   - market_symbol: mdterc20_mcrerc20
     min_volume: 0.2
     max_volume: 4.0
