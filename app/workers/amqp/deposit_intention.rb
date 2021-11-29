@@ -25,13 +25,13 @@ module Workers
         # Repeat again
       rescue Bitzlato::Client::WrongResponse => e
         Rails.logger.error do
-          { message: e.messaage, deposit_id: payload[:deposit_id], service: :deposit_intention }
+          { message: e.message, deposit_id: payload[:deposit_id], service: :deposit_intention }
         end
         report_exception(e)
         raise e
       rescue StandardError => e
         Rails.logger.error do
-          { message: e.messaage, deposit_id: payload[:deposit_id], service: :deposit_intention }
+          { message: e.message, deposit_id: payload[:deposit_id], service: :deposit_intention }
         end
         raise e if is_db_connection_error?(e)
 
