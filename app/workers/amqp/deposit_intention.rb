@@ -19,17 +19,16 @@ module Workers
         Rails.logger.info do
           { message: 'Create invoice', deposit_id: deposit.id, serivce: :deposit_intention }
         end
-        gateway = deposit.blockchain.gateway
 
-        if gateway.respond_to? :create_invoice!
-          gateway.create_invoice! deposit
+        if deposit.blockchain.enable_invoice? && deposit.blockchain.gateway_class.supports_invoice?
+          deposit.blockchain.gateway.create_invoice! deposit
         else
           deposit.with_lock do
             Rails.logger.info do
-              { message: 'Reject deposit intention (no create_invoice! method in gateway)', deposit_id: deposit.id, serivce: :deposit_intention }
+              { message: 'Reject invoice creation (disabled for blockchain or not supported by gateway)', deposit_id: deposit.id, serivce: :deposit_intention }
             end
             deposit.reject!
-            report_exception('Reject deposit intention (no create_invoice! method in gateway)', true, payload)
+            report_exception('Reject invoice creation (disabled for blockchain or not supported by gateway)', true, payload)
           end
         end
 

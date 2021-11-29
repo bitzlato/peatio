@@ -17,6 +17,10 @@ describe API::V2::Account::Deposits, type: :request do
     let(:amount) { 12.1231 }
     let(:currency) { find_or_create :currency, :btc, id: :btc }
 
+    before do
+      currency.blockchain.update!(enable_invoice: true)
+    end
+
     it 'requires authentication' do
       api_post '/api/v2/account/deposits/intention', params: { amount: 123 }
       expect(response.code).to eq '401'
