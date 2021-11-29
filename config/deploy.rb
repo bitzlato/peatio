@@ -97,8 +97,8 @@ if defined? Slackistrano
   Rake::Task['deploy:starting'].prerequisites.delete('slack:deploy:starting')
   set :slackistrano,
       klass: Slackistrano::CustomMessaging,
-      channel: ENV.fetch( 'SLACKISTRANO_CHANNEL' ), # Take it from your teamlead
-      webhook: ENV.fetch( 'SLACKISTRANO_WEBHOOK' )
+      channel: ENV.fetch('SLACKISTRANO_CHANNEL'), # Take it from your teamlead
+      webhook: ENV.fetch('SLACKISTRANO_WEBHOOK')
 
   # best when 75px by 75px.
   set :slackistrano_thumb_url, 'https://bitzlato.com/wp-content/uploads/2020/12/logo.svg'
