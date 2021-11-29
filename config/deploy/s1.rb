@@ -2,6 +2,7 @@
 
 set :rails_env, :staging
 set :disallow_pushing, false
+set :application, -> { 'peatio-' + fetch(:stage).to_s }
 set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:application)}" }
 
 set :systemd_daemon_instances, -> { %i[bargainer_job currency_pricer k_line liabilities_compactor remove_invoiced_deposits stats_member_pnl ticker] }
@@ -21,7 +22,7 @@ set :systemd_amqp_daemon_instances,
       order_processor
     ]
 
-server '217.182.138.99',
+server '51.91.62.13',
        user: fetch(:user),
        port: '22',
        roles: %w[app db daemons amqp_daemons].freeze,
