@@ -14,16 +14,13 @@ module OrderServices
       return failure(errors: ['market.swap_order.invalid_market']) unless swap_price_service.market?
       return failure(errors: ['market.swap_order.outdated_price']) unless swap_price_service.valid_price?(price)
 
-      unified_currency = swap_price_service.unified_currency
-      return failure(errors: ['market.swap_order.no_unified_currency']) unless unified_currency
+      return failure(errors: ['market.swap_order.no_currency_price']) unless from_currency.price
 
-      unified_price = swap_price_service.unified_price
-      return failure(errors: ['market.swap_order.no_unified_price']) unless unified_price
+      amount = volume * from_currency.price
 
-      unified_total_amount = volume * unified_price
-
-      return failure(errors: ['market.swap_order.reached_weekly_limit']) if (unified_total_amount + SwapOrder.weekly_unified_total_amount_for(@member)) > config['weekly_limit']
-      return failure(errors: ['market.swap_order.reached_daily_limit']) if (unified_total_amount + SwapOrder.daily_unified_total_amount_for(@member)) > config['daily_limit']
+      return failure(errors: ['market.swap_order.reached_weekly_limit']) if (amount + SwapOrder.weekly_amount_for(@member)) > config['weekly_limit']
+      return failure(errors: ['market.swap_order.reached_daily_limit']) if (amount + SwapOrder.daily_amount_for(@member)) > config['daily_limit']
+      return failure(errors: ['market.swap_order.reached_order_limit']) if amount > config['order_limit']
 
       order_volume = swap_price_service.conver_amount_to_base(volume)
 
@@ -37,10 +34,7 @@ module OrderServices
         from_currency: from_currency,
         to_currency: to_currency,
         price: swap_price_service.request_price,
-        volume: volume,
-        unified_price: unified_price,
-        unified_total_amount: unified_total_amount,
-        unified_currency: unified_currency
+        volume: volume
       )
 
       create_order_result = CreateOrder.new(member: @member).perform(

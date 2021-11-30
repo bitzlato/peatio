@@ -7,12 +7,12 @@ describe API::V2::Market::SwapOrders, type: :request do
   let(:level_0_member_token) { jwt_for(level_0_member) }
   let(:reference_price) { 2014.to_d }
   let(:swap_config) { Rails.application.config_for(:swap) }
+  let(:order_limit) { swap_config['order_limit'] }
   let(:daily_limit) { swap_config['daily_limit'] }
   let(:weekly_limit) { swap_config['weekly_limit'] }
 
   before do
     CurrencyServices::SwapPrice.any_instance.stubs(:price).returns(reference_price)
-    CurrencyServices::Price.any_instance.stubs(:call).returns(1)
 
     Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['SwapOrder'], 'create' => ['SwapOrder'], 'update' => ['SwapOrder'] } })
   end
@@ -158,28 +158,28 @@ describe API::V2::Market::SwapOrders, type: :request do
         expect(response).to include_api_error('market.swap_order.outdated_price')
       end
 
-      it 'validate no unified currency' do
-        CurrencyServices::SwapPrice.any_instance.stubs(:unified_currency).returns(nil)
+      it 'validate no currency price' do
+        Currency.any_instance.stubs(:price).returns(nil)
         api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
         expect(response.code).to eq '422'
-        expect(response).to include_api_error('market.swap_order.no_unified_currency')
+        expect(response).to include_api_error('market.swap_order.no_currency_price')
       end
 
-      it 'validate no unified price currency' do
-        CurrencyServices::SwapPrice.any_instance.stubs(:unified_price).returns(nil)
-        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
+      it 'validate order limit' do
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: order_limit + 1, price: '2014' })
         expect(response.code).to eq '422'
-        expect(response).to include_api_error('market.swap_order.no_unified_price')
+        expect(response).to include_api_error('market.swap_order.reached_order_limit')
       end
 
       it 'validate daily limit' do
-        SwapOrder.stubs(:daily_unified_total_amount_for).returns(daily_limit)
+        SwapOrder.stubs(:daily_amount_for).returns(daily_limit)
         api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
+        expect(response.code).to eq '422'
         expect(response).to include_api_error('market.swap_order.reached_daily_limit')
       end
 
       it 'validate weekly limit' do
-        SwapOrder.stubs(:weekly_unified_total_amount_for).returns(weekly_limit)
+        SwapOrder.stubs(:weekly_amount_for).returns(weekly_limit)
         api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '12.13', price: '2014' })
         expect(response.code).to eq '422'
         expect(response).to include_api_error('market.swap_order.reached_weekly_limit')

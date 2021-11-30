@@ -4,7 +4,8 @@ describe OrderServices::CreateSwapOrder do
   let(:market) { Market.find_spot_by_symbol('btc_usd') }
   let(:account) { create(:account, :usd, balance: 10.to_d) }
   let(:reference_price) { 15.1.to_d }
-  let(:service) { described_class.new(member: account.member) }
+  let(:member) { account.member }
+  let(:service) { described_class.new(member: member) }
   let(:default_params) do
     {
       market: market,
@@ -43,7 +44,6 @@ describe OrderServices::CreateSwapOrder do
   describe '#perform' do
     before do
       CurrencyServices::SwapPrice.any_instance.stubs(:price).returns(reference_price)
-      CurrencyServices::Price.any_instance.stubs(:call).returns(1)
     end
 
     context 'change btc to usd' do
@@ -74,6 +74,7 @@ describe OrderServices::CreateSwapOrder do
 
     context 'validation' do
       let(:swap_config) { Rails.application.config_for(:swap) }
+      let(:order_limit) { swap_config['order_limit'] }
       let(:daily_limit) { swap_config['daily_limit'] }
       let(:weekly_limit) { swap_config['weekly_limit'] }
 
@@ -92,32 +93,36 @@ describe OrderServices::CreateSwapOrder do
         expect(result.errors.first).to eq 'market.swap_order.outdated_price'
       end
 
-      it 'returns no_unified_currency error' do
-        CurrencyServices::SwapPrice.any_instance.stubs(:unified_currency).returns(nil)
+      it 'returns no_currency_price error' do
+        Currency.any_instance.stubs(:price).returns(nil)
         result = service.perform(**params)
         expect(result).to be_failed
-        expect(result.errors.first).to eq 'market.swap_order.no_unified_currency'
+        expect(result.errors.first).to eq 'market.swap_order.no_currency_price'
       end
 
-      it 'returns no_unified_price error' do
-        CurrencyServices::SwapPrice.any_instance.stubs(:unified_price).returns(nil)
-        result = service.perform(**params)
+      it 'order limit has been reached out' do
+        result = service.perform(**params.merge({ volume: daily_limit + 1 }))
         expect(result).to be_failed
-        expect(result.errors.first).to eq 'market.swap_order.no_unified_price'
+        expect(result.errors.first).to eq 'market.swap_order.reached_daily_limit'
       end
 
       it 'daily limit has been reached out' do
-        SwapOrder.stubs(:daily_unified_total_amount_for).returns(daily_limit)
+        create :swap_order_bid, :btc_usd, member: member, volume: daily_limit
+
         result = service.perform(**params)
         expect(result).to be_failed
         expect(result.errors.first).to eq 'market.swap_order.reached_daily_limit'
       end
 
       it 'weekly limit has been reached out' do
-        SwapOrder.stubs(:weekly_unified_total_amount_for).returns(weekly_limit)
-        result = service.perform(**params)
-        expect(result).to be_failed
-        expect(result.errors.first).to eq 'market.swap_order.reached_weekly_limit'
+        date = Date.current.end_of_week
+        Timecop.freeze(date) do
+          create :swap_order_bid, :btc_usd, member: member, volume: weekly_limit, created_at: DateTime.yesterday
+
+          result = service.perform(**params)
+          expect(result).to be_failed
+          expect(result.errors.first).to eq 'market.swap_order.reached_weekly_limit'
+        end
       end
 
       it 'return error from CreateOrder service' do

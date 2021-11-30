@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveUnifiedCurrency < ActiveRecord::Migration[5.2]
   def change
     remove_column :swap_orders, :unified_unit

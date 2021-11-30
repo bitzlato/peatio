@@ -73,22 +73,5 @@ module CurrencyServices
 
       market.round_amount(request_amount.to_d)
     end
-
-    def unified_price
-      if unified_currency.nil?
-        Rails.logger.warn { { message: 'Unified currency is not found', currency_id: swap_config['unified_currency_code'], service: 'swap_price' } }
-        return nil
-      end
-      price_service = CurrencyServices::Price.new(base_currency: @from_currency, quote_currency: unified_currency, vwap_time: swap_config['vwap_time'])
-      price_service.call
-    end
-
-    def unified_currency
-      @unified_currency ||= Currency.find_by(id: swap_config['unified_currency_code'])
-    end
-
-    def swap_config
-      Rails.application.config_for(:swap)
-    end
   end
 end
