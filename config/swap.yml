@@ -3,9 +3,9 @@ production:
   daily_limit: 500
   weekly_limit: 1000
 sandbox:
-  order_limit: 200
-  daily_limit: 500
-  weekly_limit: 1000
+  order_limit: 1
+  daily_limit: 5
+  weekly_limit: 10
 staging:
   order_limit: 200
   daily_limit: 500
