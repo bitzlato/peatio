@@ -13,7 +13,7 @@ module API
             requires :id,
                      type: Integer,
                      allow_blank: false,
-                     desc: -> { V2::Entities::SwapOrder.documentation[:id] }
+                     desc: -> { API::V2::Entities::SwapOrder.documentation[:id][:desc] }
           end
           get ':id' do
             user_authorize! :read, ::SwapOrder

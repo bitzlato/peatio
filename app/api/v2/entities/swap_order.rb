@@ -25,8 +25,10 @@ module API
           :state,
           documentation: {
             type: String,
-            desc: "One of 'wait', 'done', or 'cancel'."\
-                  "An swap order in 'wait' is an active order, waiting fulfillment;"\
+            values: ::SwapOrder.state.values,
+            desc: "One of 'pending', 'wait', 'done', or 'cancel'."\
+                  "An swap order in 'pending' is an waiting when order will be created;"\
+                  "a 'wait' is an active order, waiting fulfillment;"\
                   "a 'done' swap order is an swap order fulfilled;"\
                   "'cancel' means the swap order has been canceled."
           }
