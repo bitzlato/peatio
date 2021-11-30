@@ -1210,10 +1210,7 @@ CREATE TABLE public.swap_orders (
     price numeric(32,16) NOT NULL,
     volume numeric(32,16) NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    unified_price numeric(32,16) NOT NULL,
-    unified_total_amount numeric(32,16) NOT NULL,
-    unified_unit character varying NOT NULL
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -3256,5 +3253,3 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211116054502'),
 ('20211122110601'),
 ('20211203102904');
-
-
