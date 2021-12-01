@@ -6,9 +6,12 @@ module CurrencyServices
     DEVIATION_PRECISION = 3
     QUOTE_PRICE_PRECISION = 8
 
-    def initialize(from_currency:, to_currency:)
+    attr_reader :volume
+
+    def initialize(from_currency:, to_currency:, volume:)
       @from_currency = from_currency
       @to_currency = to_currency
+      @volume = volume
     end
 
     def market

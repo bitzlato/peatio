@@ -5,8 +5,8 @@ describe API::V2::Public::Swap, type: :request do
     let(:market) { Market.find_spot_by_symbol('btc_usd') }
 
     it 'return swap price' do
-      CurrencyServices::SwapPrice.any_instance.stubs(:request_price).returns(15.1.to_d)
-      api_get '/api/v2/public/swap/price', params: { from_currency: market.base_unit, to_currency: market.quote_unit }
+      CurrencyServices::SwapPrice.any_instance.stubs(:price).returns(15.1.to_d)
+      api_get '/api/v2/public/swap/price', params: { from_currency: market.base_unit, to_currency: market.quote_unit, volume: 1}
 
       expect(response.code).to eq '200'
       expect(response_body).to include_json({ price: '15.1' })

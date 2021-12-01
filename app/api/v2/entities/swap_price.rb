@@ -9,7 +9,15 @@ module API
           as: :price,
           documentation: {
             type: BigDecimal,
-            desc: 'Swap price.'
+            desc: 'Price'
+          }
+        )
+
+        expose(
+          :inverse_price,
+          documentation: {
+            type: BigDecimal,
+            desc: 'Reverse price.'
           }
         )
       end

@@ -9,7 +9,7 @@ module OrderServices
     end
 
     def perform(from_currency:, to_currency:, price:, volume:)
-      swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency)
+      swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency, volume: volume)
 
       return failure(errors: ['market.swap_order.invalid_market']) unless swap_price_service.market?
       return failure(errors: ['market.swap_order.outdated_price']) unless swap_price_service.valid_price?(price)

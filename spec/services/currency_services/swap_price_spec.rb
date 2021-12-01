@@ -7,7 +7,7 @@ RSpec.describe CurrencyServices::SwapPrice do
   let(:deviation) { CurrencyServices::SwapPrice::PRICE_DEVIATION }
 
   context 'sale btc for usd' do
-    subject { described_class.new(from_currency: from_currency, to_currency: to_currency) }
+    subject { described_class.new(from_currency: from_currency, to_currency: to_currency, volume: 2) }
 
     let(:bid_top_price) { '100'.to_d }
     let(:price) { market.round_price(bid_top_price - (bid_top_price * deviation)) }
@@ -37,7 +37,7 @@ RSpec.describe CurrencyServices::SwapPrice do
   end
 
   context 'buy btc for usd' do
-    subject { described_class.new(from_currency: to_currency, to_currency: from_currency) }
+    subject { described_class.new(from_currency: to_currency, to_currency: from_currency, volume: 2) }
 
     let(:ask_top_price) { '120'.to_d }
     let(:price) { market.round_price(ask_top_price + (ask_top_price * deviation)) }
