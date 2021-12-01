@@ -6,8 +6,6 @@ module API
       class Swap < Grape::API
         helpers ::API::V2::Admin::Helpers
 
-        SwapPrice = Struct.new(:price)
-
         desc 'Get swap price' do
           success API::V2::Entities::SwapPrice
         end
@@ -25,13 +23,9 @@ module API
           swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency)
 
           error!({ errors: ['market.swap.no_appropriate_market'] }, 422) unless swap_price_service.market?
+          error!({ errors: ['market.swap.no_swap_price'] }, 422) unless swap_price_service.request_price
 
-          swap_price = swap_price_service.request_price
-          error!({ errors: ['market.swap.no_swap_price'] }, 422) unless swap_price
-
-          price = SwapPrice.new(swap_price)
-
-          present price, with: API::V2::Entities::SwapPrice
+          present swap_price_service, with: API::V2::Entities::SwapPrice
         end
 
         get '/swap/limits' do

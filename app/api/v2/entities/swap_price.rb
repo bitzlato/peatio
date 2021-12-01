@@ -5,7 +5,8 @@ module API
     module Entities
       class SwapPrice < Base
         expose(
-          :price,
+          :request_price,
+          as: :price,
           documentation: {
             type: BigDecimal,
             desc: 'Swap price.'
