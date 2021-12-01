@@ -33,6 +33,12 @@ module API
 
           present price, with: API::V2::Entities::SwapPrice
         end
+
+        get '/swap/limits' do
+          swap_config = Rails.application.config_for(:swap)
+
+          present swap_config, with: API::V2::Entities::SwapLimits
+        end
       end
     end
   end

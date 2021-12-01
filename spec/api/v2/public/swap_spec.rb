@@ -11,5 +11,18 @@ describe API::V2::Public::Swap, type: :request do
       expect(response.code).to eq '200'
       expect(response_body).to include_json({ price: '15.1' })
     end
+
+
+    it 'return swap limits' do
+      swap_config = Rails.application.config_for(:swap)
+      api_get '/api/v2/public/swap/limits'
+
+      expect(response.code).to eq '200'
+      expect(response_body).to include_json({
+        order_limit: swap_config['order_limit'],
+        daily_limit: swap_config['daily_limit'],
+        weekly_limit: swap_config['weekly_limit'],
+      })
+    end
   end
 end
