@@ -59,7 +59,23 @@ set :assets_roles, []
 set :init_system, :systemd
 
 set :systemd_daemon_role, :daemons
-set :systemd_daemon_instances, %i[bargainer_job blockchain_processor collector currency_pricer gas_price_checker k_line liabilities_compactor payment_address_balancer remove_invoiced_deposits stats_member_pnl ticker transfers_polling wallet_balances]
+set :systemd_daemon_instances,
+    %i[
+      bargainer_job
+      blockchain_processor
+      collector
+      currency_pricer
+      gas_price_checker
+      k_line
+      liabilities_compactor
+      payment_address_balancer
+      remove_invoiced_deposits
+      stale_order_cancellator
+      stats_member_pnl
+      ticker
+      transfers_polling
+      wallet_balances
+    ]
 
 # Restricted daemons list for stages
 set :systemd_amqp_daemon_role, :amqp_daemons
