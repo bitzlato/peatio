@@ -9,7 +9,7 @@ module OrderServices
     end
 
     def perform(from_currency:, to_currency:, price:, volume:)
-      swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency, volume: volume)
+      swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency, request_volume: volume)
 
       return failure(errors: ['market.swap_order.invalid_market']) unless swap_price_service.market?
       return failure(errors: ['market.swap_order.outdated_price']) unless swap_price_service.valid_price?(price)
@@ -22,8 +22,6 @@ module OrderServices
       return failure(errors: ['market.swap_order.reached_daily_limit']) if (amount + SwapOrder.daily_amount_for(@member)) > config['daily_limit']
       return failure(errors: ['market.swap_order.reached_order_limit']) if amount > config['order_limit']
 
-      order_volume = swap_price_service.conver_amount_to_base(volume)
-
       swap_order = nil
       create_order_result = nil
 
@@ -34,14 +32,14 @@ module OrderServices
         from_currency: from_currency,
         to_currency: to_currency,
         price: swap_price_service.request_price,
-        volume: volume
+        volume: swap_price_service.request_volume
       )
 
       create_order_result = CreateOrder.new(member: @member).perform(
         market: swap_price_service.market,
         side: swap_price_service.side,
         price: swap_price_service.price,
-        volume: order_volume,
+        volume: swap_price_service.volume,
         ord_type: 'limit'
       )
 

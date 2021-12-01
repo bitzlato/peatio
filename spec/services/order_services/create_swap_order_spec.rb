@@ -66,7 +66,7 @@ describe OrderServices::CreateSwapOrder do
             from_currency: market.quote,
             to_currency: market.base,
             volume: '5'.to_d,
-            price: (1 / reference_price).to_d
+            price: market.round_price(1 / reference_price).to_d
           }
         end
       end

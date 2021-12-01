@@ -24,7 +24,7 @@ module API
           from_currency = ::Currency.find(params[:from_currency])
           to_currency = ::Currency.find(params[:to_currency])
 
-          swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency, volume: params[:volume])
+          swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency, request_volume: params[:volume])
 
           error!({ errors: ['market.swap.no_appropriate_market'] }, 422) unless swap_price_service.market?
           error!({ errors: ['market.swap.no_swap_price'] }, 422) unless swap_price_service.request_price

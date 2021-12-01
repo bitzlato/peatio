@@ -2,16 +2,13 @@
 
 module CurrencyServices
   class SwapPrice
-    PRICE_DEVIATION = 0.002
-    DEVIATION_PRECISION = 3
-    QUOTE_PRICE_PRECISION = 8
+    PRICE_DEVIATION = '0.02'.to_d
+    PRICE_DEVIATION_PRECISION = 2
 
-    attr_reader :volume
-
-    def initialize(from_currency:, to_currency:, volume:)
+    def initialize(from_currency:, to_currency:, request_volume:)
       @from_currency = from_currency
       @to_currency = to_currency
-      @volume = volume
+      @request_volume = request_volume.to_d
     end
 
     def market
@@ -56,7 +53,7 @@ module CurrencyServices
     end
 
     def inverse_price
-      (1 / price).to_d.round(QUOTE_PRICE_PRECISION)
+      market.round_price(1 / price)
     end
 
     def request_price
@@ -67,14 +64,20 @@ module CurrencyServices
       end
     end
 
-    def valid_price?(price)
-      ((request_price - price) / price).abs.round(DEVIATION_PRECISION) <= PRICE_DEVIATION
+    def request_volume
+      market.round_amount(@request_volume)
     end
 
-    def conver_amount_to_base(request_amount)
-      request_amount /= price if buy?
+    def volume
+      if sell?
+        request_volume
+      else
+        market.round_amount(request_volume / price)
+      end
+    end
 
-      market.round_amount(request_amount.to_d)
+    def valid_price?(price)
+      ((request_price - price) / price).abs.round(PRICE_DEVIATION_PRECISION) <= PRICE_DEVIATION
     end
   end
 end
