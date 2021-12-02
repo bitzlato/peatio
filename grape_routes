@@ -1,175 +1,175 @@
-GET        /v2/public/currencies/:id(.:format)
-GET        /v2/public/currencies(.:format)
-GET        /v2/public/markets(.:format)
-GET        /v2/public/markets/:market/order-book(.:format)
-GET        /v2/public/markets/:market/trades(.:format)
-GET        /v2/public/markets/:market/depth(.:format)
-GET        /v2/public/markets/:market/k-line(.:format)
-GET        /v2/public/markets/tickers(.:format)
-GET        /v2/public/markets/:market/tickers(.:format)
-GET        /v2/public/markets/:market/swap_price(.:format)
-GET        /v2/public/member-levels(.:format)
-GET        /v2/public/timestamp(.:format)
-GET        /v2/public/version(.:format)
-GET        /v2/public/health/alive(.:format)
-GET        /v2/public/health/ready(.:format)
-GET        /v2/public/trading_fees(.:format)
-POST       /v2/public/webhooks/:adapter/:event(.:format)
-GET        /v2/public/withdraw_limits(.:format)
-GET        /v2/public/blockchains(.:format)
-GET        /v2/public/blockchains/:id(.:format)
-GET        /v2/public/blockchains/:id/latest_block(.:format)
-GET        /v2/account/balances(.:format)
-GET        /v2/account/balances/:currency(.:format)
-POST       /v2/account/deposits/intention(.:format)
-GET        /v2/account/deposits(.:format)
-GET        /v2/account/deposits/:txid(.:format)
-GET        /v2/account/deposit_address/:currency(.:format)
-GET        /v2/account/beneficiaries(.:format)
-GET        /v2/account/beneficiaries/:id(.:format)
-POST       /v2/account/beneficiaries(.:format)
-PATCH      /v2/account/beneficiaries/:id/resend_pin(.:format)
-PATCH      /v2/account/beneficiaries/:id/activate(.:format)
-DELETE     /v2/account/beneficiaries/:id(.:format)
-GET        /v2/account/withdraws(.:format)
-GET        /v2/account/withdraws/sums(.:format)
-POST       /v2/account/withdraws(.:format)
-GET        /v2/account/transactions(.:format)
-GET        /v2/account/stats/pnl(.:format)
-GET        /v2/account/internal_transfers(.:format)
-POST       /v2/account/internal_transfers(.:format)
-GET        /v2/market/orders(.:format)
-GET        /v2/market/orders/:id(.:format)
-POST       /v2/market/orders(.:format)
-POST       /v2/market/orders/batch(.:format)
-POST       /v2/market/orders/:id/cancel(.:format)
-POST       /v2/market/orders/cancel(.:format)
-GET        /v2/market/trades(.:format)
-GET        /v2/coinmarketcap/summary(.:format)
-GET        /v2/coinmarketcap/assets(.:format)
-GET        /v2/coinmarketcap/ticker(.:format)
-GET        /v2/coinmarketcap/trades/:market_pair(.:format)
-GET        /v2/coinmarketcap/orderbook/:market_pair(.:format)
-GET        /v2/coingecko/pairs(.:format)
-GET        /v2/coingecko/tickers(.:format)
-GET        /v2/coingecko/orderbook(.:format)
-GET        /v2/coingecko/historical_trades(.:format)
-GET        /v2/swagger(.:format)
-GET        /v2/swagger/:name(.:format)
-POST       /v2/management/accounts/balance(.:format)
-POST       /v2/management/accounts/balances(.:format)
-POST       /v2/management/deposits(.:format)
-POST       /v2/management/deposits/get(.:format)
-POST       /v2/management/deposits/new(.:format)
-PUT        /v2/management/deposits/state(.:format)
-POST       /v2/management/withdraws(.:format)
-POST       /v2/management/withdraws/get(.:format)
-POST       /v2/management/withdraws/new(.:format)
-PUT        /v2/management/withdraws/action(.:format)
-POST       /v2/management/timestamp(.:format)
-POST       /v2/management/assets(.:format)
-POST       /v2/management/assets/new(.:format)
-POST       /v2/management/expenses(.:format)
-POST       /v2/management/expenses/new(.:format)
-POST       /v2/management/revenues(.:format)
-POST       /v2/management/revenues/new(.:format)
-POST       /v2/management/liabilities(.:format)
-POST       /v2/management/liabilities/new(.:format)
-POST       /v2/management/orders(.:format)
-POST       /v2/management/orders/:id/cancel(.:format)
-POST       /v2/management/orders/cancel(.:format)
-POST       /v2/management/transfers/new(.:format)
-POST       /v2/management/trades(.:format)
-POST       /v2/management/members(.:format)
-POST       /v2/management/members/group(.:format)
-POST       /v2/management/fee_schedule/trading_fees(.:format)
-POST       /v2/management/currencies/list(.:format)
-POST       /v2/management/currencies/create(.:format)
-POST       /v2/management/currencies/:code(.:format)
-PUT        /v2/management/currencies/update(.:format)
-POST       /v2/management/markets/new(.:format)
-PUT        /v2/management/markets/update(.:format)
-POST       /v2/management/markets/list(.:format)
-POST       /v2/management/markets/:symbol(.:format)
-POST       /v2/management/beneficiaries/list(.:format)
-POST       /v2/management/beneficiaries(.:format)
-POST       /v2/management/deposit_address/new(.:format)
-POST       /v2/management/engines/get(.:format)
-POST       /v2/management/engines/new(.:format)
-POST       /v2/management/engines/update(.:format)
-POST       /v2/management/wallets/new(.:format)
-POST       /v2/management/wallets/update(.:format)
-POST       /v2/management/wallets(.:format)
-POST       /v2/management/wallets/:id(.:format)
-GET        /v2/management/swagger(.:format)
-GET        /v2/management/swagger/:name(.:format)
-GET        /v2/admin/orders(.:format)
-POST       /v2/admin/orders/:id/cancel(.:format)
-POST       /v2/admin/orders/cancel(.:format)
-GET        /v2/admin/blockchains(.:format)
-GET        /v2/admin/blockchains/clients(.:format)
-GET        /v2/admin/blockchains/:id(.:format)
-GET        /v2/admin/blockchains/:id/latest_block(.:format)
-GET        /v2/admin/currencies(.:format)
-GET        /v2/admin/currencies/:code(.:format)
-POST       /v2/admin/currencies/new(.:format)
-POST       /v2/admin/currencies/update(.:format)
-GET        /v2/admin/markets(.:format)
-GET        /v2/admin/markets/:symbol(.:format)
-POST       /v2/admin/markets/new(.:format)
-POST       /v2/admin/markets/update(.:format)
-GET        /v2/admin/wallets(.:format)
-GET        /v2/admin/wallets/kinds(.:format)
-GET        /v2/admin/wallets/:id(.:format)
-POST       /v2/admin/wallets/new(.:format)
-POST       /v2/admin/wallets/update(.:format)
-POST       /v2/admin/wallets/currencies(.:format)
-DELETE     /v2/admin/wallets/currencies(.:format)
-GET        /v2/admin/deposits(.:format)
-POST       /v2/admin/deposits/actions(.:format)
-POST       /v2/admin/deposits/new(.:format)
-POST       /v2/admin/deposits/:id/refund(.:format)
-POST       /v2/admin/deposit_address(.:format)
-GET        /v2/admin/withdraws(.:format)
-GET        /v2/admin/withdraws/:id(.:format)
-POST       /v2/admin/withdraws/actions(.:format)
-PUT        /v2/admin/withdraws(.:format)
-GET        /v2/admin/trades(.:format)
-GET        /v2/admin/trades/:id(.:format)
-GET        /v2/admin/assets(.:format)
-GET        /v2/admin/expenses(.:format)
-GET        /v2/admin/revenues(.:format)
-GET        /v2/admin/liabilities(.:format)
-GET        /v2/admin/members(.:format)
-GET        /v2/admin/members/groups(.:format)
-GET        /v2/admin/members/:uid(.:format)
-PUT        /v2/admin/members/:uid(.:format)
-GET        /v2/admin/trading_fees(.:format)
-POST       /v2/admin/trading_fees/new(.:format)
-POST       /v2/admin/trading_fees/update(.:format)
-POST       /v2/admin/trading_fees/delete(.:format)
-GET        /v2/admin/adjustments(.:format)
-GET        /v2/admin/adjustments/:id(.:format)
-POST       /v2/admin/adjustments/new(.:format)
-POST       /v2/admin/adjustments/action(.:format)
-GET        /v2/admin/engines(.:format)
-GET        /v2/admin/engines/:id(.:format)
-POST       /v2/admin/engines/new(.:format)
-POST       /v2/admin/engines/update(.:format)
-GET        /v2/admin/beneficiaries(.:format)
-POST       /v2/admin/beneficiaries/actions(.:format)
-GET        /v2/admin/abilities(.:format)
-GET        /v2/admin/withdraw_limits(.:format)
-POST       /v2/admin/withdraw_limits(.:format)
-PUT        /v2/admin/withdraw_limits(.:format)
-DELETE     /v2/admin/withdraw_limits/:id(.:format)
-POST       /v2/admin/airdrops(.:format)
-GET        /v2/admin/internal_transfers(.:format)
-GET        /v2/admin/whitelisted_smart_contracts(.:format)
-GET        /v2/admin/whitelisted_smart_contract/:id(.:format)
-POST       /v2/admin/whitelisted_smart_contracts(.:format)
-PUT        /v2/admin/whitelisted_smart_contracts(.:format)
-POST       /v2/admin/whitelisted_smart_contracts/csv(.:format)
-POST       /v2/admin/import_configs(.:format)
-GET        /v2/admin/swagger(.:format)
-GET        /v2/admin/swagger/:name(.:format)
+        GET  |  /v2/coingecko/pairs(.:format)                        |    |  Get list of all available trading pairs                                                                                                                                                                                
+        GET  |  /v2/coingecko/tickers(.:format)                      |    |  Get list of all available trading pairs                                                                                                                                                                                
+        GET  |  /v2/coingecko/orderbook(.:format)                    |    |  Get depth or specified market                                                                                                                                                                                          
+        GET  |  /v2/coingecko/historical_trades(.:format)            |    |  Get recent trades on market                                                                                                                                                                                            
+        GET  |  /v2/coinmarketcap/orderbook/:market_pair(.:format)   |    |  Get depth or specified market                                                                                                                                                                                          
+        GET  |  /v2/coinmarketcap/trades/:market_pair(.:format)      |    |  Get recent trades on market                                                                                                                                                                                            
+        GET  |  /v2/public/member-levels(.:format)                   |    |  Returns hash of minimum levels and the privileges they provide.                                                                                                                                                        
+        GET  |  /v2/public/timestamp(.:format)                       |    |  Get server current time, in seconds since Unix epoch.                                                                                                                                                                  
+        GET  |  /v2/public/version(.:format)                         |    |  Get running Peatio version and build details.                                                                                                                                                                          
+        GET  |  /v2/public/health/alive(.:format)                    |    |  Get application liveness status                                                                                                                                                                                        
+        GET  |  /v2/public/health/ready(.:format)                    |    |  Get application readiness status                                                                                                                                                                                       
+        GET  |  /v2/public/trading_fees(.:format)                    |    |  Returns trading_fees table as paginated collection                                                                                                                                                                     
+       POST  |  /v2/public/webhooks/:adapter/:event(.:format)        |    |  Webhook controller                                                                                                                                                                                                     
+        GET  |  /v2/public/markets(.:format)                         |    |  Get all available markets.                                                                                                                                                                                             
+        GET  |  /v2/public/markets/:market/order-book(.:format)      |    |  Get the order book of specified market.                                                                                                                                                                                
+        GET  |  /v2/public/markets/:market/trades(.:format)          |    |  Get recent trades on market, each trade is included only once. Trades are sorted in reverse creation order.                                                                                                            
+        GET  |  /v2/public/markets/:market/depth(.:format)           |    |  Get depth or specified market. Both asks and bids are sorted from highest price to lowest.                                                                                                                             
+        GET  |  /v2/public/markets/:market/k-line(.:format)          |    |  Get OHLC(k line) of specific market.                                                                                                                                                                                   
+        GET  |  /v2/public/markets/tickers(.:format)                 |    |  Get ticker of all markets (For response doc see /:market/tickers/ response).                                                                                                                                           
+        GET  |  /v2/public/markets/:market/tickers(.:format)         |    |  Get ticker of specific market.                                                                                                                                                                                         
+        GET  |  /v2/public/markets/:market/swap_price(.:format)      |    |  Get swap price                                                                                                                                                                                                         
+        GET  |  /v2/public/withdraw_limits(.:format)                 |    |  Returns withdraw limits table as paginated collection                                                                                                                                                                  
+        GET  |  /v2/public/blockchains(.:format)                     |    |  Get all blockchains                                                                                                                                                                                                    
+        GET  |  /v2/public/blockchains/:id(.:format)                 |    |  Get a blockchain.                                                                                                                                                                                                      
+        GET  |  /v2/public/blockchains/:id/latest_block(.:format)    |    |  Get a latest blockchain block.                                                                                                                                                                                         
+        GET  |  /v2/account/balances(.:format)                       |    |  Get list of user accounts                                                                                                                                                                                              
+        GET  |  /v2/account/balances/:currency(.:format)             |    |  Get user account by currency                                                                                                                                                                                           
+       POST  |  /v2/account/deposits/intention(.:format)             |    |  Create deposit intention                                                                                                                                                                                               
+        GET  |  /v2/account/deposits(.:format)                       |    |  Get your deposits history.                                                                                                                                                                                             
+        GET  |  /v2/account/deposits/:txid(.:format)                 |    |  Get details of specific deposit.                                                                                                                                                                                       
+        GET  |  /v2/account/deposit_address/:currency(.:format)      |    |  Returns deposit address for account you want to deposit to by currency. The address may be blank because address generation process is still in progress. If this case you should try again later.                     
+        GET  |  /v2/account/beneficiaries(.:format)                  |    |  Get list of user beneficiaries                                                                                                                                                                                         
+        GET  |  /v2/account/beneficiaries/:id(.:format)              |    |  Get beneficiary by ID                                                                                                                                                                                                  
+       POST  |  /v2/account/beneficiaries(.:format)                  |    |  Create new beneficiary                                                                                                                                                                                                 
+      PATCH  |  /v2/account/beneficiaries/:id/resend_pin(.:format)   |    |  Resend beneficiary pin                                                                                                                                                                                                 
+      PATCH  |  /v2/account/beneficiaries/:id/activate(.:format)     |    |  Activates beneficiary with pin                                                                                                                                                                                         
+     DELETE  |  /v2/account/beneficiaries/:id(.:format)              |    |  Delete beneficiary                                                                                                                                                                                                     
+        GET  |  /v2/account/withdraws(.:format)                      |    |  List your withdraws as paginated collection.                                                                                                                                                                           
+        GET  |  /v2/account/withdraws/sums(.:format)                 |    |  Returns withdrawal sums for last 4 hours and 1 month                                                                                                                                                                   
+       POST  |  /v2/account/withdraws(.:format)                      |    |  Creates new withdrawal to active beneficiary.                                                                                                                                                                          
+        GET  |  /v2/account/transactions(.:format)                   |    |  Get your transactions history.                                                                                                                                                                                         
+        GET  |  /v2/account/stats/pnl(.:format)                      |    |  Get assets pnl calculated into one currency                                                                                                                                                                            
+        GET  |  /v2/account/internal_transfers(.:format)             |    |  List your internal transfers as paginated collection.                                                                                                                                                                  
+       POST  |  /v2/account/internal_transfers(.:format)             |    |  Creates internal transfer.                                                                                                                                                                                             
+       POST  |  /v2/admin/import_configs(.:format)                   |    |  Import currencies, blockchains and wallets from json/yaml file                                                                                                                                                         
+        GET  |  /v2/admin/whitelisted_smart_contracts(.:format)      |    |  Get all whitelisted addresses, result is paginated.                                                                                                                                                                    
+        GET  |  /v2/admin/whitelisted_smart_contract/:id(.:format)   |    |  Get a whitelisted address.                                                                                                                                                                                             
+       POST  |  /v2/admin/whitelisted_smart_contracts(.:format)      |    |  Creates new whitelisted address.                                                                                                                                                                                       
+        PUT  |  /v2/admin/whitelisted_smart_contracts(.:format)      |    |  Update whitelisted_smart_contract.                                                                                                                                                                                     
+       POST  |  /v2/admin/whitelisted_smart_contracts/csv(.:format)  |    |  Process whitelisted smart contracts from csv                                                                                                                                                                           
+        GET  |  /v2/admin/internal_transfers(.:format)               |    |  Get all internal transfers.                                                                                                                                                                                            
+       POST  |  /v2/admin/airdrops(.:format)                         |    |  Process user airdrop                                                                                                                                                                                                   
+        GET  |  /v2/admin/withdraw_limits(.:format)                  |    |  Returns withdraw limits table as paginated collection                                                                                                                                                                  
+       POST  |  /v2/admin/withdraw_limits(.:format)                  |    |  It creates withdraw limits record                                                                                                                                                                                      
+        PUT  |  /v2/admin/withdraw_limits(.:format)                  |    |  It updates withdraw limits record                                                                                                                                                                                      
+     DELETE  |  /v2/admin/withdraw_limits/:id(.:format)              |    |  It deletes withdraw limits record                                                                                                                                                                                      
+        GET  |  /v2/coinmarketcap/ticker(.:format)                   |    |  Get 24-hour pricing and volume summary for each market pair                                                                                                                                                            
+        GET  |  /v2/coinmarketcap/assets(.:format)                   |    |  Details on crypto currencies available on the exchange                                                                                                                                                                 
+        GET  |  /v2/market/trades(.:format)                          |    |  Get your executed trades. Trades are sorted in reverse creation order.                                                                                                                                                 
+        GET  |  /v2/market/orders(.:format)                          |    |  Get your orders, result is paginated.                                                                                                                                                                                  
+        GET  |  /v2/market/orders/:id(.:format)                      |    |  Get information of specified order.                                                                                                                                                                                    
+       POST  |  /v2/market/orders(.:format)                          |    |  Create a Sell/Buy order.                                                                                                                                                                                               
+       POST  |  /v2/market/orders/batch(.:format)                    |    |  Create a couple of Sell/Buy orders.                                                                                                                                                                                    
+       POST  |  /v2/market/orders/:id/cancel(.:format)               |    |  Cancel an order.                                                                                                                                                                                                       
+       POST  |  /v2/market/orders/cancel(.:format)                   |    |  Cancel all my orders.                                                                                                                                                                                                  
+        GET  |  /v2/public/currencies/:id(.:format)                  |    |  Get a currency                                                                                                                                                                                                         
+        GET  |  /v2/public/currencies(.:format)                      |    |  Get list of currencies                                                                                                                                                                                                 
+        GET  |  /v2/coinmarketcap/summary(.:format)                  |    |  Overview of market data for all tickers and all market pairs on the exchange                                                                                                                                           
+        GET  |  /v2/swagger(.:format)                                |    |  Swagger compatible API description                                                                                                                                                                                     
+        GET  |  /v2/swagger/:name(.:format)                          |    |  Swagger compatible API description for specific API                                                                                                                                                                    
+       POST  |  /v2/management/accounts/balance(.:format)            |    |  Queries the account balance for the given UID and currency.                                                                                                                                                            
+       POST  |  /v2/management/accounts/balances(.:format)           |    |  Queries the non-zero balance accounts for the given currency.                                                                                                                                                          
+       POST  |  /v2/management/deposits(.:format)                    |    |  Returns deposits as paginated collection.                                                                                                                                                                              
+       POST  |  /v2/management/deposits/get(.:format)                |    |  Returns deposit by TID.                                                                                                                                                                                                
+       POST  |  /v2/management/deposits/new(.:format)                |    |  Creates new fiat deposit with state set to «submitted». Optionally pass field «state» set to «accepted» if want to load money instantly. You can also use PUT /fiat_deposits/:id later to load money or cancel deposit.
+        PUT  |  /v2/management/deposits/state(.:format)              |    |  Allows to load money or cancel deposit.                                                                                                                                                                                
+       POST  |  /v2/management/withdraws(.:format)                   |    |  Returns withdraws as paginated collection.                                                                                                                                                                             
+       POST  |  /v2/management/withdraws/get(.:format)               |    |  Returns withdraw by ID.                                                                                                                                                                                                
+       POST  |  /v2/management/withdraws/new(.:format)               |    |  Creates new withdraw.                                                                                                                                                                                                  
+        PUT  |  /v2/management/withdraws/action(.:format)            |    |  Performs action on withdraw.                                                                                                                                                                                           
+       POST  |  /v2/management/timestamp(.:format)                   |    |  Returns server time in seconds since Unix epoch.                                                                                                                                                                       
+       POST  |  /v2/management/assets(.:format)                      |    |  Returns assets as paginated collection.                                                                                                                                                                                
+       POST  |  /v2/management/assets/new(.:format)                  |    |  Creates new asset operation.                                                                                                                                                                                           
+       POST  |  /v2/management/expenses(.:format)                    |    |  Returns expenses as paginated collection.                                                                                                                                                                              
+       POST  |  /v2/management/expenses/new(.:format)                |    |  Creates new expense operation.                                                                                                                                                                                         
+       POST  |  /v2/management/revenues(.:format)                    |    |  Returns revenues as paginated collection.                                                                                                                                                                              
+       POST  |  /v2/management/revenues/new(.:format)                |    |  Creates new revenue operation.                                                                                                                                                                                         
+       POST  |  /v2/management/liabilities(.:format)                 |    |  Returns liabilities as paginated collection.                                                                                                                                                                           
+       POST  |  /v2/management/liabilities/new(.:format)             |    |  Creates new liability operation.                                                                                                                                                                                       
+       POST  |  /v2/management/orders(.:format)                      |    |  Returns orders                                                                                                                                                                                                         
+       POST  |  /v2/management/orders/:id/cancel(.:format)           |    |  Cancel specific order                                                                                                                                                                                                  
+       POST  |  /v2/management/orders/cancel(.:format)               |    |  Cancel all open orders                                                                                                                                                                                                 
+       POST  |  /v2/management/transfers/new(.:format)               |    |  Creates new transfer.                                                                                                                                                                                                  
+       POST  |  /v2/management/trades(.:format)                      |    |  Returns trades as paginated collection.                                                                                                                                                                                
+       POST  |  /v2/management/members(.:format)                     |    |  Create a member.                                                                                                                                                                                                       
+       POST  |  /v2/management/members/group(.:format)               |    |  Set user group.                                                                                                                                                                                                        
+       POST  |  /v2/management/fee_schedule/trading_fees(.:format)   |    |  Returns trading_fees table as paginated collection                                                                                                                                                                     
+       POST  |  /v2/management/currencies/list(.:format)             |    |  Return currencies list.                                                                                                                                                                                                
+       POST  |  /v2/management/currencies/create(.:format)           |    |  Create currency.                                                                                                                                                                                                       
+       POST  |  /v2/management/currencies/:code(.:format)            |    |  Returns currency by code.                                                                                                                                                                                              
+        PUT  |  /v2/management/currencies/update(.:format)           |    |  Update currency.                                                                                                                                                                                                       
+       POST  |  /v2/management/markets/new(.:format)                 |    |  Create market.                                                                                                                                                                                                         
+        PUT  |  /v2/management/markets/update(.:format)              |    |  Update market.                                                                                                                                                                                                         
+       POST  |  /v2/management/markets/list(.:format)                |    |  Return list of the markets.                                                                                                                                                                                            
+       POST  |  /v2/management/markets/:symbol(.:format)             |    |  Returns market by symbol.                                                                                                                                                                                              
+       POST  |  /v2/management/beneficiaries/list(.:format)          |    |  Get list of user beneficiaries                                                                                                                                                                                         
+       POST  |  /v2/management/beneficiaries(.:format)               |    |  Create new beneficiary                                                                                                                                                                                                 
+       POST  |  /v2/management/deposit_address/new(.:format)         |    |  Create payment address                                                                                                                                                                                                 
+       POST  |  /v2/management/engines/get(.:format)                 |    |  Get all engine, result is paginated.                                                                                                                                                                                   
+       POST  |  /v2/management/engines/new(.:format)                 |    |  Creates new engine                                                                                                                                                                                                     
+       POST  |  /v2/management/engines/update(.:format)              |    |  Update engine                                                                                                                                                                                                          
+       POST  |  /v2/management/wallets/new(.:format)                 |    |  Creates new wallet.                                                                                                                                                                                                    
+       POST  |  /v2/management/wallets/update(.:format)              |    |  Update wallet.                                                                                                                                                                                                         
+       POST  |  /v2/management/wallets(.:format)                     |    |  Get all wallets, result is paginated.                                                                                                                                                                                  
+       POST  |  /v2/management/wallets/:id(.:format)                 |    |  Get a wallet.                                                                                                                                                                                                          
+        GET  |  /v2/management/swagger(.:format)                     |    |  Swagger compatible API description                                                                                                                                                                                     
+        GET  |  /v2/management/swagger/:name(.:format)               |    |  Swagger compatible API description for specific API                                                                                                                                                                    
+        GET  |  /v2/admin/orders(.:format)                           |    |  Get all orders, result is paginated.                                                                                                                                                                                   
+       POST  |  /v2/admin/orders/:id/cancel(.:format)                |    |  Cancel an order.                                                                                                                                                                                                       
+       POST  |  /v2/admin/orders/cancel(.:format)                    |    |  Cancel all orders.                                                                                                                                                                                                     
+        GET  |  /v2/admin/blockchains(.:format)                      |    |  Get all blockchains, result is paginated.                                                                                                                                                                              
+        GET  |  /v2/admin/blockchains/clients(.:format)              |    |  Get available blockchain clients.                                                                                                                                                                                      
+        GET  |  /v2/admin/blockchains/:id(.:format)                  |    |  Get a blockchain.                                                                                                                                                                                                      
+        GET  |  /v2/admin/blockchains/:id/latest_block(.:format)     |    |  Get a latest blockchain block.                                                                                                                                                                                         
+        GET  |  /v2/admin/currencies(.:format)                       |    |  Get list of currencies                                                                                                                                                                                                 
+        GET  |  /v2/admin/currencies/:code(.:format)                 |    |  Get a currency.                                                                                                                                                                                                        
+       POST  |  /v2/admin/currencies/new(.:format)                   |    |  Create new currency.                                                                                                                                                                                                   
+       POST  |  /v2/admin/currencies/update(.:format)                |    |  Update currency.                                                                                                                                                                                                       
+        GET  |  /v2/admin/markets(.:format)                          |    |  Get all markets, result is paginated.                                                                                                                                                                                  
+        GET  |  /v2/admin/markets/:symbol(.:format)                  |    |  Get market.                                                                                                                                                                                                            
+       POST  |  /v2/admin/markets/new(.:format)                      |    |  Create new market.                                                                                                                                                                                                     
+       POST  |  /v2/admin/markets/update(.:format)                   |    |  Update market.                                                                                                                                                                                                         
+        GET  |  /v2/admin/wallets(.:format)                          |    |  Get all wallets, result is paginated.                                                                                                                                                                                  
+        GET  |  /v2/admin/wallets/kinds(.:format)                    |    |  List wallet kinds.                                                                                                                                                                                                     
+        GET  |  /v2/admin/wallets/:id(.:format)                      |    |  Get a wallet.                                                                                                                                                                                                          
+       POST  |  /v2/admin/wallets/new(.:format)                      |    |  Creates new wallet.                                                                                                                                                                                                    
+       POST  |  /v2/admin/wallets/update(.:format)                   |    |  Update wallet.                                                                                                                                                                                                         
+       POST  |  /v2/admin/wallets/currencies(.:format)               |    |  Add currency to the wallet                                                                                                                                                                                             
+     DELETE  |  /v2/admin/wallets/currencies(.:format)               |    |  Delete currency from the wallet                                                                                                                                                                                        
+        GET  |  /v2/admin/deposits(.:format)                         |    |  Get all deposits, result is paginated.                                                                                                                                                                                 
+       POST  |  /v2/admin/deposits/actions(.:format)                 |    |  Take an action on the deposit.                                                                                                                                                                                         
+       POST  |  /v2/admin/deposits/new(.:format)                     |    |  Creates new fiat deposit .                                                                                                                                                                                             
+       POST  |  /v2/admin/deposits/:id/refund(.:format)              |    |  Creates new crypto refund                                                                                                                                                                                              
+       POST  |  /v2/admin/deposit_address(.:format)                  |    |  Returns deposit address for account you want to deposit to by currency and uid.                                                                                                                                        
+        GET  |  /v2/admin/withdraws(.:format)                        |    |  Get all withdraws, result is paginated.                                                                                                                                                                                
+        GET  |  /v2/admin/withdraws/:id(.:format)                    |    |  Get withdraw by ID.                                                                                                                                                                                                    
+       POST  |  /v2/admin/withdraws/actions(.:format)                |    |  Take an action on the withdrawal.                                                                                                                                                                                      
+        PUT  |  /v2/admin/withdraws(.:format)                        |    |  Update withdraw request                                                                                                                                                                                                
+        GET  |  /v2/admin/trades(.:format)                           |    |  Get all trades, result is paginated.                                                                                                                                                                                   
+        GET  |  /v2/admin/trades/:id(.:format)                       |    |  Get a trade with detailed information.                                                                                                                                                                                 
+        GET  |  /v2/admin/assets(.:format)                           |    |  Returns assets as a paginated collection.                                                                                                                                                                              
+        GET  |  /v2/admin/expenses(.:format)                         |    |  Returns expenses as a paginated collection.                                                                                                                                                                            
+        GET  |  /v2/admin/revenues(.:format)                         |    |  Returns revenues as a paginated collection.                                                                                                                                                                            
+        GET  |  /v2/admin/liabilities(.:format)                      |    |  Returns liabilities as a paginated collection.                                                                                                                                                                         
+        GET  |  /v2/admin/members(.:format)                          |    |  Get all members, result is paginated.                                                                                                                                                                                  
+        GET  |  /v2/admin/members/groups(.:format)                   |    |  Get available members groups.                                                                                                                                                                                          
+        GET  |  /v2/admin/members/:uid(.:format)                     |    |  Get a member.                                                                                                                                                                                                          
+        PUT  |  /v2/admin/members/:uid(.:format)                     |    |  Set user group.                                                                                                                                                                                                        
+        GET  |  /v2/admin/trading_fees(.:format)                     |    |  Returns trading_fees table as paginated collection                                                                                                                                                                     
+       POST  |  /v2/admin/trading_fees/new(.:format)                 |    |  It creates trading fees record                                                                                                                                                                                         
+       POST  |  /v2/admin/trading_fees/update(.:format)              |    |  It updates trading fees record                                                                                                                                                                                         
+       POST  |  /v2/admin/trading_fees/delete(.:format)              |    |  It deletes trading fees record                                                                                                                                                                                         
+        GET  |  /v2/admin/adjustments(.:format)                      |    |  Get all adjustments, result is paginated.                                                                                                                                                                              
+        GET  |  /v2/admin/adjustments/:id(.:format)                  |    |  Get adjustment by ID                                                                                                                                                                                                   
+       POST  |  /v2/admin/adjustments/new(.:format)                  |    |  Create new adjustment.                                                                                                                                                                                                 
+       POST  |  /v2/admin/adjustments/action(.:format)               |    |  Accepts adjustment and creates operations or reject adjustment.                                                                                                                                                        
+        GET  |  /v2/admin/engines(.:format)                          |    |  Get all engine, result is paginated.                                                                                                                                                                                   
+        GET  |  /v2/admin/engines/:id(.:format)                      |    |  Get engine.                                                                                                                                                                                                            
+       POST  |  /v2/admin/engines/new(.:format)                      |    |  Create new engine.                                                                                                                                                                                                     
+       POST  |  /v2/admin/engines/update(.:format)                   |    |  Update engine                                                                                                                                                                                                          
+        GET  |  /v2/admin/beneficiaries(.:format)                    |    |  Get list of beneficiaries                                                                                                                                                                                              
+       POST  |  /v2/admin/beneficiaries/actions(.:format)            |    |  Take an action on the beneficiary                                                                                                                                                                                      
+        GET  |  /v2/admin/abilities(.:format)                        |    |  Get all roles and permissions.                                                                                                                                                                                         
+        GET  |  /v2/admin/swagger(.:format)                          |    |  Swagger compatible API description                                                                                                                                                                                     
+        GET  |  /v2/admin/swagger/:name(.:format)                    |    |  Swagger compatible API description for specific API                                                                                                                                                                    
