@@ -48,6 +48,10 @@ class AbstractGateway
     false
   end
 
+  def self.supports_invoice?
+    false
+  end
+
   def latest_block_number
     nil
   end

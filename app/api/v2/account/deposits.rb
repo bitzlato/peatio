@@ -25,7 +25,7 @@ module API
           currency = Currency.find(params[:currency])
 
           error!({ errors: ['management.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
-
+          error!({ errors: ['management.currency.invoice_disabled'] }, 422) unless currency.enable_invoice?
           error!({ errors: ['account.deposit.invalid_amount'] }, 422) if params[:amount] < currency.min_deposit_amount
 
           deposit = Deposit.create!(

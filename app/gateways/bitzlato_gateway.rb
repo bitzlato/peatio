@@ -8,6 +8,10 @@ class BitzlatoGateway < AbstractGateway
     false
   end
 
+  def self.supports_invoice?
+    true
+  end
+
   def self.valid_address?(address)
     return false if BitcoinGateway.valid_address?(address)
 
