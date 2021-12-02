@@ -20,9 +20,10 @@ set :systemd_amqp_daemon_instances,
       trade_executor
       matching
       order_processor
+      order_cancellator
     ]
 
-server '51.91.62.13',
+server ENV.fetch('STAGING_SERVER'),
        user: fetch(:user),
        port: '22',
        roles: %w[app db daemons amqp_daemons].freeze,
