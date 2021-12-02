@@ -1207,10 +1207,14 @@ CREATE TABLE public.swap_orders (
     member_id bigint NOT NULL,
     market_id character varying(20) NOT NULL,
     state integer NOT NULL,
-    price numeric(32,16) NOT NULL,
-    volume numeric(32,16) NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    from_volume numeric(36,18),
+    to_volume numeric(36,18),
+    request_unit character varying NOT NULL,
+    request_volume numeric(36,18),
+    request_price numeric(36,18),
+    inverse_price numeric(36,18)
 );
 
 
@@ -3252,4 +3256,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211112205804'),
 ('20211116054502'),
 ('20211122110601'),
-('20211203102904');
+('20211203102904'),
+('20211129094431'),
+('20211130120940'),
+('20211202223416');

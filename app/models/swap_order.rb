@@ -9,6 +9,7 @@ class SwapOrder < ApplicationRecord
 
   belongs_to :from_currency, class_name: 'Currency', foreign_key: :from_unit, inverse_of: false
   belongs_to :to_currency, class_name: 'Currency', foreign_key: :to_unit, inverse_of: false
+  belongs_to :request_currency, class_name: 'Currency', foreign_key: :request_unit, inverse_of: false
   belongs_to :order, dependent: false, inverse_of: false
   belongs_to :market, primary_key: :symbol, optional: false, inverse_of: false
   belongs_to :member, optional: false, inverse_of: :swap_orders
@@ -21,21 +22,21 @@ class SwapOrder < ApplicationRecord
   scope :weekly, -> { where(created_at: DateTime.current.all_week) }
   scope :for_member, ->(member) { where(member: member) }
 
-  validates :price, :volume, presence: true
+  # validate :price, :volume, presence: true
 
   def self.daily_amount_for(member)
     SwapOrder.daily
              .with_state(:pending, :wait)
              .for_member(member)
-             .joins(:from_currency)
-             .sum('currencies.price * volume').to_d
+             .joins(:request_currency)
+             .sum('currencies.price * request_volume').to_d
   end
 
   def self.weekly_amount_for(member)
     SwapOrder.weekly
              .with_state(:pending, :wait)
              .for_member(member)
-             .joins(:from_currency)
-             .sum('currencies.price * volume').to_d
+             .joins(:request_currency)
+             .sum('currencies.price * request_volume').to_d
   end
 end
