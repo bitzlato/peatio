@@ -9,11 +9,11 @@ module CurrencyServices
                              :request_volume, :request_price, :inverse_price,
                              :from_volume, :to_volume)
 
-    def initialize(from_currency:, to_currency:, volume_currency:, volume:)
+    def initialize(from_currency:, to_currency:, request_currency:, request_volume:)
       @from_currency = from_currency
       @to_currency = to_currency
-      @volume_currency = volume_currency
-      @volume = volume.to_d
+      @request_currency = request_currency
+      @request_volume = request_volume.to_d
     end
 
     def market
@@ -53,6 +53,10 @@ module CurrencyServices
       end
     end
 
+    def volume
+      market_amount
+    end
+
     def inverse_price
       (1 / price).to_d.round(8)
     end
@@ -65,33 +69,32 @@ module CurrencyServices
       @price_object ||= PriceObject.new.tap do |price_obj|
         price_obj[:from_currency]     = @from_currency
         price_obj[:to_currency]       = @to_currency
-        price_obj[:request_currency]  = @volume_currency
-        price_obj[:request_volume]    = @volume
+        price_obj[:request_currency]  = @request_currency
+        price_obj[:request_volume]    = @request_volume
 
-        if @volume_currency == market.base
+        if @request_currency == market.base
           price_obj[:request_price] = price
           price_obj[:inverse_price] = inverse_price
-          if @volume_currency == @from_currency
-            price_obj[:from_volume] = @volume
-            price_obj[:to_volume] = market.round_amount(price * @volume)
-          elsif @volume_currency == @to_currency
-            price_obj[:from_volume] = market.round_amount(inverse_price * @volume)
-            price_obj[:to_volume] = @volume
+          if @request_currency == @from_currency
+            price_obj[:from_volume] = @request_volume
+            price_obj[:to_volume] = market.round_amount(price * @request_volume)
+          elsif @request_currency == @to_currency
+            price_obj[:from_volume] = market.round_amount(inverse_price * @request_volume)
+            price_obj[:to_volume] = @request_volume
           end
-        elsif @volume_currency == market.quote
+        elsif @request_currency == market.quote
           price_obj[:request_price] = inverse_price
           price_obj[:inverse_price] = price
-          if @volume_currency == @from_currency
-            price_obj[:from_volume] = @volume
-            price_obj[:to_volume] = market.round_amount(inverse_price * @volume)
-          elsif @volume_currency == @to_currency
-            price_obj[:from_volume] = market.round_amount(price * @volume)
-            price_obj[:to_volume] = @volume
+          if @request_currency == @from_currency
+            price_obj[:from_volume] = @request_volume
+            price_obj[:to_volume] = market.round_amount(inverse_price * @request_volume)
+          elsif @request_currency == @to_currency
+            price_obj[:from_volume] = market.round_amount(price * @request_volume)
+            price_obj[:to_volume] = @request_volume
           end
         end
       end
     end
-
 
     # Return prices and amounts
     # automaticaly convert amount in quote to base
@@ -101,34 +104,34 @@ module CurrencyServices
       return @raw_market_prices_with_amounts if @raw_market_prices_with_amounts
 
       market_depth = sell? ? OrderBid.get_depth(market.symbol) : OrderAsk.get_depth(market.symbol)
-      volume = @volume.dup
+      volume = @request_volume.dup
 
-      @raw_market_prices_with_amounts = if market.base == @volume_currency
-        market_depth.each_with_object([]) do |(p, v), arr|
-          if volume <= v
-            arr << [p, volume]
-            volume = 0
-          else
-            arr << [p, v]
-            volume -= v
-          end
-          break arr if volume.zero?
-        end
-      elsif market.quote == @volume_currency
-        market_depth.each_with_object([]) do |(p, v), arr|
-          converted_volume = (1 / p) * volume
-          if converted_volume <= v
-            arr << [p, converted_volume]
-            volume = 0
-          else
-            arr << [p, v]
-            volume -= (converted_volume - v) * p
-          end
-          break arr if volume.zero?
-        end
-      else
-        raise "Volume currency must be a #{market.base_unit} or #{market.quote_unit}"
-      end
+      @raw_market_prices_with_amounts = if market.base == @request_currency
+                                          market_depth.each_with_object([]) do |(p, v), arr|
+                                            if volume <= v
+                                              arr << [p, volume]
+                                              volume = 0
+                                            else
+                                              arr << [p, v]
+                                              volume -= v
+                                            end
+                                            break arr if volume.zero?
+                                          end
+                                        elsif market.quote == @request_currency
+                                          market_depth.each_with_object([]) do |(p, v), arr|
+                                            converted_volume = (1 / p) * volume
+                                            if converted_volume <= v
+                                              arr << [p, converted_volume]
+                                              volume = 0
+                                            else
+                                              arr << [p, v]
+                                              volume -= (converted_volume - v) * p
+                                            end
+                                            break arr if volume.zero?
+                                          end
+                                        else
+                                          raise "Volume currency must be a #{market.base_unit} or #{market.quote_unit}"
+                                        end
     end
 
     def market_amount
@@ -137,8 +140,8 @@ module CurrencyServices
 
     def market_price
       @market_price ||= raw_market_prices_with_amounts.yield_self do |arr|
-                          arr.sum { |price, volume| price * volume } / market_amount
-                        end
+                                                        arr.sum { |price, volume| price * volume } / market_amount
+                                                      end
     end
   end
 end

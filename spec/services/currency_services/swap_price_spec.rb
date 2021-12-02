@@ -19,7 +19,7 @@ RSpec.describe CurrencyServices::SwapPrice do
     let(:volume) { market.round_amount(request_volume * price) }
 
     context 'when volume_currency is from_currency' do
-      subject { described_class.new(from_currency: from_currency, to_currency: to_currency, volume_currency: from_currency, volume: request_volume) }
+      subject { described_class.new(from_currency: from_currency, to_currency: to_currency, request_currency: from_currency, request_volume: request_volume) }
 
       it { expect(subject.market).to eq(market) }
       it { expect(subject.market?).to be(true) }
@@ -49,7 +49,7 @@ RSpec.describe CurrencyServices::SwapPrice do
     end
 
     context 'when volume_currency is to_currency' do
-      subject { described_class.new(from_currency: from_currency, to_currency: to_currency, volume_currency: to_currency, volume: request_volume) }
+      subject { described_class.new(from_currency: from_currency, to_currency: to_currency, request_currency: to_currency, request_volume: request_volume) }
 
       it { expect(subject.market).to eq(market) }
       it { expect(subject.market?).to be(true) }
@@ -85,7 +85,7 @@ RSpec.describe CurrencyServices::SwapPrice do
     let(:volume) { market.round_amount(request_volume * inverse_price) }
 
     context 'when volume_currency is from_currency' do
-      subject { described_class.new(from_currency: to_currency, to_currency: from_currency, volume_currency: to_currency, volume: request_volume) }
+      subject { described_class.new(from_currency: to_currency, to_currency: from_currency, request_currency: to_currency, request_volume: request_volume) }
 
       it { expect(subject.market).to eq(market) }
       it { expect(subject.market?).to be(true) }
@@ -115,7 +115,7 @@ RSpec.describe CurrencyServices::SwapPrice do
     end
 
     context 'when volume_currency is to_currency' do
-      subject { described_class.new(from_currency: to_currency, to_currency: from_currency, volume_currency: from_currency, volume: request_volume) }
+      subject { described_class.new(from_currency: to_currency, to_currency: from_currency, request_currency: from_currency, request_volume: request_volume) }
 
       it { expect(subject.market).to eq(market) }
       it { expect(subject.market?).to be(true) }
