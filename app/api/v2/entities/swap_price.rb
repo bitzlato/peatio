@@ -20,6 +20,22 @@ module API
             desc: 'Reverse price.'
           }
         )
+
+        expose(
+          :request_volume,
+          documentation: {
+            type: BigDecimal,
+            desc: 'Request volume.'
+          }
+        )
+
+        expose(
+          :inverse_volume,
+          documentation: {
+            type: BigDecimal,
+            desc: 'Inversevolume.'
+          }
+        )
       end
     end
   end
