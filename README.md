@@ -3,9 +3,9 @@
 ![Cryptocurrency Exchange Platform - Baseapp](https://github.com/openware/meta/raw/main/images/github_peatio.png)
 
 <h3 align="center">
-<a href="https://www.openware.com/sdk/docs.html#peatio">Guide</a> <span>&vert;</span> 
-<a href="https://www.openware.com/sdk/api/peatio/peatio-user-api-v2.html">API Docs</a> <span>&vert;</span> 
-<a href="https://www.openware.com/">Consulting</a> <span>&vert;</span> 
+<a href="https://www.openware.com/sdk/docs.html#peatio">Guide</a> <span>&vert;</span>
+<a href="https://www.openware.com/sdk/api/peatio/peatio-user-api-v2.html">API Docs</a> <span>&vert;</span>
+<a href="https://www.openware.com/">Consulting</a> <span>&vert;</span>
 <a href="https://t.me/peatio">Community</a>
 </h3>
 <h6 align="center">Component part of <a href="https://github.com/openware/opendax">OpenDAX Trading Platform</a></h6>
@@ -127,7 +127,7 @@ Otherwise we advice to use [microkube based environment](#local-development-envi
 <YOUR_LOCAL_IP> peatio.local
 <YOUR_LOCAL_IP> ws.local
 ```
-4. Start rails server `JWT_PUBLIC_KEY=$(cat config/secrets/rsa-key.pub| base64 -w0) rails s -b 0.0.0.0` 
+4. Start rails server `JWT_PUBLIC_KEY=$(cat config/secrets/rsa-key.pub| base64 -w0) rails s -b 0.0.0.0`
 (`base64 -b0` for macOS)
 
 
@@ -188,10 +188,17 @@ You can interact with Peatio through API:
 * Websocket API
 * Event API (AMQP)
 
+
+# Update grape_routes
+
+```
+bundle exec rails grape:save_routes
+```
+
 ## Deployment with capistrano
 
 ```
-bundle exec cap production deploy:check 
+bundle exec cap production deploy:check
 scp .env.production app@$PRODUCTION_SERVER:/home/app/peatio/shared/.env
 scp .env.daemons.production app@$PRODUCTION_SERVER:/home/app/peatio/shared/.env.daemons
 bundle exec cap production deploy:check systemd:puma:setup systemd:daemon:setup systemd:amqp_daemon:setup puma:config
