@@ -76,6 +76,10 @@ module CurrencyServices
       end
     end
 
+    def inverse_volume
+      market.round_amount(request_volume * request_price)
+    end
+
     def valid_price?(price)
       ((request_price - price) / price).abs.round(PRICE_DEVIATION_PRECISION) <= PRICE_DEVIATION
     end
