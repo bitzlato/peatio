@@ -8,10 +8,11 @@ describe OrderServices::CreateSwapOrder do
   let(:service) { described_class.new(member: member) }
   let(:default_params) do
     {
-      market: market,
       from_currency: market.base,
       to_currency: market.quote,
-      volume: '1'.to_d
+      request_currency: market.base,
+      request_volume: '1'.to_d,
+      price: reference_price
     }
   end
 
@@ -43,7 +44,8 @@ describe OrderServices::CreateSwapOrder do
 
   describe '#perform' do
     before do
-      CurrencyServices::SwapPrice.any_instance.stubs(:price).returns(reference_price)
+      OrderBid.stubs(:get_depth).returns([[reference_price, 100.to_d]])
+      OrderAsk.stubs(:get_depth).returns([[reference_price, 100.to_d]])
     end
 
     context 'change btc to usd' do
@@ -52,8 +54,9 @@ describe OrderServices::CreateSwapOrder do
           {
             from_currency: market.base,
             to_currency: market.quote,
-            volume: '1'.to_d,
-            price: reference_price.to_d
+            request_currency: market.base,
+            request_volume: '1'.to_d,
+            price: reference_price
           }
         end
       end
@@ -65,8 +68,9 @@ describe OrderServices::CreateSwapOrder do
           {
             from_currency: market.quote,
             to_currency: market.base,
-            volume: '5'.to_d,
-            price: market.round_price(1 / reference_price).to_d
+            request_currency: market.base,
+            request_volume: '1'.to_d,
+            price: reference_price
           }
         end
       end
@@ -82,7 +86,8 @@ describe OrderServices::CreateSwapOrder do
         {
           from_currency: market.base,
           to_currency: market.quote,
-          volume: '1'.to_d,
+          request_currency: market.base,
+          request_volume: '1'.to_d,
           price: reference_price
         }
       end
@@ -101,13 +106,13 @@ describe OrderServices::CreateSwapOrder do
       end
 
       it 'order limit has been reached out' do
-        result = service.perform(**params.merge({ volume: daily_limit + 1 }))
+        result = service.perform(**params.merge({ request_volume: daily_limit + 1 }))
         expect(result).to be_failed
         expect(result.errors.first).to eq 'market.swap_order.reached_daily_limit'
       end
 
       it 'daily limit has been reached out' do
-        create :swap_order_bid, :btc_usd, member: member, volume: daily_limit
+        create :swap_order_bid, :btc_usd, member: member, request_volume: daily_limit
 
         result = service.perform(**params)
         expect(result).to be_failed
@@ -117,7 +122,7 @@ describe OrderServices::CreateSwapOrder do
       it 'weekly limit has been reached out' do
         date = Date.current.end_of_week
         Timecop.freeze(date) do
-          create :swap_order_bid, :btc_usd, member: member, volume: weekly_limit, created_at: DateTime.yesterday
+          create :swap_order_bid, :btc_usd, member: member, request_volume: weekly_limit, created_at: DateTime.yesterday
 
           result = service.perform(**params)
           expect(result).to be_failed
