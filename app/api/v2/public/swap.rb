@@ -16,20 +16,27 @@ module API
           requires :to_currency,
                    values: { value: -> { ::Currency.ids }, message: 'market.currency_doesnt_exist' },
                    desc: -> { API::V2::Management::Entities::Market.documentation[:quote_unit][:desc] }
-          requires :volume,
+          requires :request_currency,
+                   values: { value: -> { ::Currency.ids }, message: 'market.currency_doesnt_exist' },
+                   desc: -> { API::V2::Management::Entities::Market.documentation[:quote_unit][:desc] }
+          requires :request_volume,
                    type: { value: BigDecimal, message: 'market.swap_order.non_decimal_volume' },
                    values: { value: ->(v) { v.try(:positive?) }, message: 'market.swap_order.non_positive_volume' }
         end
         get '/swap/price' do
           from_currency = ::Currency.find(params[:from_currency])
           to_currency = ::Currency.find(params[:to_currency])
+          request_currency = ::Currency.find(params[:request_currency])
 
-          swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency, request_volume: params[:volume])
+          swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency,
+                                                               request_currency: request_currency, request_volume: params[:request_volume])
 
           error!({ errors: ['market.swap.no_appropriate_market'] }, 422) unless swap_price_service.market?
-          error!({ errors: ['market.swap.no_swap_price'] }, 422) unless swap_price_service.request_price
 
-          present swap_price_service, with: API::V2::Entities::SwapPrice
+          price_object = swap_price_service.price_object
+          error!({ errors: ['market.swap.no_swap_price'] }, 422) unless price_object.request_price
+
+          present price_object, with: API::V2::Entities::SwapPrice
         end
 
         get '/swap/limits' do

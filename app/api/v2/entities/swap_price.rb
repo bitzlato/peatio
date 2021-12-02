@@ -5,19 +5,42 @@ module API
     module Entities
       class SwapPrice < Base
         expose(
-          :request_price,
-          as: :price,
+          :from_currency,
           documentation: {
-            type: BigDecimal,
-            desc: 'Price'
+            type: String,
+            desc: 'From currency id.'
           }
         )
 
         expose(
-          :inverse_price,
+          :from_volume,
           documentation: {
             type: BigDecimal,
-            desc: 'Reverse price.'
+            desc: 'From volume.'
+          }
+        )
+
+        expose(
+          :to_currency,
+          documentation: {
+            type: String,
+            desc: 'To currency id.'
+          }
+        )
+
+        expose(
+          :to_volume,
+          documentation: {
+            type: BigDecimal,
+            desc: 'To volume.'
+          }
+        )
+
+        expose(
+          :request_currency,
+          documentation: {
+            type: String,
+            desc: 'Request currency id.'
           }
         )
 
@@ -30,12 +53,34 @@ module API
         )
 
         expose(
-          :inverse_volume,
+          :request_price,
           documentation: {
             type: BigDecimal,
-            desc: 'Inversevolume.'
+            desc: 'Request price.'
           }
         )
+
+        expose(
+          :inverse_price,
+          documentation: {
+            type: BigDecimal,
+            desc: 'Request price.'
+          }
+        )
+
+        private
+
+        def from_currency
+          object.from_currency.id
+        end
+
+        def to_currency
+          object.to_currency.id
+        end
+
+        def request_currency
+          object.request_currency.id
+        end
       end
     end
   end
