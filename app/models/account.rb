@@ -25,6 +25,9 @@ class Account < ApplicationRecord
 
   ZERO = 0.to_d
 
+  before_validation on: :create do
+    self.category ||= 'spot'
+  end
   before_validation :assign_uid, on: :create
 
   validates :member_id, uniqueness: { scope: :currency_id }
