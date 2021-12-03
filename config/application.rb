@@ -17,7 +17,8 @@ module Peatio
 
     config.autoload_paths += Dir[
       "#{config.root}/db/migrate/concerns/**/",
-      "#{config.root}/app/gateways"
+      "#{config.root}/app/gateways",
+      "#{config.root}/app/services"
     ]
 
     # Eager load constants from lib/peatio

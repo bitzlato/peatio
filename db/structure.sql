@@ -101,8 +101,30 @@ CREATE TABLE public.accounts (
     balance numeric(36,18) DEFAULT 0 NOT NULL,
     locked numeric(36,18) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    category character varying NOT NULL,
+    id bigint NOT NULL,
+    uid character varying NOT NULL
 );
+
+
+--
+-- Name: accounts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.accounts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: accounts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.accounts_id_seq OWNED BY public.accounts.id;
 
 
 --
@@ -407,10 +429,10 @@ CREATE TABLE public.blockchains (
     height_updated_at timestamp without time zone,
     client_version character varying,
     high_transaction_price_at timestamp without time zone,
-    address_type character varying,
     disable_collection boolean DEFAULT false NOT NULL,
-    allowance_enabled boolean DEFAULT false NOT NULL,
-    chain_id integer
+    address_type character varying,
+    chain_id integer,
+    allowance_enabled boolean DEFAULT false NOT NULL
 );
 
 
@@ -838,7 +860,7 @@ CREATE TABLE public.member_groups (
     id bigint NOT NULL,
     key character varying(25) NOT NULL,
     open_orders_limit integer DEFAULT 1 NOT NULL,
-    rates_limits jsonb DEFAULT '{"minut": 100, "second": 10}'::jsonb NOT NULL,
+    rates_limits jsonb DEFAULT '{"minit": 100, "second": 10}'::jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -1007,9 +1029,9 @@ CREATE TABLE public.payment_addresses (
     details_encrypted character varying(1024),
     member_id bigint,
     remote boolean DEFAULT false NOT NULL,
-    blockchain_id bigint NOT NULL,
     balances jsonb DEFAULT '{}'::jsonb,
     balances_updated_at timestamp without time zone,
+    blockchain_id bigint NOT NULL,
     collection_state character varying DEFAULT 'none'::character varying NOT NULL,
     collected_at timestamp without time zone,
     gas_refueled_at timestamp without time zone,
@@ -1369,8 +1391,8 @@ CREATE TABLE public.wallets (
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
-    plain_settings json,
     enable_invoice boolean DEFAULT false NOT NULL,
+    plain_settings json,
     blockchain_id bigint NOT NULL,
     use_as_fee_source boolean DEFAULT false NOT NULL,
     balance_updated_at timestamp without time zone
@@ -1515,6 +1537,13 @@ CREATE SEQUENCE public.withdraws_id_seq
 --
 
 ALTER SEQUENCE public.withdraws_id_seq OWNED BY public.withdraws.id;
+
+
+--
+-- Name: accounts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.accounts ALTER COLUMN id SET DEFAULT nextval('public.accounts_id_seq'::regclass);
 
 
 --
@@ -1760,7 +1789,7 @@ ALTER TABLE ONLY public.withdraws ALTER COLUMN id SET DEFAULT nextval('public.wi
 --
 
 ALTER TABLE ONLY public.accounts
-    ADD CONSTRAINT accounts_pkey PRIMARY KEY (currency_id, member_id);
+    ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
 
 
 --
@@ -2060,6 +2089,13 @@ ALTER TABLE ONLY public.withdraws
 
 
 --
+-- Name: index_accounts_on_category_and_currency_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_accounts_on_category_and_currency_id ON public.accounts USING btree (category, currency_id);
+
+
+--
 -- Name: index_accounts_on_currency_id_and_member_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2067,10 +2103,24 @@ CREATE UNIQUE INDEX index_accounts_on_currency_id_and_member_id ON public.accoun
 
 
 --
+-- Name: index_accounts_on_currency_id_and_member_id_and_category; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_accounts_on_currency_id_and_member_id_and_category ON public.accounts USING btree (currency_id, member_id, category);
+
+
+--
 -- Name: index_accounts_on_member_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_accounts_on_member_id ON public.accounts USING btree (member_id);
+
+
+--
+-- Name: index_accounts_on_uid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_accounts_on_uid ON public.accounts USING btree (uid);
 
 
 --
@@ -2543,6 +2593,13 @@ CREATE INDEX index_orders_on_updated_at ON public.orders USING btree (updated_at
 
 
 --
+-- Name: index_orders_on_uuid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_orders_on_uuid ON public.orders USING btree (uuid);
+
+
+--
 -- Name: index_payment_addresses_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2917,7 +2974,7 @@ ALTER TABLE ONLY public.deposit_spreads
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -3053,6 +3110,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200414155144'),
 ('20200420141636'),
 ('20200504183201'),
+('20200513153429'),
 ('20200527130534'),
 ('20200603164002'),
 ('20200622185615'),
@@ -3098,6 +3156,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210722125206'),
 ('20210727101029'),
 ('20210803084921'),
+('20210803134756'),
 ('20210806112457'),
 ('20210806112458'),
 ('20210806131828'),
@@ -3162,7 +3221,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211025132500'),
 ('20211026141101'),
 ('20211112205804'),
+('20211115144629'),
 ('20211116054502'),
-('20211203102904');
+('20211203102904'),
+('20211203165730'),
+('20211203172545');
 
 

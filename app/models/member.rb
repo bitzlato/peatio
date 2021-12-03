@@ -21,8 +21,18 @@ class Member < ApplicationRecord
   validates :email, allow_blank: true, uniqueness: true, email: true
   validates :level, numericality: { greater_than_or_equal_to: 0 }
   validates :role, inclusion: { in: ::Ability.roles }
-
   before_create { self.group = group.strip.downcase }
+
+  # Затормаживает создание пользователей но необходимодля проверки работоспособности нескольких аккаунтов
+  #
+  after_create do
+    Account::CATEGORIES.find_each do  |category|
+      Currency.find_each do |currency|
+        get_account currency, category
+      end
+    end
+  end if Rails.env.production?
+
   after_create { AirdropService.new(self).perform if ENV.true? 'AUTO_AIRDROP_FOR_NEW_MEMBERS' }
 
   delegate :open_orders_limit, :rates_limits, to: :mandatory_member_group
@@ -49,29 +59,20 @@ class Member < ApplicationRecord
     role == 'admin'
   end
 
-  def get_account(model_or_id_or_code)
+  def get_account(model_or_id_or_code, category='spot')
     case model_or_id_or_code
     when String, Symbol
-      accounts.find_or_create_by(currency_id: model_or_id_or_code)
+      accounts.find_or_create_by(category: category, currency_id: model_or_id_or_code)
     when Currency
-      accounts.find_or_create_by(currency: model_or_id_or_code)
+      accounts.find_or_create_by(category: category, currency: model_or_id_or_code)
     end
   # Thread Safe Account creation
   rescue ActiveRecord::RecordNotUnique
     case model_or_id_or_code
     when String, Symbol
-      accounts.find_by(currency_id: model_or_id_or_code)
+      accounts.find_by(category: category, currency_id: model_or_id_or_code)
     when Currency
-      accounts.find_by(currency: model_or_id_or_code)
-    end
-  end
-
-  # @deprecated
-  def touch_accounts
-    Currency.find_each do |currency|
-      next if accounts.exists?(currency: currency)
-
-      accounts.create!(currency: currency)
+      accounts.find_by(category: category, currency: model_or_id_or_code)
     end
   end
 
