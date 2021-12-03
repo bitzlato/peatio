@@ -56,6 +56,26 @@ module API
             type: 'boolean'
           }
         )
+
+        expose(
+          :limit_24_hour,
+          documentation: {
+            desc: '24-hour withdrawal limit',
+            type: BigDecimal
+          }
+        ) do |account, _options|
+          ::WithdrawLimit.for(kyc_level: account.member.level, group: account.member.group).limit_24_hour
+        end
+
+        expose(
+          :limit_1_month,
+          documentation: {
+            desc: '1-month withdrawal limit',
+            type: BigDecimal
+          }
+        ) do |account, _options|
+          ::WithdrawLimit.for(kyc_level: account.member.level, group: account.member.group).limit_1_month
+        end
       end
     end
   end

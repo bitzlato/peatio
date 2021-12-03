@@ -6,8 +6,10 @@ describe API::V2::Account::Balances, type: :request do
   let(:deposit_eth) { create(:deposit, :deposit_eth, member: member, amount: 30.5) }
   let(:withdraw) { create(:btc_withdraw, member: member, sum: 5) }
   let(:token) { jwt_for(member) }
+  let(:limit_1_month) { WithdrawLimit.for(kyc_level: member.level, group: member.group).limit_1_month }
+  let(:limit_24_hour) { WithdrawLimit.for(kyc_level: member.level, group: member.group).limit_24_hour }
 
-  let(:response_body) { { 'currency' => 'eth', 'balance' => '30.5', 'locked' => '0.0' } }
+  let(:response_body) { { 'currency' => 'eth', 'balance' => '30.5', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' } }
 
   before do
     Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['Operations::Account'] } })
@@ -40,12 +42,12 @@ describe API::V2::Account::Balances, type: :request do
         expect(response).to have_http_status :ok
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
-          { 'currency' => 'usd', 'balance' => '0.0', 'locked' => '0.0' },
-          { 'currency' => 'btc', 'balance' => '5.0', 'locked' => '5.0' },
-          { 'currency' => 'eth', 'balance' => '30.5', 'locked' => '0.0' },
-          { 'currency' => 'trst', 'balance' => '0.0', 'locked' => '0.0' },
-          { 'currency' => 'ring', 'balance' => '0.0', 'locked' => '0.0' },
-          { 'currency' => 'eur', 'balance' => '0.0', 'locked' => '0.0' }
+          { 'currency' => 'usd', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+          { 'currency' => 'btc', 'balance' => '5.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '5.0' },
+          { 'currency' => 'eth', 'balance' => '30.5', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+          { 'currency' => 'trst', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+          { 'currency' => 'ring', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+          { 'currency' => 'eur', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' }
         )
       end
 
@@ -61,12 +63,12 @@ describe API::V2::Account::Balances, type: :request do
           expect(response).to have_http_status :ok
           result = JSON.parse(response.body)
           expect(result).to contain_exactly(
-            { 'currency' => 'btc', 'balance' => '5.0', 'locked' => '5.0' },
-            { 'currency' => 'eth', 'balance' => '30.5', 'locked' => '0.0' },
-            { 'currency' => 'usd', 'balance' => '0.0', 'locked' => '0.0' },
-            { 'currency' => 'trst', 'balance' => '0.0', 'locked' => '0.0' },
-            { 'currency' => 'ring', 'balance' => '0.0', 'locked' => '0.0' },
-            { 'currency' => 'eur', 'balance' => '0.0', 'locked' => '0.0' }
+            { 'currency' => 'btc', 'balance' => '5.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '5.0' },
+            { 'currency' => 'eth', 'balance' => '30.5', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+            { 'currency' => 'usd', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+            { 'currency' => 'trst', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+            { 'currency' => 'ring', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+            { 'currency' => 'eur', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' }
           )
         end
       end
@@ -79,8 +81,8 @@ describe API::V2::Account::Balances, type: :request do
         expect(response).to have_http_status :ok
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
-          { 'currency' => 'btc', 'balance' => '5.0', 'locked' => '5.0' },
-          { 'currency' => 'eth', 'balance' => '30.5', 'locked' => '0.0' }
+          { 'currency' => 'btc', 'balance' => '5.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '5.0' },
+          { 'currency' => 'eth', 'balance' => '30.5', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' }
         )
       end
     end
@@ -92,12 +94,12 @@ describe API::V2::Account::Balances, type: :request do
         expect(response).to have_http_status :ok
         result = JSON.parse(response.body)
         expect(result).to contain_exactly(
-          { 'currency' => 'btc',  'balance' => '5.0',  'locked'  => '5.0' },
-          { 'currency' => 'eth',  'balance' => '30.5', 'locked'  => '0.0' },
-          { 'currency' => 'usd',  'balance' => '0.0',  'locked'  => '0.0' },
-          { 'currency' => 'trst',  'balance' => '0.0',  'locked'  => '0.0' },
-          { 'currency' => 'ring',  'balance' => '0.0',  'locked'  => '0.0' },
-          { 'currency' => 'eur', 'balance' => '0.0', 'locked' => '0.0' }
+          { 'currency' => 'btc', 'balance' => '5.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '5.0' },
+          { 'currency' => 'eth', 'balance' => '30.5', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+          { 'currency' => 'usd', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+          { 'currency' => 'trst', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+          { 'currency' => 'ring', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' },
+          { 'currency' => 'eur', 'balance' => '0.0', 'limit_1_month' => limit_1_month.to_s, 'limit_24_hour' => limit_24_hour.to_s, 'locked' => '0.0' }
         )
       end
     end

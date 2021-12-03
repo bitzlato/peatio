@@ -876,7 +876,7 @@ CREATE TABLE public.members (
     level integer NOT NULL,
     role character varying(16) NOT NULL,
     state character varying(16) NOT NULL,
-    "group" character varying(32) DEFAULT 'vip-0'::character varying NOT NULL,
+    "group" character varying(32) DEFAULT 'any'::character varying NOT NULL,
     username character varying,
     withdraw_disabled_at timestamp without time zone,
     withdraw_disabled_comment character varying,
@@ -3162,6 +3162,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211025132500'),
 ('20211026141101'),
 ('20211112205804'),
-('20211116054502');
+('20211116054502'),
+('20211203102904');
 
 
