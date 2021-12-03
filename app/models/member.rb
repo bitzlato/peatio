@@ -25,13 +25,15 @@ class Member < ApplicationRecord
 
   # Затормаживает создание пользователей но необходимодля проверки работоспособности нескольких аккаунтов
   #
-  after_create do
-    Account::CATEGORIES.find_each do  |category|
-      Currency.find_each do |currency|
-        get_account currency, category
+  if Rails.env.production?
+    after_create do
+      Account::CATEGORIES.find_each do |category|
+        Currency.find_each do |currency|
+          get_account currency, category
+        end
       end
     end
-  end if Rails.env.production?
+  end
 
   after_create { AirdropService.new(self).perform if ENV.true? 'AUTO_AIRDROP_FOR_NEW_MEMBERS' }
 
@@ -59,7 +61,7 @@ class Member < ApplicationRecord
     role == 'admin'
   end
 
-  def get_account(model_or_id_or_code, category='spot')
+  def get_account(model_or_id_or_code, category = 'spot')
     case model_or_id_or_code
     when String, Symbol
       accounts.find_or_create_by(category: category, currency_id: model_or_id_or_code)

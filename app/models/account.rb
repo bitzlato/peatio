@@ -4,12 +4,12 @@ class Account < ApplicationRecord
   class UIDGenerator
     def self.generate(prefix)
       loop do
-        uid = "%s%s" % [prefix.upcase, SecureRandom.hex(5).upcase]
+        uid = [prefix.upcase, SecureRandom.hex(5).upcase].join
         return uid if Account.where(uid: uid).empty?
       end
     end
   end
-  CATEGORIES = %w[spot main p2p]
+  CATEGORIES = %w[spot main p2p].freeze
 
   raise 'Categories must have unique first char' unless CATEGORIES.map(&:first).uniq.count == CATEGORIES.count
 
@@ -18,8 +18,8 @@ class Account < ApplicationRecord
   belongs_to :currency, optional: false
   belongs_to :member, optional: false
   has_one :blockchain, through: :currency
-  has_many :withdraws
-  has_many :deposits
+  has_many :withdraws, dependent: :restrict_with_exception
+  has_many :deposits, dependent: :restrict_with_exception
 
   acts_as_eventable prefix: 'account', on: %i[create update]
 
@@ -30,7 +30,7 @@ class Account < ApplicationRecord
   validates :member_id, uniqueness: { scope: :currency_id }
   validates :balance, :locked, numericality: { greater_than_or_equal_to: 0.to_d }
   validates :category, inclusion: { in: CATEGORIES }
-  validates :uid,         presence: true, uniqueness: true
+  validates :uid, presence: true, uniqueness: true
 
   scope :visible, -> { joins(:currency).merge(Currency.where(visible: true)) }
   scope :ordered, -> { joins(:currency).order(position: :asc) }
@@ -153,7 +153,7 @@ class Account < ApplicationRecord
   end
 
   def assign_uid
-    return unless uid.blank?
+    return if uid.present?
 
     self.uid = UIDGenerator.generate('A' + category.first.upcase)
   end
