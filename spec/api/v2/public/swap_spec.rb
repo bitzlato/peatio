@@ -18,6 +18,44 @@ describe API::V2::Public::Swap, type: :request do
                                               request_volume: '1.0',
                                               request_price: '15.1',
                                               inverse_price: (1 / '15.1'.to_d).round(8).to_s })
+
+      api_get '/api/v2/public/swap/price', params: { from_currency: market.base_unit, to_currency: market.quote_unit,
+                                                     request_currency: market.quote_unit, request_volume: '15.1'.to_d }
+
+      expect(response.code).to eq '200'
+      expect(response_body).to include_json({ from_currency: market.base_unit,
+                                              from_volume: market.round_amount(((1 / '15.1'.to_d).round(8) * 15.1).to_d).to_s,
+                                              to_currency: market.quote_unit,
+                                              to_volume: '15.1',
+                                              request_currency: market.quote_unit,
+                                              request_volume: '15.1',
+                                              request_price: '15.1',
+                                              inverse_price: (1 / '15.1'.to_d).round(8).to_s })
+
+      api_get '/api/v2/public/swap/price', params: { from_currency: market.quote_unit, to_currency: market.base_unit,
+                                                     request_currency: market.base_unit, request_volume: '1'.to_d }
+      expect(response.code).to eq '200'
+      expect(response_body).to include_json({ from_currency: market.quote_unit,
+                                              from_volume: '15.1',
+                                              to_currency: market.base_unit,
+                                              to_volume: '1.0',
+                                              request_currency: market.base_unit,
+                                              request_volume: '1.0',
+                                              request_price: (1 / '15.1'.to_d).round(8).to_s,
+                                              inverse_price: '15.1' })
+
+      api_get '/api/v2/public/swap/price', params: { from_currency: market.quote_unit, to_currency: market.base_unit,
+                                                     request_currency: market.quote_unit, request_volume: '15.1'.to_d }
+      expect(response.code).to eq '200'
+      expect(response_body).to include_json({ from_currency: market.quote_unit,
+                                              from_volume: '15.1',
+                                              to_currency: market.base_unit,
+                                              to_volume: market.round_amount(((1 / '15.1'.to_d).round(8) * 15.1).to_d).to_s,
+                                              request_currency: market.quote_unit,
+                                              request_volume: '15.1',
+                                              request_price: (1 / '15.1'.to_d).round(8).to_s,
+                                              inverse_price: '15.1' })
+
     end
 
     it 'return swap limits' do

@@ -70,7 +70,7 @@ describe OrderServices::CreateSwapOrder do
             to_currency: market.base,
             request_currency: market.base,
             request_volume: '1'.to_d,
-            price: reference_price
+            price: (1 / reference_price)
           }
         end
       end
