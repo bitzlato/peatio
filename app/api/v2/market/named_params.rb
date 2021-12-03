@@ -83,7 +83,10 @@ module API
           requires :to_currency,
                    values: { value: -> { ::Currency.ids }, message: 'market.currency_doesnt_exist' },
                    desc: -> { API::V2::Management::Entities::Market.documentation[:quote_unit][:desc] }
-          requires :volume,
+          requires :request_currency,
+                   values: { value: -> { ::Currency.ids }, message: 'market.currency_doesnt_exist' },
+                   desc: -> { API::V2::Management::Entities::Market.documentation[:request_unit][:desc] }
+          requires :request_volume,
                    type: { value: BigDecimal, message: 'market.swap_order.non_decimal_volume' },
                    values: { value: ->(v) { v.try(:positive?) }, message: 'market.swap_order.non_positive_volume' }
           requires :price,

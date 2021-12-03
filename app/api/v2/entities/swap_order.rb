@@ -13,15 +13,6 @@ module API
         )
 
         expose(
-          :price,
-          documentation: {
-            type: BigDecimal,
-            desc: 'Price for each unit. e.g.'\
-                  "If you want to sell/buy 1 btc at 3000 usd, the price is '3000.0'"
-          }
-        )
-
-        expose(
           :state,
           documentation: {
             type: String,
@@ -44,6 +35,70 @@ module API
           }
         )
 
+       expose(
+          :from_currency,
+          documentation: {
+            type: String,
+            desc: 'From currency id.'
+          }
+        )
+
+        expose(
+          :from_volume,
+          documentation: {
+            type: BigDecimal,
+            desc: 'From volume.'
+          }
+        )
+
+        expose(
+          :to_currency,
+          documentation: {
+            type: String,
+            desc: 'To currency id.'
+          }
+        )
+
+        expose(
+          :to_volume,
+          documentation: {
+            type: BigDecimal,
+            desc: 'To volume.'
+          }
+        )
+
+        expose(
+          :request_currency,
+          documentation: {
+            type: String,
+            desc: 'Request currency id.'
+          }
+        )
+
+        expose(
+          :request_volume,
+          documentation: {
+            type: BigDecimal,
+            desc: 'Request volume.'
+          }
+        )
+
+        expose(
+          :request_price,
+          documentation: {
+            type: BigDecimal,
+            desc: 'Request price.'
+          }
+        )
+
+        expose(
+          :inverse_price,
+          documentation: {
+            type: BigDecimal,
+            desc: 'Request price.'
+          }
+        )
+
         expose(
           :created_at,
           format_with: :iso8601,
@@ -59,14 +114,6 @@ module API
           documentation: {
             type: String,
             desc: 'Swap Order updated time in iso8601 format.'
-          }
-        )
-
-        expose(
-          :volume,
-          documentation: {
-            type: BigDecimal,
-            desc: 'Swap order volume.'
           }
         )
       end

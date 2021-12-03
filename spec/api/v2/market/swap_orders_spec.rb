@@ -12,7 +12,8 @@ describe API::V2::Market::SwapOrders, type: :request do
   let(:weekly_limit) { swap_config['weekly_limit'] }
 
   before do
-    CurrencyServices::SwapPrice.any_instance.stubs(:price).returns(reference_price)
+    OrderBid.stubs(:get_depth).returns([[reference_price, 1000.to_d]])
+    OrderAsk.stubs(:get_depth).returns([[reference_price, 1000.to_d]])
 
     Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => ['SwapOrder'], 'create' => ['SwapOrder'], 'update' => ['SwapOrder'] } })
   end
@@ -52,7 +53,8 @@ describe API::V2::Market::SwapOrders, type: :request do
       {
         from_currency: 'btc',
         to_currency: 'usd',
-        volume: '12.13',
+        request_currency: 'btc',
+        request_volume: '12.13',
         price: reference_price
       }
     end
@@ -86,7 +88,7 @@ describe API::V2::Market::SwapOrders, type: :request do
       AMQP::Queue.expects(:enqueue).with(:order_processor, is_a(Hash), is_a(Hash), nil)
 
       expect do
-        api_post '/api/v2/market/swap_orders', token: token, params: { from_currency: 'usd', to_currency: 'btc', volume: reference_price, price: market.round_price(1 / reference_price) }
+        api_post '/api/v2/market/swap_orders', token: token, params: { from_currency: 'usd', to_currency: 'btc', request_currency: 'usd', request_volume: reference_price, price: (1 / reference_price).round(8) }
         expect(response).to be_successful
 
         swap_order = SwapOrder.last
@@ -106,18 +108,19 @@ describe API::V2::Market::SwapOrders, type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
 
         # TODO: Grape validation transform swap_order to swaporder
-        expect(response).to include_api_error('market.swaporder.missing_volume')
+        expect(response).to include_api_error('market.swaporder.missing_request_currency')
+        expect(response).to include_api_error('market.swaporder.missing_request_volume')
         expect(response).to include_api_error('market.swaporder.missing_price')
       end
 
-      it 'validates volume positiveness' do
-        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '-1.1' })
+      it 'validates request volume positiveness' do
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ request_volume: '-1.1' })
         expect(response.code).to eq '422'
         expect(response).to include_api_error('market.swap_order.non_positive_volume')
       end
 
-      it 'validates volume to be a number' do
-        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: 'test' })
+      it 'validates request volume to be a number' do
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ request_volume: 'test' })
         expect(response.code).to eq '422'
         expect(response).to include_api_error('market.swap_order.non_decimal_volume')
       end
@@ -140,7 +143,7 @@ describe API::V2::Market::SwapOrders, type: :request do
         member.get_account(:btc).update(balance: 1)
         m = Market.find_spot_by_symbol(:btc_usd)
         m.update(min_amount: 1.0)
-        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: '0.1' })
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ request_volume: '0.1' })
 
         expect(response.code).to eq '422'
         expect(response).to include_api_error('market.order.invalid_volume_or_price')
@@ -168,7 +171,7 @@ describe API::V2::Market::SwapOrders, type: :request do
       end
 
       it 'validate order limit' do
-        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ volume: order_limit + 1 })
+        api_post '/api/v2/market/swap_orders', token: token, params: default_params.merge({ request_volume: order_limit + 1 })
         expect(response.code).to eq '422'
         expect(response).to include_api_error('market.swap_order.reached_order_limit')
       end
