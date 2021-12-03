@@ -1207,14 +1207,14 @@ CREATE TABLE public.swap_orders (
     member_id bigint NOT NULL,
     market_id character varying(20) NOT NULL,
     state integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    from_volume numeric(36,18),
-    to_volume numeric(36,18),
+    from_volume numeric(36,18) NOT NULL,
+    to_volume numeric(36,18) NOT NULL,
     request_unit character varying NOT NULL,
-    request_volume numeric(36,18),
-    request_price numeric(36,18),
-    inverse_price numeric(36,18)
+    request_volume numeric(36,18) NOT NULL,
+    request_price numeric(36,18) NOT NULL,
+    inverse_price numeric(36,18) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -2684,6 +2684,13 @@ CREATE INDEX index_swap_orders_on_order_id ON public.swap_orders USING btree (or
 
 
 --
+-- Name: index_swap_orders_on_request_unit; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_swap_orders_on_request_unit ON public.swap_orders USING btree (request_unit);
+
+
+--
 -- Name: index_swap_orders_on_to_unit; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3259,4 +3266,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211203102904'),
 ('20211129094431'),
 ('20211130120940'),
-('20211202223416');
+('20211202223416'),
+('20211122110601');
