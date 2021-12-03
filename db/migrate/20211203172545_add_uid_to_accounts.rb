@@ -2,7 +2,9 @@ class AddUidToAccounts < ActiveRecord::Migration[5.2]
   def change
     add_column :accounts, :uid, :string
 
-    Account.find_each do |a|
+    Account.reset_column_information
+
+    Account.all.each do |a|
       a.send :assign_uid
       a.save!
     end
