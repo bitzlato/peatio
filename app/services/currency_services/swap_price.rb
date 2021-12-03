@@ -62,6 +62,8 @@ module CurrencyServices
     end
 
     def valid_price?(price)
+      return false unless price_object.request_price
+
       ((price_object.request_price - price) / price).abs.round(PRICE_DEVIATION_PRECISION) <= PRICE_DEVIATION
     end
 
@@ -132,6 +134,10 @@ module CurrencyServices
                                         else
                                           raise "Volume currency must be a #{market.base_unit} or #{market.quote_unit}"
                                         end
+
+      raise 'Not enough volume on market' unless volume.zero?
+
+      @raw_market_prices_with_amounts
     end
 
     def market_amount
@@ -140,8 +146,8 @@ module CurrencyServices
 
     def market_price
       @market_price ||= raw_market_prices_with_amounts.yield_self do |arr|
-                                                        arr.sum { |price, volume| price * volume } / market_amount
-                                                      end
+        arr.sum { |price, volume| price * volume } / market_amount
+      end
     end
   end
 end
