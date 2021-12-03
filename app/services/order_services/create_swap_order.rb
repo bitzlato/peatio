@@ -49,7 +49,6 @@ module OrderServices
         ord_type: 'limit'
       )
 
-
       if create_order_result.successful?
         swap_order.update!(order: create_order_result.data, state: SwapOrder::STATES[:wait])
         success(data: swap_order)

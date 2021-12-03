@@ -55,7 +55,6 @@ describe API::V2::Public::Swap, type: :request do
                                               request_volume: '15.1',
                                               request_price: (1 / '15.1'.to_d).round(8).to_s,
                                               inverse_price: '15.1' })
-
     end
 
     it 'return swap limits' do
