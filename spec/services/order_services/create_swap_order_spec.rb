@@ -44,8 +44,8 @@ describe OrderServices::CreateSwapOrder do
 
   describe '#perform' do
     before do
-      OrderBid.stubs(:get_depth).returns([[reference_price, 100.to_d]])
-      OrderAsk.stubs(:get_depth).returns([[reference_price, 100.to_d]])
+      OrderBid.stubs(:get_depth).returns([[reference_price, 1000.to_d]])
+      OrderAsk.stubs(:get_depth).returns([[reference_price, 1000.to_d]])
     end
 
     context 'change btc to usd' do
@@ -106,9 +106,9 @@ describe OrderServices::CreateSwapOrder do
       end
 
       it 'order limit has been reached out' do
-        result = service.perform(**params.merge({ request_volume: daily_limit + 1 }))
+        result = service.perform(**params.merge({ request_volume: order_limit + 1 }))
         expect(result).to be_failed
-        expect(result.errors.first).to eq 'market.swap_order.reached_daily_limit'
+        expect(result.errors.first).to eq 'market.swap_order.reached_order_limit'
       end
 
       it 'daily limit has been reached out' do
