@@ -1,0 +1,3 @@
+[submodule "vendor/openbill"]
+	path = vendor/openbill
+	url = git@github.com:openbill-service/openbill-core.git
