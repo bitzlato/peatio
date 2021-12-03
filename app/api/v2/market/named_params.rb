@@ -92,7 +92,7 @@ module API
           requires :price,
                    type: { value: BigDecimal, message: 'market.swap_order.non_decimal_price' },
                    values: { value: ->(p) { p.try(:positive?) }, message: 'market.swap_order.non_positive_price' },
-                   desc: -> { API::V2::Entities::SwapOrder.documentation[:price][:desc] }
+                   desc: -> { API::V2::Entities::SwapOrder.documentation[:request_price][:desc] }
         end
       end
     end
