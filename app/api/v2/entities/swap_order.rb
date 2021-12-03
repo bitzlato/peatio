@@ -35,7 +35,7 @@ module API
           }
         )
 
-       expose(
+        expose(
           :from_currency,
           documentation: {
             type: String,
