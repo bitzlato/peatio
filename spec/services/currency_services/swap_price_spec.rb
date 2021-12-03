@@ -74,7 +74,7 @@ RSpec.describe CurrencyServices::SwapPrice do
         it { expect(price_object.request_volume).to eq(request_volume) }
         it { expect(price_object.request_price).to eq(inverse_price) }
         it { expect(price_object.inverse_price).to eq(price) }
-        it { expect(price_object.from_volume).to eq(volume) }
+        it { expect(price_object.from_volume).to eq(market.round_amount(inverse_price * request_volume)) }
         it { expect(price_object.to_volume).to eq(request_volume) }
       end
     end
@@ -142,7 +142,7 @@ RSpec.describe CurrencyServices::SwapPrice do
         it { expect(price_object.request_volume).to eq(request_volume) }
         it { expect(price_object.request_price).to eq(price) }
         it { expect(price_object.inverse_price).to eq(inverse_price) }
-        it { expect(price_object.from_volume).to eq(volume) }
+        it { expect(price_object.from_volume).to eq(market.round_amount(request_volume * price)) }
         it { expect(price_object.to_volume).to eq(request_volume) }
       end
     end
