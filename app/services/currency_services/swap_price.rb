@@ -77,23 +77,18 @@ module CurrencyServices
         if @request_currency == market.base
           price_obj[:request_price] = price
           price_obj[:inverse_price] = inverse_price
-          if @request_currency == @from_currency
-            price_obj[:from_volume] = @request_volume
-            price_obj[:to_volume] = market.round_amount(price * @request_volume)
-          elsif @request_currency == @to_currency
-            price_obj[:from_volume] = market.round_amount(price * @request_volume)
-            price_obj[:to_volume] = @request_volume
-          end
         elsif @request_currency == market.quote
           price_obj[:request_price] = inverse_price
           price_obj[:inverse_price] = price
-          if @request_currency == @from_currency
-            price_obj[:from_volume] = @request_volume
-            price_obj[:to_volume] = market.round_amount(inverse_price * @request_volume)
-          elsif @request_currency == @to_currency
-            price_obj[:from_volume] = market.round_amount(inverse_price * @request_volume)
-            price_obj[:to_volume] = @request_volume
-          end
+        end
+
+        new_volume = market.round_amount(price_obj[:request_price] * @request_volume)
+        if @request_currency == @from_currency
+          price_obj[:from_volume] = @request_volume
+          price_obj[:to_volume] = new_volume
+        elsif @request_currency == @to_currency
+          price_obj[:from_volume] = new_volume
+          price_obj[:to_volume] = @request_volume
         end
       end
     end
@@ -148,6 +143,12 @@ module CurrencyServices
       @market_price ||= raw_market_prices_with_amounts.yield_self do |arr|
         arr.sum { |price, volume| price * volume } / market_amount
       end
+    end
+
+    private
+
+    def redis
+      @redis ||= Redis.new(url: ENV.fetch('REDIS_URL', 'redis://localhost:6379'))
     end
   end
 end
