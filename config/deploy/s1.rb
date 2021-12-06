@@ -5,7 +5,7 @@ set :disallow_pushing, false
 set :application, -> { 'peatio-' + fetch(:stage).to_s }
 set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:application)}" }
 
-set :systemd_daemon_instances, -> { %i[bargainer_job currency_pricer k_line liabilities_compactor remove_invoiced_deposits stats_member_pnl ticker] }
+set :systemd_daemon_instances, -> { %i[bargainer_job currency_pricer k_line liabilities_compactor remove_invoiced_deposits stats_member_pnl ticker swap_order_status_checker] }
 
 set :systemd_amqp_daemon_instances,
     %i[

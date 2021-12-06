@@ -3,7 +3,28 @@
 module API
   module V2
     module Entities
-      class SwapPrice < Base
+      class SwapOrder < Base
+        expose(
+          :id,
+          documentation: {
+            type: Integer,
+            desc: 'Unique swap order id.'
+          }
+        )
+
+        expose(
+          :state,
+          documentation: {
+            type: String,
+            values: ::SwapOrder.state.values,
+            desc: "One of 'pending', 'wait', 'done', or 'cancel'."\
+                  "An swap order in 'pending' is an waiting when order will be created;"\
+                  "a 'wait' is an active order, waiting fulfillment;"\
+                  "a 'done' swap order is an swap order fulfilled;"\
+                  "'cancel' means the swap order has been canceled."
+          }
+        )
+
         expose(
           :from_currency,
           documentation: {
@@ -64,7 +85,25 @@ module API
           :inverse_price,
           documentation: {
             type: BigDecimal,
-            desc: 'Request price.'
+            desc: 'Inverse price.'
+          }
+        )
+
+        expose(
+          :created_at,
+          format_with: :iso8601,
+          documentation: {
+            type: String,
+            desc: 'Swap Order create time in iso8601 format.'
+          }
+        )
+
+        expose(
+          :updated_at,
+          format_with: :iso8601,
+          documentation: {
+            type: String,
+            desc: 'Swap Order updated time in iso8601 format.'
           }
         )
       end

@@ -75,6 +75,25 @@ module API
                    default: 'desc',
                    desc: "If set, returned trades will be sorted in specific order, default to 'desc'."
         end
+
+        params :swap_order do
+          requires :from_currency,
+                   values: { value: -> { ::Currency.ids }, message: 'market.currency_doesnt_exist' },
+                   desc: -> { API::V2::Management::Entities::Market.documentation[:base_unit][:desc] }
+          requires :to_currency,
+                   values: { value: -> { ::Currency.ids }, message: 'market.currency_doesnt_exist' },
+                   desc: -> { API::V2::Management::Entities::Market.documentation[:quote_unit][:desc] }
+          requires :request_currency,
+                   values: { value: -> { ::Currency.ids }, message: 'market.currency_doesnt_exist' },
+                   desc: -> { API::V2::Management::Entities::Market.documentation[:quote_unit][:desc] }
+          requires :request_volume,
+                   type: { value: BigDecimal, message: 'market.swap_order.non_decimal_volume' },
+                   values: { value: ->(v) { v.try(:positive?) }, message: 'market.swap_order.non_positive_volume' }
+          requires :price,
+                   type: { value: BigDecimal, message: 'market.swap_order.non_decimal_price' },
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'market.swap_order.non_positive_price' },
+                   desc: -> { API::V2::Entities::SwapOrder.documentation[:request_price][:desc] }
+        end
       end
     end
   end

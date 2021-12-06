@@ -230,10 +230,6 @@ class Market < ApplicationRecord
     Peatio::InfluxDB.client(keyshard: symbol).query(query, params: { market: symbol })&.dig(0, 'values', 0, 'vwap')
   end
 
-  def swap_price
-    trades.last&.price
-  end
-
   private
 
   def generate_symbol

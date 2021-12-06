@@ -14,8 +14,8 @@ describe API::V2::Admin::Abilities, type: :request do
         expect(result).to eq(
           'create' => ['Deposits::Fiat'],
           'manage' => ['Operations::Account', 'Operations::Asset', 'Operations::Expense', 'Operations::Liability', 'Operations::Revenue', 'Member', 'Account', 'Beneficiary', 'PaymentAddress', 'Deposit', 'Withdraw', 'WithdrawLimit', 'Blockchain', 'Currency', 'Engine', 'Market', 'TradingFee', 'Wallet', 'Adjustment', 'InternalTransfer', 'WhitelistedSmartContract'],
-          'read' => %w[Trade Order],
-          'update' => ['Order']
+          'read' => %w[Trade Order SwapOrder],
+          'update' => %w[Order SwapOrder]
         )
       end
     end

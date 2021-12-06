@@ -8,7 +8,6 @@ module API
         helpers ::API::V2::ParamHelpers
 
         OrderBook = Struct.new(:asks, :bids)
-        SwapPrice = Struct.new(:price)
 
         resource :markets do
           desc 'Get all available markets.',
@@ -206,19 +205,6 @@ module API
           get '/:market/tickers/', requirements: { market: /[\w.\-]+/ } do
             present format_ticker(TickersService[params[:market]].ticker),
                     with: API::V2::Entities::Ticker
-          end
-
-          desc 'Get swap price' do
-            success API::V2::Entities::SwapPrice
-          end
-          params do
-            use :enabled_markets
-          end
-          get ':market/swap_price' do
-            market = ::Market.active.find_spot_by_symbol(params[:market])
-            price = SwapPrice.new(market.swap_price)
-
-            present price, with: API::V2::Entities::SwapPrice
           end
         end
       end

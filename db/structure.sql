@@ -1196,6 +1196,48 @@ ALTER SEQUENCE public.stats_member_pnl_idx_id_seq OWNED BY public.stats_member_p
 
 
 --
+-- Name: swap_orders; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.swap_orders (
+    id bigint NOT NULL,
+    from_unit character varying NOT NULL,
+    to_unit character varying NOT NULL,
+    order_id bigint,
+    member_id bigint NOT NULL,
+    market_id character varying(20) NOT NULL,
+    state integer NOT NULL,
+    from_volume numeric(36,18) NOT NULL,
+    to_volume numeric(36,18) NOT NULL,
+    request_unit character varying NOT NULL,
+    request_volume numeric(36,18) NOT NULL,
+    request_price numeric(36,18) NOT NULL,
+    inverse_price numeric(36,18) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: swap_orders_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.swap_orders_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: swap_orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.swap_orders_id_seq OWNED BY public.swap_orders.id;
+
+
+--
 -- Name: trades; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1700,6 +1742,13 @@ ALTER TABLE ONLY public.stats_member_pnl_idx ALTER COLUMN id SET DEFAULT nextval
 
 
 --
+-- Name: swap_orders id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.swap_orders ALTER COLUMN id SET DEFAULT nextval('public.swap_orders_id_seq'::regclass);
+
+
+--
 -- Name: trades id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1993,6 +2042,14 @@ ALTER TABLE ONLY public.stats_member_pnl_idx
 
 ALTER TABLE ONLY public.stats_member_pnl
     ADD CONSTRAINT stats_member_pnl_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: swap_orders swap_orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.swap_orders
+    ADD CONSTRAINT swap_orders_pkey PRIMARY KEY (id);
 
 
 --
@@ -2599,6 +2656,48 @@ CREATE INDEX index_revenues_on_reference_type_and_reference_id ON public.revenue
 
 
 --
+-- Name: index_swap_orders_on_from_unit; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_swap_orders_on_from_unit ON public.swap_orders USING btree (from_unit);
+
+
+--
+-- Name: index_swap_orders_on_market_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_swap_orders_on_market_id ON public.swap_orders USING btree (market_id);
+
+
+--
+-- Name: index_swap_orders_on_member_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_swap_orders_on_member_id ON public.swap_orders USING btree (member_id);
+
+
+--
+-- Name: index_swap_orders_on_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_swap_orders_on_order_id ON public.swap_orders USING btree (order_id);
+
+
+--
+-- Name: index_swap_orders_on_request_unit; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_swap_orders_on_request_unit ON public.swap_orders USING btree (request_unit);
+
+
+--
+-- Name: index_swap_orders_on_to_unit; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_swap_orders_on_to_unit ON public.swap_orders USING btree (to_unit);
+
+
+--
 -- Name: index_trades_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3163,6 +3262,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211026141101'),
 ('20211112205804'),
 ('20211116054502'),
+('20211122110601'),
 ('20211203102904');
 
 

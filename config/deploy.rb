@@ -75,6 +75,7 @@ set :systemd_daemon_instances,
       ticker
       transfers_polling
       wallet_balances
+      swap_order_status_checker
     ]
 
 # Restricted daemons list for stages
