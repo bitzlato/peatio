@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe API::V2::Public::Swap, type: :request do
+describe API::V2::Public::Swaps, type: :request do
   describe 'GET /api/v2/public/markets/swap' do
     let(:market) { Market.find_spot_by_symbol('btc_usd') }
 

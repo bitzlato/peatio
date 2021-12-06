@@ -3,7 +3,7 @@
 module API
   module V2
     module Public
-      class Swap < Grape::API
+      class Swaps < Grape::API
         helpers ::API::V2::Admin::Helpers
 
         desc 'Get swap price' do
