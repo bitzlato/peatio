@@ -31,11 +31,11 @@ module OrderServices
         market: swap_price_service.market,
         member: @member,
         state: SwapOrder::STATES[:pending],
-        from_currency: price_object.from_currency,
-        to_currency: price_object.to_currency,
+        from_unit: price_object.from_currency,
+        to_unit: price_object.to_currency,
         from_volume: price_object.from_volume,
         to_volume: price_object.to_volume,
-        request_currency: price_object.request_currency,
+        request_unit: price_object.request_currency,
         request_volume: price_object.request_volume,
         request_price: price_object.request_price,
         inverse_price: price_object.inverse_price
@@ -56,9 +56,9 @@ module OrderServices
         swap_order.update!(state: SwapOrder::STATES[:cancel])
         failure(errors: create_order_result.errors)
       end
-    rescue SwapPrice::ExchangeCurrencyError, SwapPrice::RequestVolumeCurrencyError => _e
+    rescue CurrencyServices::SwapPrice::ExchangeCurrencyError, CurrencyServices::SwapPrice::RequestVolumeCurrencyError => _e
       failure(errors: ['market.swap_order.invalid_currency'])
-    rescue SwapPrice::MarketVolumeError => _e
+    rescue CurrencyServices::SwapPrice::MarketVolumeError => _e
       failure(errors: ['market.swap_order.invalid_market_volume'])
     rescue ActiveRecord::RecordInvalid => _e
       failure(errors: ['market.swap_order.invalid_volume_or_price'])

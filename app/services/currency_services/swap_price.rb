@@ -11,7 +11,7 @@ module CurrencyServices
 
     Error = Class.new(StandardError)
     ExchangeCurrencyError = Class.new(Error)
-    RequestVolumeCurrencyError= Class.new(Error)
+    RequestVolumeCurrencyError = Class.new(Error)
     MarketVolumeError = Class.new(Error)
 
     def initialize(from_currency:, to_currency:, request_currency:, request_volume:)
