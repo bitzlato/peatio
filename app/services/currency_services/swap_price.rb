@@ -9,6 +9,11 @@ module CurrencyServices
                              :request_volume, :request_price, :inverse_price,
                              :from_volume, :to_volume)
 
+    Error = Class.new(StandardError)
+    ExchangeCurrencyError = Class.new(Error)
+    RequestVolumeCurrencyError= Class.new(Error)
+    MarketVolumeError = Class.new(Error)
+
     def initialize(from_currency:, to_currency:, request_currency:, request_volume:)
       @from_currency = from_currency
       @to_currency = to_currency
@@ -33,7 +38,7 @@ module CurrencyServices
                 elsif market.base == @to_currency
                   'buy'
                 else
-                  raise "Wrong currencies: #{@from_currency.id} => #{@to_currency.id}"
+                  raise "Wrong currencies: #{@from_currency.id} => #{@to_currency.id}", WrongCurrencies
                 end
     end
 
@@ -134,10 +139,10 @@ module CurrencyServices
                                             break arr if volume.zero?
                                           end
                                         else
-                                          raise "Volume currency must be a #{market.base_unit} or #{market.quote_unit}"
+                                          raise "Volume currency must be a #{market.base_unit} or #{market.quote_unit}", WrongRequestVolumeCurrency
                                         end
 
-      raise 'Not enough volume on market' unless volume.zero?
+      raise 'Not enough volume on market', MarketVolumeError unless volume.zero?
 
       @raw_market_prices_with_amounts
     end
@@ -150,12 +155,6 @@ module CurrencyServices
       @market_price ||= raw_market_prices_with_amounts.yield_self do |arr|
         arr.sum { |price, volume| price * volume } / market_amount
       end
-    end
-
-    private
-
-    def redis
-      @redis ||= Redis.new(url: ENV.fetch('REDIS_URL', 'redis://localhost:6379'))
     end
   end
 end
