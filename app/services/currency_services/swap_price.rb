@@ -38,7 +38,7 @@ module CurrencyServices
                 elsif market.base == @to_currency
                   'buy'
                 else
-                  raise "Wrong currencies: #{@from_currency.id} => #{@to_currency.id}", WrongCurrencies
+                  raise WrongCurrencies.new("Wrong currencies: #{@from_currency.id} => #{@to_currency.id}")
                 end
     end
 
@@ -139,10 +139,10 @@ module CurrencyServices
                                             break arr if volume.zero?
                                           end
                                         else
-                                          raise "Volume currency must be a #{market.base_unit} or #{market.quote_unit}", WrongRequestVolumeCurrency
+                                          raise WrongRequestVolumeCurrency.new("Volume currency must be a #{market.base_unit} or #{market.quote_unit}")
                                         end
 
-      raise 'Not enough volume on market', MarketVolumeError unless volume.zero?
+      raise MarketVolumeError.new('Not enough volume on market') unless volume.zero?
 
       @raw_market_prices_with_amounts
     end
