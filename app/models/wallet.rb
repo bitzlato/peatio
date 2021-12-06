@@ -175,4 +175,11 @@ class Wallet < ApplicationRecord
       self.settings = settings.merge(result)
     end
   end
+
+  def can_withdraw_for?(withdraw)
+    currency = withdraw.currency
+    amount = withdraw.amount + withdraw.fee
+
+    (balance || {})[currency.id].to_d - amount > 0
+  end
 end
