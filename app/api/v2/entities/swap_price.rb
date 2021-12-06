@@ -67,20 +67,6 @@ module API
             desc: 'Request price.'
           }
         )
-
-        private
-
-        def from_currency
-          object.from_currency.id
-        end
-
-        def to_currency
-          object.to_currency.id
-        end
-
-        def request_currency
-          object.request_currency.id
-        end
       end
     end
   end

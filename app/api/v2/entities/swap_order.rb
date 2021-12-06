@@ -26,16 +26,6 @@ module API
         )
 
         expose(
-          :market_id,
-          as: :market,
-          documentation: {
-            type: String,
-            desc: "The market in which the order is placed, e.g. 'btcusd'."\
-                  'All available markets can be found at /api/v2/markets.'
-          }
-        )
-
-        expose(
           :from_currency,
           documentation: {
             type: String,
@@ -95,7 +85,7 @@ module API
           :inverse_price,
           documentation: {
             type: BigDecimal,
-            desc: 'Request price.'
+            desc: 'Inverse price.'
           }
         )
 

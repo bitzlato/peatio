@@ -74,9 +74,9 @@ module CurrencyServices
 
     def price_object
       @price_object ||= PriceObject.new.tap do |price_obj|
-        price_obj[:from_currency]     = @from_currency
-        price_obj[:to_currency]       = @to_currency
-        price_obj[:request_currency]  = @request_currency
+        price_obj[:from_currency]     = @from_currency.id
+        price_obj[:to_currency]       = @to_currency.id
+        price_obj[:request_currency]  = @request_currency.id
         price_obj[:request_volume]    = @request_volume
 
         if @from_currency == market.base

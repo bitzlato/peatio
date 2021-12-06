@@ -44,9 +44,9 @@ RSpec.describe CurrencyServices::SwapPrice do
       context 'price object' do
         let(:price_object) { subject.price_object }
 
-        it { expect(price_object.from_currency).to eq(from_currency) }
-        it { expect(price_object.to_currency).to eq(to_currency) }
-        it { expect(price_object.request_currency).to eq(from_currency) }
+        it { expect(price_object.from_currency).to eq(from_currency.id) }
+        it { expect(price_object.to_currency).to eq(to_currency.id) }
+        it { expect(price_object.request_currency).to eq(from_currency.id) }
         it { expect(price_object.request_volume).to eq(request_volume) }
         it { expect(price_object.request_price).to eq(price) }
         it { expect(price_object.inverse_price).to eq(inverse_price) }
@@ -79,9 +79,9 @@ RSpec.describe CurrencyServices::SwapPrice do
       context 'price object' do
         let(:price_object) { subject.price_object }
 
-        it { expect(price_object.from_currency).to eq(from_currency) }
-        it { expect(price_object.to_currency).to eq(to_currency) }
-        it { expect(price_object.request_currency).to eq(to_currency) }
+        it { expect(price_object.from_currency).to eq(from_currency.id) }
+        it { expect(price_object.to_currency).to eq(to_currency.id) }
+        it { expect(price_object.request_currency).to eq(to_currency.id) }
         it { expect(price_object.request_volume).to eq(request_volume) }
         it { expect(price_object.request_price).to eq(price) }
         it { expect(price_object.inverse_price).to eq(inverse_price) }
@@ -122,9 +122,9 @@ RSpec.describe CurrencyServices::SwapPrice do
       context 'price object' do
         let(:price_object) { subject.price_object }
 
-        it { expect(price_object.from_currency).to eq(to_currency) }
-        it { expect(price_object.to_currency).to eq(from_currency) }
-        it { expect(price_object.request_currency).to eq(request_currency) }
+        it { expect(price_object.from_currency).to eq(to_currency.id) }
+        it { expect(price_object.to_currency).to eq(from_currency.id) }
+        it { expect(price_object.request_currency).to eq(request_currency.id) }
         it { expect(price_object.request_volume).to eq(request_volume) }
         it { expect(price_object.request_price).to eq(request_price) }
         it { expect(price_object.inverse_price).to eq(inverse_price) }
@@ -157,9 +157,9 @@ RSpec.describe CurrencyServices::SwapPrice do
       context 'price object' do
         let(:price_object) { subject.price_object }
 
-        it { expect(price_object.from_currency).to eq(to_currency) }
-        it { expect(price_object.to_currency).to eq(from_currency) }
-        it { expect(price_object.request_currency).to eq(request_currency) }
+        it { expect(price_object.from_currency).to eq(to_currency.id) }
+        it { expect(price_object.to_currency).to eq(from_currency.id) }
+        it { expect(price_object.request_currency).to eq(request_currency.id) }
         it { expect(price_object.request_volume).to eq(request_volume) }
         it { expect(price_object.request_price).to eq(request_price) }
         it { expect(price_object.inverse_price).to eq(inverse_price) }
