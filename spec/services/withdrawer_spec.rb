@@ -9,6 +9,11 @@ describe Withdrawer do
   let(:blockchain) { create(:blockchain, 'btc-bz-testnet') }
   let!(:wallet) { create(:wallet, :btc_bz_hot, blockchain: blockchain) }
 
+  before do
+    BalancesUpdater.any_instance.stubs(:perform)
+    Wallet.any_instance.stubs(:can_withdraw_for?).returns(true)
+  end
+
   context do
     before do
       Bitzlato::Wallet.any_instance.expects(:create_transaction!).returns(transaction)
@@ -44,10 +49,12 @@ describe Withdrawer do
   context 'when insufficient funds error is raised' do
     let(:account) { create(:account, :eth, balance: 100) }
     let(:withdraw) { create(:eth_withdraw, currency: account.currency, member: account.member).tap(&:accept!).tap(&:process!) }
+    let(:wallet) { find_or_create :wallet, :eth_hot }
 
     it 'fails withdraw' do
       EthereumGateway::AbstractCommand.any_instance.expects(:fetch_gas_price).returns(0)
       EthereumGateway::TransactionCreator.any_instance.expects(:call).raises(Ethereum::Client::InsufficientFunds.new('-32010', 'Insufficient funds. The account you tried to send transaction from does not have enough funds.'))
+
       subject.call(withdraw)
       expect(withdraw.aasm_state).to eq 'failed'
     end
@@ -57,6 +64,17 @@ describe Withdrawer do
     it 'returns nil and fail withdrawal' do
       # expect(Workers::AMQP::WithdrawCoin.new.process(processing_withdrawal.as_json)).to be(nil)
       # expect(processing_withdrawal.reload.failed?).to be_truthy
+    end
+  end
+
+  context 'when low wallet balance' do
+    before do
+      Wallet.any_instance.stubs(:can_withdraw_for?).returns(false)
+    end
+
+    it 'fails withdraw' do
+      subject.call(withdraw)
+      expect(withdraw.aasm_state).to eq 'errored'
     end
   end
 

@@ -8,17 +8,18 @@ class Withdrawer
     end
 
     def as_json
-      options.merge message: message
+      @options.merge message: message
     end
 
     def to_s
-      message
+      @message
     end
   end
 
   Fail = Class.new Error
   Busy = Class.new Error
   NoHotWallet = Class.new Error
+  WalletLowBalance = Class.new Error
 
   attr_reader :logger
 
@@ -62,6 +63,10 @@ class Withdrawer
       # TODO: repeat withdraw for Busy
       withdraw.fail!
       logger.warn e.as_json.merge(id: withdraw.id)
+    rescue WalletLowBalance => e
+      logger.warn e.as_json.merge(id: withdraw.id)
+      report_exception e, true, withdraw_id: withdraw.id
+      withdraw.err! e
     rescue Ethereum::Client::InsufficientFunds
       withdraw.fail!
       logger.warn(message: 'Insufficient funds', withdraw_id: withdraw.id)
@@ -83,17 +88,21 @@ class Withdrawer
       .withdraw_wallet_for_currency(withdraw.currency) ||
       raise(NoHotWallet, 'No hot withdraw wallet for withdraw', withdraw_id: withdraw.id)
 
-    withdraw.blockchain.gateway
-            .create_transaction!(
-              from_address: withdraw_wallet.address,
-              to_address: withdraw.to_address,
-              amount: withdraw.money_amount,
-              contract_address: withdraw.currency.contract_address,
-              secret: withdraw_wallet.secret,
-              blockchain_address: withdraw_wallet.blockchain_address,
-              nonce: nonce,
-              gas_factor: gas_factor,
-              meta: { withdraw_tid: withdraw.tid }
-            ) || raise("No transaction returned for withdraw (#{withdraw.id})")
+    # TODO: updates wallet balance and validate that withdraw can be executed before creating transaction
+    BalancesUpdater.new(blockchain: withdraw_wallet.blockchain, address: withdraw_wallet.address).perform
+    raise WalletLowBalance, 'Low balance on hot wallet for withdraw' unless withdraw_wallet.can_withdraw_for?(withdraw)
+
+    withdraw_wallet.blockchain.gateway
+                   .create_transaction!(
+                     from_address: withdraw_wallet.address,
+                     to_address: withdraw.to_address,
+                     amount: withdraw.money_amount,
+                     contract_address: withdraw.currency.contract_address,
+                     secret: withdraw_wallet.secret,
+                     blockchain_address: withdraw_wallet.blockchain_address,
+                     nonce: nonce,
+                     gas_factor: gas_factor,
+                     meta: { withdraw_tid: withdraw.tid }
+                   ) || raise("No transaction returned for withdraw (#{withdraw.id})")
   end
 end

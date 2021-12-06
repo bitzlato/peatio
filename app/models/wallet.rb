@@ -180,6 +180,6 @@ class Wallet < ApplicationRecord
     currency = withdraw.currency
     amount = withdraw.amount + withdraw.fee
 
-    (balance || {})[currency.id].to_d - amount > 0
+    ((balance || {})[currency.id].to_d - amount).positive?
   end
 end
