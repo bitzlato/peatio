@@ -36,7 +36,6 @@ module API
           price_object = swap_price_service.price_object
           error!({ errors: ['market.swap.no_swap_price'] }, 422) unless price_object.request_price
 
-
           present price_object, with: API::V2::Entities::SwapPrice
         rescue CurrencyServices::SwapPrice::ExchangeCurrencyError, CurrencyServices::SwapPrice::RequestVolumeCurrencyError => _e
           failure(errors: ['market.swap_order.invalid_currency'])
