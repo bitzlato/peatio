@@ -38,9 +38,9 @@ module API
 
           present price_object, with: API::V2::Entities::SwapPrice
         rescue CurrencyServices::SwapPrice::ExchangeCurrencyError, CurrencyServices::SwapPrice::RequestVolumeCurrencyError => _e
-          failure(errors: ['market.swap_order.invalid_currency'])
+          error!(errors: ['market.swap_order.invalid_currency'])
         rescue CurrencyServices::SwapPrice::MarketVolumeError => _e
-          failure(errors: ['market.swap_order.invalid_market_volume'])
+          error!(errors: ['market.swap_order.invalid_market_volume'])
         end
 
         get '/swap/limits' do
