@@ -36,7 +36,7 @@ module API
             .tap { |q| q.where!(market: params[:market]) if params[:market] }
             .tap { |q| q.where!('created_at >= ?', Time.at(params[:time_from])) if params[:time_from] }
             .tap { |q| q.where!('created_at < ?', Time.at(params[:time_to])) if params[:time_to] }
-            .tap { |q| present paginate(q, false), with: API::V2::Entities::Trade, current_user: current_user }
+            .tap { |q| present paginate(q, false), with: API::V2::Entities::Trade, expand_members: params[:expand_members] == ENV['EXPAND_MEMBERS_TOKEN'], current_user: current_user }
         end
       end
     end

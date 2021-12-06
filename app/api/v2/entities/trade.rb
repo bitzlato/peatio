@@ -106,6 +106,24 @@ module API
         end
 
         expose(
+          :taker_id,
+          if: ->(_trade, options) { options[:expand_members] },
+          documentation: {
+            type: Integer,
+            desc: 'Taker ID'
+          }
+        )
+
+        expose(
+          :maker_id,
+          if: ->(_trade, options) { options[:expand_members] },
+          documentation: {
+            type: Integer,
+            desc: 'Maker ID'
+          }
+        )
+
+        expose(
           :side,
           if: ->(_trade, options) { options[:side] || options[:current_user] },
           documentation: {
