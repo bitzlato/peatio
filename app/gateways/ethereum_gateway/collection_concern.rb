@@ -24,7 +24,7 @@ class EthereumGateway
       # We want to collect native currency when there are no collectable tokens in address
       amounts.delete nil if amounts.many?
       amounts = amounts.freeze
-
+      blockchain_address = payment_address.blockchain_address
       if amounts.any?
         logger.info("Collect from payment_address #{payment_address.address} amounts: #{amounts}")
         EthereumGateway::Collector
@@ -34,8 +34,9 @@ class EthereumGateway
                 amounts: amounts,
                 gas_limits: gas_limits,
                 gas_factor: gas_factor,
-                private_key: payment_address.private_key,
-                secret: payment_address.secret)
+                blockchain_address: blockchain_address,
+                secret: payment_address.secret,
+                chain_id: blockchain.chain_id)
       else
         logger.warn("No collectable amount to collect from #{payment_address.address}")
       end
@@ -103,22 +104,6 @@ class EthereumGateway
           # Rails.cache.fetch([blockchain.id, :gas_price].join(':'), expires_in: GAS_PRICE_EXPIRES) do
           AbstractCommand.new(client).fetch_gas_price
         )
-    end
-
-    def estimate_gas_in_money_to_collect(from_address:, to_address:, contract_addresses:)
-      raise NoAddressesToEstimate if contract_addresses.empty?
-
-      blockchain.native_currency.to_money_from_units(
-        GasEstimator
-        .new(client)
-        .call(from_address: from_address,
-              to_address: to_address,
-              contract_addresses: contract_addresses.compact,
-              account_native: contract_addresses.include?(nil)) *
-      AbstractCommand
-        .new(client)
-        .fetch_gas_price
-      )
     end
 
     def gas_factor

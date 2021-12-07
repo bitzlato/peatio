@@ -28,11 +28,12 @@ describe ::EthereumGateway::Collector do
             to_address: to_address,
             amount: contract_amount,
             secret: :secret,
-            private_key: nil,
+            blockchain_address: nil,
             subtract_fee: false,
             gas_limit: 1,
             gas_factor: gas_factor,
-            contract_address: contract_address)
+            contract_address: contract_address,
+            chain_id: nil)
       .once
       .returns(peatio_transaction)
     EthereumGateway::TransactionCreator
@@ -42,11 +43,12 @@ describe ::EthereumGateway::Collector do
             to_address: to_address,
             amount: native_amount,
             secret: :secret,
-            private_key: nil,
+            blockchain_address: nil,
             gas_factor: 1,
             subtract_fee: true,
             gas_limit: 2,
-            contract_address: nil)
+            contract_address: nil,
+            chain_id: nil)
       .once
       .returns(peatio_transaction)
     subject.send(:call,
@@ -54,7 +56,7 @@ describe ::EthereumGateway::Collector do
                  to_address: to_address,
                  gas_limits: { contract_address => 1, nil => 2 },
                  amounts: { contract_address => contract_amount, nil => native_amount },
-                 private_key: nil,
+                 blockchain_address: nil,
                  secret: :secret)
   end
 end

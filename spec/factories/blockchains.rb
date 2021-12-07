@@ -40,6 +40,7 @@ FactoryBot.define do
       explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
       status                  { 'active' }
       initialize_with         { Blockchain.find_or_create_by(key: key) }
+      address_type            { 'ethereum' }
     end
 
     trait 'eth-kovan' do

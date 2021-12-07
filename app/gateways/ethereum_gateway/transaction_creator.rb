@@ -2,24 +2,33 @@
 
 class EthereumGateway
   class TransactionCreator < AbstractCommand
+    NONCE_LOCK_TTL = 1.minute.to_i * 1000
+
     Error = Class.new StandardError
+    NonceLocked = Class.new(Error)
+
+    def initialize(client)
+      @lock_manager = Redlock::Client.new([ENV.fetch('REDIS_URL', 'redis://localhost:6379')])
+      super(client)
+    end
 
     # @param amount - in base units (cents)
     def call(amount:, # rubocop:disable Metrics/ParameterLists
              from_address:,
              to_address:,
              gas_limit:, secret: nil,
-             private_key: nil,
+             blockchain_address: nil,
              nonce: nil,
              contract_address: nil,
              subtract_fee: false,
              gas_price: nil,
-             gas_factor: 1)
+             gas_factor: 1,
+             chain_id: nil)
       raise "amount (#{amount.class}) must be an Integer (base units)" unless amount.is_a? Integer
       raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
       raise 'No gas limit' if gas_limit.nil?
-      raise Error, 'zero amount transction' if amount.zero?
-      raise 'Must be secret ether private_key' if (secret.present? && private_key.present?) || (secret.nil? && private_key.nil?)
+      raise Error, 'zero amount transaction' if amount.zero?
+      raise 'Must be secret either blockchain_address' if secret.nil? && blockchain_address.nil?
 
       gas_price ||= (fetch_gas_price * gas_factor).to_i
 
@@ -31,20 +40,22 @@ class EthereumGateway
                                                        to_address: to_address,
                                                        contract_address: contract_address,
                                                        secret: secret,
-                                                       private_key: private_key,
+                                                       blockchain_address: blockchain_address,
                                                        nonce: nonce,
                                                        gas_limit: gas_limit,
-                                                       gas_price: gas_price)
+                                                       gas_price: gas_price,
+                                                       chain_id: chain_id)
                            else
                              create_eth_transaction!(amount: amount,
                                                      from_address: from_address,
                                                      to_address: to_address,
                                                      subtract_fee: subtract_fee,
                                                      secret: secret,
-                                                     private_key: private_key,
+                                                     blockchain_address: blockchain_address,
                                                      nonce: nonce,
                                                      gas_limit: gas_limit,
-                                                     gas_price: gas_price)
+                                                     gas_price: gas_price,
+                                                     chain_id: chain_id)
                            end
       peatio_transaction.options.merge! gas_factor: gas_factor
       peatio_transaction
@@ -54,11 +65,12 @@ class EthereumGateway
                                 to_address:,
                                 amount:,
                                 secret:,
-                                private_key:,
+                                blockchain_address:,
                                 gas_limit:,
                                 gas_price:,
                                 nonce: nil,
-                                subtract_fee: false)
+                                subtract_fee: false,
+                                chain_id: nil)
 
       raise 'amount must be an integer' unless amount.is_a? Integer
 
@@ -72,17 +84,15 @@ class EthereumGateway
         raise Error, "Amount is not positive (#{amount}) for #{from_address} to #{to_address}"
       end
       txid = validate_txid!(
-        if private_key.present?
-          tx = Eth::Tx.new({
-                             gas_limit: gas_limit,
-                             gas_price: gas_price,
-                             nonce: nonce,
-                             to: normalize_address(to_adress),
-                             value: value
-                           })
-          tx.sign private_key
-          client
-            .json_rpc(:eth_sendRawTransaction, [tx.hex])
+        if blockchain_address.present?
+          create_raw_transaction!(blockchain_address, {
+                                    data: '',
+                                    gas_limit: gas_limit,
+                                    gas_price: gas_price,
+                                    to: normalize_address(to_address),
+                                    value: amount,
+                                    chain_id: chain_id
+                                  })
         elsif secret.present?
           client
             .json_rpc(:personal_sendTransaction,
@@ -96,7 +106,7 @@ class EthereumGateway
                       }.compact,
                        secret])
         else
-          raise 'No secret or private_key'
+          raise 'No secret or blockchain_address'
         end
       )
 
@@ -118,25 +128,23 @@ class EthereumGateway
                                   amount:,
                                   contract_address:,
                                   secret:,
-                                  private_key:,
+                                  blockchain_address:,
                                   gas_limit:,
                                   gas_price:,
-                                  nonce: nil)
+                                  nonce: nil,
+                                  chain_id: nil)
       data = abi_encode('transfer(address,uint256)', normalize_address(to_address), '0x' + amount.to_s(16))
 
       logger.info("Create erc20 transaction #{from_address} -> #{to_address} contract_address: #{contract_address} amount:#{amount} gas_price:#{gas_price} gas_limit:#{gas_limit}")
       txid = validate_txid!(
-        if private_key.present?
-          tx = Eth::Tx.new({
-                             to: contract_address,
-                             gas_limit: gas_limit,
-                             gas_price: gas_price,
-                             nonce: nonce,
-                             data: data
-                           })
-          tx.sign private_key
-          client
-            .json_rpc(:eth_sendRawTransaction, [tx.hex])
+        if blockchain_address.present?
+          create_raw_transaction!(blockchain_address, {
+                                    data: data,
+                                    gas_limit: gas_limit,
+                                    gas_price: gas_price,
+                                    to: contract_address,
+                                    chain_id: chain_id
+                                  })
         elsif secret.present?
           client.json_rpc(:personal_sendTransaction,
                           [{
@@ -148,7 +156,7 @@ class EthereumGateway
                             gasPrice: '0x' + gas_price.to_i.to_s(16)
                           }.compact, secret])
         else
-          raise 'No secret or private_key'
+          raise 'No secret or blockchain_address'
         end
       )
       Peatio::Transaction.new(
@@ -162,6 +170,22 @@ class EthereumGateway
           gas_limit: gas_limit
         }
       ).freeze
+    end
+
+    private
+
+    def create_raw_transaction!(blockchain_address, params)
+      logger.info { { message: 'Create raw transaction', blockchain_address_id: blockchain_address.id } }
+      nonce_lock_key = "nonce_lock:#{blockchain_address.id}"
+      lock_info = @lock_manager.lock(nonce_lock_key, NONCE_LOCK_TTL)
+      raise NonceLocked unless lock_info
+
+      transaction_count = client.json_rpc(:eth_getTransactionCount, [blockchain_address.address, 'latest']).to_i(16)
+      tx = Eth::Tx.new(params.merge(nonce: transaction_count))
+      tx.sign(blockchain_address.private_key)
+      result = client.json_rpc(:eth_sendRawTransaction, [tx.hex])
+      @lock_manager.unlock(lock_info)
+      result
     end
   end
 end

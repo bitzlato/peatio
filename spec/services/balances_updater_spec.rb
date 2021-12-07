@@ -7,13 +7,8 @@ RSpec.describe BalancesUpdater do
     let(:blockchain) { find(:blockchain, key: 'eth-rinkeby') }
 
     before do
-      (1..3).each do |id|
-        stub_request(:post, 'http://127.0.0.1:8545')
-          .with(body: { jsonrpc: '2.0',
-                        id: id,
-                        method: :eth_getBalance,
-                        params: [address, 'latest'] }.to_json)
-          .to_return(body: { jsonrpc: '2.0', result: '0x71a5c4e9fe8a100', id: id }.to_json)
+      (0..2).each do |i|
+        stub_balance_fetching(currency: blockchain.currencies[i], balance: 511_823_000_420_000_000, address: address, id: i + 1)
       end
     end
 

@@ -57,7 +57,6 @@ FactoryBot.define do
           gas_price: 1_000_000_000 }
       end
       association :blockchain, 'bsc-testnet', strategy: :find_or_create, key: 'bsc-testnet'
-      # contract_address: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
     end
 
     trait :eth do
@@ -92,6 +91,7 @@ FactoryBot.define do
           gas_price: 1_000_000_000,
           erc20_contract_address: '0x87099adD3bCC0821B5b151307c147215F839a110' }
       end
+      contract_address { '0x87099adD3bCC0821B5b151307c147215F839a110' }
     end
 
     trait :tom do
@@ -109,6 +109,7 @@ FactoryBot.define do
           gas_price: 1_000_000_000,
           erc20_contract_address: '0xf7970499814654cd13cb7b6e7634a12a7a8a9abc' }
       end
+      contract_address { '0xf7970499814654cd13cb7b6e7634a12a7a8a9abc' }
     end
 
     trait :usdt do
@@ -122,7 +123,8 @@ FactoryBot.define do
       withdraw_fee         { 0.025 }
       position             { 6 }
       options \
-        { { erc20_contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e' } }
+        { { erc20_contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e', gas_limit: 21_000 } }
+      contract_address { '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e' }
     end
 
     trait :ring do
@@ -137,7 +139,8 @@ FactoryBot.define do
       withdraw_fee         { 0.025 }
       position             { 6 }
       options \
-        { { erc20_contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e' } }
+        { { erc20_contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e', gas_limit: 21_000 } }
+      contract_address { '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e' }
     end
 
     trait :mdt do
