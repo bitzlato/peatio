@@ -59,7 +59,11 @@ module CurrencyServices
     end
 
     def volume
-      market_amount
+      if @from_currency == market.base
+        price_object.from_volume
+      else
+        price_object.to_volume
+      end
     end
 
     def inverse_price
@@ -83,24 +87,17 @@ module CurrencyServices
           price_obj[:request_price] = price
           price_obj[:inverse_price] = inverse_price
 
-          if @request_currency == @from_currency
-            price_obj[:from_volume] = @request_volume
-            price_obj[:to_volume] = market.round_amount(price * @request_volume)
-          elsif @request_currency == @to_currency
-            price_obj[:from_volume] = market.round_amount(inverse_price * @request_volume)
-            price_obj[:to_volume] = @request_volume
-          end
         elsif @from_currency == market.quote
           price_obj[:request_price] = inverse_price
           price_obj[:inverse_price] = price
+        end
 
-          if @request_currency == @from_currency
-            price_obj[:from_volume] = @request_volume
-            price_obj[:to_volume] = market.round_amount(inverse_price * @request_volume)
-          elsif @request_currency == @to_currency
-            price_obj[:from_volume] = market.round_amount(price * @request_volume)
-            price_obj[:to_volume] = @request_volume
-          end
+        if @request_currency == @from_currency
+          price_obj[:from_volume] = @request_volume
+          price_obj[:to_volume] = market.round_amount(price_obj.request_price * @request_volume)
+        elsif @request_currency == @to_currency
+          price_obj[:from_volume] = market.round_amount(price_obj.inverse_price * @request_volume)
+          price_obj[:to_volume] = @request_volume
         end
       end
     end
