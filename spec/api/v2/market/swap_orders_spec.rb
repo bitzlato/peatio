@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe API::V2::Market::SwapOrders, type: :request do
+describe API::V2::Market::SwapOrders, type: :request, swap: true do
   let(:member) { create(:member, :level_3) }
   let(:level_0_member) { create(:member, :level_0) }
   let(:token) { jwt_for(member) }
