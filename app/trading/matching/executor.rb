@@ -32,7 +32,7 @@ module Matching
     def execute
       execute!
       # TODO: Queue should exist even if none is listening.
-    rescue TradeExecutionError => e
+    rescue TradeExecutionError, ::Account::AccountError => e
       AMQP::Queue.enqueue(:trade_error, e.options)
       [@maker_order, @taker_order].each do |order|
         order.with_lock do
