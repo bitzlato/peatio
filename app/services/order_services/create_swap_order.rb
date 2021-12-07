@@ -56,9 +56,9 @@ module OrderServices
         swap_order.update!(state: SwapOrder::STATES[:cancel])
         failure(errors: create_order_result.errors)
       end
-    rescue CurrencyServices::SwapPrice::ExchangeCurrencyError, CurrencyServices::SwapPrice::RequestVolumeCurrencyError => _e
+    rescue CurrencyServices::SwapPrice::ExchangeCurrencyError, CurrencyServices::DepthPrice::RequestVolumeCurrencyError => _e
       failure(errors: ['market.swap_order.invalid_currency'])
-    rescue CurrencyServices::SwapPrice::MarketVolumeError => _e
+    rescue CurrencyServices::DepthPrice::MarketVolumeError => _e
       failure(errors: ['market.swap_order.invalid_market_volume'])
     rescue ActiveRecord::RecordInvalid => _e
       failure(errors: ['market.swap_order.invalid_volume_or_price'])
