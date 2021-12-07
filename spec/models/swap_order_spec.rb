@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe SwapOrder, type: :model do
+describe SwapOrder, type: :model, swap: true do
   let(:member) { create :member }
 
   describe '.daily_unified_total_amount_for' do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe OrderServices::CreateSwapOrder do
+describe OrderServices::CreateSwapOrder, swap: true do
   let(:market) { Market.find_spot_by_symbol('btc_usd') }
   let(:account) { create(:account, :usd, balance: 10.to_d) }
   let(:reference_price) { 15.1.to_d }

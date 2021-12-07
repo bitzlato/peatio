@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe CurrencyServices::SwapPrice do
+RSpec.describe CurrencyServices::SwapPrice, swap: true do
   let(:from_currency) { find_or_create(:currency, id: :btc) }
   let(:to_currency) { find_or_create(:currency, id: :usd) }
   let(:market) { Market.find_by(symbol: 'btc_usd') }
