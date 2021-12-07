@@ -22,7 +22,7 @@ module Ethereum
 
     extend Memoist
 
-    def initialize(endpoint, idle_timeout: 5, read_timeout: 1, open_timeout: 1)
+    def initialize(endpoint, idle_timeout: 5, read_timeout: 5, open_timeout: 1)
       @json_rpc_endpoint = URI.parse(endpoint)
       @json_rpc_call_id = 0
       @path = @json_rpc_endpoint.path.empty? ? '/' : @json_rpc_endpoint.path
