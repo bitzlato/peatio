@@ -10,6 +10,18 @@ module API
         market.order.open_orders_limit
       ].freeze
 
+      DESCRIBED_SWAP_ORDERS_ERRORS_MESSAGES = %w[
+        market.swap_order.invalid_market
+        market.swap_order.outdated_price
+        market.swap_order.no_currency_price
+        market.swap_order.reached_weekly_limit
+        market.swap_order.reached_daily_limit
+        market.swap_order.reached_order_limit
+        market.swap_order.invalid_currency
+        market.swap_order.invalid_market_volume
+        market.swap_order.invalid_volume_or_price
+      ].freeze
+
       def create_order(attrs)
         market = ::Market.active.find_spot_by_symbol(attrs[:market])
         service = ::OrderServices::CreateOrder.new(member: current_user)
@@ -46,7 +58,7 @@ module API
         else
           error_message = result.errors.first
 
-          if DESCRIBED_ERRORS_MESSAGES.include?(error_message.to_s)
+          if DESCRIBED_ERRORS_MESSAGES.include?(error_message.to_s) || DESCRIBED_SWAP_ORDERS_ERRORS_MESSAGES.include?(error_message.to_s)
             report_api_error(error_message, request)
           else
             report_exception(error_message)

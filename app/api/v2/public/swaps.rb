@@ -31,12 +31,9 @@ module API
           swap_price_service = CurrencyServices::SwapPrice.new(from_currency: from_currency, to_currency: to_currency,
                                                                request_currency: request_currency, request_volume: params[:request_volume])
 
-          error!({ errors: ['market.swap.no_appropriate_market'] }, 422) unless swap_price_service.market?
+          error!({ errors: ['market.swap.invalid_market'] }, 422) unless swap_price_service.market?
 
-          price_object = swap_price_service.price_object
-          error!({ errors: ['market.swap.no_swap_price'] }, 422) unless price_object.request_price
-
-          present price_object, with: API::V2::Entities::SwapPrice
+          present swap_price_service.price_object, with: API::V2::Entities::SwapPrice
         rescue CurrencyServices::SwapPrice::ExchangeCurrencyError, CurrencyServices::SwapPrice::RequestVolumeCurrencyError => _e
           error!({ errors: ['market.swap_order.invalid_currency'] }, 422)
         rescue CurrencyServices::SwapPrice::MarketVolumeError => _e
