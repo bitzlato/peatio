@@ -147,25 +147,24 @@ module OrderServices
             member_balance: member_account.balance
           )
         end
+        order_subclass.create!(
+          state: ::Order::PENDING,
+          member: @member,
+          ask: market.base_unit,
+          bid: market.quote_unit,
+          market: market,
+          market_type: ::Market::DEFAULT_TYPE,
+          ord_type: ord_type || 'limit',
+          price: price,
+          volume: volume,
+          origin_volume: volume,
+          locked: locked_value,
+          origin_locked: locked_value,
+          uuid: uuid,
+          maker_fee: maker_fee,
+          taker_fee: taker_fee
+        )
       end
-
-      order_subclass.create!(
-        state: ::Order::PENDING,
-        member: @member,
-        ask: market.base_unit,
-        bid: market.quote_unit,
-        market: market,
-        market_type: ::Market::DEFAULT_TYPE,
-        ord_type: ord_type || 'limit',
-        price: price,
-        volume: volume,
-        origin_volume: volume,
-        locked: locked_value,
-        origin_locked: locked_value,
-        uuid: uuid,
-        maker_fee: maker_fee,
-        taker_fee: taker_fee
-      )
     end
 
     # OrderAsk
