@@ -144,6 +144,20 @@ FactoryBot.define do
       secret             { 'changeme' }
     end
 
+    trait :btc_bz_hot do
+      after(:create) do |w|
+        create(:currency_wallet, currency_id: 'btc_bz', wallet_id: w.id)
+      end
+
+      name               { 'Bitcoin BZ Hot Wallet' }
+      address            { '3NwYr8JxjHG2MBkgdBiHCxStSWDzyjS5U8' }
+      kind               { 'hot' }
+      max_balance        { 500.0 }
+      status             { 'active' }
+      uri                { 'http://127.0.0.1:18332' }
+      secret             { 'changeme' }
+    end
+
     trait :fake_deposit do
       after(:create) do |w|
         CurrencyWallet.create(currency_id: 'fake', wallet_id: w.id)

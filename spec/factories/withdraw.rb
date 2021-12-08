@@ -36,6 +36,22 @@ FactoryBot.define do
     type { 'Withdraws::Coin' }
   end
 
+  factory :btc_bz_withdraw, class: 'Withdraws::Coin' do
+    trait :with_deposit_liability do
+      before(:create) do |withdraw|
+        deposit = create(:deposit_btc_bz, member: withdraw.member, amount: withdraw.sum)
+        deposit.accept!
+        deposit.process!
+        deposit.dispatch!
+      end
+    end
+
+    member { create(:member, :level_3) }
+    rid { 'rid' }
+    sum { 10.to_d }
+    type { 'Withdraws::Coin' }
+  end
+
   factory :eth_withdraw, class: 'Withdraws::Coin' do
     currency { Currency.find(:eth) }
     member { create(:member, :level_3) }

@@ -44,6 +44,19 @@ FactoryBot.define do
       association :blockchain, 'btc-testnet', strategy: :find_or_create, key: 'btc-testnet'
     end
 
+    trait :btc_bz do
+      code                 { 'btc_bz' }
+      name                 { 'Bitcoin' }
+      type                 { 'coin' }
+      subunits             { 8 }
+      withdraw_limit_24h   { 0.1 }
+      withdraw_limit_72h   { 1 }
+      withdraw_fee         { 0.01 }
+      position             { 3 }
+      options              { {} }
+      association :blockchain, 'btc-bz-testnet', strategy: :find_or_create, key: 'btc-bz-testnet'
+    end
+
     trait :bnb do
       code                 { 'bnb' }
       name                 { 'bnb' }
