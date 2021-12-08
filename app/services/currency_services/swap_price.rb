@@ -59,11 +59,13 @@ module CurrencyServices
     end
 
     def volume
-      if @from_currency == market.base
+      v = if @from_currency == market.base
         price_object.from_volume
       else
         price_object.to_volume
       end
+
+      market.round_amount(v)
     end
 
     def inverse_price
