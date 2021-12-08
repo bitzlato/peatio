@@ -67,11 +67,10 @@ module CurrencyServices
 
     def volume
       v = if @from_currency == market.base
-        price_object.from_volume
-      else
-        price_object.to_volume
-      end
-
+            price_object.from_volume
+          else
+            price_object.to_volume
+          end
       market.round_amount(v)
     end
 
