@@ -143,9 +143,9 @@ module OrderServices
             ord_type: ord_type,
             price: price,
             volume: volume,
-            market: market,
-            member_balance: member_account.balance
+            market: market
           )
+          locked_value = [locked_value * OrderBid::LOCKING_BUFFER_FACTOR, member_account.balance].min if ord_type == 'market'
         end
       end
 
@@ -182,22 +182,18 @@ module OrderServices
     end
 
     # OrderBid
-    def calc_buy_compute_locked(ord_type:, price:, volume:, market:, member_balance:)
-      value = case ord_type
-              when 'limit'
-                price * volume
-              when 'market'
-                funds = estimate_required_funds(
-                  price_levels: OrderAsk.get_depth(market.symbol),
-                  volume: volume
-                ) { |price, volume| price * volume }
-                # Maximum funds precision defined in Market::FUNDS_PRECISION.
-                funds.round(Market::FUNDS_PRECISION, BigDecimal::ROUND_UP)
-              end
-      [
-        value * OrderBid::LOCKING_BUFFER_FACTOR,
-        member_balance
-      ].min
+    def calc_buy_compute_locked(ord_type:, price:, volume:, market:)
+      case ord_type
+      when 'limit'
+        price * volume
+      when 'market'
+        funds = estimate_required_funds(
+          price_levels: OrderAsk.get_depth(market.symbol),
+          volume: volume
+        ) { |price, volume| price * volume }
+        # Maximum funds precision defined in Market::FUNDS_PRECISION.
+        funds.round(Market::FUNDS_PRECISION, BigDecimal::ROUND_UP)
+      end
     end
 
     def get_member_account(side:, market:)

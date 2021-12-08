@@ -184,5 +184,21 @@ describe OrderServices::CreateOrder do
         end
       end
     end
+
+    context 'with limit ord_type and when member balance is less then order value' do
+      let(:params) do
+        {
+          market: market,
+          side: 'buy',
+          ord_type: 'limit',
+          volume: 100,
+          price: 15
+        }
+      end
+
+      it 'creates order with correct locked' do
+        expect(service.perform(**params).data).to have_attributes(locked: 1500)
+      end
+    end
   end
 end
