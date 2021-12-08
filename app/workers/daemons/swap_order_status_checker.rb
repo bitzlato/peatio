@@ -3,7 +3,7 @@
 module Workers
   module Daemons
     class SwapOrderStatusChecker < Base
-      @sleep_time = 10
+      @sleep_time = 1
 
       def process
         swap_orders = SwapOrder.open.includes(:order)
