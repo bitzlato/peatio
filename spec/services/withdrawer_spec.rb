@@ -4,14 +4,14 @@ describe Withdrawer do
   subject { described_class.new }
 
   let(:member) { create(:member, :barong) }
-  let(:withdraw) { create(:btc_withdraw, :with_deposit_liability).tap(&:accept!).tap(&:process!) }
-  let(:wallet) { find_or_create :wallet, :btc_hot, name: 'Bitcoin Hot Wallet' }
-  let(:gateway) { wallet.blockchain.gateway }
-  let(:blockchain) { wallet.blockchain }
+  let(:currency) { create(:currency, :btc_bz) }
+  let(:withdraw) { create(:btc_bz_withdraw, :with_deposit_liability, currency: currency).tap(&:accept!).tap(&:process!) }
+  let(:blockchain) { create(:blockchain, 'btc-bz-testnet') }
+  let!(:wallet) { create(:wallet, :btc_bz_hot, blockchain: blockchain) }
 
   context do
     before do
-      gateway.class.any_instance.expects(:create_transaction!).returns(transaction)
+      Bitzlato::Wallet.any_instance.expects(:create_transaction!).returns(transaction)
     end
 
     context 'errored' do

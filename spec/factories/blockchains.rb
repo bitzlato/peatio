@@ -70,7 +70,7 @@ FactoryBot.define do
     # end
 
     trait 'bsc-testnet' do
-      key                     { 'btc-testnet' }
+      key                     { 'bsc-testnet' }
       gateway_klass           { BinanceGateway.name }
       name                    { 'Binance Testnet' }
       server                  { 'http://127.0.0.1:18332' }
@@ -88,6 +88,19 @@ FactoryBot.define do
       name                    { 'Bitcoin Testnet' }
       server                  { 'http://127.0.0.1:18332' }
       height                  { 1_350_000 }
+      min_confirmations       { 1 }
+      explorer_address        { 'https://blockchain.info/address/#{address}' }
+      explorer_transaction    { 'https://blockchain.info/tx/#{txid}' }
+      status                  { 'active' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
+    end
+
+    trait 'btc-bz-testnet' do
+      key                     { 'btc-bz-testnet' }
+      gateway_klass           { BitzlatoGateway.name }
+      name                    { 'Bitcoin BZ Testnet' }
+      server                  { 'http://127.0.0.1:18332' }
+      height                  { 1 }
       min_confirmations       { 1 }
       explorer_address        { 'https://blockchain.info/address/#{address}' }
       explorer_transaction    { 'https://blockchain.info/tx/#{txid}' }

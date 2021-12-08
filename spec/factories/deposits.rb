@@ -13,6 +13,14 @@ FactoryBot.define do
       block_number { rand(1..1_349_999) }
     end
 
+    factory :deposit_btc_bz, class: 'Deposits::Coin' do
+      currency { find_or_create :currency, :btc_bz, id: 'btc_bz' }
+      address { create(:payment_address, :btc_address).address }
+      txid { Faker::Lorem.characters(64) }
+      txout { 0 }
+      block_number { rand(1..1_349_999) }
+    end
+
     factory :deposit_usd, class: 'Deposits::Fiat' do
       currency { find_or_create :currency, :usd, id: :usd }
     end
