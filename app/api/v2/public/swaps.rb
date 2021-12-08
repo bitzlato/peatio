@@ -34,9 +34,9 @@ module API
           error!({ errors: ['market.swap.invalid_market'] }, 422) unless swap_price_service.market?
 
           present swap_price_service.price_object, with: API::V2::Entities::SwapPrice
-        rescue CurrencyServices::SwapPrice::ExchangeCurrencyError, CurrencyServices::SwapPrice::RequestVolumeCurrencyError => _e
+        rescue CurrencyServices::SwapPrice::ExchangeCurrencyError, CurrencyServices::DepthPrice::RequestVolumeCurrencyError => _e
           error!({ errors: ['market.swap_order.invalid_currency'] }, 422)
-        rescue CurrencyServices::SwapPrice::MarketVolumeError => _e
+        rescue CurrencyServices::DepthPrice::MarketVolumeError => _e
           error!({ errors: ['market.swap_order.invalid_market_volume'] }, 422)
         end
 
