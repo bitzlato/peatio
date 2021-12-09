@@ -11,7 +11,7 @@ class EthereumGateway
     def call(from_address:, to_address:, amounts:, gas_limits:, secret: nil, blockchain_address: nil, gas_factor: 1, chain_id: nil)
       raise NoAmounts if amounts.empty?
 
-      raise 'Must be secret or blockchain_address' if (secret.nil? && blockchain_address.nil?) || (secret.present? && blockchain_address.present?)
+      raise 'Must be secret or blockchain_address' if secret.nil? && blockchain_address.nil?
 
       # TODO: Сообщать о том что не хватает газа ДО выполнения, так как он потратися
       # Не выводить базовую валюту пока не счету есть токены
