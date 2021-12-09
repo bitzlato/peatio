@@ -64,6 +64,7 @@ class Withdrawer
       withdraw.fail!
       logger.warn e.as_json.merge(id: withdraw.id)
     rescue WalletLowBalance => e
+      Peatio::SlackNotifier.notifications.ping('There is not enough money in the system wallet to withdraw funds.')
       logger.warn e.as_json.merge(id: withdraw.id)
       report_exception e, true, withdraw_id: withdraw.id
       withdraw.err! e
