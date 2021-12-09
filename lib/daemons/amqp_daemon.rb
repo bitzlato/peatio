@@ -87,11 +87,10 @@ workers = ARGV.map do |arg|
       end
     end
     if defined? Bugsnag
-      Bugsnag.configure do |config|
-        config.add_on_error(proc do |event|
-          event.add_metadata(:amqp, { message_payload: payload, message_metadata: metadata, message_delivery_info: delivery_info })
-        end)
+      callback = proc do |event|
+        event.add_metadata(:amqp, { message_payload: payload, message_metadata: metadata, message_delivery_info: delivery_info })
       end
+      Bugsnag.add_on_error(callback)
     end
 
     # Invoke Worker#process with floating number of arguments.
@@ -114,6 +113,10 @@ workers = ARGV.map do |arg|
     end
 
     report_exception(e, true, { message_payload: payload, message_metadata: metadata, message_delivery_info: delivery_info })
+  ensure
+    if defined? Bugsnag
+      Bugsnag.remove_on_error(callback)
+    end
   end
 
   worker

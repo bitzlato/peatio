@@ -53,7 +53,7 @@ gem 'jwt-multisig', '~> 1.0.0'
 gem 'jwt-rack', '~> 0.1.0', require: false
 gem 'memoist', '~> 0.16.0'
 gem 'method-not-implemented', '~> 1.0.1'
-gem 'net-http-persistent', '~> 3.0.1'
+gem 'net-http-persistent', '~> 4.0.1'
 gem 'peatio', github: 'bitzlato/peatio-core'
 gem 'rack-cors', '~> 1.0.6', require: false
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
