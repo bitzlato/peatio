@@ -16,6 +16,9 @@ module Workers
         orders = orders.with_market(market_symbol) if market_symbol.present?
         orders.find_each do |order|
           submit_order(order.id)
+        rescue Account::CannotLockFundsError => e
+          ::AMQP::Queue.enqueue(:trade_error, e.message)
+          report_exception e, false, order: order.as_json
         rescue StandardError => e
           ::AMQP::Queue.enqueue(:trade_error, e.message)
           report_exception e, true, order: order.as_json
@@ -36,6 +39,9 @@ module Workers
 
           cancel_order(payload.dig('order', 'id'))
         end
+      rescue Account::CannotLockFundsError => e
+        ::AMQP::Queue.enqueue(:trade_error, e.message)
+        report_exception e, false, payload: payload
       rescue StandardError => e
         ::AMQP::Queue.enqueue(:trade_error, e.message)
         report_exception e, true, payload: payload
@@ -66,9 +72,7 @@ module Workers
                                 Peatio::App.config.market_specific_workers ? order.market_id : nil)
         end
       rescue StandardError => e
-        report_exception e, true, order_id: id
         reject_order_in_transaction id
-
         raise e
       end
 
