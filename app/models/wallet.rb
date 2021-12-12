@@ -178,7 +178,7 @@ class Wallet < ApplicationRecord
 
   def can_withdraw_for?(withdraw)
     currency = withdraw.currency
-    amount = withdraw.amount + withdraw.fee
+    amount = withdraw.amount
 
     ((balance || {})[currency.id].to_d - amount).positive?
   end
