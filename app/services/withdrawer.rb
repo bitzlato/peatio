@@ -8,7 +8,7 @@ class Withdrawer
     end
 
     def as_json
-      @options.merge message: message
+      @options.merge message: @message
     end
 
     def to_s
