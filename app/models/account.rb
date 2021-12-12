@@ -2,6 +2,7 @@
 
 class Account < ApplicationRecord
   AccountError = Class.new(StandardError)
+  CannotLockFundsError = Class.new(AccountError)
 
   self.primary_keys = :currency_id, :member_id
 
@@ -99,7 +100,7 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_lock_funds!(amount)
-    raise AccountError, "Cannot lock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance}, locked: #{locked})." if amount <= ZERO || amount > balance
+    raise CannotLockFundsError, "Cannot lock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance}, locked: #{locked})." if amount <= ZERO || amount > balance
 
     { balance: balance - amount, locked: locked + amount }
   end
