@@ -51,6 +51,7 @@ class Order < ApplicationRecord
 
   validates :ord_type, :volume, :origin_volume, :locked, :origin_locked, presence: true
   validates :price, numericality: { greater_than: 0 }, if: ->(order) { order.ord_type == 'limit' }
+  validates :locked, numericality: { greater_than_or_equal_to: 0 }
 
   validates :origin_volume,
             numericality: { greater_than: 0, greater_than_or_equal_to: ->(order) { order.market.min_amount } },
