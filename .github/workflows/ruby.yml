@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.7.4']
+        ruby-version: ['2.7.5']
         ci_node_total: [2]
         ci_node_index: [0, 1]
     services:
