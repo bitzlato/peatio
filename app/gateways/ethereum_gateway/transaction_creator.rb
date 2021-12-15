@@ -143,6 +143,7 @@ class EthereumGateway
                                     gas_limit: gas_limit,
                                     gas_price: gas_price,
                                     to: contract_address,
+                                    value: 0,
                                     chain_id: chain_id
                                   })
         elsif secret.present?
