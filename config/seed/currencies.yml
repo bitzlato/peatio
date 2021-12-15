@@ -51,7 +51,7 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               3
-  blockchain_key: eth-rinkeby
+  blockchain_key: eth-ropsten
   options:
     # ETH tx fees configurations.
     #
@@ -79,7 +79,7 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               4
-  blockchain_key: eth-rinkeby
+  blockchain_key: eth-ropsten
   options:
     # ERC20 tx fees configurations.
     #

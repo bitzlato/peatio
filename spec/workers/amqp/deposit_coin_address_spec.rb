@@ -26,7 +26,6 @@ describe Workers::AMQP::DepositCoinAddress do
 
   context 'when USE_PRIVATE_KEY is true' do
     before do
-      ENV['USE_PRIVATE_KEY'] = 'true'
       Eth::Key
         .any_instance
         .expects(:address)
@@ -37,7 +36,9 @@ describe Workers::AMQP::DepositCoinAddress do
         .returns('private_hex')
     end
 
-    after do
+    around do |example|
+      ENV['USE_PRIVATE_KEY'] = 'true'
+      example.run
       ENV.delete('USE_PRIVATE_KEY')
     end
 
@@ -49,7 +50,17 @@ describe Workers::AMQP::DepositCoinAddress do
     end
   end
 
-  context 'when USE_PRIVATE_KEY is not true' do
+  context 'when member has same type address' do
+    it 'sets common address to payment address' do
+      ropsten_blockchain = create(:blockchain, 'eth-ropsten')
+      blockchain_address = create(:blockchain_address)
+      member.payment_address(ropsten_blockchain).update!(address: blockchain_address.address)
+      described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
+      expect(payment_address.reload).to have_attributes(address: blockchain_address.address.downcase)
+    end
+  end
+
+  context 'when USE_PRIVATE_KEY is not set' do
     let(:secret) { PasswordGenerator.generate(64) }
     let(:create_address_result) do
       { address: address,

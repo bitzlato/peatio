@@ -8,7 +8,5 @@ Rake::Task['seed:engines'].invoke
 Rake::Task['seed:markets'].invoke
 Rake::Task['seed:wallets'].invoke
 Rake::Task['seed:trading_fees'].invoke
-Rake::Task['seed:whitelisted_smart_contracts'].invoke
 
-member = Member.create!(level: 3, role: 'member', uid: 'U123456789', state: :active)
-member.payment_address(Blockchain.find_by!(key: 'bsc-testnet'))
+Member.create!(level: 3, role: 'member', uid: 'U123456789', state: :active)
