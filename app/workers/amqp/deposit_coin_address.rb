@@ -14,11 +14,6 @@ module Workers
           return
         end
 
-        unless ENV.true?('USE_PRIVATE_KEY') ? blockchain.gateway_class.implements?(:create_private_address!) : blockchain.gateway_class.implements?(:create_address!)
-          Rails.logger.warn "Skip deposit coin address for blockchain #{payload}. It does not implement create_address!"
-          return
-        end
-
         member.payment_address(blockchain).tap do |pa|
           pa.with_lock do
             if pa.address.present?
@@ -27,15 +22,10 @@ module Workers
             else
               Rails.logger.info("Coin deposit adress for member_id:#{member.id}, blockchain_id:#{blockchain.id}")
             end
-            if ENV.true?('USE_PRIVATE_KEY')
-              blockchain_address = blockchain.create_private_address! || raise("No result when creating adress for #{member.id} #{currency}")
-              pa.update!(address: blockchain_address.address)
-            else
-              result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
-              pa.update!(address: result[:address],
-                         secret: result[:secret],
-                         details: result[:details])
-            end
+
+            result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
+            pa.update(result.slice(:address, :secret, :details))
+
             Rails.logger.info("Coined #{pa.address} for member_id:#{member.id}, blockchain_id:#{blockchain.id}")
           end
 
