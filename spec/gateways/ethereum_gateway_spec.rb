@@ -66,4 +66,42 @@ describe ::EthereumGateway do
       gateway.approve!(address: address, secret: secret, spender_address: fee_wallet.address, contract_address: contract_address)
     end
   end
+
+  describe '#create_address!' do
+    context 'when USE_PRIVATE_KEY is not true' do
+      before do
+        ENV['USE_PRIVATE_KEY'] = 'false'
+      end
+
+      after do
+        ENV.delete('USE_PRIVATE_KEY')
+      end
+
+      it 'create personal address' do
+        described_class
+          .any_instance
+          .expects(:create_personal_address!)
+
+        gateway.create_address!
+      end
+    end
+
+    context 'when USE_PRIVATE_KEY is true' do
+      before do
+        ENV['USE_PRIVATE_KEY'] = 'true'
+      end
+
+      after do
+        ENV.delete('USE_PRIVATE_KEY')
+      end
+
+      it 'create private address' do
+        described_class
+          .any_instance
+          .expects(:create_private_address!)
+
+        gateway.create_address!
+      end
+    end
+  end
 end

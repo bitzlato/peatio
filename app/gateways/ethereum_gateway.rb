@@ -59,14 +59,24 @@ class EthereumGateway < AbstractGateway
   end
 
   def create_address!(secret = nil)
-    AddressCreator
-      .new(client)
-      .call(secret)
+    if ENV.true?('USE_PRIVATE_KEY')
+      create_private_address!
+    else
+      create_personal_address!(secret)
+    end
   end
 
   def create_private_address!
     key = Eth::Key.new
-    BlockchainAddress.create!(address: key.address, address_type: 'ethereum', private_key_hex: key.private_hex)
+    blockchain_address = BlockchainAddress.create!(address: key.address, address_type: 'ethereum', private_key_hex: key.private_hex)
+
+    { address: blockchain_address.address }
+  end
+
+  def create_personal_address!(secret = nil)
+    AddressCreator
+      .new(client)
+      .call(secret)
   end
 
   def create_transaction!(from_address:,
