@@ -168,6 +168,10 @@ class EthereumGateway < AbstractGateway
   end
 
   def build_client
-    ::Ethereum::Client.new(blockchain.server, idle_timeout: IDLE_TIMEOUT)
+    client_options = (blockchain.client_options || {}).symbolize_keys
+                                                      .slice(:idle_timeout, :read_timeout, :open_timeout)
+                                                      .reverse_merge(idle_timeout: IDLE_TIMEOUT)
+
+    ::Ethereum::Client.new(blockchain.server, **client_options)
   end
 end
