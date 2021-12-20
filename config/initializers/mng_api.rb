@@ -16,7 +16,7 @@ yaml = ERB.new(raw_file).result
     end
     if key.private?
       raise ArgumentError, "keychain. #{id} was set to private key, " \
-                           'however it should be public (in config/management_api_v1.yml).'
+                           'however it should be public (in config/management_api.yml).'
     end
     x[:keychain][id][:value] = key
   end
@@ -26,7 +26,7 @@ yaml = ERB.new(raw_file).result
       scope[list] = scope.fetch(list, []).map(&:to_sym)
       if list == :mandatory_signers && scope[list].empty?
         raise ArgumentError, "scopes.#{scope}.#{list} is empty, " \
-                             'however it should contain at least one value (in config/management_api_v1.yml).'
+                             'however it should contain at least one value (in config/management_api.yml).'
       end
     end
   end

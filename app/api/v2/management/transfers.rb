@@ -16,7 +16,7 @@ module API
           requires :category,
                    type: String,
                    desc: 'Transfer Category.'
-          optional :description,
+          requires :description,
                    type: String,
                    desc: 'Transfer Description.'
 
