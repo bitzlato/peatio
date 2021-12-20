@@ -322,6 +322,22 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         end
       end
 
+      context 'with number address for Bitzlato beneficiary' do
+        let(:currency) { create(:currency, :btc_bz) }
+        let(:beneficiary_data) do
+          {
+            currency: currency.code,
+            name: 'Bitzlato Beneficiary',
+            data: { address: '111' }.to_json
+          }
+        end
+
+        it do
+          api_post endpoint, params: beneficiary_data, token: token
+          expect(response).to include_api_error('account.beneficiary.invalid_address')
+        end
+      end
+
       context 'data without address' do
         it do
           beneficiary_data[:data] = { memo: :memo }.to_json
