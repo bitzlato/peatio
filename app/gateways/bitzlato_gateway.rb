@@ -14,10 +14,11 @@ class BitzlatoGateway < AbstractGateway
 
   def self.valid_address?(address)
     return false if BitcoinGateway.valid_address?(address)
+    return false unless address[0].match?(/[A-Za-z]/)
 
     # Take regexp from p2p, but increase length size
     # https://chat.lgk.one/bitzlato/pl/e4ixc1wyxpy13d84tezdcbfy4a
-    address =~ /^[a-zA-Z0-9_]{2,28}$/i
+    address =~ /^[a-zA-Z0-9_]{2,28}$/
   end
 
   def load_balance(_address, currency)
