@@ -13,6 +13,8 @@ EnvironmentFile=<%= current_path %>/.env.daemons
 WorkingDirectory=<%= current_path %>
 ExecStart=/home/<%= fetch(:user) %>/.rbenv/bin/rbenv exec bundle exec ruby ./lib/daemons/amqp_daemon.rb %i
 ExecStop=/bin/kill -TERM $MAINPID
+MemoryHigh=1024M
+MemoryMax=1200M
 
 KillMode=mixed
 Restart=always
