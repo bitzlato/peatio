@@ -7,6 +7,8 @@ class PaymentAddress < ApplicationRecord
   include Vault::EncryptedModel
   include AASM
 
+  TRANSACTION_SLEEP_MINUTES = 15
+
   strip_attributes
 
   vault_lazy_decrypt!
@@ -37,7 +39,7 @@ class PaymentAddress < ApplicationRecord
     event :collect do
       transitions from: %i[pending none done], to: :collecting do
         guard do
-          last_transfer_try_at.nil? || last_transfer_try_at < 30.minutes.ago
+          last_transfer_try_at.nil? || last_transfer_try_at < TRANSACTION_SLEEP_MINUTES.minutes.ago
         end
       end
       after do
@@ -53,7 +55,7 @@ class PaymentAddress < ApplicationRecord
     event :refuel_gas do
       transitions from: %i[pending none done], to: :gas_refueling do
         guard do
-          last_transfer_try_at.nil? || last_transfer_try_at < 30.minutes.ago
+          last_transfer_try_at.nil? || last_transfer_try_at < TRANSACTION_SLEEP_MINUTES.minutes.ago
         end
       end
       after do
