@@ -1,0 +1,45 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://127.0.0.1:8090/wallet/getaccount
+    body:
+      encoding: UTF-8
+      string: '{"address":"41954f4930a2057860956eaa824137669d5398258a"}'
+    headers:
+      User-Agent:
+      - Faraday v1.5.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '30'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 18 Jan 2022 15:26:43 GMT
+      Content-Type:
+      - application/json;charset=utf-8
+      Content-Length:
+      - '633'
+      Server:
+      - Jetty(9.4.z-SNAPSHOT)
+    body:
+      encoding: UTF-8
+      string: '{"address": "41954f4930a2057860956eaa824137669d5398258a","balance":
+        1997891000,"create_time": 1642505439000,"latest_opration_time": 1642519188000,"free_net_usage":
+        1270,"latest_consume_free_time": 1642518750000,"account_resource": {},"owner_permission":
+        {"permission_name": "owner","threshold": 1,"keys": [{"address": "41954f4930a2057860956eaa824137669d5398258a","weight":
+        1}]},"active_permission": [{"type": "Active","id": 2,"permission_name": "active","threshold":
+        1,"operations": "7fff1fc0033e3b00000000000000000000000000000000000000000000000000","keys":
+        [{"address": "41954f4930a2057860956eaa824137669d5398258a","weight": 1}]}]}
+
+        '
+  recorded_at: Tue, 18 Jan 2022 15:26:43 GMT
+recorded_with: VCR 6.0.0

@@ -3,6 +3,10 @@
 class AbstractGateway
   attr_reader :blockchain, :client
 
+  def self.address_type
+    nil
+  end
+
   def self.supports_cash_addr_format?
     false
   end

@@ -97,7 +97,7 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
-  config.before do
+  config.before do |_example|
     DatabaseCleaner.start
     AMQP::Queue.stubs(:publish)
     KlineDB.stubs(:kline).returns([])
@@ -111,14 +111,14 @@ RSpec.configure do |config|
     [%w[btc btc-testnet], %w[usd dummy], %w[eur dummy]].each do |bc|
       FactoryBot.create(:blockchain_currency, bc[0], blockchain: Blockchain.find_by!(key: bc[1]), currency_id: bc[0])
     end
-    parent = FactoryBot.create(:blockchain_currency, 'eth', blockchain: Blockchain.find_by!(key: 'eth-rinkeby'), currency_id: 'eth')
+    parent = FactoryBot.find_or_create(:blockchain_currency, 'eth', blockchain: Blockchain.find_by!(key: 'eth-rinkeby'), currency_id: 'eth')
     [%w[trst eth-rinkeby], %w[ring eth-rinkeby]].each do |bc|
-      FactoryBot.create(:blockchain_currency, bc[0], blockchain: Blockchain.find_by!(key: bc[1]), currency_id: bc[0], parent_id: parent.id)
+      FactoryBot.find_or_create(:blockchain_currency, bc[0], blockchain: Blockchain.find_by!(key: bc[1]), currency_id: bc[0], parent_id: parent.id)
     end
 
     Wallet.delete_all
     %i[eth_deposit eth_hot eth_warm eth_fee trst_deposit trst_hot btc_hot btc_deposit].each do |name|
-      FactoryBot.create(:wallet, name)
+      FactoryBot.find_or_create(:wallet, name)
     end
 
     %i[btc_usd btc_eth btc_eth_qe].each do |market|

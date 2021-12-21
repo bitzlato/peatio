@@ -17,6 +17,7 @@ module Workers
       def process
         # TODO: select only payment addresses with enough balance
         Rails.logger.info('Check collectable balances on PaymentAddresses')
+
         PaymentAddress.collection_required.lock.each do |payment_address|
           next if payment_address.blockchain.disable_collection
           next if success_state?(payment_address.last_transfer_status) && \
@@ -44,6 +45,7 @@ module Workers
         return unless payment_address.has_collectable_balances?
 
         Rails.logger.info("PaymentAddress #{payment_address.address} has collectable balances")
+
         if payment_address.has_enough_gas_to_collect?
           Rails.logger.info("PaymentAddress #{payment_address.address} has enough gas to collect. Collect it!")
           payment_address.collect!

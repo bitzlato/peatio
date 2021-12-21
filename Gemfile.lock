@@ -532,7 +532,6 @@ GEM
       rubocop (>= 1.7.0, < 2.0)
     rubocop-rspec (2.6.0)
       rubocop (~> 1.19)
-    ruby-prof (0.17.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
     ruby_dep (1.5.0)
@@ -561,6 +560,7 @@ GEM
       sshkit (~> 1.12)
     strip_attributes (1.11.0)
       activemodel (>= 3.0, < 7.0)
+    test-prof (1.0.7)
     thin (1.8.1)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
@@ -582,6 +582,7 @@ GEM
     vault-rails (0.7.1)
       activesupport (>= 5.0)
       vault (~> 0.14)
+    vcr (6.0.0)
     webmock (3.12.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -602,6 +603,7 @@ DEPENDENCIES
   amazing_print
   annotate
   arel-is-blank (~> 1.0.0)
+  base58 (~> 0.2.3)
   bitzlato!
   bootsnap (>= 1.1.0)
   brakeman
@@ -669,6 +671,7 @@ DEPENDENCIES
   method-not-implemented (~> 1.0.1)
   mocha (~> 1.8)
   money!
+  money-tree (~> 0.10)
   net-http-persistent (~> 4.0.1)
   parallel_tests
   peatio!
@@ -693,7 +696,6 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails
   rubocop-rspec
-  ruby-prof (~> 0.17.0)
   safe_yaml (~> 1.0.5)
   scout_apm (~> 2.4)
   sd_notify (~> 0.1.1)
@@ -701,11 +703,13 @@ DEPENDENCIES
   slack-notifier (~> 2.4)
   slackistrano
   strip_attributes
+  test-prof (~> 1.0)
   timecop (~> 0.9)
   validate_url (~> 1.0.4)
   validates_lengths_from_database (~> 0.7.0)
   vault (~> 0.16)
   vault-rails (~> 0.7.1)
+  vcr (~> 6.0)
   webmock (~> 3.5)
 
 RUBY VERSION

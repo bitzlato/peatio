@@ -356,6 +356,7 @@ CREATE TABLE public.blockchain_currencies (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     base_factor bigint NOT NULL,
+    options jsonb,
     withdraw_fee numeric(32,18) DEFAULT 0 NOT NULL,
     min_deposit_amount numeric(32,18) DEFAULT 0 NOT NULL,
     CONSTRAINT blockchain_currencies_contract_address CHECK ((((parent_id IS NOT NULL) AND (contract_address IS NOT NULL)) OR ((parent_id IS NULL) AND (contract_address IS NULL))))
@@ -3441,8 +3442,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220110182834'),
 ('20220113150944'),
 ('20220113155904'),
+('20220119094838'),
 ('20220120134412'),
 ('20220120142856'),
+('20220124090404'),
 ('20220126084415'),
 ('20220127104954'),
 ('20220131124813'),
