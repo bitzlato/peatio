@@ -41,7 +41,7 @@ class Money
     attr_reader :currency_record
 
     delegate :priority, :subunit_to_unit, :contract_address, :precision, :name, :subunits, :base_factor,
-             :min_collection_amount, :min_deposit_amount, :crypto?, :token?, :blockchain, to: :currency_record
+             :min_collection_amount, :min_deposit_amount, :crypto?, :token?, :blockchain, :options, to: :currency_record
 
     def initialize_data!
       @currency_record = ::Currency.find(id)

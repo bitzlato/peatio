@@ -66,7 +66,7 @@ class Withdrawer
     rescue WalletLowBalance => e
       Peatio::SlackNotifier.notifications.ping(e.message)
       logger.warn e.as_json.merge(withdraw_id: withdraw.id)
-      report_exception e, true, withdraw_id: withdraw.iid
+      report_exception e, true, withdraw_id: withdraw.id
       withdraw.err! e
     rescue Ethereum::Client::InsufficientFunds
       withdraw.fail!
@@ -91,7 +91,7 @@ class Withdrawer
 
     # TODO: updates wallet balance and validate that withdraw can be executed before creating transaction
     BalancesUpdater.new(blockchain: withdraw_wallet.blockchain, address: withdraw_wallet.address).perform
-    raise(WalletLowBalance, "Low balance on hot wallet: #{withdraw_wallet.name}(#{withdraw_wallet.id}) for withdraw", wallet_id: withdraw_wallet.id) unless withdraw_wallet.can_withdraw_for?(withdraw)
+    raise(WalletLowBalance.new("Low balance on hot wallet: #{withdraw_wallet.name}(#{withdraw_wallet.id}) for withdraw", wallet_id: withdraw_wallet.id)) unless withdraw_wallet.can_withdraw_for?(withdraw)
 
     contract_address = BlockchainCurrency.find_by(blockchain: withdraw_wallet.blockchain, currency: withdraw.currency)&.contract_address
     withdraw_wallet.blockchain.gateway

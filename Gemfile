@@ -74,7 +74,9 @@ gem 'pry-byebug', '~> 3.7'
 
 gem 'money', github: 'bitzlato/money', branch: 'main'
 
+gem 'base58', '~> 0.2.3'
 gem 'eth', '~> 0.4.16'
+gem 'money-tree', '~> 0.10'
 
 group :development, :test do
   gem 'bullet',       '~> 5.9'
@@ -111,6 +113,7 @@ group :test do
   gem 'rspec-rails', '~> 3.8', '>= 3.8.2'
   gem 'rspec-retry', '~> 0.6'
   gem 'timecop', '~> 0.9'
+  gem 'vcr', '~> 6.0'
   gem 'webmock', '~> 3.5'
 end
 

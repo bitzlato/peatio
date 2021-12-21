@@ -586,6 +586,7 @@ GEM
     vault-rails (0.7.1)
       activesupport (>= 5.0)
       vault (~> 0.14)
+    vcr (6.0.0)
     webmock (3.12.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -606,6 +607,7 @@ DEPENDENCIES
   amazing_print
   annotate
   arel-is-blank (~> 1.0.0)
+  base58 (~> 0.2.3)
   bitzlato!
   bootsnap (>= 1.1.0)
   brakeman
@@ -673,6 +675,7 @@ DEPENDENCIES
   method-not-implemented (~> 1.0.1)
   mocha (~> 1.8)
   money!
+  money-tree (~> 0.10)
   net-http-persistent (~> 4.0.1)
   parallel_tests
   peatio!
@@ -710,6 +713,7 @@ DEPENDENCIES
   validates_lengths_from_database (~> 0.7.0)
   vault (~> 0.16)
   vault-rails (~> 0.7.1)
+  vcr (~> 6.0)
   webmock (~> 3.5)
 
 RUBY VERSION

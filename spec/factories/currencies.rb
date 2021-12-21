@@ -180,5 +180,56 @@ FactoryBot.define do
       subunits { 6 }
       after(:create) { |currency| currency.blockchain_currency.update!(contract_address: '0xdac17f958d2ee523a2206206994597c13d831ec7', parent_id: find_or_create(:currency, 'eth', id: 'eth').blockchain_currency.id) }
     end
+
+    trait :trx do
+      association :blockchain, 'tron-testnet', strategy: :find_or_create, key: 'tron-testnet'
+      precision            { 6 }
+      subunits             { 6 }
+      code                 { 'trx' }
+      name                 { 'Tron' }
+      type                 { 'coin' }
+      withdraw_limit_24h   { 0.1 }
+      withdraw_limit_72h   { 1 }
+      withdraw_fee         { 0.025 }
+      position             { 7 }
+      options do
+        { bandwidth_limit: 270 }
+      end
+
+      after(:create) do |currency|
+        currency.blockchain_currency.update!({
+                                               gas_limit: 10_000_000 # SUNS
+                                             })
+      end
+    end
+
+    trait :'usdj-trc20' do
+      association :blockchain, 'tron-testnet', strategy: :find_or_create, key: 'tron-testnet'
+      precision            { 6 }
+      subunits             { 18 }
+      code                 { 'trx-usdj' }
+      name                 { 'Tron USDJ' }
+      type                 { 'coin' }
+      withdraw_limit_24h   { 0.1 }
+      withdraw_limit_72h   { 1 }
+      withdraw_fee         { 0.025 }
+      position             { 8 }
+      contract_address     { 'TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL' }
+      parent_id            { 'trx' }
+      options do
+        {
+          bandwidth_limit: 270,
+          energy_limit: 15_000,
+          trc20_contract_address: 'TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL'
+        }
+      end
+      after(:create) do |currency|
+        currency.blockchain_currency.update!({
+                                               contract_address: 'TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL',
+                                               gas_limit: 10_000_000, # SUNS
+                                               parent_id: find_or_create(:currency, 'trx', id: 'trx').blockchain_currency.id
+                                             })
+      end
+    end
   end
 end
