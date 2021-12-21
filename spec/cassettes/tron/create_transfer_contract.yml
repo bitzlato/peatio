@@ -1,0 +1,39 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://127.0.0.1:8090/wallet/easytransferbyprivate
+    body:
+      encoding: UTF-8
+      string: '{"privateKey":"8296e92ed906a4360d9596a73e5271d60ded3197a58ba4dc11c5ac8eabe884d7","toAddress":"4175f6a3be1bf8d02e6f82ec24e210e91acec38be8","amount":100}'
+    headers:
+      User-Agent:
+      - Faraday v1.5.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '30'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 18 Jan 2022 15:35:40 GMT
+      Content-Type:
+      - application/json;charset=utf-8
+      Content-Length:
+      - '927'
+      Server:
+      - Jetty(9.4.z-SNAPSHOT)
+    body:
+      encoding: UTF-8
+      string: '{"result":{"result":true},"transaction":{"signature":["2d16b04d05d6a54a638575a901f3a2294d14aad6f64105b2af014fa6eb28d57731c5a44791bee96677e9644dff48fddaef4453b514829725ae6039c03b45ea3901"],"txID":"faf74dd6d46068d61dcf7eba3588df3cd366e3c0ec6e652d17e03aa7fa3539e9","raw_data":{"contract":[{"parameter":{"value":{"amount":100,"owner_address":"41954f4930a2057860956eaa824137669d5398258a","to_address":"4175f6a3be1bf8d02e6f82ec24e210e91acec38be8"},"type_url":"type.googleapis.com/protocol.TransferContract"},"type":"TransferContract"}],"ref_block_bytes":"392b","ref_block_hash":"56b2e57b88844b8f","expiration":1642520199000,"timestamp":1642520140105},"raw_data_hex":"0a02392b220856b2e57b88844b8f40d8fed4eee62f5a65080112610a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412300a1541954f4930a2057860956eaa824137669d5398258a12154175f6a3be1bf8d02e6f82ec24e210e91acec38be8186470c9b2d1eee62f"}}
+
+        '
+  recorded_at: Tue, 18 Jan 2022 15:35:40 GMT
+recorded_with: VCR 6.0.0

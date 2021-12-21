@@ -215,5 +215,23 @@ FactoryBot.define do
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
+
+    trait :trx_hot do
+      address = 'TPagfXG2ZKSrzWez9YTJUE7tr4c9kAvRCH'
+      private_key = '8296e92ed906a4360d9596a73e5271d60ded3197a58ba4dc11c5ac8eabe884d7'
+
+      association :blockchain, factory: [:blockchain, 'tron-testnet'], strategy: :find_or_create, key: 'tron-testnet'
+      name               { 'Tron Hot Wallet' }
+      address            { address }
+      kind               { 'hot' }
+      max_balance        { 100.0 }
+      status             { 'active' }
+      uri                { 'http://127.0.0.1:8090' }
+
+      after(:create) do |w|
+        CurrencyWallet.create(currency_id: 'trx', wallet_id: w.id)
+        BlockchainAddress.create(address: address, address_type: :tron, private_key_hex: private_key)
+      end
+    end
   end
 end

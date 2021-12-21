@@ -19,9 +19,9 @@ class CreateBlockchainCurrencies < ActiveRecord::Migration[5.2]
 
     Blockchain.find_each do |blockchain|
       parent_currency = Currency.find_by(blockchain_id: blockchain.id, parent_id: nil)
-      next if parent_currency.nil?
+      next unless parent_currency
 
-      parent_blockchain_currency = BlockchainCurrency.create!(blockchain: blockchain, currency: parent_currency, gas_limit: parent_currency.options['gas_limit'])
+      parent_blockchain_currency = BlockchainCurrency.create!(blockchain: blockchain, currency: parent_currency, gas_limit: parent_currency.gas_limit)
       Currency.where(blockchain_id: blockchain.id).where.not(parent_id: nil).find_each do |currency|
         BlockchainCurrency.create!(blockchain: blockchain, currency: currency, contract_address: currency.contract_address, gas_limit: currency.options['gas_limit'], parent_id: parent_blockchain_currency.id)
       end

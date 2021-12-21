@@ -1,0 +1,111 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://127.0.0.1:8090/wallet/triggersmartcontract
+    body:
+      encoding: UTF-8
+      string: '{"contract_address":"4170082243784dcdf3042034e7b044d6d342a91360","function_selector":"transfer(address,uint256)","parameter":"00000000000000000000000075f6a3be1bf8d02e6f82ec24e210e91acec38be80000000000000000000000000000000000000000000000000000000000000064","fee_limit":10000000,"owner_address":"41954f4930a2057860956eaa824137669d5398258a"}'
+    headers:
+      User-Agent:
+      - Faraday v1.5.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '30'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 18 Jan 2022 15:37:53 GMT
+      Content-Type:
+      - application/json;charset=utf-8
+      Content-Length:
+      - '1124'
+      Server:
+      - Jetty(9.4.z-SNAPSHOT)
+    body:
+      encoding: UTF-8
+      string: '{"result":{"result":true},"transaction":{"visible":false,"txID":"e86af3a08d8c21075cd203f5060208476bc51decf019c0bfa9c8748d47ba3ffc","raw_data":{"contract":[{"parameter":{"value":{"data":"a9059cbb00000000000000000000000075f6a3be1bf8d02e6f82ec24e210e91acec38be80000000000000000000000000000000000000000000000000000000000000064","owner_address":"41954f4930a2057860956eaa824137669d5398258a","contract_address":"4170082243784dcdf3042034e7b044d6d342a91360"},"type_url":"type.googleapis.com/protocol.TriggerSmartContract"},"type":"TriggerSmartContract"}],"ref_block_bytes":"3957","ref_block_hash":"b037c90b29b7b27b","expiration":1642520331000,"fee_limit":10000000,"timestamp":1642520273463},"raw_data_hex":"0a0239572208b037c90b29b7b27b40f885ddeee62f5aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a1541954f4930a2057860956eaa824137669d5398258a12154170082243784dcdf3042034e7b044d6d342a913602244a9059cbb00000000000000000000000075f6a3be1bf8d02e6f82ec24e210e91acec38be8000000000000000000000000000000000000000000000000000000000000006470b7c4d9eee62f900180ade204"}}
+
+        '
+  recorded_at: Tue, 18 Jan 2022 15:37:53 GMT
+- request:
+    method: post
+    uri: http://127.0.0.1:8090/wallet/gettransactionsign
+    body:
+      encoding: UTF-8
+      string: '{"transaction":{"visible":false,"txID":"e86af3a08d8c21075cd203f5060208476bc51decf019c0bfa9c8748d47ba3ffc","raw_data":{"contract":[{"parameter":{"value":{"data":"a9059cbb00000000000000000000000075f6a3be1bf8d02e6f82ec24e210e91acec38be80000000000000000000000000000000000000000000000000000000000000064","owner_address":"41954f4930a2057860956eaa824137669d5398258a","contract_address":"4170082243784dcdf3042034e7b044d6d342a91360"},"type_url":"type.googleapis.com/protocol.TriggerSmartContract"},"type":"TriggerSmartContract"}],"ref_block_bytes":"3957","ref_block_hash":"b037c90b29b7b27b","expiration":1642520331000,"fee_limit":10000000,"timestamp":1642520273463},"raw_data_hex":"0a0239572208b037c90b29b7b27b40f885ddeee62f5aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a1541954f4930a2057860956eaa824137669d5398258a12154170082243784dcdf3042034e7b044d6d342a913602244a9059cbb00000000000000000000000075f6a3be1bf8d02e6f82ec24e210e91acec38be8000000000000000000000000000000000000000000000000000000000000006470b7c4d9eee62f900180ade204"},"privateKey":"8296e92ed906a4360d9596a73e5271d60ded3197a58ba4dc11c5ac8eabe884d7"}'
+    headers:
+      User-Agent:
+      - Faraday v1.5.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '30'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 18 Jan 2022 15:37:53 GMT
+      Content-Type:
+      - application/json;charset=utf-8
+      Content-Length:
+      - '1230'
+      Server:
+      - Jetty(9.4.z-SNAPSHOT)
+    body:
+      encoding: UTF-8
+      string: '{"visible":false,"signature":["9963c7666456b7823a1dba5fb262af6dc406ca6aa2c11f6f9c07cc81ff22883c78bcd7adc0c96f12a7723d8f7d13bd02ba671e944e2dc364fe94f359d8e0a00901"],"txID":"e86af3a08d8c21075cd203f5060208476bc51decf019c0bfa9c8748d47ba3ffc","raw_data":{"contract":[{"parameter":{"value":{"data":"a9059cbb00000000000000000000000075f6a3be1bf8d02e6f82ec24e210e91acec38be80000000000000000000000000000000000000000000000000000000000000064","owner_address":"41954f4930a2057860956eaa824137669d5398258a","contract_address":"4170082243784dcdf3042034e7b044d6d342a91360"},"type_url":"type.googleapis.com/protocol.TriggerSmartContract"},"type":"TriggerSmartContract"}],"ref_block_bytes":"3957","ref_block_hash":"b037c90b29b7b27b","expiration":1642520331000,"fee_limit":10000000,"timestamp":1642520273463},"raw_data_hex":"0a0239572208b037c90b29b7b27b40f885ddeee62f5aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a1541954f4930a2057860956eaa824137669d5398258a12154170082243784dcdf3042034e7b044d6d342a913602244a9059cbb00000000000000000000000075f6a3be1bf8d02e6f82ec24e210e91acec38be8000000000000000000000000000000000000000000000000000000000000006470b7c4d9eee62f900180ade204"}
+
+        '
+  recorded_at: Tue, 18 Jan 2022 15:37:53 GMT
+- request:
+    method: post
+    uri: http://127.0.0.1:8090/wallet/broadcasttransaction
+    body:
+      encoding: UTF-8
+      string: '{"visible":false,"signature":["9963c7666456b7823a1dba5fb262af6dc406ca6aa2c11f6f9c07cc81ff22883c78bcd7adc0c96f12a7723d8f7d13bd02ba671e944e2dc364fe94f359d8e0a00901"],"txID":"e86af3a08d8c21075cd203f5060208476bc51decf019c0bfa9c8748d47ba3ffc","raw_data":{"contract":[{"parameter":{"value":{"data":"a9059cbb00000000000000000000000075f6a3be1bf8d02e6f82ec24e210e91acec38be80000000000000000000000000000000000000000000000000000000000000064","owner_address":"41954f4930a2057860956eaa824137669d5398258a","contract_address":"4170082243784dcdf3042034e7b044d6d342a91360"},"type_url":"type.googleapis.com/protocol.TriggerSmartContract"},"type":"TriggerSmartContract"}],"ref_block_bytes":"3957","ref_block_hash":"b037c90b29b7b27b","expiration":1642520331000,"fee_limit":10000000,"timestamp":1642520273463},"raw_data_hex":"0a0239572208b037c90b29b7b27b40f885ddeee62f5aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a1541954f4930a2057860956eaa824137669d5398258a12154170082243784dcdf3042034e7b044d6d342a913602244a9059cbb00000000000000000000000075f6a3be1bf8d02e6f82ec24e210e91acec38be8000000000000000000000000000000000000000000000000000000000000006470b7c4d9eee62f900180ade204"}'
+    headers:
+      User-Agent:
+      - Faraday v1.5.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '30'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 18 Jan 2022 15:37:53 GMT
+      Content-Type:
+      - application/json;charset=utf-8
+      Content-Length:
+      - '90'
+      Server:
+      - Jetty(9.4.z-SNAPSHOT)
+    body:
+      encoding: UTF-8
+      string: '{"result":true,"txid":"e86af3a08d8c21075cd203f5060208476bc51decf019c0bfa9c8748d47ba3ffc"}
+
+        '
+  recorded_at: Tue, 18 Jan 2022 15:37:53 GMT
+recorded_with: VCR 6.0.0

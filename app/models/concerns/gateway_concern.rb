@@ -14,7 +14,8 @@ module GatewayConcern
     BitzlatoGateway,
     DummyGateway,
     BitcoinGateway,
-    EthereumGateway
+    EthereumGateway,
+    TronGateway
   ].map(&:to_s)
 
   CLIENTS = AVAILABLE_GATEWAYS.map { |g| g.remove(GATEWAY_PREFIX).downcase }
@@ -23,7 +24,7 @@ module GatewayConcern
     validates :client, presence: true, inclusion: { in: CLIENTS }
     delegate :create_address!, to: :gateway
 
-    delegate :normalize_address, :normalize_txid, :valid_address?, :valid_txid?, to: :gateway_class
+    delegate :normalize_address, :normalize_txid, :valid_address?, :valid_txid?, :address_type, to: :gateway_class
 
     def self.clients
       CLIENTS
