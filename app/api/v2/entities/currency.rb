@@ -15,6 +15,16 @@ module API
         )
 
         expose(
+          :cc_code,
+          documentation: {
+            desc: 'Currency code in Bitzlato P2P',
+            type: String,
+            values: -> { ::Currency.pluck(:cc_code).uniq },
+            example: -> { ::Currency.pluck(:cc_code).first || 'BTC' }
+          }
+        )
+
+        expose(
           :name,
           documentation: {
             type: String,
