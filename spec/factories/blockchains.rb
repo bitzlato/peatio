@@ -121,5 +121,19 @@ FactoryBot.define do
       initialize_with         { Blockchain.find_or_create_by(key: key) }
       gateway_klass           { DummyGateway.name }
     end
+
+    trait 'tron-testnet' do
+      key                     { 'tron-testnet' }
+      name                    { 'Tron Testnet' }
+      gateway_klass           { TronGateway.name }
+      server                  { 'http://127.0.0.1:8090' }
+      height                  { 2_500_000 }
+      min_confirmations       { 6 }
+      explorer_address        { 'https://nile.tronscan.org/#/address/\#{address}' }
+      explorer_transaction    { 'https://nile.tronscan.org/#/transaction/\#{txid}' }
+      status                  { 'active' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
+      address_type            { 'tron' }
+    end
   end
 end

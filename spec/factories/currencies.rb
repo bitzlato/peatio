@@ -139,5 +139,24 @@ FactoryBot.define do
     trait :'usdt-erc20' do
       name { 'USDT(ERC20)' }
     end
+
+    trait :trx do
+      code                 { 'trx' }
+      name                 { 'Tron' }
+      type                 { 'coin' }
+      withdraw_limit_24h   { 0.1 }
+      withdraw_limit_72h   { 1 }
+      position             { 7 }
+      options              { {} }
+    end
+
+    trait :'usdj-trc20' do
+      code                 { 'trx-usdj' }
+      name                 { 'Tron USDJ' }
+      type                 { 'coin' }
+      withdraw_limit_24h   { 0.1 }
+      withdraw_limit_72h   { 1 }
+      position             { 8 }
+    end
   end
 end

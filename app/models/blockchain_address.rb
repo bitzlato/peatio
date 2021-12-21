@@ -2,7 +2,7 @@
 
 class BlockchainAddress < ApplicationRecord
   include Vault::EncryptedModel
-  ADDRESS_TYPES = %w[ethereum].freeze
+  ADDRESS_TYPES = %w[ethereum tron].freeze
 
   strip_attributes
 

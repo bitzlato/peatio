@@ -10,7 +10,6 @@ set :puma_bind, -> { ["tcp://0.0.0.0:965#{fetch(:stage)[1].to_i || 9}", "unix://
 set :systemd_daemon_instances,
     %i[
       blockchain_processor
-      collector
       currency_pricer
       k_line
       liabilities_compactor
@@ -19,6 +18,8 @@ set :systemd_daemon_instances,
       stats_member_pnl
       swap_order_status_checker
       ticker
+      collector
+      wallet_balances
     ]
 
 set :systemd_amqp_daemon_instances,

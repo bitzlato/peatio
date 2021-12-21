@@ -5,7 +5,7 @@ class AddSquashTokenToCurrencies < ActiveRecord::Migration[5.2]
     add_reference :currencies, :merged_token, foreign_key: { to_table: :currencies }, type: :string, length: 20
 
     Currency.find_each do |c|
-      c.update! merged_token_id: c.token_name if c.legacy?
+      c.update_column :merged_token_id, c.token_name if c.legacy?
     end
   end
 end

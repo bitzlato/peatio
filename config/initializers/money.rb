@@ -40,7 +40,7 @@ class Money
 
     attr_reader :blockchain_currency_record, :currency_record
 
-    delegate :base_factor, :subunit_to_unit, :min_deposit_amount, :token?, to: :blockchain_currency_record
+    delegate :base_factor, :subunit_to_unit, :min_deposit_amount, :blockchain, :options, :token?, :contract_address, to: :blockchain_currency_record
     delegate :priority, :precision, :name, :min_collection_amount, :crypto?, to: :currency_record
 
     def initialize_data!

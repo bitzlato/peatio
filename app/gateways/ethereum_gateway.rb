@@ -17,6 +17,10 @@ class EthereumGateway < AbstractGateway
   Error = Class.new StandardError
   NoHotWallet = Class.new Error
 
+  def self.address_type
+    :ethereum
+  end
+
   def enable_block_fetching?
     true
   end
