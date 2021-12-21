@@ -66,7 +66,7 @@ class Beneficiary < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :currency, optional: false
+  belongs_to :blockchain_currency
   belongs_to :member, optional: false
 
   # == Validations ==========================================================
@@ -82,7 +82,7 @@ class Beneficiary < ApplicationRecord
 
   # Validates address field which is required for coin.
   validate if: ->(b) { b.currency.present? && b.currency.coin? } do
-    errors.add(:data, 'invalid address') if data.blank? || !currency.blockchain.valid_address?(data.symbolize_keys[:address])
+    errors.add(:data, 'invalid address') if data.blank? || !blockchain_currency.blockchain.valid_address?(data.symbolize_keys[:address])
   end
 
   # Validates that data contains full_name field which is required for fiat.
@@ -93,6 +93,7 @@ class Beneficiary < ApplicationRecord
   # == Scopes ===============================================================
 
   scope :available_to_member, -> { with_state(:pending, :active) }
+  scope :with_currency, ->(currency_id) { joins(:blockchain_currency).where(blockchain_currencies: { currency_id: currency_id }) }
 
   # == Callbacks ============================================================
 
@@ -120,6 +121,12 @@ class Beneficiary < ApplicationRecord
   end
 
   # == Instance Methods =====================================================
+
+  delegate :currency, to: :blockchain_currency
+
+  def currency_id
+    blockchain_currency&.currency_id || attributes['currency_id']
+  end
 
   def as_json_for_event_api
     { user: { uid: member.uid, email: member.email },

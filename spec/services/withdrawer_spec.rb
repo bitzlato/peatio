@@ -5,11 +5,12 @@ describe Withdrawer do
 
   let(:member) { create(:member, :barong) }
   let(:currency) { create(:currency, :btc_bz) }
-  let(:withdraw) { create(:btc_bz_withdraw, :with_deposit_liability, currency: currency).tap(&:accept!).tap(&:process!) }
   let(:blockchain) { create(:blockchain, 'btc-bz-testnet') }
+  let(:withdraw) { create(:btc_bz_withdraw, :with_deposit_liability, currency: currency, blockchain: blockchain).tap(&:accept!).tap(&:process!) }
   let!(:wallet) { create(:wallet, :btc_bz_hot, blockchain: blockchain) }
 
   before do
+    create(:blockchain_currency, blockchain: blockchain, currency: currency)
     BalancesUpdater.any_instance.stubs(:perform)
     Wallet.any_instance.stubs(:can_withdraw_for?).returns(true)
   end
@@ -48,7 +49,7 @@ describe Withdrawer do
 
   context 'when insufficient funds error is raised' do
     let(:account) { create(:account, :eth, balance: 100) }
-    let(:withdraw) { create(:eth_withdraw, currency: account.currency, member: account.member).tap(&:accept!).tap(&:process!) }
+    let(:withdraw) { create(:eth_withdraw, currency: account.currency, blockchain: Blockchain.find_by!(key: 'eth-rinkeby'), member: account.member).tap(&:accept!).tap(&:process!) }
     let(:wallet) { find_or_create :wallet, :eth_hot }
 
     it 'fails withdraw' do

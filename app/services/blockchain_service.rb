@@ -157,6 +157,7 @@ class BlockchainService
     end
 
     @deposit = Deposits::Coin.find_or_create_by!(
+      blockchain_id: blockchain.id,
       currency_id: transaction.currency_id,
       txid: transaction.hash,
       txout: transaction.txout # what for? it is usable for blockchain only?

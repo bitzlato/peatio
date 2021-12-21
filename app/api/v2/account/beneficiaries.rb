@@ -29,18 +29,10 @@ module API
           get do
             user_authorize! :read, ::Beneficiary
 
-            current_user
-              .beneficiaries
-              .available_to_member
-              .tap do |q|
-                q.where!(currency_id: params[:currency_id]) if params[:currency_id].present?
-              end
-              .tap do |q|
-                q.where!(state: params[:state]) if params[:state].present?
-              end
-              .yield_self do |b|
-                present paginate(b), with: API::V2::Entities::Beneficiary
-              end
+            beneficiaries = current_user.beneficiaries.available_to_member
+            beneficiaries = beneficiaries.with_currency(params[:currency_id]) if params[:currency_id].present?
+            beneficiaries = beneficiaries.where(state: params[:state]) if params[:state].present?
+            present paginate(beneficiaries), with: API::V2::Entities::Beneficiary
           end
 
           desc 'Get beneficiary by ID',
@@ -72,6 +64,10 @@ module API
                      desc: 'Beneficiary currency code.',
                      documentation: { param_type: 'body' },
                      coerce_with: ->(c) { c.downcase }
+            requires :blockchain_id,
+                     type: Integer,
+                     values: { value: -> { ::Blockchain.pluck(:id) }, message: 'account.blockchain_id.doesnt_exist' },
+                     desc: -> { API::V2::Entities::Beneficiary.documentation[:blockchain_id][:desc] }
             requires :name,
                      type: String,
                      allow_blank: false,
@@ -90,9 +86,10 @@ module API
           post do
             user_authorize! :create, ::Beneficiary
 
-            declared_params = declared(params)
-
             currency = Currency.find(params[:currency_id])
+            blockchain_currency = BlockchainCurrency.find_by!(blockchain_id: params[:blockchain_id], currency: currency)
+
+            declared_params = declared(params).except(:blockchain_id, :currency_id).merge(blockchain_currency_id: blockchain_currency.id)
 
             if !currency.withdrawal_enabled?
               error!({ errors: ['account.currency.withdrawal_disabled'] }, 422)
@@ -108,7 +105,8 @@ module API
                current_user
                .beneficiaries
                .available_to_member
-               .where(currency: currency)
+               .joins(:blockchain_currency)
+               .where(blockchain_currencies: { id: blockchain_currency.id })
                .any? { |b| b.data['address'] == declared_params.dig(:data, :address) }
               error!({ errors: ['account.beneficiary.duplicate_address'] }, 422)
             end

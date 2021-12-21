@@ -24,13 +24,6 @@ class Deposit < ApplicationRecord
 
   scope :recent, -> { order(id: :desc) }
 
-  before_validation on: :create do
-    self.blockchain ||= currency.try(:blockchain)
-  end
-
-  before_create do
-    self.blockchain ||= currency.blockchain || raise("No blockchain currency #{currency.id}") if currency.present?
-  end
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
   after_commit :trigger_private_event

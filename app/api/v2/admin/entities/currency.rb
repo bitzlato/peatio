@@ -19,15 +19,6 @@ module API
           )
 
           expose(
-            :blockchain_key,
-            documentation: {
-              type: String,
-              desc: 'Associated blockchain key which will perform transactions synchronization for currency.'
-            },
-            if: ->(currency) { currency.coin? }
-          )
-
-          expose(
             :min_collection_amount,
             documentation: {
               type: BigDecimal,

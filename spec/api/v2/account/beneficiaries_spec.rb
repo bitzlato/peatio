@@ -6,20 +6,21 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
   let(:member) { create(:member, :level_3) }
   let(:token) { jwt_for(member) }
 
+  let(:blockchain_currency) { create(:blockchain_currency) }
   let!(:pending_beneficiaries_for_member) do
-    create_list(:beneficiary, 2, member: member, state: :pending)
+    create_list(:beneficiary, 2, member: member, state: :pending, blockchain_currency: blockchain_currency)
   end
 
   let!(:active_beneficiaries_for_member) do
-    create_list(:beneficiary, 3, member: member, state: :active)
+    create_list(:beneficiary, 3, member: member, state: :active, blockchain_currency: blockchain_currency)
   end
 
   let!(:archived_beneficiaries_for_member) do
-    create_list(:beneficiary, 2, member: member, state: :archived)
+    create_list(:beneficiary, 2, member: member, state: :archived, blockchain_currency: blockchain_currency)
   end
 
   let!(:other_member_beneficiaries) do
-    create_list(:beneficiary, 5)
+    create_list(:beneficiary, 5, blockchain_currency: blockchain_currency)
   end
 
   def response_body
@@ -74,7 +75,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
 
   context 'existing currency' do
     let!(:btc_beneficiaries_for_member) do
-      create_list(:beneficiary, 3, member: member)
+      create_list(:beneficiary, 3, member: member, blockchain_currency: blockchain_currency)
     end
 
     it do
@@ -102,7 +103,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
 
   context 'both currency and state' do
     let!(:active_btc_beneficiaries_for_member) do
-      create_list(:beneficiary, 3, member: member, state: :active)
+      create_list(:beneficiary, 3, member: member, state: :active, blockchain_currency: blockchain_currency)
     end
 
     it do
@@ -118,7 +119,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     end
 
     let!(:active_btc_beneficiaries_for_member) do
-      create_list(:beneficiary, 3, member: member, state: :active)
+      create_list(:beneficiary, 3, member: member, state: :active, blockchain_currency: blockchain_currency)
     end
 
     it 'renders unauthorized error' do
@@ -164,7 +165,8 @@ describe API::V2::Account::Beneficiaries, 'GET /:id', type: :request do
   end
 
   context 'fiat beneficiary' do
-    let!(:fiat_beneficiary) { create(:beneficiary, currency: Currency.find('usd'), member: member) }
+    let(:blockchain_currency) { create(:blockchain_currency, currency: Currency.find('usd')) }
+    let!(:fiat_beneficiary) { create(:beneficiary, member: member, blockchain_currency: blockchain_currency) }
     let(:endpoint) { "/api/v2/account/beneficiaries/#{fiat_beneficiary.id}" }
 
     it do
@@ -226,9 +228,11 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
   let(:token) { jwt_for(member) }
 
   let(:address) { Faker::Blockchain::Bitcoin.address }
+  let(:blockchain) { find_or_create(:blockchain, 'btc-testnet', key: 'btc-testnet') }
   let(:beneficiary_data) do
     {
       currency: :btc,
+      blockchain_id: blockchain.id,
       name: 'Personal Bitcoin wallet',
       description: 'Multisignature Bitcoin Wallet',
       data: { address: address }.to_json
@@ -324,8 +328,10 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
       context 'with number address for Bitzlato beneficiary' do
         let(:currency) { create(:currency, :btc_bz) }
+        let(:blockchain) { create(:blockchain, 'btc-bz-testnet') }
         let(:beneficiary_data) do
           {
+            blockchain_id: blockchain.id,
             currency: currency.code,
             name: 'Bitzlato Beneficiary',
             data: { address: '111' }.to_json
@@ -333,6 +339,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         end
 
         it do
+          create(:blockchain_currency, blockchain: blockchain, currency: currency)
           api_post endpoint, params: beneficiary_data, token: token
           expect(response).to include_api_error('account.beneficiary.invalid_address')
         end
@@ -365,9 +372,10 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
       context 'duplicated address' do
         context 'same currency' do
           before do
+            blockchain = find_or_create(:blockchain, 'btc-testnet', key: 'btc-testnet')
             create(:beneficiary,
                    member: member,
-                   currency_id: beneficiary_data[:currency],
+                   blockchain_currency: BlockchainCurrency.find_by!(blockchain_id: blockchain.id, currency_id: beneficiary_data[:currency]),
                    data: { address: address })
           end
 
@@ -383,11 +391,12 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
           let(:eth_beneficiary_data) do
             beneficiary_data.merge({ data: { address: eth_address }.to_json })
           end
+          let(:blockchain_currency) { find_or_create(:blockchain_currency, blockchain_id: find_or_create(:blockchain, 'eth-rinkeby', key: 'eth-rinkeby').id, currency_id: 'eth') }
 
           before do
             create(:beneficiary,
                    member: member,
-                   currency_id: :eth,
+                   blockchain_currency: blockchain_currency,
                    data: { address: eth_address })
           end
 
@@ -435,6 +444,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
     context 'fiat beneficiary' do
       let(:fiat_beneficiary_data) do
         {
+          blockchain_id: Blockchain.find_by!(key: 'dummy').id,
           currency: :usd,
           name: Faker::Bank.name,
           description: Faker::Company.catch_phrase,
@@ -463,9 +473,10 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
       context 'duplicated address' do
         context 'same currency' do
           before do
+            blockchain_currency = BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'dummy'), currency_id: :usd)
             create(:beneficiary,
                    member: member,
-                   currency_id: fiat_beneficiary_data[:currency],
+                   blockchain_currency: blockchain_currency,
                    data: fiat_beneficiary_data[:data])
           end
 

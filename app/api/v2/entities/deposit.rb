@@ -22,6 +22,14 @@ module API
         )
 
         expose(
+          :blockchain_id,
+          documentation: {
+            type: Integer,
+            desc: 'Deposit blockchain ID.'
+          }
+        )
+
+        expose(
           :amount,
           format_with: :decimal,
           documentation: {

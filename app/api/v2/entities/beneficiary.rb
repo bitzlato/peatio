@@ -22,6 +22,14 @@ module API
         )
 
         expose(
+          :blockchain_id,
+          documentation: {
+            type: Integer,
+            desc: 'Beneficiary blockchain id.'
+          }
+        ) { |b| b.blockchain_currency.blockchain_id }
+
+        expose(
           :uid,
           documentation: {
             desc: 'Beneficiary owner',

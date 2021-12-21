@@ -4,7 +4,7 @@ describe ::AbstractGateway do
   subject { described_class.new(blockchain) }
 
   let(:address) { 'address' }
-  let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'btc-testnet', key: 'btc-testnet' }
+  let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'eth-rinkeby', key: 'eth-rinkeby' }
   let(:uri) { 'http://127.0.0.1:8545' }
   let(:client) { ::Ethereum::Client.new(uri) }
 

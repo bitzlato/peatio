@@ -11,6 +11,10 @@ module API
         desc 'Create deposit intention',
              success: API::V2::Entities::Deposit
         params do
+          requires :blockchain_id,
+                   type: Integer,
+                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'account.blockchain_id.doesnt_exist' },
+                   desc: 'Blockchain ID.'
           requires :currency,
                    type: String,
                    values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
@@ -22,15 +26,17 @@ module API
         end
 
         post '/deposits/intention' do
+          blockchain = Blockchain.find(params[:blockchain_id])
           currency = Currency.find(params[:currency])
 
           error!({ errors: ['management.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
-          error!({ errors: ['management.currency.invoice_disabled'] }, 422) unless currency.enable_invoice?
+          error!({ errors: ['management.currency.invoice_disabled'] }, 422) unless blockchain.enable_invoice?
           error!({ errors: ['account.deposit.invalid_amount'] }, 422) if params[:amount] < currency.min_deposit_amount
 
           deposit = Deposit.create!(
             type: Deposit.name,
             member: current_user,
+            blockchain: blockchain,
             currency: currency,
             amount: params[:amount]
           )
@@ -104,26 +110,23 @@ module API
           present deposit, with: API::V2::Entities::Deposit
         end
 
-        desc 'Returns deposit address for account you want to deposit to by currency. ' \
+        desc 'Returns deposit address. ' \
              'The address may be blank because address generation process is still in progress. ' \
              'If this case you should try again later.',
              success: API::V2::Entities::PaymentAddress
         params do
-          requires :currency,
-                   type: String,
-                   values: { value: -> { Currency.coins.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
-                   desc: 'The account you want to deposit to.'
+          requires :blockchain_id,
+                   type: Integer,
+                   values: { value: -> { ::Blockchain.active.pluck(:id) }, message: 'account.blockchain.doesnt_exist' },
+                   desc: 'Blockchain ID.'
         end
-        get '/deposit_address/:currency', requirements: { currency: /[\w.\-]+/ } do
+        get '/deposit_address/:blockchain_id', requirements: { blockchain_id: /\d+/ } do
           user_authorize! :read, ::PaymentAddress
 
-          currency = Currency.find(params[:currency])
+          blockchain = Blockchain.find(params[:blockchain_id])
+          error!({ errors: ['account.blockchain.no_deposit_address_invoices_only'] }, 422) if blockchain.enable_invoice?
 
-          error!({ errors: ['account.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
-
-          error!({ errors: ['account.currency.no_deposit_address_invoices_only'] }, 422) if currency.enable_invoice?
-
-          payment_address = current_user.payment_address(currency.blockchain)
+          payment_address = current_user.payment_address(blockchain)
           present payment_address, with: API::V2::Entities::PaymentAddress
         end
       end

@@ -24,7 +24,7 @@ describe ::EthereumGateway::GasRefueler do
   let(:refuel_gas_factor) { 1 }
 
   before do
-    stub_balance_fetching blockchain_currency: eth.blockchain_currency, balance: balance_on_target_address, address: to_address
+    stub_balance_fetching blockchain_currency: eth.blockchain_currencies[0], balance: balance_on_target_address, address: to_address
     stub_gas_fetching gas_price: gas_price, id: 2
   end
 
@@ -59,8 +59,8 @@ describe ::EthereumGateway::GasRefueler do
 
   context 'address has tokens' do
     let(:balance_on_target_address) { 0 }
-    let(:eth_blockchain_currency) { eth.blockchain_currency }
-    let(:trst_blockchain_currency) { trst.blockchain_currency }
+    let(:eth_blockchain_currency) { eth.blockchain_currencies[0] }
+    let(:trst_blockchain_currency) { trst.blockchain_currencies[0] }
     let(:contract_addresses) { [trst_blockchain_currency.contract_address] }
     let(:gas_limits) { { nil => eth_blockchain_currency.gas_limit, trst_blockchain_currency.contract_address => trst_blockchain_currency.gas_limit } }
     let(:estimated_gas) { eth_blockchain_currency.gas_limit }

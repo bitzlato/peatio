@@ -53,6 +53,7 @@ module API
           requires :uid,      type: String, desc: 'The shared user ID.'
           optional :tid,      type: String, desc: 'The shared transaction ID. Must not exceed 64 characters. Peatio will generate one automatically unless supplied.'
           requires :currency, type: String, values: -> { Currency.fiats.codes(bothcase: true) }, desc: 'The currency code.'
+          requires :blockchain_id, type: Integer, values: { value: -> { ::Blockchain.pluck(:id) } }, desc: 'The blockchain ID.'
           requires :amount,   type: BigDecimal, desc: 'The deposit amount.'
           optional :state,    type: String, desc: 'The state of deposit.', values: %w[accepted]
           optional :transfer_type,  type: String,
@@ -62,10 +63,11 @@ module API
         post '/deposits/new' do
           member   = Member.find_by(uid: params[:uid])
           currency = Currency.find(params[:currency])
+          blockchain = Blockchain.find(params[:blockchain_id])
 
           error!({ errors: ['management.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
 
-          data     = { member: member, currency: currency }.merge!(params.slice(:amount, :tid, :transfer_type))
+          data     = { member: member, currency: currency, blockchain: blockchain }.merge!(params.slice(:amount, :tid, :transfer_type))
           deposit  = ::Deposits::Fiat.new(data)
           if deposit.save
             deposit.charge! if params[:state] == 'accepted'

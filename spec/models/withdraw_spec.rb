@@ -391,7 +391,7 @@ describe Withdraw do
         let!(:beneficiary) do
           create(:beneficiary,
                  member: member,
-                 currency: coin,
+                 blockchain_currency: BlockchainCurrency.find_by!(currency: coin),
                  state: :active,
                  data: generate(:btc_beneficiary_data).merge(address: address))
         end
@@ -497,8 +497,8 @@ describe Withdraw do
     end
 
     context 'non-active beneficiary' do
-      let(:currency) { Currency.find(:eth) }
-      let(:beneficiary) { create(:beneficiary, state: :pending, currency: currency) }
+      let(:blockchain_currency) { BlockchainCurrency.find_by!(currency_id: :eth) }
+      let(:beneficiary) { create(:beneficiary, state: :pending, blockchain_currency: blockchain_currency) }
 
       # Create deposit before withdraw for valid accounting cause withdraw
       # build callback doesn't trigger deposit creation.
@@ -547,6 +547,7 @@ describe Withdraw do
 
     let :record do
       Withdraws::Coin.new \
+        blockchain: Blockchain.find_by!(key: 'btc-testnet'),
         currency: Currency.find(:btc),
         member: member,
         rid: address,

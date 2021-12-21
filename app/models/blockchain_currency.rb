@@ -11,15 +11,17 @@ class BlockchainCurrency < ApplicationRecord
 
   validate if: :parent_id do
     errors.add :parent_id, 'wrong fiat/crypto nesting' unless currency.fiat? == parent.currency.fiat?
-    errors.add :parent_id, 'nesting currency must be token' unless currency.token?
+    errors.add :parent_id, 'nesting currency must be token' unless token?
     errors.add :parent_id, 'wrong parent blockchain currency' if parent.parent_id.present?
   end
   validates :base_factor, presence: true
 
+  scope :tokens, -> { joins(:currency).merge(Currency.coins).where.not(parent_id: nil) }
+
   after_create do
     link_wallets
   end
-  before_validation(if: proc { |blockchain_currency| blockchain_currency.currency.token? }) { self.blockchain ||= parent.blockchain }
+  before_validation(if: :token?) { self.blockchain ||= parent.blockchain }
 
   delegate :to_money_from_decimal, :to_money_from_units, to: :money_currency
 

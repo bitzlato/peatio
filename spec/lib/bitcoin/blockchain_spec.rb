@@ -24,15 +24,6 @@ describe Bitcoin::Blockchain do
     it 'default settings' do
       expect(blockchain.settings).to eq({})
     end
-
-    it 'currencies and server configuration' do
-      currencies = Currency.where(type: :coin).first(2).map(&:to_blockchain_api_settings)
-      settings = { server: 'http://user:password@127.0.0.1:18332',
-                   currencies: currencies,
-                   something: :custom }
-      blockchain.configure(settings)
-      expect(blockchain.settings).to eq(settings.slice(*Peatio::Blockchain::Abstract::SUPPORTED_SETTINGS))
-    end
   end
 
   context :transaction_sources do
@@ -253,118 +244,6 @@ describe Bitcoin::Blockchain do
 
       it 'all transactions are valid' do
         expect(subject).to be_all(&:valid?)
-      end
-    end
-  end
-
-  context :build_transaction do
-    let(:tx_file_name) { '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22.json' }
-
-    let(:tx_hash) do
-      Rails.root.join('spec', 'resources', 'bitcoin-data', tx_file_name)
-           .yield_self { |file_path| File.open(file_path) }
-           .yield_self { |file| JSON.load(file) }
-    end
-    let(:expected_transactions) do
-      [{ hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-         txout: 0,
-         to_address: 'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
-         amount: 0.325e0,
-         status: 'success',
-         currency_id: currency.id },
-       { hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-         txout: 1,
-         to_address: 'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
-         amount: 0.1964466932e2,
-         status: 'success',
-         currency_id: currency.id }]
-    end
-
-    let(:currency) do
-      Currency.find_by(id: :btc)
-    end
-
-    let(:blockchain) do
-      Bitcoin::Blockchain.new.tap { |b| b.configure(currencies: [currency.to_blockchain_api_settings]) }
-    end
-
-    it 'builds formatted transactions for passed transaction' do
-      expect(blockchain.send(:build_transaction, tx_hash)).to contain_exactly(*expected_transactions)
-    end
-
-    context 'multiple currencies' do
-      let(:expected_transactions) do
-        [{ hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-           txout: 0,
-           to_address: 'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
-           amount: 0.325e0,
-           status: 'success',
-           currency_id: currency1.id },
-         { hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-           txout: 1,
-           to_address: 'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
-           amount: 0.1964466932e2,
-           status: 'success',
-           currency_id: currency1.id },
-         { hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-           txout: 0,
-           to_address: 'mg4KVGerD3rYricWC8CoBaayDp1YCKMfvL',
-           amount: 0.325e0,
-           status: 'success',
-           currency_id: currency2.id },
-         { hash: '1858591d8ce638c37d5fcd92b9b33ee96be1b950e593cf0cbf45e6bfb1ad8a22',
-           txout: 1,
-           to_address: 'mqaBwWDjJCE2Egsf6pfysgD5ZBrfsP7NkA',
-           amount: 0.1964466932e2,
-           status: 'success',
-           currency_id: currency2.id }]
-      end
-
-      let(:currency1) do
-        Currency.find_by(id: :btc)
-      end
-
-      let(:currency2) do
-        Currency.find_by(id: :btc)
-      end
-
-      let(:blockchain) do
-        Bitcoin::Blockchain.new.tap do |b|
-          b.configure(currencies: [currency1.to_blockchain_api_settings, currency2.to_blockchain_api_settings])
-        end
-      end
-
-      it 'builds formatted transactions for passed transaction per each currency' do
-        expect(blockchain.send(:build_transaction, tx_hash)).to contain_exactly(*expected_transactions)
-      end
-    end
-
-    context 'three vout transaction' do
-      let(:tx_file_name) { '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0.json' }
-
-      let(:expected_transactions) do
-        [{ hash: '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
-           txout: 0,
-           to_address: '2N5WyM3QT1Kb6fvkSZj3Xvcx2at7Ydm5VmL',
-           amount: 0.1e0,
-           status: 'success',
-           currency_id: 'btc' },
-         { hash: '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
-           txout: 1,
-           to_address: '2MzDFuDK9ZEEiRsuCDFkPdeHQLGvwbC9ufG',
-           amount: 0.2e0,
-           status: 'success',
-           currency_id: 'btc' },
-         { hash: '1da5cd163a9aaf830093115ac3ac44355e0bcd15afb59af78f84ad4084973ad0',
-           txout: 2,
-           to_address: '2MuvCKKi1MzGtvZqvcbqn5twjA2v5XLaTWe',
-           amount: 0.11749604e0,
-           status: 'success',
-           currency_id: 'btc' }]
-      end
-
-      it 'builds formatted transactions for each vout' do
-        expect(blockchain.send(:build_transaction, tx_hash)).to contain_exactly(*expected_transactions)
       end
     end
   end

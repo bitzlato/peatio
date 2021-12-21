@@ -198,7 +198,7 @@ ALTER SEQUENCE public.assets_id_seq OWNED BY public.assets.id;
 CREATE TABLE public.beneficiaries (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    currency_id character varying(20) NOT NULL,
+    currency_id character varying(20),
     name character varying(64) NOT NULL,
     description character varying DEFAULT ''::character varying,
     pin integer NOT NULL,
@@ -206,7 +206,8 @@ CREATE TABLE public.beneficiaries (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     sent_at timestamp without time zone,
-    data_encrypted character varying(1024)
+    data_encrypted character varying(1024),
+    blockchain_currency_id bigint NOT NULL
 );
 
 
@@ -3436,6 +3437,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211222155200'),
 ('20211223192517'),
 ('20211226123302'),
+('20211227134747'),
 ('20220110182834'),
 ('20220113150944'),
 ('20220113155904'),

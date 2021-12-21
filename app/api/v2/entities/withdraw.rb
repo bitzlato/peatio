@@ -22,6 +22,14 @@ module API
         )
 
         expose(
+          :blockchain_id,
+          documentation: {
+            type: Integer,
+            desc: 'Withdrawal blockchain ID.'
+          }
+        )
+
+        expose(
           :type,
           documentation: {
             type: String,

@@ -112,6 +112,7 @@ module API
             beneficiary: beneficiary,
             sum: params[:amount],
             member: current_user,
+            blockchain: beneficiary.blockchain_currency.blockchain,
             currency: currency,
             note: params[:note]
           withdraw.save!

@@ -32,32 +32,6 @@ module API
         )
 
         expose(
-          :deposit_address,
-          if: lambda do |account, _options|
-            account.currency.coin? && !account.enable_invoice? && account.payment_address.try(:address).present?
-          end,
-          using: API::V2::Entities::PaymentAddress,
-          documentation: {
-            desc: 'User deposit address',
-            type: String
-          }
-        ) do |account, options|
-          account.payment_address
-        rescue StandardError => e
-          report_exception e, true, account: account, options: options
-          nil
-        end
-
-        expose(
-          :enable_invoice,
-          if: ->(account, _options) { account.enable_invoice? },
-          documentation: {
-            desc: 'Show intention form instead of payment address generation',
-            type: 'boolean'
-          }
-        )
-
-        expose(
           :limit_24_hour,
           documentation: {
             desc: '24-hour withdrawal limit',

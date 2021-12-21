@@ -8,7 +8,6 @@ class Account < ApplicationRecord
 
   belongs_to :currency, optional: false
   belongs_to :member, optional: false
-  has_one :blockchain, through: :currency
 
   acts_as_eventable prefix: 'account', on: %i[create update]
 
@@ -19,8 +18,6 @@ class Account < ApplicationRecord
 
   scope :visible, -> { joins(:currency).merge(Currency.where(visible: true)) }
   scope :ordered, -> { joins(:currency).order(position: :asc) }
-
-  delegate :enable_invoice?, :enable_invoice, to: :blockchain
 
   def as_json_for_event_api
     {
@@ -39,10 +36,6 @@ class Account < ApplicationRecord
 
   def withdraws
     Withdraw.where(member_id: member_id, currency_id: currency_id)
-  end
-
-  def payment_address
-    member.payment_address blockchain
   end
 
   def plus_funds!(amount)

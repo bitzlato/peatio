@@ -95,16 +95,6 @@ describe Currency do
     end
   end
 
-  context 'Methods' do
-    context 'token?' do
-      let!(:coin) { described_class.find(:btc) }
-      let!(:token) { described_class.find(:trst) }
-
-      it { expect(coin.token?).to eq false }
-      it { expect(token.token?).to eq true }
-    end
-  end
-
   context 'Callbacks' do
     context 'after_create' do
       let!(:coin) { described_class.find(:btc) }

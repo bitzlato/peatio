@@ -2,6 +2,10 @@
 
 FactoryBot.define do
   factory :blockchain do
+    sequence(:key) { |n| "blockchain#{n}" }
+    sequence(:name) { |n| "Blockchain ##{n}" }
+    height { 1 }
+    status { 'active' }
     gateway_klass { DummyGateway.name }
     client_options { { token_gas_limit: 110_000, base_gas_limit: 11_000, gas_factor: 1 } }
 
