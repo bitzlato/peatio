@@ -5,8 +5,8 @@ class Transfer < ApplicationRecord
 
   extend Enumerize
 
-  CATEGORIES = %w[wire refund purchases commission airdrop].freeze
-  CATEGORIES_MAPPING = { wire: 1, refund: 2, purchases: 3, commission: 4, airdrop: 5 }.freeze
+  CATEGORIES = %w[wire refund purchases commission airdrop p2p].freeze
+  CATEGORIES_MAPPING = { wire: 1, refund: 2, purchases: 3, commission: 4, airdrop: 5, p2p: 6 }.freeze
 
   # == Attributes ===========================================================
 
@@ -27,6 +27,7 @@ class Transfer < ApplicationRecord
 
   validates :key, uniqueness: true, presence: true
   validates :category, presence: true
+  validates :description, presence: true
   validate do
     errors.add(:base, 'invalidates accounting equation') unless Operations.validate_accounting_equation(operations)
   end

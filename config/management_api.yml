@@ -19,14 +19,20 @@
 #       value: "<%= ENV['BACKEND3_PUBLIC_KEY'] %>"
 #
 #
-keychain: {}
+keychain: 
+  whaler:
+    algorithm: RS256
+    value: "<%= ENV['WHALER_PUBLIC_KEY'] %>"
 
 #
 # Keeps all the JWT verification options.
 # The documentation is available at https://github.com/jwt/ruby-jwt#support-for-reserved-claim-names.
 # Check lib/jwt/default_options.rb for the default options.
 #
-jwt: {}
+jwt:
+  verify_jti: true
+  verify_aud: true
+  exp_leeway: 180
 
 #
 # Keep all the API security scopes.
@@ -65,4 +71,7 @@ jwt: {}
 #   – write_markets
 #   – tools
 #
-scopes: {}
+scopes: 
+  write_transfers:
+    permitted_signers: ['whaler']
+    mandatory_signers: ['whaler']

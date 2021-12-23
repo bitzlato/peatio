@@ -581,6 +581,7 @@ describe Workers::Daemons::StatsMemberPnl do
         {
           key: key,
           category: Transfer::CATEGORIES_MAPPING[:purchases],
+          description: 'test',
           operations: [
             {
               currency: :usd,
@@ -599,6 +600,7 @@ describe Workers::Daemons::StatsMemberPnl do
         {
           key: key + 1,
           category: Transfer::CATEGORIES_MAPPING[:purchases],
+          description: 'test',
           operations: [
             {
               # Refund (unlock) user 10 usd
@@ -707,6 +709,7 @@ describe Workers::Daemons::StatsMemberPnl do
         {
           key: key,
           category: Transfer::CATEGORIES_MAPPING[:purchases],
+          description: 'test',
           operations: [
             {
               currency: :usd,
@@ -725,6 +728,7 @@ describe Workers::Daemons::StatsMemberPnl do
         {
           key: key + 1,
           category: Transfer::CATEGORIES_MAPPING[:purchases],
+          description: 'test',
           operations: [
             {
               # Transfer 99 usd from user to the platform
