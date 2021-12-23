@@ -19,23 +19,26 @@ module Workers
           return
         end
 
-        member.payment_address(blockchain).tap do |pa|
-          pa.with_lock do
-            if pa.address.present?
-              Rails.logger.info("Skip coin deposit adress for member_id:#{member.id}, blockchain_id:#{blockchain.id}. It exists")
-              next
-            else
-              Rails.logger.info("Coin deposit adress for member_id:#{member.id}, blockchain_id:#{blockchain.id}")
-            end
-
-            result = blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
-            pa.update!(result.slice(:address, :secret, :details))
-
-            Rails.logger.info("Coined #{pa.address} for member_id:#{member.id}, blockchain_id:#{blockchain.id}")
+        payment_address = member.payment_address(blockchain)
+        member.with_lock do
+          payment_address.lock!
+          if payment_address.address.present?
+            Rails.logger.info { { message: 'Skip coin deposit address. It exists', member_id: member.id, blockchain_id: blockchain.id } }
+            return
           end
 
-          pa.trigger_address_event if pa.address.present?
+          member_addresses = member.payment_addresses.active.joins(:blockchain).where(blockchains: { address_type: blockchain.address_type }).pluck(:address)
+          blockchain_address = BlockchainAddress.find_by(address: member_addresses, address_type: blockchain.address_type)
+          result = if blockchain_address.present?
+                     { address: blockchain_address.address }
+                   else
+                     Rails.logger.info { { message: 'Coin deposit address', member_id: member.id, blockchain_id: blockchain.id } }
+                     blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
+                   end
+          payment_address.update!(result.slice(:address, :secret, :details))
         end
+        Rails.logger.info { { message: 'Payment address is updated', payment_address_id: payment_address.id, member_id: member.id, blockchain_id: blockchain.id } }
+        payment_address.trigger_address_event if payment_address.address.present?
 
       # Don't re-enqueue this job in case of error.
       # The system is designed in such way that when user will

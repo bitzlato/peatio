@@ -56,18 +56,19 @@ FactoryBot.define do
       initialize_with         { Blockchain.find_or_create_by(key: key) }
     end
 
-    # trait 'eth-mainet' do
-    # key                     { 'eth-mainet' }
-    # gateway_klass           { EthereumGateway.name }
-    # name                    { 'Ethereum Mainet' }
-    # server                  { 'http://127.0.0.1:8545' }
-    # height                  { 2500000 }
-    # min_confirmations       { 4 }
-    # explorer_address        { 'https://etherscan.io/address/#{address}' }
-    # explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
-    # status                  { 'disabled' }
-    # initialize_with         { Blockchain.find_or_create_by(key: key) }
-    # end
+    trait 'eth-ropsten' do
+      key                     { 'eth-ropsten' }
+      name                    { 'Ethereum Ropsten' }
+      gateway_klass { EthereumGateway.name }
+      server                  { 'http://127.0.0.1:8545' }
+      height                  { 2_500_000 }
+      min_confirmations       { 6 }
+      explorer_address        { 'https://ropsten.etherscan.io/address/#{address}' }
+      explorer_transaction    { 'https://ropsten.etherscan.io/tx/#{txid}' }
+      status                  { 'active' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
+      address_type            { 'ethereum' }
+    end
 
     trait 'bsc-testnet' do
       key                     { 'bsc-testnet' }

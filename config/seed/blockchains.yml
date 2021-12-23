@@ -1,31 +1,9 @@
 - key:               bitzlato
   name:              Bitzlato P2P
   gateway_klass:     BitzlatoGateway                 # API client name.
-  server:            http://127.0.0.1:8545  # Public Ethereum node endpoint. IMPORTANT: full syncmode.
+  server:            http://127.0.0.1:8545
   height:            1
   min_confirmations: 1                      # Minimal confirmations needed for withdraw and deposit confirmation.
-  status:            disabled
-
-- key:               eth-rinkeby
-  name:              Ethereum Rinkeby
-  gateway_klass:     EthereumGateway                 # API client name.
-  server:            http://127.0.0.1:8545  # Public Ethereum node endpoint. IMPORTANT: full syncmode.
-  height:            4000000                # Initial block number from which sync will be started.
-  min_confirmations: 6                      # Minimal confirmations needed for withdraw and deposit confirmation.
-  explorer:
-    address:         https://rinkeby.etherscan.io/address/#{address}
-    transaction:     https://rinkeby.etherscan.io/tx/#{txid}
-  status:            disabled
-
-- key:               eth-mainnet
-  name:              Ethereum Mainet
-  gateway_klass:     EthereumGateway                 # API client name.
-  server:            http://127.0.0.1:8545  # Public Ethereum node endpoint. IMPORTANT: full syncmode.
-  height:            7500000                # Initial block number from which sync will be started.
-  min_confirmations: 6                      # Minimal confirmations needed for withdraw and deposit confirmation.
-  explorer:
-    address:         https://etherscan.io/address/#{address}
-    transaction:     https://etherscan.io/tx/#{txid}
   status:            disabled
 
 - key:               btc-testnet
@@ -42,6 +20,7 @@
 - key:               eth-ropsten
   name:              Ethereum Ropsten
   gateway_klass:     EthereumGateway                 # API client name.
+  server:            http://127.0.0.1:8545
   height:            11400000                # Initial block number from which sync will be started.
   min_confirmations: 6                      # Minimal confirmations needed for withdraw and deposit confirmation.
   explorer:
@@ -49,6 +28,7 @@
     transaction:     https://ropsten.etherscan.io/tx/#{txid}
     contract_address: https://ropsten.etherscan.io/token/#{contract_address}
   status:            active
+  address_type:      ethereum
 
 - key:               bsc-testnet
   name:              BSC Testnet
