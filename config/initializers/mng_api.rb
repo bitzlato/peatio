@@ -4,6 +4,8 @@ require 'yaml'
 require 'erb'
 require 'openssl'
 
+# TODO Исключить загрузка для daemon-ов
+#
 raw_file = File.read('config/management_api.yml')
 yaml = ERB.new(raw_file).result
 
