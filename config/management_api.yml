@@ -19,10 +19,7 @@
 #       value: "<%= ENV['BACKEND3_PUBLIC_KEY'] %>"
 #
 #
-keychain: 
-  whaler:
-    algorithm: RS256
-    value: "<%= ENV['WHALER_PUBLIC_KEY'] %>"
+keychain: []
 
 #
 # Keeps all the JWT verification options.
