@@ -15,6 +15,7 @@ ExecStart=/home/<%= fetch(:user) %>/.rbenv/bin/rbenv exec bundle exec ruby ./lib
 ExecStop=/bin/kill -TERM $MAINPID
 MemoryHigh=1024M
 MemoryMax=1200M
+Slice=daemon.slice
 
 KillMode=mixed
 Restart=always
