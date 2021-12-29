@@ -79,11 +79,8 @@ class BlockchainService
           BlockchainApproval.upsert_transaction!(tx)
         else
           @withdrawal = @deposit = @fetched_transaction = nil
-          if tx.to_address.in?(blockchain.deposit_addresses)
-            update_or_create_deposit tx unless tx.from_address.in?(blockchain.wallets_addresses) # Skip gas refueling
-          elsif tx.hash.in?(withdraw_txids)
-            update_or_create_withdraw tx
-          end
+          update_or_create_withdraw(tx) if tx.hash.in?(withdraw_txids)
+          update_or_create_deposit(tx) if tx.to_address.in?(blockchain.deposit_addresses) && (!tx.from_address.in?(blockchain.wallets_addresses) || tx.hash.in?(withdraw_txids)) # Skip gas refueling
           # TODO: fetch_transaction if status is pending
           tx = fetch_transaction(tx)
           Transaction.upsert_transaction! tx, reference: (deposit || withdrawal)

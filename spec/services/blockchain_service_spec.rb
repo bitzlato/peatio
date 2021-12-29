@@ -9,7 +9,52 @@ class FakeBlockchain < Peatio::Blockchain::Abstract
 end
 
 describe BlockchainService do
-  pending
+  subject(:service) { described_class.new(blockchain) }
+
+  let(:blockchain) { create(:blockchain, 'eth-ropsten') }
+
+  around do |example|
+    WebMock.disable_net_connect!
+    example.run
+    WebMock.allow_net_connect!
+  end
+
+  context 'when user withdraws to deposit address' do
+    let(:account_balance) { 1000 }
+    let(:withdraw_amount) { 100 }
+    let(:txid) { '0xa2a4414587ad1cbdb2fd0867f0a369562233d043da77f2cd5e0ac7fea4344aaa' }
+    let(:currency) { create(:currency, 'usdt', blockchain: blockchain) }
+    let!(:member) { create(:member) }
+    let!(:account) { create(:account, currency: currency, member: member, balance: account_balance, locked: withdraw_amount) }
+    let!(:withdraw) { create(:eth_withdraw, aasm_state: :confirming, blockchain: blockchain, currency: currency, member: member, sum: withdraw_amount, txid: txid) }
+    let!(:payment_address) { create(:payment_address, address: '0x4711269d9c58a81b8dab9f7b847a9fca59cfbbbb', blockchain: blockchain, member: member) }
+    let!(:wallet) { create(:wallet, address: '0x7075bbbd9bd338ce47a0e7ad23170d94c772aaaa', blockchain: blockchain, kind: :hot) }
+
+    it 'transits withdrawal to succeed and creates deposit' do
+      block_number = 0
+      create(:currency_wallet, currency: currency, wallet: wallet)
+
+      stub_latest_block_number(id: 1, block_number: block_number + blockchain.min_confirmations)
+      EthereumGateway.any_instance.expects(:fetch_block_transactions).returns(
+        [Peatio::Transaction.new(amount: currency.money_currency.to_money_from_decimal(withdraw_amount.to_d),
+                                 block_number: block_number,
+                                 blockchain_id: blockchain.id,
+                                 currency_id: currency.id,
+                                 from: 'wallet',
+                                 from_address: wallet.address,
+                                 status: 'success',
+                                 to: 'deposit',
+                                 to_address: payment_address.address,
+                                 hash: txid)]
+      )
+
+      service.process_block(block_number)
+
+      expect(withdraw.reload.aasm_state).to eq 'succeed'
+      expect(member.deposits.take).to have_attributes(currency_id: currency.id, amount: withdraw_amount, txid: txid, aasm_state: 'accepted', address: payment_address.address, from_addresses: [wallet.address], blockchain_id: blockchain.id)
+      expect(account.reload).to have_attributes(balance: account_balance + withdraw_amount, locked: 0)
+    end
+  end
 
   # let!(:blockchain) { create(:blockchain, 'fake-testnet') }
   # let(:block_number) { 100 }

@@ -7,6 +7,7 @@ FactoryBot.define do
 
   factory :wallet do
     name { generate :wallet_name }
+    status { 'active' }
 
     trait :eth_deposit do
       after(:create) do |w|
@@ -18,7 +19,6 @@ FactoryBot.define do
       address { Faker::Blockchain::Ethereum.address }
       kind               { 'deposit' }
       max_balance        { 0.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -33,7 +33,6 @@ FactoryBot.define do
       address { Faker::Blockchain::Ethereum.address }
       kind               { 'hot' }
       max_balance        { 100.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -48,7 +47,6 @@ FactoryBot.define do
       address { Faker::Blockchain::Ethereum.address }
       kind               { 'warm' }
       max_balance        { 1000.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -63,7 +61,6 @@ FactoryBot.define do
       address            { '0x2b9fBC10EbAeEc28a8Fc10069C0BC29E45eBEB9C' }
       kind               { 'cold' }
       max_balance        { 1000.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -79,7 +76,6 @@ FactoryBot.define do
       address            { '0x45a31b15a2ab8a8477375b36b6f5a0c63733dce8' }
       kind               { 'fee' }
       max_balance        { 1000.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -94,7 +90,6 @@ FactoryBot.define do
       address            { '0x828058628DF254Ebf252e0b1b5393D1DED91E369' }
       kind               { 'deposit' }
       max_balance        { 0.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -109,7 +104,6 @@ FactoryBot.define do
       address            { '0xb6a61c43DAe37c0890936D720DC42b5CBda990F9' }
       kind               { 'hot' }
       max_balance        { 100.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
@@ -124,7 +118,6 @@ FactoryBot.define do
       address            { '3DX3Ak4751ckkoTFbYSY9FEQ6B7mJ4furT' }
       kind               { 'deposit' }
       max_balance        { 0.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:18332' }
       secret             { 'changeme' }
     end
@@ -139,7 +132,6 @@ FactoryBot.define do
       address            { '3NwYr8JxjHG2MBkgdBiHCxStSWDzyjS5U8' }
       kind               { 'hot' }
       max_balance        { 500.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:18332' }
       secret             { 'changeme' }
     end
@@ -153,7 +145,6 @@ FactoryBot.define do
       address            { '3NwYr8JxjHG2MBkgdBiHCxStSWDzyjS5U8' }
       kind               { 'hot' }
       max_balance        { 500.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:18332' }
       secret             { 'changeme' }
     end
@@ -168,7 +159,6 @@ FactoryBot.define do
       address           { 'fake-deposit' }
       kind              { 'deposit' }
       max_balance       { 0.0 }
-      status            { 'active' }
       uri               { 'http://127.0.0.1:18881' }
     end
 
@@ -182,7 +172,6 @@ FactoryBot.define do
       address           { 'fake-hot' }
       kind              { 'hot' }
       max_balance       { 10.0 }
-      status            { 'active' }
       uri               { 'http://127.0.0.1:18881' }
     end
 
@@ -196,7 +185,6 @@ FactoryBot.define do
       address           { 'fake-warm' }
       kind              { 'warm' }
       max_balance       { 100.0 }
-      status            { 'active' }
       uri               { 'http://127.0.0.1:18881' }
     end
 
@@ -210,7 +198,6 @@ FactoryBot.define do
       address           { 'fake-cold' }
       kind              { 'cold' }
       max_balance       { 1000.0 }
-      status            { 'active' }
       uri               { 'http://127.0.0.1:18881' }
     end
 
@@ -225,7 +212,6 @@ FactoryBot.define do
       address            { 'fake-fee' }
       kind               { 'fee' }
       max_balance        { 1000.0 }
-      status             { 'active' }
       uri                { 'http://127.0.0.1:8545' }
       secret             { 'changeme' }
     end
