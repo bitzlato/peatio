@@ -18,7 +18,10 @@ class EthereumGateway
 
       amounts = load_balances(payment_address.address)
                 .select { |_currency, amount| is_amount_collectable?(amount) }
-                .each_with_object({}) { |(_key, amount), hash| hash[amount.currency.contract_address] = amount.base_units }
+                .each_with_object({}) do |(_key, amount), hash|
+                  contract_address = BlockchainCurrency.find_by(blockchain: blockchain, currency: amount.currency.currency_record)&.contract_address
+                  hash[contract_address] = amount.base_units
+                end
 
       # Remove native currency if there are tokens to transfer
       # We want to collect native currency when there are no collectable tokens in address
@@ -86,12 +89,10 @@ class EthereumGateway
     end
 
     def gas_for_collection_in_money(coin_address)
-      currency = blockchain
-                 .currencies
-                 .find { |c| c.contract_address == coin_address } ||
-                 raise("No found currency with coin '#{coin_address || :native}' for blockchain #{blockchain.id}")
+      blockchain_currency = blockchain.blockchain_currencies.find_by(contract_address: coin_address) ||
+                            raise("No found currency with coin '#{coin_address || :native}' for blockchain #{blockchain.id}")
 
-      gas_factor * fetch_gas_price * (currency.gas_limit || raise("No gas limit specified for currency #{currency.id}"))
+      gas_factor * fetch_gas_price * (blockchain_currency.gas_limit || raise("No gas limit specified for blockchain currency #{blockchain_currency.id}"))
     end
 
     # Returns current gas price in money

@@ -346,6 +346,42 @@ ALTER SEQUENCE public.blockchain_approvals_id_seq OWNED BY public.blockchain_app
 
 
 --
+-- Name: blockchain_currencies; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.blockchain_currencies (
+    id bigint NOT NULL,
+    blockchain_id bigint NOT NULL,
+    currency_id character varying(10) NOT NULL,
+    contract_address character varying,
+    gas_limit bigint,
+    parent_id bigint,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    CONSTRAINT blockchain_currencies_contract_address CHECK ((((parent_id IS NOT NULL) AND (contract_address IS NOT NULL)) OR ((parent_id IS NULL) AND (contract_address IS NULL))))
+);
+
+
+--
+-- Name: blockchain_currencies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.blockchain_currencies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: blockchain_currencies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.blockchain_currencies_id_seq OWNED BY public.blockchain_currencies.id;
+
+
+--
 -- Name: blockchain_nodes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -461,7 +497,7 @@ CREATE TABLE public.currencies (
     homepage character varying,
     price numeric(36,18) DEFAULT 1 NOT NULL,
     parent_id character varying,
-    blockchain_id bigint NOT NULL,
+    blockchain_id bigint,
     base_factor bigint NOT NULL,
     contract_address character varying,
     cc_code character varying
@@ -1603,6 +1639,13 @@ ALTER TABLE ONLY public.blockchain_approvals ALTER COLUMN id SET DEFAULT nextval
 
 
 --
+-- Name: blockchain_currencies id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies ALTER COLUMN id SET DEFAULT nextval('public.blockchain_currencies_id_seq'::regclass);
+
+
+--
 -- Name: blockchain_nodes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1867,6 +1910,14 @@ ALTER TABLE ONLY public.blockchain_addresses
 
 ALTER TABLE ONLY public.blockchain_approvals
     ADD CONSTRAINT blockchain_approvals_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: blockchain_currencies blockchain_currencies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies
+    ADD CONSTRAINT blockchain_currencies_pkey PRIMARY KEY (id);
 
 
 --
@@ -2220,6 +2271,20 @@ CREATE INDEX index_blockchain_approvals_on_owner_address ON public.blockchain_ap
 --
 
 CREATE INDEX index_blockchain_approvals_on_txid ON public.blockchain_approvals USING btree (txid);
+
+
+--
+-- Name: index_blockchain_currencies_on_blockchain_id_and_currency_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_blockchain_currencies_on_blockchain_id_and_currency_id ON public.blockchain_currencies USING btree (blockchain_id, currency_id);
+
+
+--
+-- Name: index_blockchain_currencies_on_currency_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_blockchain_currencies_on_currency_id ON public.blockchain_currencies USING btree (currency_id);
 
 
 --
@@ -2974,6 +3039,14 @@ ALTER TABLE ONLY public.gas_refuels
 
 
 --
+-- Name: blockchain_currencies fk_rails_7b9177edd7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies
+    ADD CONSTRAINT fk_rails_7b9177edd7 FOREIGN KEY (blockchain_id) REFERENCES public.blockchains(id);
+
+
+--
 -- Name: blockchain_nodes fk_rails_86c4fbb9f7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2998,6 +3071,14 @@ ALTER TABLE ONLY public.currencies
 
 
 --
+-- Name: blockchain_currencies fk_rails_c890abe125; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies
+    ADD CONSTRAINT fk_rails_c890abe125 FOREIGN KEY (parent_id) REFERENCES public.blockchain_currencies(id);
+
+
+--
 -- Name: members fk_rails_cad3e0edf3; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3011,6 +3092,14 @@ ALTER TABLE ONLY public.members
 
 ALTER TABLE ONLY public.deposit_spreads
     ADD CONSTRAINT fk_rails_eef3f5807b FOREIGN KEY (deposit_id) REFERENCES public.deposits(id);
+
+
+--
+-- Name: blockchain_currencies fk_rails_fac9f73ca6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies
+    ADD CONSTRAINT fk_rails_fac9f73ca6 FOREIGN KEY (currency_id) REFERENCES public.currencies(id);
 
 
 --
@@ -3265,7 +3354,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211116054502'),
 ('20211122110601'),
 ('20211203102904'),
+('20211222155200'),
 ('20211223192517'),
+('20211226123302'),
 ('20220110182834');
 
 

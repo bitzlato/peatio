@@ -72,16 +72,6 @@ module API
         )
 
         expose(
-          :parent_id,
-          documentation: {
-            type: String,
-            desc: 'Currency parent id',
-            example: -> { ::Currency.visible.first.parent_id }
-          },
-          if: ->(currency) { currency.parent_id.present? }
-        )
-
-        expose(
           :price,
           documentation: {
             desc: 'Currency current price'
