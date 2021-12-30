@@ -40,10 +40,9 @@ class Currency < ApplicationRecord
 
   # == Relationships ========================================================
 
-  belongs_to :blockchain, optional: false
+  has_one :blockchain_currency, dependent: :destroy
+  has_one :blockchain, through: :blockchain_currency
   has_and_belongs_to_many :wallets
-
-  belongs_to :parent, class_name: 'Currency'
 
   # == Validations ==========================================================
   #
@@ -81,9 +80,6 @@ class Currency < ApplicationRecord
             :withdraw_limit_72h,
             numericality: { greater_than_or_equal_to: 0 }
 
-  # TODO: improve tests
-  validates :contract_address, presence: true, if: :parent_id unless Rails.env.test?
-
   # == Scopes ===============================================================
 
   scope :visible, -> { where(visible: true) }
@@ -93,35 +89,26 @@ class Currency < ApplicationRecord
   scope :coins, -> { where(type: :coin) }
   scope :fiats, -> { where(type: :fiat) }
   # This scope select all coins without parent_id, which means that they are not tokens
-  scope :coins_without_tokens, -> { coins.where(parent_id: nil) }
-  scope :tokens, -> { coins.where.not(parent_id: nil) }
+  scope :coins_without_tokens, -> { coins.joins(:blockchain_currency).where(blockchain_currencies: { parent_id: nil }) }
+  scope :tokens, -> { coins.joins(:blockchain_currency).where.not(blockchain_currencies: { parent_id: nil }) }
 
   # == Callbacks ============================================================
 
   after_initialize :initialize_defaults
   after_create do
-    link_wallets
     insert_position(self)
   end
 
   before_validation { self.code = code.downcase }
   before_validation { self.deposit_fee = 0 unless fiat? }
-  before_validation(if: :token?) { self.blockchain ||= parent.blockchain }
   before_validation(on: :create) { self.position = Currency.count + 1 if position.blank? }
 
   before_validation do
     self.erc20_contract_address = erc20_contract_address.try(:downcase) if erc20_contract_address.present?
   end
 
-  validate if: :parent_id do
-    errors.add :parent_id, 'wrong fiat/crypto nesting' unless fiat? == parent.fiat?
-    errors.add :parent_id, 'nesting currency must be token' unless token?
-    errors.add :parent_id, 'wrong parent currency' if parent.parent_id.present?
-  end
-
   before_update { update_position(self) if position_changed? }
 
-  delegate :key, to: :blockchain, prefix: true
   delegate :enable_invoice?, to: :blockchain
   delegate :to_money_from_decimal, :to_money_from_units, to: :money_currency
 
@@ -178,16 +165,6 @@ class Currency < ApplicationRecord
     @money_currency ||= Money::Currency.find!(id)
   end
 
-  def link_wallets
-    if parent_id.present?
-      # Iterate through active deposit/withdraw wallets
-      Wallet.active.where.not(kind: :fee).with_currency(parent_id).each do |wallet|
-        # Link parent currency with wallet
-        CurrencyWallet.create(currency_id: id, wallet_id: wallet.id)
-      end
-    end
-  end
-
   # Allows to dynamically check value of id/code:
   #
   #   id.btc? # true if code equals to "btc".
@@ -221,7 +198,7 @@ class Currency < ApplicationRecord
   # We use parent_id for token type to inherit some useful info such as blockchain_key from parent currency
   # For coin currency enough to have only coin type
   def token?
-    parent_id.present? && coin?
+    blockchain_currency.parent_id.present? && coin?
   end
 
   def subunit_to_unit

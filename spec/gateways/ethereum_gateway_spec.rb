@@ -27,7 +27,7 @@ describe ::EthereumGateway do
       it 'refuels gas' do
         EthereumGateway::BalanceLoader.any_instance.stubs(:call).returns(0)
         EthereumGateway::AbstractCommand.any_instance.stubs(:fetch_gas_price).returns(gas_price)
-        stub_balance_fetching(currency: blockchain.currencies[0], balance: 0, address: address, id: 1)
+        stub_balance_fetching(blockchain_currency: blockchain.blockchain_currencies[0], balance: 0, address: address, id: 1)
         stub_personal_send_transaction(from_address: fee_wallet.address, secret: fee_wallet.secret, to_address: address, value: 132_000, gas_price: gas_price, gas: 21_000, id: 2, txid: txid)
         gateway.refuel_gas!(address)
       end
@@ -48,7 +48,7 @@ describe ::EthereumGateway do
         EthereumGateway::BalanceLoader.any_instance.stubs(:call).returns(0)
         EthereumGateway::AbstractCommand.any_instance.stubs(:fetch_gas_price).returns(gas_price)
         Eth::Tx.any_instance.stubs(:hex).returns('data')
-        stub_balance_fetching(currency: blockchain.currencies[0], balance: 0, address: address, id: 1)
+        stub_balance_fetching(blockchain_currency: blockchain.blockchain_currencies[0], balance: 0, address: address, id: 1)
         stub_get_transaction_count(id: 2, address: fee_blockchain_address.address, count: 0)
         stub_send_raw_transaction(id: 3, txid: txid, data: 'data')
         gateway.refuel_gas!(address)
@@ -58,7 +58,7 @@ describe ::EthereumGateway do
 
   describe '#approve!' do
     it 'approves' do
-      contract_address = blockchain.currencies[1].contract_address
+      contract_address = blockchain.blockchain_currencies[1].contract_address
       approver_data = abi_encode('approve(address,uint256)', fee_wallet.address, '0x' + EthereumGateway::Approver::ALLOWANCE_AMOUNT.to_s(16))
       stub_request(:post, 'http://127.0.0.1:8545/').with(
         body: "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"personal_sendTransaction\",\"params\":[{\"from\":\"#{address}\",\"to\":\"#{contract_address}\",\"data\":\"#{approver_data}\",\"gas\":\"0x15f90\",\"gasPrice\":\"0x#{gas_price.to_s(16)}\"},\"#{secret}\"]}"

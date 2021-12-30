@@ -12,9 +12,11 @@ class EthereumGateway
 
     # @return balance of addrese in Money
     def load_balance(address, currency)
+      currency = currency.currency_record if currency.is_a? Money::Currency
+      contract_address = BlockchainCurrency.find_by(blockchain: blockchain, currency: currency)&.contract_address
       BalanceLoader
         .new(client)
-        .call(address, currency.contract_address)
+        .call(address, contract_address)
         .yield_self { |amount| currency.to_money_from_units(amount) }
     end
 

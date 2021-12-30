@@ -156,7 +156,7 @@ class EthereumGateway < AbstractGateway
   private
 
   def gas_limits
-    blockchain.currencies.each_with_object({}) { |c, agg| agg[c.contract_address] = c.gas_limit }
+    blockchain.blockchain_currencies.each_with_object({}) { |bc, agg| agg[bc.contract_address] = bc.gas_limit }
   end
 
   def fee_wallet

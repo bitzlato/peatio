@@ -65,11 +65,9 @@ FactoryBot.define do
       withdraw_limit_72h   { 1 }
       withdraw_fee         { 0.025 }
       position             { 4 }
-      options do
-        { gas_limit: 21_000,
-          gas_price: 1_000_000_000 }
-      end
+      options { { gas_price: 1_000_000_000 } }
       association :blockchain, 'bsc-testnet', strategy: :find_or_create, key: 'bsc-testnet'
+      after(:create) { |currency| currency.blockchain_currency.update!(gas_limit: 21_000) }
     end
 
     trait :eth do
@@ -82,10 +80,8 @@ FactoryBot.define do
       withdraw_limit_72h   { 1 }
       withdraw_fee         { 0.025 }
       position             { 4 }
-      options do
-        { gas_limit: 21_000,
-          gas_price: 1_000_000_000 }
-      end
+      options { { gas_price: 1_000_000_000 } }
+      after(:create) { |currency| currency.blockchain_currency.update!(gas_limit: 21_000) }
     end
 
     trait :trst do
@@ -94,35 +90,12 @@ FactoryBot.define do
       name                 { 'WeTrust' }
       type                 { 'coin' }
       subunits { 6 }
-      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
       position             { 5 }
-      options do
-        { gas_limit: 90_000,
-          gas_price: 1_000_000_000,
-          erc20_contract_address: '0x87099adD3bCC0821B5b151307c147215F839a110' }
-      end
-      contract_address { '0x87099adD3bCC0821B5b151307c147215F839a110' }
-    end
-
-    trait :tom do
-      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
-      code                 { 'tom' }
-      name                 { 'TOM' }
-      type                 { 'coin' }
-      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
-      withdraw_limit_24h   { 100 }
-      withdraw_limit_72h   { 1000 }
-      withdraw_fee         { 0.025 }
-      position             { 5 }
-      options do
-        { gas_limit: 90_000,
-          gas_price: 1_000_000_000,
-          erc20_contract_address: '0xf7970499814654cd13cb7b6e7634a12a7a8a9abc' }
-      end
-      contract_address { '0xf7970499814654cd13cb7b6e7634a12a7a8a9abc' }
+      options { { gas_price: 1_000_000_000 } }
+      after(:create) { |currency| currency.blockchain_currency.update!(contract_address: '0x87099adD3bCC0821B5b151307c147215F839a110', gas_limit: 90_000, parent_id: find_or_create(:currency, 'eth', id: 'eth').blockchain_currency.id) }
     end
 
     trait :usdt do
@@ -130,14 +103,12 @@ FactoryBot.define do
       code                 { 'usdt' }
       name                 { 'usdt' }
       type                 { 'coin' }
-      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
       position             { 6 }
-      options \
-        { { erc20_contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e', gas_limit: 21_000 } }
-      contract_address { '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e' }
+      options { {} }
+      after(:create) { |currency| currency.blockchain_currency.update!(contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e', gas_limit: 21_000, parent_id: find_or_create(:currency, 'eth', id: 'eth').blockchain_currency.id) }
     end
 
     trait :ring do
@@ -145,15 +116,13 @@ FactoryBot.define do
       code                 { 'ring' }
       name                 { 'Evolution Land Global Token' }
       type                 { 'coin' }
-      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       subunits { 6 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
       withdraw_fee         { 0.025 }
       position             { 6 }
-      options \
-        { { erc20_contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e', gas_limit: 21_000 } }
-      contract_address { '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e' }
+      options { {} }
+      after(:create) { |currency| currency.blockchain_currency.update!(contract_address: '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e', gas_limit: 21_000, parent_id: find_or_create(:currency, 'eth', id: 'eth').blockchain_currency.id) }
     end
 
     trait :mdt do
@@ -197,20 +166,19 @@ FactoryBot.define do
       code                { 'xagm.cx' }
       name                { 'XAGm.cx' }
       type                { 'coin' }
-      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }
       withdraw_fee        { 0.02 }
       position            { 8 }
       visible             { true }
       options             { {} }
+      after(:create) { |currency| currency.blockchain_currency.update!(contract_address: '0x0', parent_id: find_or_create(:currency, 'eth', id: 'eth').blockchain_currency.id) }
     end
 
     trait :'usdt-erc20' do
-      association :parent, 'eth', factory: :currency, strategy: :find_or_create, id: :eth
       name { 'USDT(ERC20)' }
       subunits { 6 }
-      contract_address { '0xdac17f958d2ee523a2206206994597c13d831ec7' }
+      after(:create) { |currency| currency.blockchain_currency.update!(contract_address: '0xdac17f958d2ee523a2206206994597c13d831ec7', parent_id: find_or_create(:currency, 'eth', id: 'eth').blockchain_currency.id) }
     end
   end
 end

@@ -8,7 +8,7 @@ RSpec.describe BalancesUpdater do
 
     before do
       (0..2).each do |i|
-        stub_balance_fetching(currency: blockchain.currencies[i], balance: 511_823_000_420_000_000, address: address, id: i + 1)
+        stub_balance_fetching(blockchain_currency: blockchain.blockchain_currencies[i], balance: 511_823_000_420_000_000, address: address, id: i + 1)
       end
     end
 

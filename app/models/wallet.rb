@@ -65,7 +65,7 @@ class Wallet < ApplicationRecord
   scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
 
   delegate :key, to: :blockchain, prefix: true
-  delegate :create_address!, :gateway, to: :blockchain
+  delegate :create_address!, :gateway, :native_currency, to: :blockchain
 
   before_validation :generate_settings, on: :create
   before_validation if: :blockchain do
@@ -156,10 +156,6 @@ class Wallet < ApplicationRecord
 
   def address_url
     blockchain&.explore_address_url address
-  end
-
-  def native_currency
-    currencies.find { |c| c.parent_id.nil? } || raise("No native currency for wallet id #{id}")
   end
 
   def generate_settings

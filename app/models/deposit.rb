@@ -90,9 +90,10 @@ class Deposit < ApplicationRecord
         end
       end
       after_commit do
-        if blockchain.gateway_class.supports_allowance? && blockchain.allowance_enabled && !payment_address.fee_wallet_approved?(currency.id) && currency.contract_address.present?
+        contract_address = BlockchainCurrency.find_by(blockchain: blockchain, currency: currency)&.contract_address
+        if blockchain.gateway_class.supports_allowance? && blockchain.allowance_enabled && !payment_address.fee_wallet_approved?(currency.id) && contract_address.present?
           payment_address.refuel_gas! unless payment_address.has_enough_gas_to_collect?
-          txid = gateway.approve!(address: payment_address.address, secret: payment_address.secret, spender_address: blockchain.fee_wallet.address, contract_address: currency.contract_address)
+          txid = gateway.approve!(address: payment_address.address, secret: payment_address.secret, spender_address: blockchain.fee_wallet.address, contract_address: contract_address)
           BlockchainApproval.create!(currency: currency, txid: txid, owner_address: payment_address.address, spender_address: blockchain.fee_wallet.address, blockchain: blockchain)
         end
       end

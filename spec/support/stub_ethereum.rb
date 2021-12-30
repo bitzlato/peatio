@@ -12,9 +12,9 @@ module EthereumHelpers
     'http://127.0.0.1:8545'
   end
 
-  def stub_balance_fetching(currency:, balance:, address:, id:)
+  def stub_balance_fetching(blockchain_currency:, balance:, address:, id:)
     response = { jsonrpc: '2.0', result: '0x' + (balance.to_s 16), id: id }
-    if currency.contract_address.nil?
+    if blockchain_currency.contract_address.nil?
       stub_request(:post, node_uri)
         .with(body: { jsonrpc: '2.0',
                       id: id,
@@ -26,7 +26,7 @@ module EthereumHelpers
         .with(body: { jsonrpc: '2.0',
                       id: id,
                       method: :eth_call,
-                      params: [{ to: currency.contract_address, data: abi_encode('balanceOf(address)', normalize_address(address)) }, 'latest'] }.to_json)
+                      params: [{ to: blockchain_currency.contract_address, data: abi_encode('balanceOf(address)', normalize_address(address)) }, 'latest'] }.to_json)
         .to_return(body: response.to_json)
     end
   end

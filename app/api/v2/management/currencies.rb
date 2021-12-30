@@ -137,9 +137,6 @@ module API
             optional :blockchain_id,
                      values: { message: 'management.currency.blockchain_id_doesnt_exist' },
                      desc: -> { 'Associated blockchain key which will perform transactions synchronization for currency.' }
-            optional :parent_id,
-                     values: { value: -> { Currency.coins_without_tokens.pluck(:id).map(&:to_s) }, message: 'management.currency.parent_id_doesnt_exist' },
-                     desc: -> { API::V2::Management::Entities::Currency.documentation[:parent_id][:desc] }
           end
           mutually_exclusive :base_factor, :subunits, message: 'management.currency.one_of_base_factor_subunits_fields'
         end
