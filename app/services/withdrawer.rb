@@ -91,7 +91,7 @@ class Withdrawer
 
     # TODO: updates wallet balance and validate that withdraw can be executed before creating transaction
     BalancesUpdater.new(blockchain: withdraw_wallet.blockchain, address: withdraw_wallet.address).perform
-    raise(WalletLowBalance, "Low balance on hot wallet: #{withdraw_wallet.name}(#{withdraw_wallet.id}) for withdraw", wallet_id: withdraw_wallet) unless withdraw_wallet.can_withdraw_for?(withdraw)
+    raise(WalletLowBalance, "Low balance on hot wallet: #{withdraw_wallet.name}(#{withdraw_wallet.id}) for withdraw", wallet_id: withdraw_wallet.id) unless withdraw_wallet.can_withdraw_for?(withdraw)
 
     withdraw_wallet.blockchain.gateway
                    .create_transaction!(
