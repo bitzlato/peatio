@@ -67,6 +67,8 @@ module API
           # http://api.rubyonrails.org/classes/ActiveRecord/Relation.html#method-i-find_or_create_by
           rescue ActiveRecord::RecordNotUnique
             retry
+          rescue ActiveRecord::RecordInvalid => err
+            report_exception err, true, payload: request.env['jwt.payload'].symbolize_keys
           end
         end
       end
