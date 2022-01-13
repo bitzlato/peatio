@@ -97,7 +97,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.accounts (
     member_id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     balance numeric(36,18) DEFAULT 0 NOT NULL,
     locked numeric(36,18) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -201,7 +201,7 @@ ALTER SEQUENCE public.assets_id_seq OWNED BY public.assets.id;
 CREATE TABLE public.beneficiaries (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     name character varying(64) NOT NULL,
     description character varying DEFAULT ''::character varying,
     pin integer NOT NULL,
@@ -313,7 +313,7 @@ ALTER SEQUENCE public.blockchain_addresses_id_seq OWNED BY public.blockchain_add
 
 CREATE TABLE public.blockchain_approvals (
     id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     txid public.citext NOT NULL,
     owner_address public.citext NOT NULL,
     spender_address public.citext NOT NULL,
@@ -352,7 +352,7 @@ ALTER SEQUENCE public.blockchain_approvals_id_seq OWNED BY public.blockchain_app
 CREATE TABLE public.blockchain_currencies (
     id bigint NOT NULL,
     blockchain_id bigint NOT NULL,
-    currency_id character varying(15) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     contract_address character varying,
     gas_limit bigint,
     parent_id bigint,
@@ -558,7 +558,7 @@ ALTER SEQUENCE public.deposit_spreads_id_seq OWNED BY public.deposit_spreads.id;
 CREATE TABLE public.deposits (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     amount numeric(36,18) NOT NULL,
     fee numeric(36,18) NOT NULL,
     txid public.citext,
@@ -832,8 +832,8 @@ CREATE TABLE public.markets (
     id bigint NOT NULL,
     symbol character varying(20) NOT NULL,
     type character varying DEFAULT 'spot'::character varying NOT NULL,
-    base_unit character varying(10) NOT NULL,
-    quote_unit character varying(10) NOT NULL,
+    base_unit character varying(20) NOT NULL,
+    quote_unit character varying(20) NOT NULL,
     engine_id bigint NOT NULL,
     amount_precision smallint DEFAULT 4 NOT NULL,
     price_precision smallint DEFAULT 4 NOT NULL,
@@ -984,8 +984,8 @@ ALTER SEQUENCE public.operations_accounts_id_seq OWNED BY public.operations_acco
 
 CREATE TABLE public.orders (
     id bigint NOT NULL,
-    bid character varying(10) NOT NULL,
-    ask character varying(10) NOT NULL,
+    bid character varying(20) NOT NULL,
+    ask character varying(20) NOT NULL,
     market_id character varying(20) NOT NULL,
     price numeric(36,18),
     volume numeric(36,18) NOT NULL,
@@ -1164,8 +1164,8 @@ CREATE TABLE public.schema_migrations (
 CREATE TABLE public.stats_member_pnl (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    pnl_currency_id character varying(10) NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    pnl_currency_id character varying(20) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     total_credit numeric(50,18) DEFAULT 0,
     total_credit_fees numeric(50,18) DEFAULT 0,
     total_debit_fees numeric(50,18) DEFAULT 0,
@@ -1204,8 +1204,8 @@ ALTER SEQUENCE public.stats_member_pnl_id_seq OWNED BY public.stats_member_pnl.i
 
 CREATE TABLE public.stats_member_pnl_idx (
     id bigint NOT NULL,
-    pnl_currency_id character varying(10) NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    pnl_currency_id character varying(20) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     reference_type character varying(255) NOT NULL,
     last_id bigint,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -1551,7 +1551,7 @@ ALTER SEQUENCE public.withdraw_limits_id_seq OWNED BY public.withdraw_limits.id;
 CREATE TABLE public.withdraws (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     amount numeric(36,18) NOT NULL,
     fee numeric(36,18) NOT NULL,
     created_at timestamp(3) without time zone NOT NULL,
@@ -3358,6 +3358,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211223192517'),
 ('20211226123302'),
 ('20220110182834'),
-('20220113150944');
+('20220113150944'),
+('20220113155904');
 
 
