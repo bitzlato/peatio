@@ -352,7 +352,7 @@ ALTER SEQUENCE public.blockchain_approvals_id_seq OWNED BY public.blockchain_app
 CREATE TABLE public.blockchain_currencies (
     id bigint NOT NULL,
     blockchain_id bigint NOT NULL,
-    currency_id character varying(15) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     contract_address character varying,
     gas_limit bigint,
     parent_id bigint,
