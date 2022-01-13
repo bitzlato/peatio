@@ -233,5 +233,39 @@ FactoryBot.define do
         BlockchainAddress.create(address: address, address_type: :tron, private_key_hex: private_key)
       end
     end
+
+    trait :sol_hot do
+      address = '3WA3WKg2YizUgG1a8LqAXAEAPJA5HWwujUUYSv5SGPic'
+      private_key = '32eb965ece48ef14bb4e42be0f8044d8e6e3124d78f414e662b9cbb0abef0045'
+
+      use_as_fee_source { true }
+      association :blockchain, factory: [:blockchain, 'sol-testnet'], strategy: :find_or_create, key: 'sol-testnet'
+      name               { 'Sol Currency Fee Wallet' }
+      address            { address }
+      kind               { 'hot' }
+      max_balance        { 1000.0 }
+      uri                { 'https://api.testnet.solana.com' }
+
+      after(:create) do |w|
+        CurrencyWallet.create(currency_id: 'sol', wallet_id: w.id)
+        BlockchainAddress.create(address: address, address_type: :solana, private_key_hex: private_key)
+      end
+    end
+
+    trait :sol_spl_hot do
+      address = 'A4PjS9msRpWRi6RB1jatUpXfXN5k3JaSqJsbW7qNB61N'
+
+      use_as_fee_source { true }
+      association :blockchain, factory: [:blockchain, 'sol-testnet'], strategy: :find_or_create, key: 'sol-testnet'
+      name               { 'Sol Currency Fee Wallet' }
+      address            { address }
+      kind               { 'hot' }
+      max_balance        { 1000.0 }
+      uri                { 'https://api.testnet.solana.com' }
+
+      after(:create) do |w|
+        CurrencyWallet.create(currency_id: 'sol_spl', wallet_id: w.id)
+      end
+    end
   end
 end

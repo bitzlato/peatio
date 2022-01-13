@@ -77,6 +77,7 @@ gem 'money', github: 'bitzlato/money', branch: 'main'
 gem 'base58', '~> 0.2.3'
 gem 'eth', '~> 0.4.16'
 gem 'money-tree', '~> 0.10'
+gem 'solana', github: 'bitzlato/ruby-solana'
 
 group :development, :test do
   gem 'bullet',       '~> 5.9'

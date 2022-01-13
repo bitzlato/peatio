@@ -90,12 +90,13 @@ class Transaction < ApplicationRecord
       currency_id: tx.currency_id,
       blockchain_id: tx.blockchain_id,
       txid: tx.id,
+      instruction_id: tx.instruction_id,
       options: tx.options
     }.deep_merge(extra)
 
     # TODO: There are problem with save 'kind'a attribuve with upsert
     #
-    t = find_by(blockchain_id: tx.blockchain_id, txid: tx.txid, txout: tx.txout)
+    t = find_by(blockchain_id: tx.blockchain_id, txid: tx.txid, txout: tx.txout, instruction_id: attrs[:instruction_id])
     if t.nil?
       t = Transaction.create!(attrs)
     else

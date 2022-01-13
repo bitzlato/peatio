@@ -2,7 +2,7 @@
 
 class BlockchainAddress < ApplicationRecord
   include Vault::EncryptedModel
-  ADDRESS_TYPES = %w[ethereum tron].freeze
+  ADDRESS_TYPES = %w[ethereum tron solana].freeze
 
   strip_attributes
 
@@ -13,6 +13,11 @@ class BlockchainAddress < ApplicationRecord
   validates :address, presence: true, uniqueness: { scope: :address_type }
 
   def private_key
-    Eth::Key.new priv: private_key_hex
+    case address_type
+    when 'solana'
+      Solana::Key.new([private_key_hex].pack('H*'))
+    else
+      Eth::Key.new priv: private_key_hex
+    end
   end
 end
