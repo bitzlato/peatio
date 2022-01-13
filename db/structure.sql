@@ -352,7 +352,7 @@ ALTER SEQUENCE public.blockchain_approvals_id_seq OWNED BY public.blockchain_app
 CREATE TABLE public.blockchain_currencies (
     id bigint NOT NULL,
     blockchain_id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(15) NOT NULL,
     contract_address character varying,
     gas_limit bigint,
     parent_id bigint,
@@ -3357,6 +3357,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211222155200'),
 ('20211223192517'),
 ('20211226123302'),
-('20220110182834');
+('20220110182834'),
+('20220113150944');
 
 
