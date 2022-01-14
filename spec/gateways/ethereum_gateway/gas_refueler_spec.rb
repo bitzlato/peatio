@@ -24,7 +24,7 @@ describe ::EthereumGateway::GasRefueler do
   let(:refuel_gas_factor) { 1 }
 
   before do
-    stub_balance_fetching blockchain_currency: eth.blockchain_currency, balance: balance_on_target_address, address: to_address, id: 1
+    stub_balance_fetching blockchain_currency: eth.blockchain_currency, balance: balance_on_target_address, address: to_address
     stub_gas_fetching gas_price: gas_price, id: 2
   end
 

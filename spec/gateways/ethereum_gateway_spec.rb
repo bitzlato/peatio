@@ -27,7 +27,7 @@ describe ::EthereumGateway do
       it 'refuels gas' do
         EthereumGateway::BalanceLoader.any_instance.stubs(:call).returns(0)
         EthereumGateway::AbstractCommand.any_instance.stubs(:fetch_gas_price).returns(gas_price)
-        stub_balance_fetching(blockchain_currency: blockchain.blockchain_currencies[0], balance: 0, address: address, id: 1)
+        stub_balance_fetching(blockchain_currency: blockchain.blockchain_currencies[0], balance: 0, address: address)
         stub_personal_send_transaction(from_address: fee_wallet.address, secret: fee_wallet.secret, to_address: address, value: 132_000, gas_price: gas_price, gas: 21_000, id: 2, txid: txid)
         gateway.refuel_gas!(address)
       end
@@ -48,7 +48,7 @@ describe ::EthereumGateway do
         EthereumGateway::BalanceLoader.any_instance.stubs(:call).returns(0)
         EthereumGateway::AbstractCommand.any_instance.stubs(:fetch_gas_price).returns(gas_price)
         Eth::Tx.any_instance.stubs(:hex).returns('data')
-        stub_balance_fetching(blockchain_currency: blockchain.blockchain_currencies[0], balance: 0, address: address, id: 1)
+        stub_balance_fetching(blockchain_currency: blockchain.blockchain_currencies[0], balance: 0, address: address)
         stub_get_transaction_count(id: 2, address: fee_blockchain_address.address, count: 0)
         stub_send_raw_transaction(id: 3, txid: txid, data: 'data')
         gateway.refuel_gas!(address)
