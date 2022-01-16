@@ -22,7 +22,7 @@ class EthereumGateway
     # ex calculate_gas_price
     def fetch_gas_price
       client.json_rpc(:eth_gasPrice, []).to_i(16).tap do |gas_price|
-        Rails.logger.info { "Fetched gas price #{gas_price}" }
+        Rails.logger.debug { "Fetched gas price #{gas_price}" }
       end
     end
 
