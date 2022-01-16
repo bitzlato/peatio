@@ -179,9 +179,11 @@ class EthereumGateway
       logger.info { { message: 'Create raw transaction', blockchain_address_id: blockchain_address.id } }
       nonce_lock_key = "nonce_lock:#{blockchain_address.id}"
       lock_info = @lock_manager.lock(nonce_lock_key, NONCE_LOCK_TTL)
+      logger.info { { message: 'Raw transaction nonce is locked', blockchain_address_id: blockchain_address.id, lock_info: lock_info } }
       raise NonceLocked unless lock_info
 
       transaction_count = client.json_rpc(:eth_getTransactionCount, [blockchain_address.address, 'latest']).to_i(16)
+      logger.info { { message: 'Transaction count is fetched', blockchain_address_id: blockchain_address.id, transaction_count: transaction_count } }
       tx = Eth::Tx.new(params.merge(nonce: transaction_count))
       tx.sign(blockchain_address.private_key)
       result = client.json_rpc(:eth_sendRawTransaction, [tx.hex])
