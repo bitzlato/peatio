@@ -72,9 +72,9 @@ module API
         # Handle race conditions when creating member record.
         # We do not handle race condition for update operations.
         # http://api.rubyonrails.org/classes/ActiveRecord/Relation.html#method-i-find_or_create_by
-      rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => err
-        retry if (attempts +=1) < 2
-        report_exception err, true, payload: payload
+      rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
+        retry if (attempts += 1) < 3
+        report_exception e, true, payload: payload
       end
 
       def current_market
