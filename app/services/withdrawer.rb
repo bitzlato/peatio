@@ -93,12 +93,13 @@ class Withdrawer
     BalancesUpdater.new(blockchain: withdraw_wallet.blockchain, address: withdraw_wallet.address).perform
     raise(WalletLowBalance, "Low balance on hot wallet: #{withdraw_wallet.name}(#{withdraw_wallet.id}) for withdraw", wallet_id: withdraw_wallet.id) unless withdraw_wallet.can_withdraw_for?(withdraw)
 
+    contract_address = BlockchainCurrency.find_by(blockchain: withdraw_wallet.blockchain, currency: withdraw.currency)&.contract_address
     withdraw_wallet.blockchain.gateway
                    .create_transaction!(
                      from_address: withdraw_wallet.address,
                      to_address: withdraw.to_address,
                      amount: withdraw.money_amount,
-                     contract_address: withdraw.currency.contract_address,
+                     contract_address: contract_address,
                      secret: withdraw_wallet.secret,
                      blockchain_address: withdraw_wallet.blockchain_address,
                      nonce: nonce,

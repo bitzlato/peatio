@@ -97,7 +97,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.accounts (
     member_id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     balance numeric(36,18) DEFAULT 0 NOT NULL,
     locked numeric(36,18) DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -201,7 +201,7 @@ ALTER SEQUENCE public.assets_id_seq OWNED BY public.assets.id;
 CREATE TABLE public.beneficiaries (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     name character varying(64) NOT NULL,
     description character varying DEFAULT ''::character varying,
     pin integer NOT NULL,
@@ -313,7 +313,7 @@ ALTER SEQUENCE public.blockchain_addresses_id_seq OWNED BY public.blockchain_add
 
 CREATE TABLE public.blockchain_approvals (
     id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     txid public.citext NOT NULL,
     owner_address public.citext NOT NULL,
     spender_address public.citext NOT NULL,
@@ -343,6 +343,42 @@ CREATE SEQUENCE public.blockchain_approvals_id_seq
 --
 
 ALTER SEQUENCE public.blockchain_approvals_id_seq OWNED BY public.blockchain_approvals.id;
+
+
+--
+-- Name: blockchain_currencies; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.blockchain_currencies (
+    id bigint NOT NULL,
+    blockchain_id bigint NOT NULL,
+    currency_id character varying(20) NOT NULL,
+    contract_address character varying,
+    gas_limit bigint,
+    parent_id bigint,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    CONSTRAINT blockchain_currencies_contract_address CHECK ((((parent_id IS NOT NULL) AND (contract_address IS NOT NULL)) OR ((parent_id IS NULL) AND (contract_address IS NULL))))
+);
+
+
+--
+-- Name: blockchain_currencies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.blockchain_currencies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: blockchain_currencies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.blockchain_currencies_id_seq OWNED BY public.blockchain_currencies.id;
 
 
 --
@@ -438,7 +474,7 @@ ALTER SEQUENCE public.blockchains_id_seq OWNED BY public.blockchains.id;
 --
 
 CREATE TABLE public.currencies (
-    id character varying(10) NOT NULL,
+    id character varying(15) NOT NULL,
     type character varying(30) DEFAULT 'coin'::character varying NOT NULL,
     withdraw_limit_24h numeric(36,18) DEFAULT 0 NOT NULL,
     options json,
@@ -461,7 +497,7 @@ CREATE TABLE public.currencies (
     homepage character varying,
     price numeric(36,18) DEFAULT 1 NOT NULL,
     parent_id character varying,
-    blockchain_id bigint NOT NULL,
+    blockchain_id bigint,
     base_factor bigint NOT NULL,
     contract_address character varying,
     cc_code character varying
@@ -522,7 +558,7 @@ ALTER SEQUENCE public.deposit_spreads_id_seq OWNED BY public.deposit_spreads.id;
 CREATE TABLE public.deposits (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     amount numeric(36,18) NOT NULL,
     fee numeric(36,18) NOT NULL,
     txid public.citext,
@@ -796,8 +832,8 @@ CREATE TABLE public.markets (
     id bigint NOT NULL,
     symbol character varying(20) NOT NULL,
     type character varying DEFAULT 'spot'::character varying NOT NULL,
-    base_unit character varying(10) NOT NULL,
-    quote_unit character varying(10) NOT NULL,
+    base_unit character varying(20) NOT NULL,
+    quote_unit character varying(20) NOT NULL,
     engine_id bigint NOT NULL,
     amount_precision smallint DEFAULT 4 NOT NULL,
     price_precision smallint DEFAULT 4 NOT NULL,
@@ -948,8 +984,8 @@ ALTER SEQUENCE public.operations_accounts_id_seq OWNED BY public.operations_acco
 
 CREATE TABLE public.orders (
     id bigint NOT NULL,
-    bid character varying(10) NOT NULL,
-    ask character varying(10) NOT NULL,
+    bid character varying(20) NOT NULL,
+    ask character varying(20) NOT NULL,
     market_id character varying(20) NOT NULL,
     price numeric(36,18),
     volume numeric(36,18) NOT NULL,
@@ -1128,8 +1164,8 @@ CREATE TABLE public.schema_migrations (
 CREATE TABLE public.stats_member_pnl (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    pnl_currency_id character varying(10) NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    pnl_currency_id character varying(20) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     total_credit numeric(50,18) DEFAULT 0,
     total_credit_fees numeric(50,18) DEFAULT 0,
     total_debit_fees numeric(50,18) DEFAULT 0,
@@ -1168,8 +1204,8 @@ ALTER SEQUENCE public.stats_member_pnl_id_seq OWNED BY public.stats_member_pnl.i
 
 CREATE TABLE public.stats_member_pnl_idx (
     id bigint NOT NULL,
-    pnl_currency_id character varying(10) NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    pnl_currency_id character varying(20) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     reference_type character varying(255) NOT NULL,
     last_id bigint,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -1515,7 +1551,7 @@ ALTER SEQUENCE public.withdraw_limits_id_seq OWNED BY public.withdraw_limits.id;
 CREATE TABLE public.withdraws (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    currency_id character varying(10) NOT NULL,
+    currency_id character varying(20) NOT NULL,
     amount numeric(36,18) NOT NULL,
     fee numeric(36,18) NOT NULL,
     created_at timestamp(3) without time zone NOT NULL,
@@ -1600,6 +1636,13 @@ ALTER TABLE ONLY public.blockchain_addresses ALTER COLUMN id SET DEFAULT nextval
 --
 
 ALTER TABLE ONLY public.blockchain_approvals ALTER COLUMN id SET DEFAULT nextval('public.blockchain_approvals_id_seq'::regclass);
+
+
+--
+-- Name: blockchain_currencies id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies ALTER COLUMN id SET DEFAULT nextval('public.blockchain_currencies_id_seq'::regclass);
 
 
 --
@@ -1867,6 +1910,14 @@ ALTER TABLE ONLY public.blockchain_addresses
 
 ALTER TABLE ONLY public.blockchain_approvals
     ADD CONSTRAINT blockchain_approvals_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: blockchain_currencies blockchain_currencies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies
+    ADD CONSTRAINT blockchain_currencies_pkey PRIMARY KEY (id);
 
 
 --
@@ -2220,6 +2271,20 @@ CREATE INDEX index_blockchain_approvals_on_owner_address ON public.blockchain_ap
 --
 
 CREATE INDEX index_blockchain_approvals_on_txid ON public.blockchain_approvals USING btree (txid);
+
+
+--
+-- Name: index_blockchain_currencies_on_blockchain_id_and_currency_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_blockchain_currencies_on_blockchain_id_and_currency_id ON public.blockchain_currencies USING btree (blockchain_id, currency_id);
+
+
+--
+-- Name: index_blockchain_currencies_on_currency_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_blockchain_currencies_on_currency_id ON public.blockchain_currencies USING btree (currency_id);
 
 
 --
@@ -2974,6 +3039,14 @@ ALTER TABLE ONLY public.gas_refuels
 
 
 --
+-- Name: blockchain_currencies fk_rails_7b9177edd7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies
+    ADD CONSTRAINT fk_rails_7b9177edd7 FOREIGN KEY (blockchain_id) REFERENCES public.blockchains(id);
+
+
+--
 -- Name: blockchain_nodes fk_rails_86c4fbb9f7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2998,6 +3071,14 @@ ALTER TABLE ONLY public.currencies
 
 
 --
+-- Name: blockchain_currencies fk_rails_c890abe125; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies
+    ADD CONSTRAINT fk_rails_c890abe125 FOREIGN KEY (parent_id) REFERENCES public.blockchain_currencies(id);
+
+
+--
 -- Name: members fk_rails_cad3e0edf3; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3011,6 +3092,14 @@ ALTER TABLE ONLY public.members
 
 ALTER TABLE ONLY public.deposit_spreads
     ADD CONSTRAINT fk_rails_eef3f5807b FOREIGN KEY (deposit_id) REFERENCES public.deposits(id);
+
+
+--
+-- Name: blockchain_currencies fk_rails_fac9f73ca6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blockchain_currencies
+    ADD CONSTRAINT fk_rails_fac9f73ca6 FOREIGN KEY (currency_id) REFERENCES public.currencies(id);
 
 
 --
@@ -3265,6 +3354,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211116054502'),
 ('20211122110601'),
 ('20211203102904'),
-('20211223192517');
+('20211222155200'),
+('20211223192517'),
+('20211226123302'),
+('20220110182834'),
+('20220113150944'),
+('20220113155904');
 
 

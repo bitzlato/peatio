@@ -24,7 +24,7 @@ describe ::EthereumGateway::GasRefueler do
   let(:refuel_gas_factor) { 1 }
 
   before do
-    stub_balance_fetching currency: eth, balance: balance_on_target_address, address: to_address, id: 1
+    stub_balance_fetching blockchain_currency: eth.blockchain_currency, balance: balance_on_target_address, address: to_address
     stub_gas_fetching gas_price: gas_price, id: 2
   end
 
@@ -59,9 +59,11 @@ describe ::EthereumGateway::GasRefueler do
 
   context 'address has tokens' do
     let(:balance_on_target_address) { 0 }
-    let(:contract_addresses) { [trst.contract_address] }
-    let(:gas_limits) { { nil => eth.gas_limit, trst.contract_address => trst.gas_limit } }
-    let(:estimated_gas) { eth.gas_limit }
+    let(:eth_blockchain_currency) { eth.blockchain_currency }
+    let(:trst_blockchain_currency) { trst.blockchain_currency }
+    let(:contract_addresses) { [trst_blockchain_currency.contract_address] }
+    let(:gas_limits) { { nil => eth_blockchain_currency.gas_limit, trst_blockchain_currency.contract_address => trst_blockchain_currency.gas_limit } }
+    let(:estimated_gas) { eth_blockchain_currency.gas_limit }
     let(:gas_limit) { estimated_gas }
 
     context 'and it has no enough ethereum balance' do
@@ -71,7 +73,7 @@ describe ::EthereumGateway::GasRefueler do
           from_address: from_address,
           secret: secret,
           to_address: to_address,
-          gas: eth.gas_limit,
+          gas: eth_blockchain_currency.gas_limit,
           gas_price: transaction_gas_price,
           txid: txid,
           id: 2
@@ -79,7 +81,7 @@ describe ::EthereumGateway::GasRefueler do
       end
 
       let(:balance_on_target_address) { 10_000 }
-      let(:value) { ((trst.gas_limit * transaction_gas_price) + (eth.gas_limit * transaction_gas_price)).to_i - balance_on_target_address }
+      let(:value) { ((trst_blockchain_currency.gas_limit * transaction_gas_price) + (eth_blockchain_currency.gas_limit * transaction_gas_price)).to_i - balance_on_target_address }
       let(:transaction_gas_price) { (gas_price * refuel_gas_factor).to_i }
       let(:result_transaction_hash) do
         {
@@ -94,7 +96,7 @@ describe ::EthereumGateway::GasRefueler do
             'gas_price' => transaction_gas_price,
             'subtract_fee' => false,
             'required_amount' => 111_000_000_000_000,
-            'required_gas' => trst.gas_limit
+            'required_gas' => trst_blockchain_currency.gas_limit
           }
         }
       end

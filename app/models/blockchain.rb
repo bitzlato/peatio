@@ -13,7 +13,8 @@ class Blockchain < ApplicationRecord
   has_many :wallets
   has_many :whitelisted_smart_contracts
   has_many :withdraws
-  has_many :currencies
+  has_many :blockchain_currencies, dependent: :destroy
+  has_many :currencies, through: :blockchain_currencies
   has_many :payment_addresses
   has_many :transactions, through: :currencies
   has_many :deposits, through: :currencies
@@ -32,7 +33,7 @@ class Blockchain < ApplicationRecord
   scope :active, -> { where(status: :active) }
 
   def native_currency
-    currencies.find_by(parent_id: nil) || raise("No native currency for wallet id #{id}")
+    currencies.joins(:blockchain_currency).find_by(blockchain_currencies: { blockchain_id: id, parent_id: nil }) || raise("No native currency for blockchain id #{id}")
   end
 
   def fee_currency

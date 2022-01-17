@@ -176,9 +176,6 @@ module API
             optional :blockchain_key,
                      values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.currency.blockchain_key_doesnt_exist' },
                      desc: -> { API::V2::Admin::Entities::Currency.documentation[:blockchain_key][:desc] }
-            optional :parent_id,
-                     values: { value: -> { Currency.coins_without_tokens.pluck(:id).map(&:to_s) }, message: 'admin.currency.parent_id_doesnt_exist' },
-                     desc: -> { API::V2::Admin::Entities::Currency.documentation[:parent_id][:desc] }
           end
           mutually_exclusive :base_factor, :subunits, message: 'admin.currency.one_of_base_factor_subunits_fields'
         end
@@ -210,11 +207,6 @@ module API
           optional :blockchain_key,
                    values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.currency.blockchain_key_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Currency.documentation[:blockchain_key][:desc] }
-          given code: ->(val) { val.in?(Currency.coins.pluck(:code).map(&:to_s)) } do
-            optional :parent_id,
-                     values: { value: -> { Currency.coins_without_tokens.pluck(:id).map(&:to_s) }, message: 'admin.currency.parent_id_doesnt_exist' },
-                     desc: -> { API::V2::Admin::Entities::Currency.documentation[:parent_id][:desc] }
-          end
         end
         post '/currencies/update' do
           admin_authorize! :update, ::Currency, params.except(:code)

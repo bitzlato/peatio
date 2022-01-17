@@ -9,7 +9,12 @@ module Workers
         Rails.logger.info { 'Start bargainer process' }
 
         bargainer = Bargainer.new
-        member = Member.find_by!(uid: ENV.fetch('BARGAINER_UID'))
+        member = Member.find_by(uid: ENV.fetch('BARGAINER_UID'))
+        if member.nil?
+          Rails.logger.error { { message: 'Bargainer member is not found', member_uid: ENV.fetch('BARGAINER_UID') } }
+          sleep 60
+          return
+        end
         Rails.configuration.bargainers.each do |bargainer_config|
           market = Market.find_by(symbol: bargainer_config.fetch('market_symbol'))
           if market.nil?

@@ -21,7 +21,7 @@ describe ::EthereumGateway::CollectionConcern do
     let(:eth_money_amount) { 2.to_money('eth') }
     let(:balances) { { Money::Currency.find('eth') => eth_money_amount } }
     let(:payment_address) { create :payment_address, blockchain: blockchain }
-    let(:gas_limits) { blockchain.currencies.map { |c| [c.contract_address, c.gas_limit] }.to_h }
+    let(:gas_limits) { blockchain.blockchain_currencies.map { |bc| [bc.contract_address, bc.gas_limit] }.to_h }
 
     context 'there are native and tokens on the address' do
       before do

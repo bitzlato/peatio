@@ -108,7 +108,7 @@ describe ::EthereumGateway::TransactionCreator do
     let(:to_address) { '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa' }
     let(:transaction_gas_price) { fetched_gas_price }
     let(:subtract_fee) { false }
-    let(:contract_address) { trst.options.fetch('erc20_contract_address') }
+    let(:contract_address) { trst.blockchain_currency.contract_address }
     let(:request_body) do
       { jsonrpc: '2.0',
         id: 2,

@@ -14,7 +14,6 @@
   withdraw_fee:           0
   position:               1
   options:                {}
-  blockchain_key: bitzlato
 
 - id:                     btc
   subunits:               8
@@ -33,7 +32,6 @@
   withdraw_fee:           0
   position:               2
   options:                {}
-  blockchain_key: bitzlato
 
 - id:                     eth
   name:                   Ethereum
@@ -51,19 +49,12 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               3
-  blockchain_key: eth-ropsten
   options:
-    # ETH tx fees configurations.
-    #
-    # Maximum amount of gas you're willing to spend on a particular transaction.
-    gas_limit: 21_000
     # Internal price that is paid for running a transaction on the Ethereum network.
     gas_price: 1_000_000_000
 
 - id:                     trst
   name:                   WeTrust
-  parent_id:              eth
-  contract_address:       '0x0000000000000000000000000000000000000000'
   type:                   coin
   visible:                true
   subunits:               6
@@ -79,17 +70,9 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               4
-  blockchain_key: eth-ropsten
   options:
-    # ERC20 tx fees configurations.
-    #
-    # Maximum amount of gas you're willing to spend on a particular transaction.
-    gas_limit: 90_000
     # Internal price that is paid for running a contract on the Ethereum network.
     gas_price: 1_000_000_000
-    #
-    # ERC20 configuration.
-    erc20_contract_address: '0x0000000000000000000000000000000000000000' # Always wrap this value in quotes!
 
 - id:                     bnb-bep20
   name:                   BNB-BEP20
@@ -107,19 +90,12 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               5
-  blockchain_key: bsc-testnet
   options:
-    # ETH tx fees configurations.
-    #
-    # Maximum amount of gas you're willing to spend on a particular transaction.
-    gas_limit: 21_000
     # Internal price that is paid for running a transaction on the Ethereum network.
     gas_price: 1_000_000_000
 
 - id:                     usdt-bep20
   name:                   USDT-BEP20
-  parent_id:              bnb-bep20
-  contract_address:       '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd'
   subunits:               18
   type:                   coin
   visible:                true
@@ -134,12 +110,6 @@
   deposit_fee:            0
   withdraw_fee:           0
   position:               6
-  blockchain_key: bsc-testnet
   options:
-    # Maximum amount of gas you're willing to spend on a particular transaction.
-    gas_limit: 100_000
     # Internal price that is paid for running a transaction on the Ethereum network.
     gas_price: 1_000_000_000
-    #
-    # ERC20 configuration.
-    erc20_contract_address: '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd' # Always wrap this value in quotes!
