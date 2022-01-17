@@ -26,7 +26,7 @@ class EthereumGateway
       # Remove native currency if there are tokens to transfer
       # We want to collect native currency when there are no collectable tokens in address
       amounts.delete nil if amounts.many?
-      amounts = amounts.freeze
+      amounts = Hash[*amounts.first].freeze # Don't send simultaneous transactions for same address
       blockchain_address = payment_address.blockchain_address
       if amounts.any?
         logger.info("Collect from payment_address #{payment_address.address} amounts: #{amounts}")
