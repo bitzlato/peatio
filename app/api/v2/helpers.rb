@@ -59,20 +59,23 @@ module API
 
       def current_user
         # jwt.payload provided by rack-jwt
-        if request.env.key?('jwt.payload')
-          begin
-            Member.from_payload(request.env['jwt.payload'].symbolize_keys)
-          # Handle race conditions when creating member record.
-          # We do not handle race condition for update operations.
-          # http://api.rubyonrails.org/classes/ActiveRecord/Relation.html#method-i-find_or_create_by
-          rescue ActiveRecord::RecordNotUnique
-            retry
-          rescue ActiveRecord::RecordInvalid => err
-            report_exception err, true, payload: request.env['jwt.payload'].symbolize_keys
-          end
-        end
+        return unless request.env.key?('jwt.payload')
+
+        load_user
       end
       memoize :current_user
+
+      def load_user
+        attempts ||= 1
+        payload = request.env['jwt.payload'].symbolize_keys
+        Member.from_payload payload
+        # Handle race conditions when creating member record.
+        # We do not handle race condition for update operations.
+        # http://api.rubyonrails.org/classes/ActiveRecord/Relation.html#method-i-find_or_create_by
+      rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => err
+        retry if (attempts +=1) < 2
+        report_exception err, true, payload: payload
+      end
 
       def current_market
         ::Market.active.find_spot_by_symbol(params[:market])
