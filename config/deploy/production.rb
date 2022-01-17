@@ -17,6 +17,8 @@ set :markets, %w[
   mdterc20_mcrerc20 mdterc20_usdterc20 matic_usdtplgn matic_usdcplgn
   usdterc20_usdtplgn usdcerc20_usdcplgn usdtbep20_usdtplgn
   usdcbep20_usdcplgn usdthrc20_usdtplgn usdchrc20_usdcplgn
+  avax_usdtearc20 avax_usdcearc20 usdterc20_usdtearc20 usdcerc20_usdcearc20
+  usdtbep20_usdtearc20 usdcbep20_usdcearc20 usdthrc20_usdtearc20 usdchrc20_usdcearc20
 ]
 
 server ENV['PRODUCTION_SERVER'],
