@@ -169,12 +169,16 @@ module API
                           .available_to_member
                           .find(params[:id])
 
-            error!({ errors: ['account.beneficiary.cant_activate'] }, 422) unless beneficiary.pending?
-
-            if beneficiary.activate!(params[:pin])
-              present beneficiary, with: API::V2::Entities::Beneficiary
+            if Rails.env.development? || Rails.env.sandbox?
+              beneficiary.activate!(beneficiary.pin)
             else
-              error!({ errors: ['account.beneficiary.invalid_pin'] }, 422)
+              error!({ errors: ['account.beneficiary.cant_activate'] }, 422) unless beneficiary.pending?
+
+              if beneficiary.activate!(params[:pin])
+                present beneficiary, with: API::V2::Entities::Beneficiary
+              else
+                error!({ errors: ['account.beneficiary.invalid_pin'] }, 422)
+              end
             end
           end
 
