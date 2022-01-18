@@ -1,7 +1,7 @@
 production:
-  order_limit: 200
-  daily_limit: 500
-  weekly_limit: 1000
+  order_limit: 1000
+  daily_limit: 2500
+  weekly_limit: 5000
 sandbox:
   order_limit: 1
   daily_limit: 5
