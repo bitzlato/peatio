@@ -41,6 +41,6 @@
     transaction:     https://testnet.bscscan.com/tx/#{txid}
     contract_address: https://testent.bscscan.com/token/#{contract_address}
   status:            active
-#  address_type:      ethereum
+  address_type:      ethereum
   client_options:
     gas_factor:      1
