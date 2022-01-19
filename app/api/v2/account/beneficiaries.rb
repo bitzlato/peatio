@@ -169,7 +169,7 @@ module API
                           .available_to_member
                           .find(params[:id])
 
-            if Rails.env.development? || Rails.env.sandbox?
+            if Rails.env.sandbox?
               beneficiary.activate!(beneficiary.pin)
               present beneficiary, with: API::V2::Entities::Beneficiary
             else
