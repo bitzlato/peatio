@@ -34,8 +34,6 @@ set :systemd_amqp_daemon_instances,
       order_cancellator
     ]
 
-set :puma_bind, -> { ["tcp://0.0.0.0:970#{fetch(:stage)[1].to_i || 9}", "unix://#{shared_path}/tmp/sockets/puma.sock"] }
-
 server ENV.fetch('STAGING_SERVER'),
        user: fetch(:user),
        port: '22',
