@@ -171,6 +171,7 @@ module API
 
             if Rails.env.development? || Rails.env.sandbox?
               beneficiary.activate!(beneficiary.pin)
+              present beneficiary, with: API::V2::Entities::Beneficiary
             else
               error!({ errors: ['account.beneficiary.cant_activate'] }, 422) unless beneficiary.pending?
 
