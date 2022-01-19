@@ -1,4 +1,4 @@
-- id:                btcusd
+- id:
   base_unit:         btc
   quote_unit:        usd
   engine_name:       peatio-default-engine
@@ -11,7 +11,7 @@
   state:             enabled
   data:              {}
 
-- id:                ethusd
+- id:
   base_unit:         eth
   quote_unit:        usd
   engine_name:       peatio-default-engine
@@ -24,7 +24,7 @@
   state:             enabled
   data:              {}
 
-- id:                trstusd
+- id:
   base_unit:         trst
   quote_unit:        usd
   engine_name:       peatio-default-engine
@@ -37,7 +37,7 @@
   state:             enabled
   data:              {}
 
-- id:                ethbtc
+- id:
   base_unit:         eth
   quote_unit:        btc
   engine_name:       peatio-default-engine
@@ -50,7 +50,7 @@
   state:             enabled
   data:              {}
 
-- id:                trstbtc
+- id:
   base_unit:         trst
   quote_unit:        btc
   engine_name:       peatio-default-engine
@@ -63,7 +63,7 @@
   state:             enabled
   data:              {}
 
-- id:                trsteth
+- id:
   base_unit:         trst
   quote_unit:        eth
   engine_name:       peatio-default-engine
