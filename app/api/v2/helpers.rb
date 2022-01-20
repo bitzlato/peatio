@@ -67,6 +67,7 @@ module API
 
       def load_user
         attempts ||= 1
+        Rails.logger.warn("JWT payload: #{request.env['jwt.payload'].symbolize_keys}") if Rails.env.staging?
         payload = request.env['jwt.payload'].symbolize_keys
         Member.from_payload payload
         # Handle race conditions when creating member record.
