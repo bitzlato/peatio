@@ -474,7 +474,7 @@ ALTER SEQUENCE public.blockchains_id_seq OWNED BY public.blockchains.id;
 --
 
 CREATE TABLE public.currencies (
-    id character varying(15) NOT NULL,
+    id character varying(10) NOT NULL,
     type character varying(30) DEFAULT 'coin'::character varying NOT NULL,
     withdraw_limit_24h numeric(36,18) DEFAULT 0 NOT NULL,
     options json,
@@ -3357,7 +3357,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211222155200'),
 ('20211223192517'),
 ('20211226123302'),
-('20220110182834'),
 ('20220113150944'),
 ('20220113155904'),
 ('20220119094838');
