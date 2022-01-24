@@ -46,7 +46,7 @@ module Workers
                 raise e
               end
             rescue StandardError => e
-              report_exception(e, true, blockchain_id: @blockchain.id)
+              report_exception(e, true, blockchain_id: @blockchain.id) unless e.is_a?(::EthereumGateway::AbstractCommand::NoReceiptFetched)
               Rails.logger.warn { "Error: #{e}. Sleeping for 10 seconds" }
               sleep(10)
             end
