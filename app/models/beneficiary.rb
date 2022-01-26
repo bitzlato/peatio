@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Beneficiary < ApplicationRecord
-  self.ignored_columns = ['currency_id']
-
   # == Constants ============================================================
 
   extend Enumerize
@@ -124,11 +122,7 @@ class Beneficiary < ApplicationRecord
 
   # == Instance Methods =====================================================
 
-  delegate :currency, to: :blockchain_currency
-
-  def currency_id
-    blockchain_currency&.currency_id || attributes['currency_id']
-  end
+  delegate :currency, :currency_id, to: :blockchain_currency
 
   def as_json_for_event_api
     { user: { uid: member.uid, email: member.email },
