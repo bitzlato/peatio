@@ -8,10 +8,12 @@ class FakeBlockchain < Peatio::Blockchain::Abstract
   def configure(settings = {}); end
 end
 
+RSpec::Matchers.define_negated_matcher :not_change, :change
+
 describe BlockchainService do
   subject(:service) { described_class.new(blockchain) }
 
-  let(:blockchain) { create(:blockchain, 'eth-ropsten') }
+  let!(:blockchain) { find_or_create(:blockchain, key: 'eth-rinkeby') }
 
   around do |example|
     WebMock.disable_net_connect!
@@ -54,6 +56,59 @@ describe BlockchainService do
       expect(withdraw.reload.aasm_state).to eq 'succeed'
       expect(member.deposits.take).to have_attributes(currency_id: currency.id, amount: withdraw_amount, txid: txid, aasm_state: 'accepted', address: payment_address.address, from_addresses: [wallet.address], blockchain_id: blockchain.id)
       expect(account.reload).to have_attributes(balance: account_balance + withdraw_amount, locked: 0)
+    end
+  end
+
+  describe '#process_block' do
+    let(:block_number) { 1 }
+    let(:account_balance) { 0 }
+    let(:txid) { '0xa2a4414587ad1cbdb2fd0867f0a369562233d043da77f2cd5e0ac7fea4344aaa' }
+    let!(:currency) { create(:currency, 'usdt') }
+    let!(:member) { create(:member) }
+    let!(:account) { create(:account, currency: currency, member: member, balance: account_balance) }
+    let(:blockchain_currency) { create(:blockchain_currency, blockchain: blockchain, currency: currency,  blockchain: blockchain, min_deposit_amount: 100) }
+    let!(:payment_address) { create(:payment_address, address: '0x4711269d9c58a81b8dab9f7b847a9fca59cfbbbb', blockchain: blockchain, member: member) }
+    let!(:existed_skipped_deposit) do
+      create(:deposit, :deposit_eth, aasm_state: :skipped, blockchain: blockchain, currency: currency, member: member, amount: 10, error: 'Skipped deposit')
+    end
+    let(:skipped_deposit) do
+      blockchain_currency = find_or_create(:blockchain_currency, blockchain: blockchain, currency: currency)
+      Peatio::Transaction.new({
+
+                                amount: blockchain_currency.money_currency.to_money_from_decimal(95.to_d),
+                                block_number: block_number,
+                                blockchain_id: blockchain.id,
+                                currency_id: currency.id,
+                                from: 'unknown',
+                                from_address: '0x7075bbbd9bd338ce47a0e7ad23170d94c772aaab',
+                                status: 'success',
+                                to: 'deposit',
+                                to_address: payment_address.address,
+                                hash: '0xa2a4414587ad1cbdb2fd0867f0a369562233d043da77f2cd5e0ac7fea4344aaa'
+                              })
+    end
+
+    it 'accept new deposit and old skipped deposits' do
+      stub_latest_block_number(id: 1, block_number: block_number + blockchain.min_confirmations)
+      EthereumGateway.any_instance.expects(:fetch_block_transactions).returns([skipped_deposit])
+
+      expect do
+        service.process_block(block_number)
+      end.to change { existed_skipped_deposit.reload.aasm_state }.to('accepted').and \
+        change(Deposit, :count).by(1).and \
+          change { account.reload.balance }.from(0).to(95 + 10)
+    end
+
+    it 'skip new deposit and leave skipped old deposits when no volume on balance' do
+      blockchain_currency.update min_deposit_amount: 200
+      stub_latest_block_number(id: 1, block_number: block_number + blockchain.min_confirmations)
+      EthereumGateway.any_instance.expects(:fetch_block_transactions).returns([skipped_deposit])
+
+      expect do
+        service.process_block(block_number)
+      end.to not_change { existed_skipped_deposit.reload.aasm_state }.and \
+        not_change { account.reload.balance }.and \
+          change(Deposit, :count).by(1)
     end
   end
 
