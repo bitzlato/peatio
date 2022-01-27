@@ -113,10 +113,7 @@ class BlockchainService
   def update_height(block_number)
     current_height = blockchain.height
     new_height = blockchain.reload.height
-
-    if current_height != new_height
-      raise Error, "#{blockchain.name} height was reset. Current height: #{current_height}, New height: #{new_height}"
-    end
+    raise Error, "#{blockchain.name} height was reset. Current height: #{current_height}, New height: #{new_height}" if current_height != new_height
 
     # NOTE: We use update_column to not change updated_at timestamp
     # because we use it for detecting blockchain configuration changes see Workers::Daemon::Blockchain#run.
