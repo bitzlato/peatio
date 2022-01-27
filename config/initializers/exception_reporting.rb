@@ -21,12 +21,12 @@ def report_api_error(exception, request)
 end
 
 def report_exception(exception, report_to_ets = true, meta = {})
-  report_exception_to_screen(exception)
+  report_exception_to_screen(exception, meta)
   report_exception_to_ets(exception, meta) if report_to_ets
 end
 
-def report_exception_to_screen(exception)
-  Rails.logger.error(exception.inspect)
+def report_exception_to_screen(exception, meta = {})
+  Rails.logger.error(exception.inspect + ' ' + meta.to_json)
   Rails.logger.error(exception.backtrace.join("\n")) if exception.respond_to?(:backtrace)
 end
 
