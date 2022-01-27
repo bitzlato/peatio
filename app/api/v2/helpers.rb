@@ -75,6 +75,7 @@ module API
       rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
         retry if (attempts += 1) < 3
         report_exception e, true, payload: payload
+        raise ::JWT::DecodeError, "#{e} with #{payload}"
       end
 
       def current_market
