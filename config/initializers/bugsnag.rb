@@ -10,6 +10,7 @@ if defined? Bugsnag
   end
 
   Bugsnag.before_notify_callbacks << lambda do |report|
-    report.add_tab :context, request_id: Thread.current[:request_id] if Thread.current[:request_id].present?
+    report.add_metadata(:context, :urlHost, ENV['URL_HOST']) if Rails.env.staging?
+    report.add_metadata(:context, :requestId, Thread.current[:request_id]) if Thread.current[:request_id].present?
   end
 end
