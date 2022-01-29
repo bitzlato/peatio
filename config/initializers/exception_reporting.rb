@@ -26,8 +26,9 @@ def report_exception(exception, report_to_ets = true, meta = {})
 end
 
 def report_exception_to_screen(exception, meta = {})
-  Rails.logger.error(exception.inspect + ' ' + meta.to_json)
-  Rails.logger.error(exception.backtrace.join("\n")) if exception.respond_to?(:backtrace)
+  message = { message: exception.inspect, **meta }
+  message[:backtrace] = exception.backtrace&.join("\n") if exception.respond_to?(:backtrace)
+  Rails.logger.error(message)
 end
 
 def report_exception_to_ets(exception, meta = {})
