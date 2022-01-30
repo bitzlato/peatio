@@ -113,13 +113,6 @@ module API
                    type: String,
                    values: { value: -> { Currency.coins.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                    desc: 'The account you want to deposit to.'
-          given :currency do
-            optional :address_format,
-                     type: String,
-                     values: { value: -> { %w[legacy cash] }, message: 'account.deposit_address.invalid_address_format' },
-                     validate_currency_address_format: { value: true, prefix: 'account.deposit_address' },
-                     desc: 'Address format legacy/cash'
-          end
         end
         get '/deposit_address/:currency', requirements: { currency: /[\w.\-]+/ } do
           user_authorize! :read, ::PaymentAddress
@@ -131,7 +124,7 @@ module API
           error!({ errors: ['account.currency.no_deposit_address_invoices_only'] }, 422) if currency.enable_invoice?
 
           payment_address = current_user.payment_address(currency.blockchain)
-          present payment_address, with: API::V2::Entities::PaymentAddress, address_format: params[:address_format]
+          present payment_address, with: API::V2::Entities::PaymentAddress
         end
       end
     end

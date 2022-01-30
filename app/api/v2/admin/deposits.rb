@@ -146,13 +146,6 @@ module API
                    values: { value: -> { Currency.codes }, message: 'admin.deposit.currency_doesnt_exist' },
                    as: :currency_id,
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:currency][:desc] }
-          given :currency_id do
-            optional :address_format,
-                     type: String,
-                     values: { value: -> { %w[legacy cash] }, message: 'admin.deposit.invalid_address_format' },
-                     validate_currency_address_format: { value: true, prefix: 'admin.deposit' },
-                     desc: 'Address format legacy/cash'
-          end
         end
         post '/deposit_address' do
           admin_authorize! :create, ::PaymentAddress
@@ -165,7 +158,7 @@ module API
 
           if currency.deposit_enabled
             payment_address = member.payment_address(wallet.blockchain)
-            present payment_address, with: API::V2::Entities::PaymentAddress, address_format: params[:address_format]
+            present payment_address, with: API::V2::Entities::PaymentAddress
             status 201
           else
             body errors: ['admin.deposit.deposit_disabled']

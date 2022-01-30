@@ -21,9 +21,7 @@ module API
             desc: 'Payment address.',
             type: String
           }
-        ) do |pa, options|
-          options[:address_format] ? pa.format_address(options[:address_format]) : pa.address
-        end
+        )
 
         expose(
           :state,

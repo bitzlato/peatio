@@ -231,18 +231,6 @@ describe API::V2::Account::Deposits, type: :request do
         expect(response).to include_api_error('account.currency.doesnt_exist')
       end
 
-      it 'validates currency address format' do
-        api_get '/api/v2/account/deposit_address/btc', params: { address_format: 'cash' }, token: token
-        expect(response).to have_http_status :unprocessable_entity
-        expect(response).to include_api_error('account.deposit_address.doesnt_support_cash_address_format')
-      end
-
-      it 'validates currency with address_format param' do
-        api_get '/api/v2/account/deposit_address/abc', params: { address_format: 'cash' }, token: token
-        expect(response).to have_http_status :unprocessable_entity
-        expect(response).to include_api_error('account.currency.doesnt_exist')
-      end
-
       context 'unauthorized' do
         let(:currency) { find_or_create :currency, :btc, id: :btc }
 

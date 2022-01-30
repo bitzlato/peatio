@@ -15,10 +15,6 @@ class AbstractGateway
     address
   end
 
-  def self.format_address(_address)
-    not_implemented!
-  end
-
   def self.normalize_txid(txid)
     txid
   end
