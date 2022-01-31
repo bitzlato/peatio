@@ -105,10 +105,6 @@ class PaymentAddress < ApplicationRecord
     BalancesUpdater.new(blockchain: blockchain, address: address).perform
   end
 
-  def format_address(format)
-    blockchain.gateway_class.format_address(address, format)
-  end
-
   def status
     if address.present?
       blockchain.status # active or disabled

@@ -75,21 +75,6 @@ module API
                 message: "#{name} must be greater than zero."
         end
       end
-
-      class ValidateCurrencyAddressFormat < Grape::Validations::Base
-        remove_const :REASON if defined? REASON
-        REASON = 'doesnt_support_cash_address_format'
-        def validate_param!(name, params)
-          return unless params.key?(name)
-
-          currency = Currency.find_by(id: params[:currency])
-          return if currency && currency.blockchain.gateway_class.supports_cash_addr_format?
-
-          raise Grape::Exceptions::Validation,
-                params: [@scope.full_name('currency')],
-                message: "#{@option.fetch(:prefix)}.#{REASON}"
-        end
-      end
     end
   end
 end
