@@ -1409,7 +1409,9 @@ CREATE TABLE public.transfers (
     description character varying(255) DEFAULT ''::character varying,
     created_at timestamp(3) without time zone NOT NULL,
     updated_at timestamp(3) without time zone NOT NULL,
-    category smallint NOT NULL
+    category smallint NOT NULL,
+    member_id bigint NOT NULL,
+    amount numeric NOT NULL
 );
 
 
@@ -2918,6 +2920,13 @@ CREATE UNIQUE INDEX index_transfers_on_key ON public.transfers USING btree (key)
 
 
 --
+-- Name: index_transfers_on_member_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_transfers_on_member_id ON public.transfers USING btree (member_id);
+
+
+--
 -- Name: index_wallets_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3063,6 +3072,14 @@ ALTER TABLE ONLY public.blockchain_approvals
 
 
 --
+-- Name: transfers fk_rails_a3a7379a62; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.transfers
+    ADD CONSTRAINT fk_rails_a3a7379a62 FOREIGN KEY (member_id) REFERENCES public.members(id);
+
+
+--
 -- Name: currencies fk_rails_a7ead03da9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3106,7 +3123,7 @@ ALTER TABLE ONLY public.blockchain_currencies
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -3359,6 +3376,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211226123302'),
 ('20220110182834'),
 ('20220113150944'),
-('20220113155904');
+('20220113155904'),
+('20220131115104'),
+('20220131120854');
 
 

@@ -20,6 +20,9 @@ module API
                    type: String,
                    desc: 'Transfer Description.'
 
+          requires :member_uid, type: String
+          requires :amount, type: BigDecimal
+
           requires(:operations, type: Array, allow_blank: false) do
             requires :currency,
                      type: String,
@@ -58,7 +61,10 @@ module API
         post '/transfers/new' do
           declared_params = declared(params)
 
-          attrs = declared_params.slice(:key, :category, :description)
+          attrs = declared_params.slice(:key, :category, :description, :amount)
+
+          member_uid = description.fetch :member_uid
+          member = Member.find_by(uid: member_uid)
 
           declared_params[:operations].each do |op_pair|
             currency = Currency.find(op_pair[:currency])
@@ -70,7 +76,11 @@ module API
               klass = ::Operations.klass_for(code: op['code'])
 
               uid = op.delete(:uid)
-              op.merge!(member: Member.find_by!(uid: uid)) if uid.present?
+              if uid.present?
+                member = Member.find_by!(uid: uid)
+                op.merge!(member: member)
+                raise "Wrong members (#{member.uid} != #{attrs[:member_uid]})" unless member.uid == attrs[:member_uid]
+              end
 
               type = ::Operations::Account.find_by(code: op[:code]).type
               type_plural = type.pluralize
@@ -82,7 +92,7 @@ module API
             end
           end
 
-          present Transfer.create!(attrs), with: Entities::Transfer
+          present Transfer.create!(attrs.merge(member: member)), with: Entities::Transfer
           status 201
         rescue ActiveRecord::RecordInvalid => e
           body errors: e.message

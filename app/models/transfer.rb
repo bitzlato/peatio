@@ -14,6 +14,8 @@ class Transfer < ApplicationRecord
 
   # == Extensions ===========================================================
 
+  belongs_to :member
+
   # == Relationships ========================================================
 
   # Define has_many relation with Operations::{Asset,Expense,Liability,Revenue}.
@@ -28,6 +30,8 @@ class Transfer < ApplicationRecord
   validates :key, uniqueness: true, presence: true
   validates :category, presence: true
   validates :description, presence: true
+  validates :amount, presence: true
+
   validate do
     errors.add(:base, 'invalidates accounting equation') unless Operations.validate_accounting_equation(operations)
   end
