@@ -36,9 +36,9 @@ set :rbenv_ruby, File.read('.ruby-version').strip
 
 set :conditionally_migrate, true # Only attempt migration if db/migrate changed - not related to Webpacker, but a nice thing
 
-set :db_dump_extra_opts, '--force'
-set :db_local_clean, false
-set :db_remote_clean, true
+set :db_ignore_tables, %w[liabilities assets expenses revenues]
+set :db_local_clean, true
+set :db_remote_clean, false
 
 set :app_version, SemVer.find.to_s
 set :current_version, `git rev-parse HEAD`.strip
