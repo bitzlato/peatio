@@ -41,6 +41,7 @@ module API
         mount Management::Operations
         mount Management::Orders
         mount Management::Transfers
+        mount Management::MemberTransfers
         mount Management::Trades
         mount Management::Members
         mount Management::TradingFees
