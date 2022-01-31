@@ -64,7 +64,7 @@ module CurrencyServices
         else
           total_price += p * v
           total_volume += v
-          volume -= (converted_volume - v) * p
+          volume = (converted_volume - v) * p
         end
 
         break if volume.zero?
