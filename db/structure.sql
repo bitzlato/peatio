@@ -901,6 +901,43 @@ ALTER SEQUENCE public.member_groups_id_seq OWNED BY public.member_groups.id;
 
 
 --
+-- Name: member_transfers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.member_transfers (
+    id bigint NOT NULL,
+    member_id bigint NOT NULL,
+    currency_id character varying NOT NULL,
+    service character varying NOT NULL,
+    amount numeric NOT NULL,
+    key character varying NOT NULL,
+    description text NOT NULL,
+    meta jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: member_transfers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.member_transfers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: member_transfers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.member_transfers_id_seq OWNED BY public.member_transfers.id;
+
+
+--
 -- Name: members; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1409,7 +1446,8 @@ CREATE TABLE public.transfers (
     description character varying(255) DEFAULT ''::character varying,
     created_at timestamp(3) without time zone NOT NULL,
     updated_at timestamp(3) without time zone NOT NULL,
-    category smallint NOT NULL
+    category smallint NOT NULL,
+    member_id bigint NOT NULL
 );
 
 
@@ -1730,6 +1768,13 @@ ALTER TABLE ONLY public.member_groups ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: member_transfers id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.member_transfers ALTER COLUMN id SET DEFAULT nextval('public.member_transfers_id_seq'::regclass);
+
+
+--
 -- Name: members id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2022,6 +2067,14 @@ ALTER TABLE ONLY public.markets
 
 ALTER TABLE ONLY public.member_groups
     ADD CONSTRAINT member_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: member_transfers member_transfers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.member_transfers
+    ADD CONSTRAINT member_transfers_pkey PRIMARY KEY (id);
 
 
 --
@@ -2561,6 +2614,20 @@ CREATE UNIQUE INDEX index_member_groups_on_key ON public.member_groups USING btr
 
 
 --
+-- Name: index_member_transfers_on_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_member_transfers_on_key ON public.member_transfers USING btree (key);
+
+
+--
+-- Name: index_member_transfers_on_member_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_member_transfers_on_member_id ON public.member_transfers USING btree (member_id);
+
+
+--
 -- Name: index_members_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2918,6 +2985,13 @@ CREATE UNIQUE INDEX index_transfers_on_key ON public.transfers USING btree (key)
 
 
 --
+-- Name: index_transfers_on_member_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_transfers_on_member_id ON public.transfers USING btree (member_id);
+
+
+--
 -- Name: index_wallets_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3063,11 +3137,27 @@ ALTER TABLE ONLY public.blockchain_approvals
 
 
 --
+-- Name: transfers fk_rails_a3a7379a62; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.transfers
+    ADD CONSTRAINT fk_rails_a3a7379a62 FOREIGN KEY (member_id) REFERENCES public.members(id);
+
+
+--
 -- Name: currencies fk_rails_a7ead03da9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.currencies
     ADD CONSTRAINT fk_rails_a7ead03da9 FOREIGN KEY (parent_id) REFERENCES public.currencies(id);
+
+
+--
+-- Name: member_transfers fk_rails_b34092e2c9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.member_transfers
+    ADD CONSTRAINT fk_rails_b34092e2c9 FOREIGN KEY (member_id) REFERENCES public.members(id);
 
 
 --
@@ -3106,7 +3196,7 @@ ALTER TABLE ONLY public.blockchain_currencies
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -3359,6 +3449,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211226123302'),
 ('20220110182834'),
 ('20220113150944'),
-('20220113155904');
+('20220113155904'),
+('20220131115104'),
+('20220131124954');
 
 
