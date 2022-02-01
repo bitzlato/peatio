@@ -33,7 +33,7 @@ production:
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.001
-    max_spread: 0.011
+    max_spread: 0.015
   - market_symbol: usdterc20_usdtbep20
     min_volume: 15.0
     max_volume: 85.0
@@ -139,6 +139,11 @@ production:
     max_volume: 85.0
     price_deviation: 0.0005
     max_spread: 0.011
+  - market_symbol: avax_usdtearc20
+    min_volume: 0.25
+    max_volume: 1.0
+    price_deviation: 0.001
+    max_spread: 0.015
 sandbox:
   - market_symbol: eth_bnb
     min_volume: 0.0005
