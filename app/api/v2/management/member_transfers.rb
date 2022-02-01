@@ -29,6 +29,7 @@ module API
         end
         post '/member_transfers' do
           mt = MemberTransfer.create! declared(params).merge(meta: params)
+          mt.process!
           present mt, with: Entities::MemberTransfer
           status 201
         rescue ActiveRecord::RecordInvalid => e

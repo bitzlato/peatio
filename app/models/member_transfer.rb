@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class MemberTransfer < ApplicationRecord
+  include AASM
   AVAILABLE_SERVICES = %w[p2p].freeze
 
   belongs_to :member
@@ -12,9 +13,21 @@ class MemberTransfer < ApplicationRecord
   validates :amount, numericality: { other_than: 0 }
   validates :meta, presence: true
 
-  after_create :process!
-
   delegate :uid, to: :member, prefix: true
+
+  aasm do
+    state :pending, initial: true
+    state :finished
+    state :errored
+
+    event :finish do
+      transitions from: %i[pending], to: :finished
+    end
+
+    event :err do
+      transitions from: %i[pending], to: :errored
+    end
+  end
 
   def member_uid=(uid)
     self.member = Member.find_by!(uid: uid)
@@ -24,15 +37,21 @@ class MemberTransfer < ApplicationRecord
     member.get_account(currency_id)
   end
 
-  private
-
   def process!
-    if amount.positive?
-      income!
-    else
-      outcome!
+    transaction do
+      if amount.positive?
+        income!
+      else
+        outcome!
+      end
+      self.finish!
+    rescue => e
+      self.err!
+      raise e
     end
   end
+
+  private
 
   def income!
     account.with_lock do
