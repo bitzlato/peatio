@@ -20,7 +20,7 @@ module API
                    desc: 'Operation currency.'
           requires :amount,
                    type: BigDecimal,
-                   values: ->(v) { v.to_d.positive? },
+                   values: ->(v) { !v.to_d.zero? },
                    desc: 'Operation amount.'
           requires :service,
                   type: String,
