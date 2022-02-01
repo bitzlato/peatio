@@ -23,19 +23,12 @@ module API
                    values: ->(v) { !v.to_d.zero? },
                    desc: 'Operation amount.'
           requires :service,
-                  type: String,
-                  values: MemberTransfer::AVAILABLE_SERVICES
+                   type: String,
+                   values: MemberTransfer::AVAILABLE_SERVICES
           requires :member_uid
         end
         post '/member_transfers' do
-          mt = MemberTransfer.new declared(params.merge meta: params)
-          mt.member.get_account(mt.currency_id).with_lock do |account|
-            if amount.positive?
-              account.plus_funds!(mt.amount)
-            else
-              account.sub_funds!(-mt.amount)
-            end
-          end
+          mt = MemberTransfer.create! declared(params).merge(meta: params)
           present mt, with: Entities::MemberTransfer
           status 201
         rescue ActiveRecord::RecordInvalid => e
