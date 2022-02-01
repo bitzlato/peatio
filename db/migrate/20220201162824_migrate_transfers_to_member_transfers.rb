@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MigrateTransfersToMemberTransfers < ActiveRecord::Migration[5.2]
   def change
     Transfer.find_each do |transfer|
@@ -7,17 +9,17 @@ class MigrateTransfersToMemberTransfers < ActiveRecord::Migration[5.2]
       revenue = transfer.revenue.first
 
       mb = MemberTransfer.create!({
-        id: transfer.id,
-        key: transfer.key,
-        currency: liability.currency,
-        amount: liability.amount,
-        memeber: liability.member,
-        description: transfer.description,
-        service: transfer.category,
-        meta: transfer.attributes.merge(liability: liability.attributes, revenue: revenue.attributes),
-        created_at: transfer.created_at,
-        updated_at: transfer.updated_at,
-      })
+                                    id: transfer.id,
+                                    key: transfer.key,
+                                    currency: liability.currency,
+                                    amount: liability.amount,
+                                    memeber: liability.member,
+                                    description: transfer.description,
+                                    service: transfer.category,
+                                    meta: transfer.attributes.merge(liability: liability.attributes, revenue: revenue.attributes),
+                                    created_at: transfer.created_at,
+                                    updated_at: transfer.updated_at
+                                  })
 
       if mb.amount.positive?
         Operations::Asset.credit!(

@@ -44,9 +44,9 @@ class MemberTransfer < ApplicationRecord
       else
         outcome!
       end
-      self.finish!
-    rescue => e
-      self.err!
+      finish!
+    rescue StandardError => e
+      err!
       raise e
     end
   end
