@@ -44,6 +44,14 @@ class Blockchain < ApplicationRecord
     native_blockchain_currency
   end
 
+  def native_blockchain_currency
+    blockchain_currencies.find_by!(parent_id: nil)
+  end
+
+  def fee_blockchain_currency
+    native_blockchain_currency
+  end
+
   # Support legacy API for tower
   #
   def status
