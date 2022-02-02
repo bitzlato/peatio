@@ -33,7 +33,7 @@ module API
 
             account = mt.member.get_account(mt.currency_id)
 
-            raise 'account is not persisted!' unless account.persisted?
+            raise "Account for member #{mt.member_uid} and currency #{mt.currency} is not persisted!" unless account.persisted?
 
             account.with_lock do
               if mt.amount.positive?
