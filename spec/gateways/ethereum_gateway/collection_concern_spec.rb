@@ -18,8 +18,9 @@ describe ::EthereumGateway::CollectionConcern do
   end
 
   describe '#collect!' do
-    let(:eth_money_amount) { 2.to_money('eth') }
-    let(:balances) { { Money::Currency.find('eth') => eth_money_amount } }
+    let(:blockchain_currency) { BlockchainCurrency.find_by!(blockchain: blockchain, currency_id: 'eth') }
+    let(:eth_money_amount) { 2.to_money(blockchain_currency) }
+    let(:balances) { { Money::Currency.find(blockchain_currency.id) => eth_money_amount } }
     let(:payment_address) { create :payment_address, blockchain: blockchain }
     let(:gas_limits) { blockchain.blockchain_currencies.map { |bc| [bc.contract_address, bc.gas_limit] }.to_h }
 

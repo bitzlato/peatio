@@ -176,10 +176,11 @@ class BlockchainService
 
       logger.info("Found or created suitable deposit #{deposit.id} for txid #{transaction.id}, amount #{transaction.amount}")
       if deposit.submitted?
-        if transaction.amount < Currency.find(transaction.amount.currency.id).min_deposit_amount_money
+        min_deposit_amount_money = BlockchainCurrency.find(transaction.amount.currency.blockchain_currency_record.id).min_deposit_amount_money
+        if transaction.amount < min_deposit_amount_money
           skip_message = "Skipped deposit with txid: #{transaction.hash}"\
                          " to #{transaction.to_address} in block number #{transaction.block_number}"\
-                         " because of low amount (#{transaction.amount.format} < #{Currency.find(transaction.amount.currency.id).min_deposit_amount_money.format})"
+                         " because of low amount (#{transaction.amount.format} < #{min_deposit_amount_money.format})"
           logger.warn skip_message
           deposit.skip!
           deposit.add_error skip_message

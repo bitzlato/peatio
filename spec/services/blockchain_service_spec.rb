@@ -23,7 +23,7 @@ describe BlockchainService do
     let(:account_balance) { 1000 }
     let(:withdraw_amount) { 100 }
     let(:txid) { '0xa2a4414587ad1cbdb2fd0867f0a369562233d043da77f2cd5e0ac7fea4344aaa' }
-    let(:currency) { create(:currency, 'usdt', blockchain: blockchain) }
+    let(:currency) { create(:currency, 'usdt') }
     let!(:member) { create(:member) }
     let!(:account) { create(:account, currency: currency, member: member, balance: account_balance, locked: withdraw_amount) }
     let!(:withdraw) { create(:eth_withdraw, aasm_state: :confirming, blockchain: blockchain, currency: currency, member: member, sum: withdraw_amount, txid: txid) }
@@ -31,12 +31,13 @@ describe BlockchainService do
     let!(:wallet) { create(:wallet, address: '0x7075bbbd9bd338ce47a0e7ad23170d94c772aaaa', blockchain: blockchain, kind: :hot) }
 
     it 'transits withdrawal to succeed and creates deposit' do
+      blockchain_currency = create(:blockchain_currency, blockchain: blockchain, currency: currency)
       block_number = 0
       create(:currency_wallet, currency: currency, wallet: wallet)
 
       stub_latest_block_number(id: 1, block_number: block_number + blockchain.min_confirmations)
       EthereumGateway.any_instance.expects(:fetch_block_transactions).returns(
-        [Peatio::Transaction.new(amount: currency.money_currency.to_money_from_decimal(withdraw_amount.to_d),
+        [Peatio::Transaction.new(amount: blockchain_currency.money_currency.to_money_from_decimal(withdraw_amount.to_d),
                                  block_number: block_number,
                                  blockchain_id: blockchain.id,
                                  currency_id: currency.id,

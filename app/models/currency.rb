@@ -46,12 +46,6 @@ class Currency < ApplicationRecord
 
   # == Validations ==========================================================
   #
-  before_validation on: :create do
-    # Это устанавливате сятолько для того чтобы проходили специфичные тесты которые надо подправить
-    # чтобы онги сами усатанвилвали base_factor
-    self.base_factor ||= 2
-  end
-
   # Support for tower
   before_update if: :erc20_contract_address do
     self.contract_address ||= erc20_contract_address
@@ -69,7 +63,6 @@ class Currency < ApplicationRecord
 
   validates :type, inclusion: { in: ->(_) { Currency.types.map(&:to_s) } }
   validates :options, length: { maximum: 1000 }
-  validates :base_factor, presence: true
 
   validates :deposit_fee,
             :min_deposit_amount,
@@ -110,7 +103,6 @@ class Currency < ApplicationRecord
   before_update { update_position(self) if position_changed? }
 
   delegate :enable_invoice?, to: :blockchain
-  delegate :to_money_from_decimal, :to_money_from_units, to: :money_currency
 
   after_commit :wipe_cache
 
@@ -156,15 +148,6 @@ class Currency < ApplicationRecord
     self.options = {} if options.blank?
   end
 
-  # quick fix specs
-  def money_code
-    return 'fake' if code.start_with? 'fake'
-  end
-
-  def money_currency
-    @money_currency ||= Money::Currency.find!(id)
-  end
-
   # Allows to dynamically check value of id/code:
   #
   #   id.btc? # true if code equals to "btc".
@@ -183,26 +166,11 @@ class Currency < ApplicationRecord
     id.to_s.downcase.split(ID_SEPARATOR).first.presence
   end
 
-  # subunit (or fractional monetary unit) - a monetary unit
-  # that is valued at a fraction (usually one hundredth)
-  # of the basic monetary unit
-  def subunits=(n)
-    self.base_factor = 10**n
-  end
-
-  def subunits
-    Math.log(base_factor, 10).round
-  end
-
   # This method defines that token currency need to have parent_id and coin type
   # We use parent_id for token type to inherit some useful info such as blockchain_key from parent currency
   # For coin currency enough to have only coin type
   def token?
     blockchain_currency.parent_id.present? && coin?
-  end
-
-  def subunit_to_unit
-    base_factor
   end
 
   def get_price
@@ -221,14 +189,6 @@ class Currency < ApplicationRecord
                                   base_factor: base_factor,
                                   min_collection_amount: min_collection_amount,
                                   options: opt)
-  end
-
-  def min_deposit_amount_money
-    money_currency.to_money_from_decimal min_deposit_amount
-  end
-
-  def min_withdraw_amount_money
-    money_currency.to_money_from_decimal min_withdraw_amount
   end
 
   def dependent_markets

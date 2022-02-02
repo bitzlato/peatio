@@ -281,7 +281,7 @@ class Withdraw < ApplicationRecord
   end
 
   def money_amount
-    currency.money_currency.to_money_from_decimal amount
+    blockchain_currency.money_currency.to_money_from_decimal amount
   end
 
   def for_notify
@@ -356,5 +356,9 @@ class Withdraw < ApplicationRecord
 
   def send_coins!
     AMQP::Queue.enqueue(:withdraw_coin, id: id) if currency.coin?
+  end
+
+  def blockchain_currency
+    @blockchain_currency ||= BlockchainCurrency.find_by!(blockchain: blockchain, currency: currency)
   end
 end

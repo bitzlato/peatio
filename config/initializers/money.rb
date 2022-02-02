@@ -24,12 +24,12 @@ class Money
     include NumericHelpers
 
     class << self
-      def find!(code)
-        find(code) || raise("No #{code} Money::Currency found!")
+      def find!(id)
+        find(id) || raise("No #{id} Money::Currency found!")
       end
 
       def all
-        ::Currency.ordered.map(&:money_currency)
+        ::BlockchainCurrency.all.map(&:money_currency)
       end
 
       def new(id)
@@ -38,13 +38,14 @@ class Money
       end
     end
 
-    attr_reader :currency_record
+    attr_reader :blockchain_currency_record, :currency_record
 
-    delegate :priority, :subunit_to_unit, :contract_address, :precision, :name, :subunits, :base_factor,
-             :min_collection_amount, :min_deposit_amount, :crypto?, :token?, :blockchain, to: :currency_record
+    delegate :base_factor, :subunit_to_unit, :token?, to: :blockchain_currency_record
+    delegate :priority, :precision, :name, :min_collection_amount, :min_deposit_amount, :crypto?, to: :currency_record
 
     def initialize_data!
-      @currency_record = ::Currency.find(id)
+      @blockchain_currency_record = ::BlockchainCurrency.find(id.to_s.to_i)
+      @currency_record = @blockchain_currency_record.currency
     rescue ActiveRecord::RecordNotFound
       raise UnknownCurrency, id
     end

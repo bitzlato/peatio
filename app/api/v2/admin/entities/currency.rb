@@ -52,22 +52,6 @@ module API
           )
 
           expose(
-            :base_factor,
-            documentation: {
-              type: Integer,
-              desc: 'Currency base factor.'
-            }
-          )
-
-          expose(
-            :subunits,
-            documentation: {
-              type: Integer,
-              desc: 'Fraction of the basic monetary unit.'
-            }, &:subunits
-          )
-
-          expose(
             :options,
             documentation: {
               type: JSON,

@@ -102,15 +102,18 @@ RSpec.configure do |config|
     AMQP::Queue.stubs(:publish)
     KlineDB.stubs(:kline).returns([])
     Currency.any_instance.stubs(:price).returns(1.to_d)
-    %w[bitzlato eth-kovan eth-rinkeby btc-testnet].each do |key|
+    %w[bitzlato eth-kovan eth-rinkeby btc-testnet btc-testnet dummy].each do |key|
       FactoryBot.find_or_create(:blockchain, key, key: key)
     end
-    %i[btc-testnet].each do |key|
-      FactoryBot.find_or_create(:blockchain, key, key: key)
-    end
-
     %i[usd eur btc eth trst ring].each do |code|
       FactoryBot.find_or_create :currency, code, id: code
+    end
+    [%w[btc btc-testnet], %w[usd dummy], %w[eur dummy]].each do |bc|
+      FactoryBot.create(:blockchain_currency, blockchain: Blockchain.find_by!(key: bc[1]), currency_id: bc[0])
+    end
+    parent = FactoryBot.create(:blockchain_currency, 'eth', blockchain: Blockchain.find_by!(key: 'eth-rinkeby'), currency_id: 'eth')
+    [%w[trst eth-rinkeby], %w[ring eth-rinkeby]].each do |bc|
+      FactoryBot.create(:blockchain_currency, bc[0], blockchain: Blockchain.find_by!(key: bc[1]), currency_id: bc[0], parent_id: parent.id)
     end
 
     Wallet.delete_all
