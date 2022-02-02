@@ -3,17 +3,17 @@
 class MigrateTransfersToMemberTransfers < ActiveRecord::Migration[5.2]
   def change
     Transfer.find_each do |transfer|
-      raise 'wtf?' if transfer.liabilities.count != 1 || transfer.revenues.count != 1 || transfer.operations != 2
+      raise 'wtf?' if transfer.liabilities.count != 1 || transfer.revenues.count != 1 || transfer.operations.size != 2
 
       liability = transfer.liabilities.first
-      revenue = transfer.revenue.first
+      revenue = transfer.revenues.first
 
       mb = MemberTransfer.create!({
                                     id: transfer.id,
                                     key: transfer.key,
                                     currency: liability.currency,
                                     amount: liability.amount,
-                                    memeber: liability.member,
+                                    member: liability.member,
                                     description: transfer.description,
                                     service: transfer.category,
                                     meta: transfer.attributes.merge(liability: liability.attributes, revenue: revenue.attributes),
