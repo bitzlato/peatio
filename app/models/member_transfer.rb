@@ -13,6 +13,13 @@ class MemberTransfer < ApplicationRecord
   validates :amount, numericality: { other_than: 0 }
   validates :meta, presence: true
 
+  # Define has_many relation with Operations::{Asset,Expense,Liability,Revenue}.
+  ::Operations::Account::TYPES.map(&:pluralize).each do |op_t|
+    has_many op_t.to_sym,
+             class_name: "::Operations::#{op_t.to_s.singularize.camelize}",
+             as: :reference
+  end
+
   delegate :uid, to: :member, prefix: true
 
   def member_uid=(uid)
