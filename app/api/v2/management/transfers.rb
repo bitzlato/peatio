@@ -56,6 +56,8 @@ module API
           end
         end
         post '/transfers/new' do
+          raise 'turned off transfers' unless Rails.env.test?
+
           declared_params = declared(params)
 
           attrs = declared_params.slice(:key, :category, :description)
