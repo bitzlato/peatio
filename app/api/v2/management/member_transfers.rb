@@ -29,7 +29,41 @@ module API
         end
         post '/member_transfers' do
           mt = MemberTransfer.create! declared(params).merge(meta: params)
-          mt.process!
+
+          account = mt.member.get_account(mt.currency_id)
+
+          account.with_lock do
+            if mt.amount.positive?
+              account.plus_funds!(mt.amount)
+              ::Operations::Asset.credit!(
+                amount: mt.amount,
+                currency: mt.currency,
+                reference: mt
+              )
+              ::Operations::Liability.credit!(
+                amount: mt.amount,
+                currency: mt.currency,
+                reference: mt,
+                member_id: mt.member_id,
+                kind: :main
+              )
+            else
+              account.sub_funds!(-mt.amount)
+              ::Operations::Asset.debit!(
+                amount: -mt.amount,
+                currency: mt.currency,
+                reference: mt
+              )
+              ::Operations::Liability.debit!(
+                amount: -mt.amount,
+                currency: mt.currency,
+                reference: mt,
+                member_id: mt.member_id,
+                kind: :main
+              )
+            end
+          end
+
           present mt, with: Entities::MemberTransfer
           status 201
         rescue ActiveRecord::RecordInvalid => e

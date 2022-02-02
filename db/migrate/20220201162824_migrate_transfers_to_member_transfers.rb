@@ -50,7 +50,6 @@ class MigrateTransfersToMemberTransfers < ActiveRecord::Migration[5.2]
       end
 
       transfer.operations.each(&:destroy!)
-      transfer.destroy!
     end
   end
 end
