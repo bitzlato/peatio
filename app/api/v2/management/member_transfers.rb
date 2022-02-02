@@ -28,6 +28,7 @@ module API
           requires :member_uid
         end
         post '/member_transfers' do
+          mt = nil
           MemberTransfer.transaction do
             mt = MemberTransfer.create! declared(params).merge(meta: params)
 
