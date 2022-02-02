@@ -16,7 +16,7 @@ module API
                    desc: 'Transfer Description.'
           requires :currency_id,
                    type: String,
-                   values: -> { Currency.codes(bothcase: true) },
+                   values: -> { Currency.codes },
                    desc: 'Operation currency.'
           requires :amount,
                    type: BigDecimal,
@@ -32,8 +32,6 @@ module API
             mt = MemberTransfer.create! declared(params).merge(meta: params)
 
             account = mt.member.get_account(mt.currency_id)
-
-            raise "Account for member #{mt.member_uid} and currency #{mt.currency} is not persisted!" unless account.persisted?
 
             account.with_lock do
               if mt.amount.positive?
