@@ -53,9 +53,9 @@ class Member < ApplicationRecord
   def get_account(model_or_id_or_code)
     case model_or_id_or_code
     when String, Symbol
-      accounts.find_or_create_by(currency_id: model_or_id_or_code)
+      accounts.find_or_create_by!(currency_id: model_or_id_or_code)
     when Currency
-      accounts.find_or_create_by(currency: model_or_id_or_code)
+      accounts.find_or_create_by!(currency: model_or_id_or_code)
     end
   # Thread Safe Account creation
   rescue ActiveRecord::RecordNotUnique
