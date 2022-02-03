@@ -7,6 +7,9 @@ class MemberTransfer < ApplicationRecord
   belongs_to :member
   belongs_to :currency
 
+  before_update { raise 'updates disabled'}
+  before_destroy { raise 'destroy disabled'}
+
   validates :service, presence: true, inclusion: { in: AVAILABLE_SERVICES }
   validates :description, null: false
   validates :key, uniqueness: true, presence: true
