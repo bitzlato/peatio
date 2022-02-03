@@ -50,9 +50,7 @@ class BalancesUpdater
   end
 
   def current_balances(wallet)
-    if @blockchain.gateway.is_a? BitzlatoGateway
-      @blockchain.gateway.load_balances
-    else
+    unless @blockchain.gateway.is_a? BitzlatoGateway
       wallet.currencies.each_with_object({}) do |c, balances|
         balances[c.id] = begin
           c = c.money_currency unless c.is_a? Money::Currency
