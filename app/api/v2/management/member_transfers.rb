@@ -28,41 +28,50 @@ module API
           requires :member_uid
         end
         post '/member_transfers' do
-          mt = nil
-          MemberTransfer.transaction do
-            mt = MemberTransfer.create! declared(params).merge(meta: params)
+          attributes = declared(params).merge(meta: params)
+          mt = MemberTransfer.find_by_key(params[:key])
+          if mt.present?
+            mt.assign_attributes attributes
+            raise "Member transfer (#{mt.key}) exists and attributes are changed (#{mt.changed_attributes})" if mt.changed?
+            present mt, with: Entities::MemberTransfer
+            status 200
+          else
+            MemberTransfer.transaction do
+              mt = MemberTransfer.new attributes
+              mt.save!
 
-            account = mt.member.get_account(mt.currency_id)
+              account = mt.member.get_account(mt.currency_id)
 
-            account.with_lock do
-              if mt.amount.positive?
-                account.plus_funds!(mt.amount)
-                ::Operations::Asset.credit!(
-                  amount: mt.amount,
-                  currency: mt.currency,
-                  reference: mt
-                )
-                ::Operations::Liability.credit!(
-                  amount: mt.amount,
-                  currency: mt.currency,
-                  reference: mt,
-                  member_id: mt.member_id,
-                  kind: :main
-                )
-              else
-                account.sub_funds!(-mt.amount)
-                ::Operations::Asset.debit!(
-                  amount: -mt.amount,
-                  currency: mt.currency,
-                  reference: mt
-                )
-                ::Operations::Liability.debit!(
-                  amount: -mt.amount,
-                  currency: mt.currency,
-                  reference: mt,
-                  member_id: mt.member_id,
-                  kind: :main
-                )
+              account.with_lock do
+                if mt.amount.positive?
+                  account.plus_funds!(mt.amount)
+                  ::Operations::Asset.credit!(
+                    amount: mt.amount,
+                    currency: mt.currency,
+                    reference: mt
+                  )
+                  ::Operations::Liability.credit!(
+                    amount: mt.amount,
+                    currency: mt.currency,
+                    reference: mt,
+                    member_id: mt.member_id,
+                    kind: :main
+                  )
+                else
+                  account.sub_funds!(-mt.amount)
+                  ::Operations::Asset.debit!(
+                    amount: -mt.amount,
+                    currency: mt.currency,
+                    reference: mt
+                  )
+                  ::Operations::Liability.debit!(
+                    amount: -mt.amount,
+                    currency: mt.currency,
+                    reference: mt,
+                    member_id: mt.member_id,
+                    kind: :main
+                  )
+                end
               end
             end
           end
