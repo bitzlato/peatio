@@ -97,15 +97,18 @@ describe API::V2::Management::MemberTransfers, type: :request do
     end
 
     context 'existing transfer key' do
-      before do
+      it 'raise error if attribute has been changed' do
         t = create(:member_transfer, :income)
         data[:key] = t.key
         request
+        expect(response).to have_http_status(500)
       end
 
-      it do
-        expect(response).to have_http_status :unprocessable_entity
-        expect(response.body).to match(/key has already been taken/i)
+      it 'return success' do
+        request
+        expect(response).to have_http_status(201)
+        request
+        expect(response).to have_http_status(200)
       end
     end
 
