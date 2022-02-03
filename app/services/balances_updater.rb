@@ -50,15 +50,15 @@ class BalancesUpdater
   end
 
   def current_balances(wallet)
-    unless @blockchain.gateway.is_a? BitzlatoGateway
-      wallet.currencies.each_with_object({}) do |c, balances|
-        balances[c.id] = begin
-          c = c.money_currency unless c.is_a? Money::Currency
-          @blockchain.gateway.load_balance(wallet.address, c)
-        rescue Peatio::Wallet::ClientError => e
-          report_exception e, true, wallet_id: wallet.id
-          nil
-        end
+    return if @blockchain.gateway.is_a? BitzlatoGateway
+
+    wallet.currencies.each_with_object({}) do |c, balances|
+      balances[c.id] = begin
+        c = c.money_currency unless c.is_a? Money::Currency
+        @blockchain.gateway.load_balance(wallet.address, c)
+      rescue Peatio::Wallet::ClientError => e
+        report_exception e, true, wallet_id: wallet.id
+        nil
       end
     end
   end

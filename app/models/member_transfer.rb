@@ -20,6 +20,7 @@ class MemberTransfer < ApplicationRecord
   ::Operations::Account::TYPES.map(&:pluralize).each do |op_t|
     has_many op_t.to_sym,
              class_name: "::Operations::#{op_t.to_s.singularize.camelize}",
+             dependent: false,
              as: :reference
   end
 
