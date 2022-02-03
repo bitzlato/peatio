@@ -302,6 +302,7 @@ Rails/HasManyOrHasOneDependent:
     - 'app/models/engine.rb'
     - 'app/models/market.rb'
     - 'app/models/member.rb'
+    - 'app/models/member_transfer.rb'
     - 'app/models/transfer.rb'
     - 'app/models/wallet.rb'
 

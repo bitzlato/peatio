@@ -33,6 +33,7 @@ module API
           if mt.present?
             mt.assign_attributes attributes
             raise "Member transfer (#{mt.key}) exists and attributes are changed (#{mt.changed_attributes})" if mt.changed?
+
             present mt, with: Entities::MemberTransfer
             status 200
           else
