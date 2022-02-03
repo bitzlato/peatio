@@ -74,10 +74,10 @@ module API
                 end
               end
             end
-          end
 
-          present mt, with: Entities::MemberTransfer
-          status 201
+            present mt, with: Entities::MemberTransfer
+            status 201
+          end
         rescue ActiveRecord::RecordInvalid => e
           body errors: e.message
           status 422
