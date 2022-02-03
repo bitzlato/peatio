@@ -898,6 +898,43 @@ ALTER SEQUENCE public.member_groups_id_seq OWNED BY public.member_groups.id;
 
 
 --
+-- Name: member_transfers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.member_transfers (
+    id bigint NOT NULL,
+    member_id bigint NOT NULL,
+    currency_id character varying NOT NULL,
+    service character varying NOT NULL,
+    amount numeric NOT NULL,
+    key character varying NOT NULL,
+    description text NOT NULL,
+    meta jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: member_transfers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.member_transfers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: member_transfers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.member_transfers_id_seq OWNED BY public.member_transfers.id;
+
+
+--
 -- Name: members; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1727,6 +1764,13 @@ ALTER TABLE ONLY public.member_groups ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: member_transfers id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.member_transfers ALTER COLUMN id SET DEFAULT nextval('public.member_transfers_id_seq'::regclass);
+
+
+--
 -- Name: members id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2019,6 +2063,14 @@ ALTER TABLE ONLY public.markets
 
 ALTER TABLE ONLY public.member_groups
     ADD CONSTRAINT member_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: member_transfers member_transfers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.member_transfers
+    ADD CONSTRAINT member_transfers_pkey PRIMARY KEY (id);
 
 
 --
@@ -2558,6 +2610,27 @@ CREATE UNIQUE INDEX index_member_groups_on_key ON public.member_groups USING btr
 
 
 --
+-- Name: index_member_transfers_on_currency_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_member_transfers_on_currency_id ON public.member_transfers USING btree (currency_id);
+
+
+--
+-- Name: index_member_transfers_on_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_member_transfers_on_key ON public.member_transfers USING btree (key);
+
+
+--
+-- Name: index_member_transfers_on_member_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_member_transfers_on_member_id ON public.member_transfers USING btree (member_id);
+
+
+--
 -- Name: index_members_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3068,6 +3141,14 @@ ALTER TABLE ONLY public.currencies
 
 
 --
+-- Name: member_transfers fk_rails_b34092e2c9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.member_transfers
+    ADD CONSTRAINT fk_rails_b34092e2c9 FOREIGN KEY (member_id) REFERENCES public.members(id);
+
+
+--
 -- Name: blockchain_currencies fk_rails_c890abe125; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3357,6 +3438,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220110182834'),
 ('20220113150944'),
 ('20220113155904'),
-('20220131124813');
+('20220131124813'),
+('20220131124954'),
+('20220201162824');
 
 
