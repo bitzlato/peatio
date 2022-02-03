@@ -5,6 +5,7 @@ module API
     module Management
       module Entities
         class MemberTransfer < Base
+          expose :id
           expose :key,
                  documentation: {
                    type: String,
