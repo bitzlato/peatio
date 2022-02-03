@@ -101,14 +101,14 @@ describe API::V2::Management::MemberTransfers, type: :request do
         t = create(:member_transfer, :income)
         data[:key] = t.key
         request
-        expect(response).to have_http_status(500)
+        expect(response).to have_http_status(:internal_server_error)
       end
 
       it 'return success' do
         request
-        expect(response).to have_http_status(201)
+        expect(response).to have_http_status(:created)
         request
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
       end
     end
 
