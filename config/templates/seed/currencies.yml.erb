@@ -5,7 +5,6 @@
   name:                   US Dollar
   type:                   fiat
   precision:              2
-  base_factor:            1
   visible:                true
   deposit_enabled:        true
   withdrawal_enabled:     true
@@ -23,7 +22,6 @@
   blockchain_key:         btc-testnet
   type:                   coin
   precision:              8
-  base_factor:            100_000_000
   visible:                true
   deposit_enabled:        true
   withdrawal_enabled:     true
@@ -43,7 +41,6 @@
   blockchain_key:         eth-rinkeby
   type:                   coin
   precision:              8
-  base_factor:            1_000_000_000_000_000_000
   visible:                true
   deposit_enabled:        true
   withdrawal_enabled:     true
@@ -70,9 +67,6 @@
   parent_id:              eth
   type:                   coin
   precision:              8
-  base_factor:            1_000_000 # IMPORTANT: Don't forget to update this variable according
-                                    # to your ERC20-based currency requirements
-                                    # (usually can be found on the official website).
   visible:                true
   deposit_enabled:        true
   withdrawal_enabled:     true

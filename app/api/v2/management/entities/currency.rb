@@ -30,14 +30,6 @@ module API
           )
 
           expose(
-            :subunits,
-            documentation: {
-              type: Integer,
-              desc: 'Fraction of the basic monetary unit.'
-            }, &:subunits
-          )
-
-          expose(
             :options,
             documentation: {
               type: JSON,

@@ -98,7 +98,7 @@ class EthereumGateway
     # Returns current gas price in money
     def fetch_gas_price
       blockchain
-        .fee_currency
+        .fee_blockchain_currency
         .to_money_from_units(
           # мы не можем кешировать, потому что при сборе газ посчитается из ноды и будет
           # другой. Нужно или при сборе брать газ из кэша или тут убрать. Я пока убрал тут.

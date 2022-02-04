@@ -11,10 +11,10 @@ describe API::V2::Admin::Currencies, type: :request do
     let(:coin) { Currency.find(:btc) }
 
     let(:expected_for_fiat) do
-      %w[code type deposit_fee withdraw_fee withdraw_limit_24h withdraw_limit_72h min_collection_amount base_factor precision position]
+      %w[code type deposit_fee withdraw_fee withdraw_limit_24h withdraw_limit_72h min_collection_amount precision position]
     end
     let(:expected_for_coin) do
-      expected_for_fiat.concat(%w[blockchain_key base_factor precision subunits options])
+      expected_for_fiat.concat(%w[blockchain_key precision options])
     end
 
     it 'returns information about specified currency' do

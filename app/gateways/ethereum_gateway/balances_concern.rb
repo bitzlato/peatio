@@ -13,17 +13,18 @@ class EthereumGateway
     # @return balance of addrese in Money
     def load_balance(address, currency)
       currency = currency.currency_record if currency.is_a? Money::Currency
-      contract_address = BlockchainCurrency.find_by(blockchain: blockchain, currency: currency)&.contract_address
+      blockchain_currency = BlockchainCurrency.find_by!(blockchain: blockchain, currency: currency)
+      contract_address = blockchain_currency.contract_address
       BalanceLoader
         .new(client)
         .call(address, contract_address)
-        .yield_self { |amount| currency.to_money_from_units(amount) }
+        .yield_self { |amount| blockchain_currency.to_money_from_units(amount) }
     end
 
     # Returns native balance in money
     def fetch_balance(address)
       address = address.address if address.is_a? PaymentAddress
-      blockchain.native_currency.to_money_from_units(
+      blockchain.native_blockchain_currency.to_money_from_units(
         AbstractCommand.new(client).load_basic_balance(address)
       )
     end

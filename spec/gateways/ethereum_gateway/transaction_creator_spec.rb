@@ -40,6 +40,7 @@ describe ::EthereumGateway::TransactionCreator do
   let(:to_address) { Faker::Blockchain::Ethereum.address }
   let(:gas_limit) { 22_000 }
   let(:gas_factor) { 1 }
+  let(:blockchain) { Blockchain.find_by!(key: 'eth-rinkeby') }
 
   before do
     stub_gas_fetching gas_price: fetched_gas_price, id: 1
@@ -59,7 +60,8 @@ describe ::EthereumGateway::TransactionCreator do
   end
 
   context 'eth transaction' do
-    let(:base_factor) { eth.base_factor }
+    let(:blockchain_currency) { BlockchainCurrency.find_by!(blockchain: blockchain, currency: eth) }
+    let(:base_factor) { blockchain_currency.base_factor }
     let(:contract_address) { nil }
     let(:subtract_fee) { false }
     let(:result_transaction_hash) do
@@ -104,7 +106,8 @@ describe ::EthereumGateway::TransactionCreator do
   end
 
   context 'erc20 transaction for trst' do
-    let(:base_factor) { trst.base_factor }
+    let(:blockchain_currency) { BlockchainCurrency.find_by!(blockchain: blockchain, currency: trst) }
+    let(:base_factor) { blockchain_currency.base_factor }
     let(:to_address) { '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa' }
     let(:transaction_gas_price) { fetched_gas_price }
     let(:subtract_fee) { false }

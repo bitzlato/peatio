@@ -123,22 +123,14 @@ module API
                    values: { value: ::Currency.types.map(&:to_s), message: 'management.currency.invalid_type' },
                    default: 'coin',
                    desc: -> { API::V2::Management::Entities::Currency.documentation[:type][:desc] }
-          optional :base_factor,
-                   type: { value: Integer, message: 'management.currency.non_integer_base_factor' },
-                   desc: -> { API::V2::Management::Entities::Currency.documentation[:base_factor][:desc] }
           optional :position,
                    type: { value: Integer, message: 'management.currency.non_integer_position' },
                    desc: -> { API::V2::Management::Entities::Currency.documentation[:position][:desc] }
-          optional :subunits,
-                   type: { value: Integer, message: 'management.currency.non_integer_subunits' },
-                   values: { value: (0..18), message: 'management.currency.invalid_subunits' },
-                   desc: -> { API::V2::Management::Entities::Currency.documentation[:subunits][:desc] }
           given type: ->(val) { val == 'coin' } do
             optional :blockchain_id,
                      values: { message: 'management.currency.blockchain_id_doesnt_exist' },
                      desc: -> { 'Associated blockchain key which will perform transactions synchronization for currency.' }
           end
-          mutually_exclusive :base_factor, :subunits, message: 'management.currency.one_of_base_factor_subunits_fields'
         end
         post '/currencies/create' do
           currency = Currency.new(declared(params, include_missing: false))

@@ -189,7 +189,7 @@ class Deposit < ApplicationRecord
   end
 
   def money_amount
-    currency.money_currency.to_money_from_decimal amount
+    blockchain_currency.money_currency.to_money_from_decimal amount
   end
 
   def money_amount=(value)
@@ -255,5 +255,9 @@ class Deposit < ApplicationRecord
         member_id: member_id
       )
     end
+  end
+
+  def blockchain_currency
+    @blockchain_currency ||= BlockchainCurrency.find_by!(blockchain: blockchain, currency: currency)
   end
 end

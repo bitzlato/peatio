@@ -1,6 +1,5 @@
 - id:                     usd
   name:                   US Dollar
-  subunits:               2
   type:                   fiat
   precision:              2
   visible:                true
@@ -16,7 +15,6 @@
   options:                {}
 
 - id:                     btc
-  subunits:               8
   name:                   Bitcoin
   type:                   coin
   visible:                true
@@ -35,7 +33,6 @@
 
 - id:                     eth
   name:                   Ethereum
-  subunits:               18
   type:                   coin
   visible:                true
   deposit_enabled:        true
@@ -57,7 +54,6 @@
   name:                   WeTrust
   type:                   coin
   visible:                true
-  subunits:               6
   deposit_enabled:        true
   withdrawal_enabled:     true
   # Deposits with less amount are skipped during blockchain synchronization.
@@ -76,7 +72,6 @@
 
 - id:                     bnb-bep20
   name:                   BNB-BEP20
-  subunits:               18
   type:                   coin
   visible:                true
   deposit_enabled:        true
@@ -96,7 +91,6 @@
 
 - id:                     usdt-bep20
   name:                   USDT-BEP20
-  subunits:               18
   type:                   coin
   visible:                true
   deposit_enabled:        true

@@ -40,6 +40,14 @@ class Blockchain < ApplicationRecord
     native_currency
   end
 
+  def native_blockchain_currency
+    blockchain_currencies.find_by!(parent_id: nil)
+  end
+
+  def fee_blockchain_currency
+    native_blockchain_currency
+  end
+
   # Support legacy API for tower
   #
   def status
@@ -61,8 +69,7 @@ class Blockchain < ApplicationRecord
   end
 
   def find_money_currency(contract_address = nil)
-    currencies.map(&:money_currency)
-              .find { |mc| mc.contract_address.presence == contract_address.presence } ||
+    blockchain_currencies.find_by(contract_address: contract_address)&.money_currency ||
       raise("No found currency for '#{contract_address || :nil}' contract address in blockchain '#{key}'")
   end
 

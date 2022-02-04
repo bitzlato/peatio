@@ -4,6 +4,7 @@ describe Transaction do
   let(:from_address) { Faker::Blockchain::Ethereum.address }
   let(:to_address) { Faker::Blockchain::Ethereum.address }
   let!(:blockchain) { FactoryBot.find_or_create :blockchain, 'eth-rinkeby', key: 'eth-rinkeby' }
+  let(:blockchain_currency) { find_or_create :blockchain_currency, blockchain_id: blockchain.id, currency_id: 'eth' }
 
   context 'upsert_transaction' do
     let(:peatio_transaction) do
@@ -11,8 +12,8 @@ describe Transaction do
         txid: '1',
         txout: '2',
         currency_id: 'eth',
-        amount: 1.2.to_money('eth'),
-        fee: 0.001.to_money('eth'),
+        amount: 1.2.to_money(blockchain_currency),
+        fee: 0.001.to_money(blockchain_currency),
         from_address: from_address,
         to_address: to_address,
         block_number: 1,

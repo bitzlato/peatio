@@ -355,6 +355,7 @@ CREATE TABLE public.blockchain_currencies (
     parent_id bigint,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
+    base_factor bigint NOT NULL,
     CONSTRAINT blockchain_currencies_contract_address CHECK ((((parent_id IS NOT NULL) AND (contract_address IS NOT NULL)) OR ((parent_id IS NULL) AND (contract_address IS NULL))))
 );
 
@@ -495,7 +496,7 @@ CREATE TABLE public.currencies (
     price numeric(36,18) DEFAULT 1 NOT NULL,
     parent_id character varying,
     blockchain_id bigint,
-    base_factor bigint NOT NULL,
+    base_factor bigint,
     contract_address character varying,
     cc_code character varying
 );
@@ -3438,6 +3439,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220110182834'),
 ('20220113150944'),
 ('20220113155904'),
+('20220120134412'),
+('20220120142856'),
 ('20220131124813'),
 ('20220131124954'),
 ('20220201162824');

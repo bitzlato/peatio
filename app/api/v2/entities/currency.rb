@@ -183,14 +183,6 @@ module API
         )
 
         expose(
-          :base_factor,
-          documentation: {
-            desc: 'Currency base factor',
-            example: -> { ::Currency.visible.first.base_factor }
-          }
-        )
-
-        expose(
           :precision,
           documentation: {
             desc: 'Currency precision',

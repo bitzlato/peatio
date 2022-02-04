@@ -54,7 +54,8 @@ class BalancesUpdater
 
     wallet.currencies.each_with_object({}) do |c, balances|
       balances[c.id] = begin
-        c = c.money_currency unless c.is_a? Money::Currency
+        blockchain_currency = BlockchainCurrency.find_by!(blockchain: @blockchain, currency: c)
+        c = blockchain_currency.money_currency
         @blockchain.gateway.load_balance(wallet.address, c)
       rescue Peatio::Wallet::ClientError => e
         report_exception e, true, wallet_id: wallet.id

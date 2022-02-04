@@ -107,11 +107,11 @@ class AbstractGateway
     end
     currency = blockchain.find_money_currency(tx.contract_address)
     tx.dup.tap do |tx|
-      tx.currency_id = currency.id
+      tx.currency_id = currency.currency_record.id
       tx.blockchain_id = blockchain.id
       tx.amount = currency.to_money_from_units tx.amount
-      tx.fee_currency_id = blockchain.fee_currency.money_currency.id
-      tx.fee = tx.fee.nil? ? nil : blockchain.fee_currency.money_currency.to_money_from_units(tx.fee)
+      tx.fee_currency_id = blockchain.fee_blockchain_currency.currency_id
+      tx.fee = tx.fee.nil? ? nil : blockchain.fee_blockchain_currency.money_currency.to_money_from_units(tx.fee)
       tx.to = kind_of_address(tx.to_address)
       tx.from = kind_of_address(tx.from_address)
     end.freeze
