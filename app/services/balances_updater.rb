@@ -50,7 +50,7 @@ class BalancesUpdater
   end
 
   def current_balances(wallet)
-    return if @blockchain.gateway.is_a? BitzlatoGateway
+    return {} if @blockchain.gateway.is_a? BitzlatoGateway
 
     wallet.currencies.each_with_object({}) do |c, balances|
       balances[c.id] = begin
