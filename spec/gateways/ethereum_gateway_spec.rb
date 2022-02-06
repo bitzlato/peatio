@@ -58,7 +58,7 @@ describe ::EthereumGateway do
 
   describe '#approve!' do
     it 'approves' do
-      contract_address = blockchain.blockchain_currencies[1].contract_address
+      contract_address = blockchain.blockchain_currencies.find_by!(currency_id: 'trst').contract_address
       approver_data = abi_encode('approve(address,uint256)', fee_wallet.address, '0x' + EthereumGateway::Approver::ALLOWANCE_AMOUNT.to_s(16))
       stub_request(:post, 'http://127.0.0.1:8545/').with(
         body: "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"personal_sendTransaction\",\"params\":[{\"from\":\"#{address}\",\"to\":\"#{contract_address}\",\"data\":\"#{approver_data}\",\"gas\":\"0x15f90\",\"gasPrice\":\"0x#{gas_price.to_s(16)}\"},\"#{secret}\"]}"
