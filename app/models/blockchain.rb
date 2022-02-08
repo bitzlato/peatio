@@ -33,11 +33,7 @@ class Blockchain < ApplicationRecord
   scope :active, -> { where(status: :active) }
 
   def native_currency
-    currencies.joins(:blockchain_currency).find_by(blockchain_currencies: { blockchain_id: id, parent_id: nil }) || raise("No native currency for blockchain id #{id}")
-  end
-
-  def fee_currency
-    native_currency
+    blockchain_currencies.find_by(parent_id: nil)&.currency || raise("No native currency for blockchain id #{id}")
   end
 
   def native_blockchain_currency
@@ -106,7 +102,7 @@ class Blockchain < ApplicationRecord
   end
 
   def contract_addresses
-    @contract_addresses ||= Set.new(currencies.tokens.map(&:contract_address).map { |a| normalize_address a })
+    @contract_addresses ||= Set.new(blockchain_currencies.tokens.map { |bc| normalize_address(bc.contract_address) })
   end
 
   delegate :active?, to: :status

@@ -14,7 +14,7 @@ describe API::V2::Admin::Currencies, type: :request do
       %w[code type deposit_fee withdraw_fee withdraw_limit_24h withdraw_limit_72h min_collection_amount precision position]
     end
     let(:expected_for_coin) do
-      expected_for_fiat.concat(%w[blockchain_key precision options])
+      expected_for_fiat.concat(%w[precision options])
     end
 
     it 'returns information about specified currency' do

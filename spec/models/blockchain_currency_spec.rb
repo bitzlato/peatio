@@ -24,6 +24,16 @@ RSpec.describe BlockchainCurrency do
     end
   end
 
+  context 'Methods' do
+    context 'token?' do
+      let!(:coin) { described_class.find_by!(currency_id: :btc) }
+      let!(:token) { described_class.find_by!(currency_id: :trst) }
+
+      it { expect(coin.token?).to eq false }
+      it { expect(token.token?).to eq true }
+    end
+  end
+
   context 'Callbacks' do
     context 'after_create' do
       context 'link_wallets' do
@@ -40,7 +50,9 @@ RSpec.describe BlockchainCurrency do
 
         context 'with parent id' do
           it 'creates currency wallet' do
-            described_class.create!(blockchain: coin.blockchain, currency: currency, contract_address: '0x0', parent_id: coin.blockchain_currency.id)
+            blockchain = Blockchain.find_by!(key: 'eth-rinkeby')
+            blockchain_currency = BlockchainCurrency.find_by!(blockchain: blockchain, currency: coin)
+            described_class.create!(blockchain: blockchain, currency: currency, contract_address: '0x0', parent_id: blockchain_currency.id)
             c_w = CurrencyWallet.find_by(currency_id: currency.id, wallet_id: wallet.id)
 
             expect(c_w.present?).to eq true

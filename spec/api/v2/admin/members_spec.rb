@@ -104,7 +104,7 @@ describe API::V2::Admin::Members, type: :request do
       let!(:beneficiary) do
         create(:beneficiary,
                member: member,
-               currency: coin,
+               blockchain_currency: BlockchainCurrency.find_by!(currency: coin),
                state: :active,
                data: generate(:btc_beneficiary_data).merge(address: address))
       end
@@ -138,7 +138,7 @@ describe API::V2::Admin::Members, type: :request do
         let!(:beneficiary) do
           create(:beneficiary,
                  member: member,
-                 currency: fiat,
+                 blockchain_currency: BlockchainCurrency.find_by!(currency: fiat),
                  state: :active,
                  data: generate(:fiat_beneficiary_data))
         end

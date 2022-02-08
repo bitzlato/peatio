@@ -69,8 +69,8 @@ class EthereumGateway
     # Collectable is coin with has enough amount to be collected (amount more than paid gas * COLLECT_FACTOR)
     def collectable_coins(address)
       coins = blockchain
-              .currencies
-              .select { |currency| is_amount_collectable?(load_balance(address, currency)) }
+              .blockchain_currencies
+              .select { |bc| is_amount_collectable?(load_balance(address, bc.currency)) }
               .map(&:contract_address)
 
       # Don't return native currency if where are collectable tokens
@@ -81,7 +81,7 @@ class EthereumGateway
     def is_amount_collectable?(amount)
       raise 'amount must be a Money' unless amount.is_a? Money
 
-      if amount.currency.token?
+      if amount.currency.blockchain_currency_record.token?
         amount.to_d >= [amount.currency.min_collection_amount, amount.currency.min_deposit_amount].max
       else
         amount >= gas_for_collection_in_money(nil) * COLLECT_FACTOR

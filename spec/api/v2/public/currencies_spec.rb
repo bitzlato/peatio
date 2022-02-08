@@ -11,7 +11,7 @@ describe API::V2::Public::Currencies, type: :request do
       %w[id type deposit_enabled withdrawal_enabled deposit_fee withdraw_fee withdraw_limit_24h withdraw_limit_72h precision]
     end
     let(:expected_for_coin) do
-      expected_for_fiat.concat(%w[explorer_transaction explorer_address])
+      expected_for_fiat.concat(%w[])
     end
 
     it 'returns information about specified currency' do

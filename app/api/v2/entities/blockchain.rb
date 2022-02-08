@@ -67,6 +67,16 @@ module API
             desc: 'Blockchain status (active/disabled).'
           }
         )
+
+        expose(
+          :is_transaction_price_too_high,
+          documentation: {
+            type: String,
+            desc: 'Transaction price is too high (true/false).'
+          }
+        ) do |blockchain, _options|
+          blockchain.high_transaction_price_at.present?
+        end
       end
     end
   end

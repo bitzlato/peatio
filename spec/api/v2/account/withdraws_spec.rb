@@ -162,10 +162,11 @@ describe API::V2::Account::Withdraws, type: :request do
       Currency.visible.sample
       Currency.find(:usd)
     end
+    let(:blockchain_currency) { BlockchainCurrency.find_by!(currency: currency) }
     let(:amount) { 0.15 }
 
     let(:beneficiary) do
-      create(:beneficiary, member: member, state: :active, currency: currency)
+      create(:beneficiary, member: member, state: :active, blockchain_currency: blockchain_currency)
     end
 
     let :data do

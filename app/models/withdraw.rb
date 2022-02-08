@@ -28,7 +28,6 @@ class Withdraw < ApplicationRecord
   enumerize :transfer_type, in: WITHDRAW_TRANSFER_TYPES
 
   after_initialize :initialize_defaults, if: :new_record?
-  before_validation { self.blockchain ||= currency.try(:blockchain) }
   before_validation(on: :create) { self.rid ||= beneficiary.rid if beneficiary.present? }
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }

@@ -34,11 +34,12 @@ module API
             ransack_params = Helpers::RansackBuilder.new(params)
                                                     .eq(:id)
                                                     .in(:state)
-                                                    .translate_in(currency: :currency_id)
                                                     .translate(uid: :member_uid)
                                                     .build
 
-            search = Beneficiary.ransack(ransack_params)
+            beneficiaries = Beneficiary
+            beneficiaries = beneficiaries.with_currency(params[:currency]) if params[:currency].present?
+            search = beneficiaries.ransack(ransack_params)
             search.sorts = "#{params[:order_by]} #{params[:ordering]}"
 
             present paginate(search.result), with: API::V2::Admin::Entities::Beneficiary

@@ -22,13 +22,14 @@ FactoryBot.define do
     trait :with_beneficiary do
       beneficiary do
         create(:beneficiary, :btc,
-               currency: currency,
+               blockchain_currency: BlockchainCurrency.find_by!(blockchain: find_or_create(:blockchain, 'btc-testnet', key: 'btc-testnet'), currency_id: :btc),
                member: member,
                state: :active)
       end
       rid { nil }
     end
 
+    blockchain { find_or_create(:blockchain, 'btc-testnet', key: 'btc-testnet') }
     currency { Currency.find(:btc) }
     member { create(:member, :level_3) }
     rid { Faker::Blockchain::Bitcoin.address }
@@ -82,7 +83,7 @@ FactoryBot.define do
     trait :with_beneficiary do
       beneficiary do
         create(:beneficiary,
-               currency: currency,
+               blockchain_currency: BlockchainCurrency.find_by!(blockchain: find_or_create(:blockchain, 'dummy', key: 'dummy'), currency_id: :usd),
                member: member,
                state: :active)
       end
@@ -90,6 +91,7 @@ FactoryBot.define do
     end
 
     member { create(:member, :level_3) }
+    blockchain { find_or_create(:blockchain, 'dummy', key: 'dummy') }
     currency { Currency.find(:usd) }
     rid { Faker::Bank.iban }
     sum { 1000.to_d }

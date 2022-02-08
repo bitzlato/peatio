@@ -7,10 +7,6 @@ class CurrencyWallet < ApplicationRecord
   belongs_to :wallet
 
   validates :currency_id, uniqueness: { scope: :wallet_id }
-
-  before_update do
-    raise 'Blockchains must be same' unless wallet.blockchain == currency.blockchain
-  end
 end
 
 # == Schema Information

@@ -9,6 +9,10 @@ FactoryBot.define do
     { address: Faker::Blockchain::Ethereum.address }
   end
 
+  sequence(:usdt_beneficiary_data) do
+    { address: Faker::Blockchain::Ethereum.address }
+  end
+
   sequence(:fiat_beneficiary_data) do
     { full_name: Faker::Name.name_with_middle,
       address: Faker::Address.full_address,
@@ -27,16 +31,15 @@ FactoryBot.define do
 
   factory :beneficiary do
     member { create(:member) }
-    currency { Currency.find(:eth) }
+    blockchain_currency { BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'eth-rinkeby'), currency_id: 'eth') }
     name { Faker::Company.name }
     description { Faker::Company.catch_phrase }
     state { 'pending' }
 
     data do
-      # Use save navigation operator for cases when currency is nil.
-      if currency&.coin?
-        generate("#{currency.id}_beneficiary_data")
-      elsif currency&.fiat?
+      if blockchain_currency&.currency&.coin?
+        generate("#{blockchain_currency.currency.id}_beneficiary_data")
+      elsif blockchain_currency&.currency&.fiat?
         generate(:fiat_beneficiary_data).merge(currency: currency.id)
       end
     end

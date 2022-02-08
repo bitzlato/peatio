@@ -69,6 +69,7 @@ describe Workers::AMQP::DepositCoinAddress do
     end
 
     before do
+      ENV.delete('USE_PRIVATE_KEY')
       EthereumGateway::AddressCreator
         .any_instance
         .expects(:call)

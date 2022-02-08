@@ -27,12 +27,10 @@ module API
           post '/list' do
             member = Member.find_by!(uid: params[:uid])
 
-            member
-              .beneficiaries
-              .available_to_member
-              .tap { |q| q.where!(currency_id: params[:currency_id]) if params[:currency_id].present? }
-              .tap { |q| q.where!(state: params[:state]) if params[:state].present? }
-              .yield_self { |b| present paginate(b), with: API::V2::Management::Entities::Beneficiary }
+            beneficiaries = member.beneficiaries.available_to_member
+            beneficiaries = beneficiaries.with_currency(params[:currency_id]) if params[:currency_id].present?
+            beneficiaries = beneficiaries.where(state: params[:state]) if params[:state].present?
+            present paginate(beneficiaries), with: API::V2::Management::Entities::Beneficiary
 
             status 200
           end
@@ -47,6 +45,10 @@ module API
                      values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'management.currency.doesnt_exist' },
                      as: :currency_id,
                      desc: 'Beneficiary currency code.'
+            requires :blockchain_id,
+                     type: Integer,
+                     values: { value: -> { ::Blockchain.pluck(:id) }, message: 'management.blockchain_id.doesnt_exist' },
+                     desc: 'Beneficiary blockchain ID.'
             requires :name,
                      type: String,
                      allow_blank: false,
@@ -73,6 +75,7 @@ module API
             declared_params = declared(params)
             member   = Member.find_by!(uid: params[:uid])
             currency = Currency.find(params[:currency_id])
+            blockchain_currency = BlockchainCurrency.find_by!(blockchain_id: params[:blockchain_id], currency: currency)
 
             if !currency.withdrawal_enabled?
               error!({ errors: ['management.currency.withdrawal_disabled'] }, 422)
@@ -88,14 +91,15 @@ module API
                member
                .beneficiaries
                .available_to_member
-               .where(currency: currency)
+               .joins(:blockchain_currency)
+               .where(blockchain_currencies: { id: blockchain_currency.id })
                .any? { |b| b.data['address'] == declared_params.dig(:data, :address) }
               error!({ errors: ['management.beneficiary.duplicate_address'] }, 422)
             end
 
             present member
               .beneficiaries
-              .create!(declared_params.except(:uid)),
+              .create!(declared_params.except(:uid, :currency_id, :blockchain_id).merge(blockchain_currency_id: blockchain_currency.id)),
                     with: API::V2::Management::Entities::Beneficiary
           rescue ActiveRecord::RecordInvalid => e
             report_exception(e)

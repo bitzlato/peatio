@@ -47,7 +47,6 @@ FactoryBot.define do
       withdraw_fee         { 0.01 }
       position             { 3 }
       options              { {} }
-      association :blockchain, 'btc-bz-testnet', strategy: :find_or_create, key: 'btc-bz-testnet'
     end
 
     trait :bnb do
@@ -139,7 +138,6 @@ FactoryBot.define do
     end
 
     trait :xagm_cx do
-      association :blockchain, 'eth-rinkeby', strategy: :find_or_create, key: 'eth-rinkeby'
       code                { 'xagm.cx' }
       name                { 'XAGm.cx' }
       type                { 'coin' }

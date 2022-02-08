@@ -17,14 +17,6 @@ describe Beneficiary, 'Relationships' do
       it { expect(subject).not_to be_valid }
     end
   end
-
-  context 'belongs to currency' do
-    context 'null currency_id' do
-      subject { build(:beneficiary, currency: nil) }
-
-      it { expect(subject).not_to be_valid }
-    end
-  end
 end
 
 describe Beneficiary, 'Validations' do
@@ -73,9 +65,9 @@ describe Beneficiary, 'Validations' do
   context 'data address presence' do
     context 'fiat' do
       context 'blank address' do
-        subject { build(:beneficiary, currency: fiat).tap { |b| b.data.delete('address') } }
+        subject { build(:beneficiary, blockchain_currency: blockchain_currency).tap { |b| b.data.delete('address') } }
 
-        let(:fiat) { Currency.find(:usd) }
+        let(:blockchain_currency) { BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'dummy'), currency_id: :usd) }
 
         it { expect(subject).to be_valid }
       end
@@ -83,11 +75,13 @@ describe Beneficiary, 'Validations' do
 
     context 'coin' do
       context 'blank address' do
-        subject { build(:beneficiary, currency_id: coin).tap { |b| b.data.delete('address') } }
+        subject { build(:beneficiary, blockchain_currency: blockchain_currency).tap { |b| b.data.delete(:address) } }
 
-        let(:coin) { Currency.find(:btc) }
+        let(:blockchain_currency) { BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'btc-testnet'), currency_id: :btc) }
 
-        it { expect(subject).not_to be_valid }
+        it do
+          expect(subject).not_to be_valid
+        end
       end
     end
   end
@@ -129,13 +123,13 @@ describe Beneficiary, 'Instance Methods' do
   context 'rid' do
     context 'fiat' do
       subject do
+        blockchain_currency = BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'dummy'), currency_id: :usd)
         create(:beneficiary,
-               currency: fiat,
+               blockchain_currency: blockchain_currency,
                data: generate(:fiat_beneficiary_data).merge(full_name: full_name))
       end
 
       let(:full_name) { Faker::Name.name_with_middle }
-      let(:fiat) { Currency.find(:usd) }
 
       it do
         expect(subject.rid).to include(*full_name.downcase.split)
@@ -146,13 +140,13 @@ describe Beneficiary, 'Instance Methods' do
 
     context 'coin' do
       subject do
+        blockchain_currency = BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'btc-testnet'), currency_id: :btc)
         create(:beneficiary,
-               currency: coin,
+               blockchain_currency: blockchain_currency,
                data: generate(:btc_beneficiary_data).merge(address: address))
       end
 
       let(:address) { Faker::Blockchain::Bitcoin.address }
-      let(:coin) { Currency.find(:btc) }
 
       it do
         expect(subject.rid).to include(address)
@@ -163,7 +157,8 @@ describe Beneficiary, 'Instance Methods' do
       context 'account number' do
         context 'fiat beneficiary' do
           let!(:fiat_beneficiary) do
-            create(:beneficiary, currency: Currency.find('usd'),
+            blockchain_currency = BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'dummy'), currency_id: :usd)
+            create(:beneficiary, blockchain_currency: blockchain_currency,
                                  data: {
                                    full_name: Faker::Name.name_with_middle,
                                    address: Faker::Address.full_address,
@@ -176,7 +171,10 @@ describe Beneficiary, 'Instance Methods' do
         end
 
         context 'coin beneficiary' do
-          let!(:coin_beneficiary) { create(:beneficiary, currency: Currency.find('btc')) }
+          let!(:coin_beneficiary) do
+            blockchain_currency = BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'btc-testnet'), currency_id: :btc)
+            create(:beneficiary, blockchain_currency: blockchain_currency)
+          end
 
           it { expect(coin_beneficiary.masked_account_number).to eq nil }
         end
@@ -185,7 +183,8 @@ describe Beneficiary, 'Instance Methods' do
       context 'masked data' do
         context 'fiat beneficiary' do
           let!(:fiat_beneficiary) do
-            create(:beneficiary, currency: Currency.find('usd'),
+            blockchain_currency = BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'dummy'), currency_id: :usd)
+            create(:beneficiary, blockchain_currency: blockchain_currency,
                                  data: {
                                    full_name: 'Full name',
                                    address: 'Address',
@@ -205,7 +204,10 @@ describe Beneficiary, 'Instance Methods' do
         end
 
         context 'coin beneficiary' do
-          let!(:coin_beneficiary) { create(:beneficiary, currency: Currency.find('btc')) }
+          let!(:coin_beneficiary) do
+            blockchain_currency = BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'btc-testnet'), currency_id: :btc)
+            create(:beneficiary, blockchain_currency: blockchain_currency)
+          end
 
           it 'data shouldnt change' do
             expect(coin_beneficiary.masked_data).to match(coin_beneficiary.data)

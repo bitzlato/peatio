@@ -165,11 +165,6 @@ module API
           optional :position,
                    type: { value: Integer, message: 'admin.currency.non_integer_position' },
                    desc: -> { API::V2::Admin::Entities::Currency.documentation[:position][:desc] }
-          given type: ->(val) { val == 'coin' } do
-            optional :blockchain_key,
-                     values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.currency.blockchain_key_doesnt_exist' },
-                     desc: -> { API::V2::Admin::Entities::Currency.documentation[:blockchain_key][:desc] }
-          end
         end
         post '/currencies/new' do
           admin_authorize! :create, ::Currency
@@ -196,9 +191,6 @@ module API
                    type: { value: Integer, message: 'admin.currency.non_integer_position' },
                    values: { value: ->(p) { p >= ::Currency::TOP_POSITION }, message: 'admin.currency.invalid_position' },
                    desc: -> { API::V2::Admin::Entities::Currency.documentation[:position][:desc] }
-          optional :blockchain_key,
-                   values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.currency.blockchain_key_doesnt_exist' },
-                   desc: -> { API::V2::Admin::Entities::Currency.documentation[:blockchain_key][:desc] }
         end
         post '/currencies/update' do
           admin_authorize! :update, ::Currency, params.except(:code)

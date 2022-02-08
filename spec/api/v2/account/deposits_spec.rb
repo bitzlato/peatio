@@ -15,10 +15,11 @@ describe API::V2::Account::Deposits, type: :request do
 
   describe 'POST /api/v2/account/deposits/intention' do
     let(:amount) { 12.1231 }
+    let(:blockchain) { find_or_create(:blockchain, 'btc-testnet', key: 'btc-testnet') }
     let(:currency) { find_or_create :currency, :btc, id: :btc }
 
     before do
-      currency.blockchain.update!(enable_invoice: true)
+      currency.blockchains.find_by!(key: 'btc-testnet').update!(enable_invoice: true)
     end
 
     it 'requires authentication' do
@@ -28,7 +29,7 @@ describe API::V2::Account::Deposits, type: :request do
 
     it 'returns with auth token deposits' do
       AMQP::Queue.expects(:enqueue).with(:deposit_intention, anything, { persistent: false }).once
-      api_post '/api/v2/account/deposits/intention', token: token, params: { currency: currency.id, amount: amount }
+      api_post '/api/v2/account/deposits/intention', token: token, params: { blockchain_id: blockchain.id, currency: currency.id, amount: amount }
 
       expect(response).to be_successful
       result = JSON.parse(response.body)
@@ -40,7 +41,7 @@ describe API::V2::Account::Deposits, type: :request do
 
       currency.update min_deposit_amount: 100
 
-      api_post '/api/v2/account/deposits/intention', token: token, params: { currency: currency.id, amount: amount }
+      api_post '/api/v2/account/deposits/intention', token: token, params: { blockchain_id: blockchain.id, currency: currency.id, amount: amount }
 
       expect(response.code).to eq '422'
       expect(response).to include_api_error('account.deposit.invalid_amount')
@@ -221,25 +222,23 @@ describe API::V2::Account::Deposits, type: :request do
     end
   end
 
-  describe 'GET /api/v2/account/deposit_address/:currency' do
-    let(:currency) { :bch }
-
+  describe 'GET /api/v2/account/deposit_address/:blockchain_id' do
     context 'failed' do
-      it 'validates currency' do
-        api_get '/api/v2/account/deposit_address/dildocoin', token: token
+      it 'validates blockchain' do
+        api_get '/api/v2/account/deposit_address/100500', token: token
         expect(response).to have_http_status :unprocessable_entity
-        expect(response).to include_api_error('account.currency.doesnt_exist')
+        expect(response).to include_api_error('account.blockchain.doesnt_exist')
       end
 
       context 'unauthorized' do
-        let(:currency) { find_or_create :currency, :btc, id: :btc }
+        let(:blockchain) { find_or_create :blockchain, 'eth-ropsten', key: 'eth-ropsten' }
 
         before do
           Ability.stubs(:user_permissions).returns([])
         end
 
         it 'renders unauthorized error' do
-          api_get '/api/v2/account/deposit_address/' + currency.id, token: token
+          api_get "/api/v2/account/deposit_address/#{blockchain.id}", token: token
           expect(response).to have_http_status :forbidden
           expect(response).to include_api_error('user.ability.not_permitted')
         end
@@ -252,10 +251,12 @@ describe API::V2::Account::Deposits, type: :request do
         let(:blockchain) { find_or_create :blockchain, 'eth-rinkeby', key: 'eth-rinkeby' }
         let(:address) { Faker::Blockchain::Ethereum.address }
 
-        before { member.payment_address(blockchain).update!(address: address) }
+        before do
+          member.payment_address(blockchain).update!(address: address)
+        end
 
         it 'expose data about eth address' do
-          api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
+          api_get "/api/v2/account/deposit_address/#{blockchain.id}", token: token
 
           expect(response_body).to include_json(
             {
@@ -268,7 +269,7 @@ describe API::V2::Account::Deposits, type: :request do
 
         it 'pending user address state' do
           member.payment_address(blockchain).update!(address: nil)
-          api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
+          api_get "/api/v2/account/deposit_address/#{blockchain.id}", token: token
 
           expect(response_body).to include_json(
             {
@@ -280,10 +281,11 @@ describe API::V2::Account::Deposits, type: :request do
         end
 
         context 'currency code with dot' do
-          let!(:currency) { create(:currency, :xagm_cx, blockchain: blockchain) }
-
           it 'returns information about specified deposit address' do
-            api_get "/api/v2/account/deposit_address/#{currency.code}", token: token
+            currency = create(:currency, :xagm_cx)
+            parent = BlockchainCurrency.find_by!(blockchain: blockchain, currency: eth)
+            create(:blockchain_currency, blockchain: blockchain, currency: currency, contract_address: 'xa9mcx', parent: parent)
+            api_get "/api/v2/account/deposit_address/#{blockchain.id}", token: token
             expect(response).to have_http_status :ok
             expect(response_body).to include_json(
               {
@@ -294,20 +296,6 @@ describe API::V2::Account::Deposits, type: :request do
             )
           end
         end
-      end
-    end
-
-    context 'disabled deposit for currency' do
-      let(:currency) { find_or_create :currency, :btc, id: :btc }
-
-      before do
-        Currency.any_instance.expects(:deposit_enabled?).returns(false)
-      end
-
-      it 'returns error' do
-        api_get "/api/v2/account/deposit_address/#{currency.id}", token: token
-        expect(response).to have_http_status :unprocessable_entity
-        expect(response).to include_api_error('account.currency.deposit_disabled')
       end
     end
   end

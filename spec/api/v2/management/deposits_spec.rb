@@ -87,6 +87,7 @@ describe API::V2::Management::Deposits, type: :request do
     let :data do
       { uid: member.uid,
         currency: currency.code,
+        blockchain_id: currency.blockchains[0].id,
         amount: amount.to_s }
     end
     let(:signers) { %i[alex jeff] }
@@ -208,7 +209,7 @@ describe API::V2::Management::Deposits, type: :request do
     let(:signers) { %i[alex jeff] }
     let(:data) { { tid: record.tid } }
     let(:account) { member.get_account(currency) }
-    let(:record) { Deposits::Fiat.create!(member: member, amount: amount, currency: currency) }
+    let(:record) { Deposits::Fiat.create!(member: member, amount: amount, currency: currency, blockchain: currency.blockchains.find_by!(key: 'dummy')) }
 
     context 'coin deposit' do
       let(:record) { create(:deposit_btc) }

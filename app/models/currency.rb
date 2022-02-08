@@ -3,8 +3,7 @@
 class Currency < ApplicationRecord
   # == Constants ============================================================
 
-  # TODO: remove erc20 contract_address
-  OPTIONS_ATTRIBUTES = %i[erc20_contract_address gas_limit gas_price].freeze
+  OPTIONS_ATTRIBUTES = %i[gas_price].freeze
   TOP_POSITION = 1
   ID_SEPARATOR = '-'
 
@@ -40,17 +39,12 @@ class Currency < ApplicationRecord
 
   # == Relationships ========================================================
 
-  has_one :blockchain_currency, dependent: :destroy
-  has_one :blockchain, through: :blockchain_currency
+  has_many :blockchain_currencies, dependent: :destroy
+  has_many :blockchains, through: :blockchain_currencies
   has_and_belongs_to_many :wallets
 
   # == Validations ==========================================================
   #
-  # Support for tower
-  before_update if: :erc20_contract_address do
-    self.contract_address ||= erc20_contract_address
-  end
-
   validate on: :create do
     errors.add(:max, 'Currency limit has been reached') if ENV['MAX_CURRENCIES'].present? && Currency.count >= ENV['MAX_CURRENCIES'].to_i
   end
@@ -81,9 +75,6 @@ class Currency < ApplicationRecord
   scope :ordered, -> { order(position: :asc) }
   scope :coins, -> { where(type: :coin) }
   scope :fiats, -> { where(type: :fiat) }
-  # This scope select all coins without parent_id, which means that they are not tokens
-  scope :coins_without_tokens, -> { coins.joins(:blockchain_currency).where(blockchain_currencies: { parent_id: nil }) }
-  scope :tokens, -> { coins.joins(:blockchain_currency).where.not(blockchain_currencies: { parent_id: nil }) }
 
   # == Callbacks ============================================================
 
@@ -96,13 +87,7 @@ class Currency < ApplicationRecord
   before_validation { self.deposit_fee = 0 unless fiat? }
   before_validation(on: :create) { self.position = Currency.count + 1 if position.blank? }
 
-  before_validation do
-    self.erc20_contract_address = erc20_contract_address.try(:downcase) if erc20_contract_address.present?
-  end
-
   before_update { update_position(self) if position_changed? }
-
-  delegate :enable_invoice?, to: :blockchain
 
   after_commit :wipe_cache
 
@@ -131,14 +116,7 @@ class Currency < ApplicationRecord
 
   # == Instance Methods =====================================================
 
-  delegate :explorer_transaction, :explorer_address, to: :blockchain
-  delegate :key, to: :blockchain, prefix: true
-
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
-
-  def blockchain_key=(key)
-    self.blockchain = Blockchain.find_by_key!(key)
-  end
 
   def wipe_cache
     Rails.cache.delete_matched('currencies*')
@@ -156,21 +134,8 @@ class Currency < ApplicationRecord
     super&.inquiry
   end
 
-  def token_name
-    return unless token?
-
-    id.to_s.upcase.split(ID_SEPARATOR).first.presence
-  end
-
   def icon_id
     id.to_s.downcase.split(ID_SEPARATOR).first.presence
-  end
-
-  # This method defines that token currency need to have parent_id and coin type
-  # We use parent_id for token type to inherit some useful info such as blockchain_key from parent currency
-  # For coin currency enough to have only coin type
-  def token?
-    blockchain_currency.parent_id.present? && coin?
   end
 
   def get_price
@@ -179,16 +144,6 @@ class Currency < ApplicationRecord
     else
       price
     end
-  end
-
-  def to_blockchain_api_settings
-    # We pass options are available as top-level hash keys and via options for
-    # compatibility with Wallet#to_wallet_api_settings.
-    opt = options.compact.deep_symbolize_keys
-    opt.deep_symbolize_keys.merge(id: id,
-                                  base_factor: base_factor,
-                                  min_collection_amount: min_collection_amount,
-                                  options: opt)
   end
 
   def dependent_markets

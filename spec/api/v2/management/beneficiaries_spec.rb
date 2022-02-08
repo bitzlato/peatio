@@ -79,7 +79,9 @@ describe API::V2::Management::Beneficiaries, type: :request do
       end
 
       context 'fiat currency' do
-        let!(:usd_beneficiary_for_member) { create(:beneficiary, currency: Currency.find('usd'), member: member) }
+        let(:blockchain) { Blockchain.find_by!(key: 'dummy') }
+        let(:blockchain_currency) { BlockchainCurrency.find_by!(blockchain: blockchain, currency_id: :usd) }
+        let!(:usd_beneficiary_for_member) { create(:beneficiary, blockchain_currency: blockchain_currency, member: member) }
 
         it do
           beneficiary_data.merge!(currency: :usd)
@@ -134,6 +136,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
     let(:beneficiary_data) do
       {
         currency: :btc,
+        blockchain_id: Blockchain.find_by!(key: 'btc-testnet').id,
         name: 'Personal Bitcoin wallet',
         description: 'Multisignature Bitcoin Wallet',
         uid: member.uid,
@@ -255,7 +258,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
             before do
               create(:beneficiary,
                      member: member,
-                     currency_id: beneficiary_data[:currency],
+                     blockchain_currency: BlockchainCurrency.find_by!(blockchain_id: beneficiary_data[:blockchain_id], currency_id: beneficiary_data[:currency]),
                      data: { address: beneficiary_data.dig(:data, :address) })
             end
 
@@ -276,7 +279,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
             before do
               create(:beneficiary,
                      member: member,
-                     currency_id: :eth,
+                     blockchain_currency: BlockchainCurrency.find_by!(blockchain: Blockchain.find_by!(key: 'eth-rinkeby'), currency_id: 'eth'),
                      data: { address: eth_beneficiary_data.dig(:data, :address) })
             end
 
@@ -321,6 +324,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
           let(:beneficiary_data) do
             {
               currency: :usd,
+              blockchain_id: Blockchain.find_by!(key: 'dummy').id,
               uid: member.uid,
               name: Faker::Bank.name,
               description: Faker::Company.catch_phrase,
@@ -351,7 +355,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
               before do
                 create(:beneficiary,
                        member: member,
-                       currency_id: beneficiary_data[:currency],
+                       blockchain_currency: BlockchainCurrency.find_by!(blockchain_id: beneficiary_data[:blockchain_id], currency_id: beneficiary_data[:currency]),
                        data: beneficiary_data[:data])
               end
 

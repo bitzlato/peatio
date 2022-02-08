@@ -44,16 +44,6 @@ module API
         )
 
         expose(
-          :token_name,
-          documentation: {
-            type: String,
-            desc: 'Token name',
-            example: -> { ::Currency.visible.tokens.first.try(:token_name) || 'USDT' }
-          },
-          if: ->(currency) { currency.token? }
-        )
-
-        expose(
           :icon_id,
           documentation: {
             type: String,
@@ -76,24 +66,6 @@ module API
           documentation: {
             desc: 'Currency current price'
           }
-        )
-
-        expose(
-          :explorer_transaction,
-          documentation: {
-            desc: 'Currency transaction exprorer url template',
-            example: 'https://testnet.blockchain.info/tx/'
-          },
-          if: ->(currency) { currency.coin? }
-        )
-
-        expose(
-          :explorer_address,
-          documentation: {
-            desc: 'Currency address exprorer url template',
-            example: 'https://testnet.blockchain.info/address/'
-          },
-          if: ->(currency) { currency.coin? }
         )
 
         expose(
@@ -120,19 +92,7 @@ module API
             type: String,
             desc: 'Currency withdrawal possibility status (true/false).'
           }
-        ) do |currency, _options|
-          currency.withdrawal_enabled && !currency.blockchain.high_transaction_price_at
-        end
-
-        expose(
-          :withdrawal_disabled_reason,
-          documentation: {
-            type: String,
-            desc: 'Reason for currency withdrawal impossibility.'
-          }
-        ) do |currency, _options|
-          currency.blockchain.high_transaction_price_at.present? ? 'Gas price is too high' : ''
-        end
+        )
 
         expose(
           :deposit_fee,
@@ -208,12 +168,14 @@ module API
         )
 
         expose(
-          :min_confirmations,
-          if: ->(currency) { currency.coin? },
+          :blockchain_ids,
           documentation: {
-            desc: 'Number of confirmations required for confirming deposit or withdrawal'
+            is_array: true,
+            desc: 'Blockchain IDs'
           }
-        ) { |c| c.blockchain.min_confirmations }
+        ) do |currency, _options|
+          currency.blockchain_ids
+        end
       end
     end
   end
