@@ -14,6 +14,7 @@ class ReplaceIdToCode < ActiveRecord::Migration[4.2]
       change_column :orders, :ask, :string, limit: 10
       change_column :orders, :bid, :string, limit: 10
 
+      Currency.reset_column_information
       Currency.all.each do |c|
         Deposits.where(currency_id: c.id).update_all(currency_id: c.code)
         Withdraws.where(currency_id: c.id).update_all(currency_id: c.code)
