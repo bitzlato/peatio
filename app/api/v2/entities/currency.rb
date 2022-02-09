@@ -103,22 +103,6 @@ module API
         )
 
         expose(
-          :min_deposit_amount,
-          documentation: {
-            desc: 'Minimal deposit amount',
-            example: -> { ::Currency.visible.first.min_deposit_amount }
-          }
-        )
-
-        expose(
-          :withdraw_fee,
-          documentation: {
-            desc: 'Currency withdraw fee',
-            example: -> { ::Currency.visible.first.withdraw_fee }
-          }
-        )
-
-        expose(
           :min_withdraw_amount,
           documentation: {
             desc: 'Minimal withdraw amount',
@@ -175,6 +159,16 @@ module API
           }
         ) do |currency, _options|
           currency.blockchain_ids
+        end
+
+        expose(
+          :blockchain_currencies,
+          documentation: {
+            is_array: true,
+            desc: 'Blockchain currencies'
+          }
+        ) do |currency, _options|
+          currency.blockchain_currencies.as_json(only: %i[blockchain_id withdraw_fee min_deposit_amount])
         end
       end
     end

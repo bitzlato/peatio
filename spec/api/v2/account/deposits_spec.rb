@@ -39,7 +39,7 @@ describe API::V2::Account::Deposits, type: :request do
     it 'returns error when amount less them min_deposit_amount' do
       AMQP::Queue.expects(:enqueue).with(:deposit_intention, anything, { persistent: false }).never
 
-      currency.update min_deposit_amount: 100
+      BlockchainCurrency.find_by!(blockchain: blockchain, currency: currency).update!(min_deposit_amount: 100)
 
       api_post '/api/v2/account/deposits/intention', token: token, params: { blockchain_id: blockchain.id, currency: currency.id, amount: amount }
 

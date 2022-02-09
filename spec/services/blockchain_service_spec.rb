@@ -26,12 +26,12 @@ describe BlockchainService do
     let(:currency) { create(:currency, 'usdt') }
     let!(:member) { create(:member) }
     let!(:account) { create(:account, currency: currency, member: member, balance: account_balance, locked: withdraw_amount) }
-    let!(:withdraw) { create(:eth_withdraw, aasm_state: :confirming, blockchain: blockchain, currency: currency, member: member, sum: withdraw_amount, txid: txid) }
+    let(:blockchain_currency) { create(:blockchain_currency, blockchain: blockchain, currency: currency) }
+    let!(:withdraw) { create(:eth_withdraw, aasm_state: :confirming, blockchain: blockchain_currency.blockchain, currency: blockchain_currency.currency, member: member, sum: withdraw_amount, txid: txid) }
     let!(:payment_address) { create(:payment_address, address: '0x4711269d9c58a81b8dab9f7b847a9fca59cfbbbb', blockchain: blockchain, member: member) }
     let!(:wallet) { create(:wallet, address: '0x7075bbbd9bd338ce47a0e7ad23170d94c772aaaa', blockchain: blockchain, kind: :hot) }
 
     it 'transits withdrawal to succeed and creates deposit' do
-      blockchain_currency = create(:blockchain_currency, blockchain: blockchain, currency: currency)
       block_number = 0
       create(:currency_wallet, currency: currency, wallet: wallet)
 

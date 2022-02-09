@@ -9,7 +9,6 @@ FactoryBot.define do
       precision            { 2 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
-      withdraw_fee         { 0.1 }
       position             { 1 }
       options              { {} }
     end
@@ -21,7 +20,6 @@ FactoryBot.define do
       precision            { 8 }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
-      withdraw_fee         { 0.1 }
       position             { 2 }
       visible              { false }
       options              { {} }
@@ -33,7 +31,6 @@ FactoryBot.define do
       type                 { 'coin' }
       withdraw_limit_24h   { 0.1 }
       withdraw_limit_72h   { 1 }
-      withdraw_fee         { 0.01 }
       position             { 3 }
       options              { {} }
     end
@@ -44,7 +41,6 @@ FactoryBot.define do
       type                 { 'coin' }
       withdraw_limit_24h   { 0.1 }
       withdraw_limit_72h   { 1 }
-      withdraw_fee         { 0.01 }
       position             { 3 }
       options              { {} }
     end
@@ -55,7 +51,6 @@ FactoryBot.define do
       type                 { 'coin' }
       withdraw_limit_24h   { 0.1 }
       withdraw_limit_72h   { 1 }
-      withdraw_fee         { 0.025 }
       position             { 4 }
       options { { gas_price: 1_000_000_000 } }
     end
@@ -66,7 +61,6 @@ FactoryBot.define do
       type                 { 'coin' }
       withdraw_limit_24h   { 0.1 }
       withdraw_limit_72h   { 1 }
-      withdraw_fee         { 0.025 }
       position             { 4 }
       options { { gas_price: 1_000_000_000 } }
     end
@@ -77,7 +71,6 @@ FactoryBot.define do
       type                 { 'coin' }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
-      withdraw_fee         { 0.025 }
       position             { 5 }
       options { { gas_price: 1_000_000_000 } }
     end
@@ -88,7 +81,6 @@ FactoryBot.define do
       type                 { 'coin' }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
-      withdraw_fee         { 0.025 }
       position             { 6 }
       options { {} }
     end
@@ -99,7 +91,6 @@ FactoryBot.define do
       type                 { 'coin' }
       withdraw_limit_24h   { 100 }
       withdraw_limit_72h   { 1000 }
-      withdraw_fee         { 0.025 }
       position             { 6 }
       options { {} }
     end
@@ -110,7 +101,6 @@ FactoryBot.define do
       type                { 'coin' }
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }
-      withdraw_fee        { 0.02 }
       position            { 7 }
       options             { {} }
     end
@@ -121,7 +111,6 @@ FactoryBot.define do
       type                { 'coin' }
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }
-      withdraw_fee        { 0.02 }
       position            { 7 }
       options             { {} }
     end
@@ -132,7 +121,6 @@ FactoryBot.define do
       type                { 'coin' }
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }
-      withdraw_fee        { 0.02 }
       position            { 7 }
       options             { {} }
     end
@@ -143,7 +131,6 @@ FactoryBot.define do
       type                { 'coin' }
       withdraw_limit_24h  { 100 }
       withdraw_limit_72h  { 1000 }
-      withdraw_fee        { 0.02 }
       position            { 8 }
       visible             { true }
       options             { {} }

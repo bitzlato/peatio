@@ -109,7 +109,7 @@ RSpec.configure do |config|
       FactoryBot.find_or_create :currency, code, id: code
     end
     [%w[btc btc-testnet], %w[usd dummy], %w[eur dummy]].each do |bc|
-      FactoryBot.create(:blockchain_currency, blockchain: Blockchain.find_by!(key: bc[1]), currency_id: bc[0])
+      FactoryBot.create(:blockchain_currency, bc[0], blockchain: Blockchain.find_by!(key: bc[1]), currency_id: bc[0])
     end
     parent = FactoryBot.create(:blockchain_currency, 'eth', blockchain: Blockchain.find_by!(key: 'eth-rinkeby'), currency_id: 'eth')
     [%w[trst eth-rinkeby], %w[ring eth-rinkeby]].each do |bc|

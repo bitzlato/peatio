@@ -24,10 +24,10 @@ module FeeChargeable
       attr_readonly :sum
 
       before_validation on: :create do
-        next unless currency
+        next unless blockchain_currency
 
         self.sum  ||= 0.to_d
-        self.fee  ||= currency.withdraw_fee
+        self.fee  ||= blockchain_currency.withdraw_fee
         self.amount = sum - fee
       end
 

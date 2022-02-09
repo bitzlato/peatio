@@ -15,6 +15,7 @@ class BlockchainCurrency < ApplicationRecord
     errors.add :parent_id, 'wrong parent blockchain currency' if parent.parent_id.present?
   end
   validates :base_factor, presence: true
+  validates :min_deposit_amount, :withdraw_fee, numericality: { greater_than_or_equal_to: 0 }
 
   scope :tokens, -> { joins(:currency).merge(Currency.coins).where.not(parent_id: nil) }
 
@@ -44,7 +45,7 @@ class BlockchainCurrency < ApplicationRecord
   end
 
   def min_deposit_amount_money
-    money_currency.to_money_from_decimal(currency.min_deposit_amount)
+    money_currency.to_money_from_decimal(min_deposit_amount)
   end
 
   def min_withdraw_amount_money
