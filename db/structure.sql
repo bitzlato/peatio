@@ -198,7 +198,6 @@ ALTER SEQUENCE public.assets_id_seq OWNED BY public.assets.id;
 CREATE TABLE public.beneficiaries (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
-    currency_id character varying(20),
     name character varying(64) NOT NULL,
     description character varying DEFAULT ''::character varying,
     pin integer NOT NULL,
@@ -495,10 +494,6 @@ CREATE TABLE public.currencies (
     description text,
     homepage character varying,
     price numeric(36,18) DEFAULT 1 NOT NULL,
-    parent_id character varying,
-    blockchain_id bigint,
-    base_factor bigint,
-    contract_address character varying,
     cc_code character varying
 );
 
@@ -2262,13 +2257,6 @@ CREATE INDEX index_assets_on_reference_type_and_reference_id ON public.assets US
 
 
 --
--- Name: index_beneficiaries_on_currency_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_beneficiaries_on_currency_id ON public.beneficiaries USING btree (currency_id);
-
-
---
 -- Name: index_beneficiaries_on_member_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2357,13 +2345,6 @@ CREATE UNIQUE INDEX index_blockchains_on_key ON public.blockchains USING btree (
 --
 
 CREATE INDEX index_blockchains_on_status ON public.blockchains USING btree (status);
-
-
---
--- Name: index_currencies_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_currencies_on_blockchain_id ON public.currencies USING btree (blockchain_id);
 
 
 --
@@ -3135,14 +3116,6 @@ ALTER TABLE ONLY public.blockchain_approvals
 
 
 --
--- Name: currencies fk_rails_a7ead03da9; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.currencies
-    ADD CONSTRAINT fk_rails_a7ead03da9 FOREIGN KEY (parent_id) REFERENCES public.currencies(id);
-
-
---
 -- Name: member_transfers fk_rails_b34092e2c9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3443,6 +3416,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220113155904'),
 ('20220120134412'),
 ('20220120142856'),
+('20220126084415'),
+('20220127104954'),
 ('20220131124813'),
 ('20220131124954'),
 ('20220201162824');
