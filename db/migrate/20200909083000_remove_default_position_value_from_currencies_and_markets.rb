@@ -6,6 +6,7 @@ class RemoveDefaultPositionValueFromCurrenciesAndMarkets < ActiveRecord::Migrati
     change_column :markets, :position, :integer, default: nil
 
     # Update currency/market positions for already existed items
+    Currency.reset_column_information
     Currency.order(:position, :updated_at).each.with_index(1) do |currency, index|
       currency.update_column(:position, index)
     end

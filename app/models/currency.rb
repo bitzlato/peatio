@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Currency < ApplicationRecord
+  self.ignored_columns = %w[parent_id blockchain_id base_factor contract_address]
+
   # == Constants ============================================================
 
   OPTIONS_ATTRIBUTES = %i[gas_price].freeze

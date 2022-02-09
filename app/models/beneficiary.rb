@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Beneficiary < ApplicationRecord
+  self.ignored_columns = ['currency_id']
+
   # == Constants ============================================================
 
   extend Enumerize
