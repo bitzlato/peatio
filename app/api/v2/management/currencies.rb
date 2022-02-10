@@ -12,23 +12,11 @@ module API
             default: 0.0,
             desc: -> { API::V2::Management::Entities::Currency.documentation[:deposit_fee][:desc] }
           },
-          min_deposit_amount: {
-            type: { value: BigDecimal, message: 'management.currency.min_deposit_amount' },
-            values: { value: ->(p) { p >= 0 }, message: 'management.currency.min_deposit_amount' },
-            default: 0.0,
-            desc: -> { API::V2::Management::Entities::Currency.documentation[:min_deposit_amount][:desc] }
-          },
           min_collection_amount: {
             type: { value: BigDecimal, message: 'management.currency.non_decimal_min_collection_amount' },
             values: { value: ->(p) { p >= 0 }, message: 'management.currency.invalid_min_collection_amount' },
             default: 0.0,
             desc: -> { API::V2::Management::Entities::Currency.documentation[:min_collection_amount][:desc] }
-          },
-          withdraw_fee: {
-            type: { value: BigDecimal, message: 'management.currency.non_decimal_withdraw_fee' },
-            values: { value: ->(p) { p >= 0 }, message: 'management.currency.ivalid_withdraw_fee' },
-            default: 0.0,
-            desc: -> { API::V2::Management::Entities::Currency.documentation[:withdraw_fee][:desc] }
           },
           min_withdraw_amount: {
             type: { value: BigDecimal, message: 'management.currency.non_decimal_min_withdraw_amount' },
@@ -170,21 +158,11 @@ module API
                    values: { value: ->(p) { p >= 0 }, message: 'management.currency.invalid_deposit_fee' },
                    default: 0.0,
                    desc: -> { API::V2::Management::Entities::Currency.documentation[:deposit_fee][:desc] }
-          optional :min_deposit_amount,
-                   type: { value: BigDecimal, message: 'management.currency.min_deposit_amount' },
-                   values: { value: ->(p) { p >= 0 }, message: 'management.currency.invalid_min_deposit_amount' },
-                   default: 0.0,
-                   desc: -> { API::V2::Management::Entities::Currency.documentation[:min_deposit_amount][:desc] }
           optional :min_collection_amount,
                    type: { value: BigDecimal, message: 'management.currency.non_decimal_min_collection_amount' },
                    values: { value: ->(p) { p >= 0 }, message: 'management.currency.invalid_min_collection_amount' },
                    default: 0.0,
                    desc: -> { API::V2::Management::Entities::Currency.documentation[:min_collection_amount][:desc] }
-          optional :withdraw_fee,
-                   type: { value: BigDecimal, message: 'management.currency.non_decimal_withdraw_fee' },
-                   values: { value: ->(p) { p >= 0 }, message: 'management.currency.invalid_withdraw_fee' },
-                   default: 0.0,
-                   desc: -> { API::V2::Management::Entities::Currency.documentation[:withdraw_fee][:desc] }
           optional :min_withdraw_amount,
                    type: { value: BigDecimal, message: 'management.currency.non_decimal_min_withdraw_amount' },
                    values: { value: ->(p) { p >= 0 }, message: 'management.currency.invalid_min_withdraw_amount' },

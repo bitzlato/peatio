@@ -186,7 +186,7 @@ describe API::V2::Account::Withdraws, type: :request do
     before { Vault::TOTP.stubs(:validate?).returns(true) }
 
     context 'extremely precise values' do
-      before { Currency.any_instance.stubs(:withdraw_fee).returns(BigDecimal(0)) }
+      before { BlockchainCurrency.any_instance.stubs(:withdraw_fee).returns(BigDecimal(0)) }
 
       before { Currency.any_instance.stubs(:precision).returns(16) }
 

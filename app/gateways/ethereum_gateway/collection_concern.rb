@@ -82,7 +82,7 @@ class EthereumGateway
       raise 'amount must be a Money' unless amount.is_a? Money
 
       if amount.currency.blockchain_currency_record.token?
-        amount.to_d >= [amount.currency.min_collection_amount, amount.currency.min_deposit_amount].max
+        amount.to_d >= [amount.currency.min_collection_amount, amount.currency.blockchain_currency_record.min_deposit_amount].max
       else
         amount >= gas_for_collection_in_money(nil) * COLLECT_FACTOR
       end

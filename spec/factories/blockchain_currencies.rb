@@ -21,5 +21,17 @@ FactoryBot.define do
       gas_limit { 21_000 }
       contract_address { '0xf8720eb6ad4a530cccb696043a0d10831e2ff60e' }
     end
+
+    trait :usd do
+      withdraw_fee { 0.1 }
+    end
+
+    trait :eur do
+      withdraw_fee { 0.1 }
+    end
+
+    trait :btc do
+      withdraw_fee { 0.01 }
+    end
   end
 end

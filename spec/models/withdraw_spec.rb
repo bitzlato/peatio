@@ -428,7 +428,7 @@ describe Withdraw do
   context 'fee is set to fixed value of 10' do
     let(:withdraw) { create(:usd_withdraw, :with_deposit_liability, sum: 200) }
 
-    before { Currency.any_instance.expects(:withdraw_fee).once.returns(10) }
+    before { BlockchainCurrency.any_instance.expects(:withdraw_fee).once.returns(10) }
 
     it 'computes fee' do
       expect(withdraw.fee).to eql 10.to_d
@@ -441,7 +441,7 @@ describe Withdraw do
     let!(:account) { member.get_account(:usd).tap { |x| x.update!(balance: 200.0.to_d) } }
     let(:withdraw) { build(:usd_withdraw, sum: 200, member: member) }
 
-    before { Currency.any_instance.expects(:withdraw_fee).once.returns(200) }
+    before { BlockchainCurrency.any_instance.expects(:withdraw_fee).once.returns(200) }
 
     it 'fails validation' do
       expect(withdraw.save).to eq false
