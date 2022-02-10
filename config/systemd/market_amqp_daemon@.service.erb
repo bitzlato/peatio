@@ -1,6 +1,7 @@
 [Unit]
 Description = <%= fetch(:application) %> (<%= fetch(:stage) %>) market-AMQP daemon (%i)
 After=syslog.target network.target
+OnFailure=daemon_notifications@%n.service
 
 [Service]
 Type=simple
