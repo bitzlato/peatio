@@ -152,16 +152,6 @@ module API
         )
 
         expose(
-          :blockchain_ids,
-          documentation: {
-            is_array: true,
-            desc: 'Blockchain IDs'
-          }
-        ) do |currency, _options|
-          currency.blockchain_ids
-        end
-
-        expose(
           :blockchain_currencies,
           documentation: {
             is_array: true,

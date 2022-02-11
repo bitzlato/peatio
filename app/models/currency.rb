@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Currency < ApplicationRecord
-  self.ignored_columns = %w[min_deposit_amount withdraw_fee]
-
   # == Constants ============================================================
 
   OPTIONS_ATTRIBUTES = %i[gas_price].freeze

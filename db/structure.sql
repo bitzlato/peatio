@@ -482,10 +482,8 @@ CREATE TABLE public.currencies (
     "precision" smallint DEFAULT 8 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    withdraw_fee numeric(36,18) DEFAULT 0 NOT NULL,
     deposit_fee numeric(36,18) DEFAULT 0 NOT NULL,
     icon_url character varying,
-    min_deposit_amount numeric(36,18) DEFAULT 0 NOT NULL,
     withdraw_limit_72h numeric(36,18) DEFAULT 0 NOT NULL,
     min_collection_amount numeric(36,18) DEFAULT 0 NOT NULL,
     min_withdraw_amount numeric(36,18) DEFAULT 0 NOT NULL,
@@ -3423,6 +3421,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220131124813'),
 ('20220131124954'),
 ('20220201162824'),
-('20220209142904');
+('20220209142904'),
+('20220210175201');
 
 
