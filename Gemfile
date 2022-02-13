@@ -13,7 +13,7 @@ gem 'hashie', '~> 3.6.0'
 gem 'hiredis', '~> 0.6.0'
 gem 'kaminari', '~> 1.2.1'
 gem 'puma', '~> 5.0'
-gem 'rails', '~> 5.2.4.5'
+gem 'rails', '~> 5.2.6'
 gem 'ransack', '~> 2.3.2'
 gem 'rbtree', '~> 0.4.2'
 gem 'redis', '~> 4.1.2', require: ['redis', 'redis/connection/hiredis']
