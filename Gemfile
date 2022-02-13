@@ -31,7 +31,7 @@ gem 'eventmachine', '~> 1.2'
 gem 'faraday'
 gem 'faraday_middleware'
 gem 'faye', '~> 1.4'
-gem 'rack-attack', '~> 5.4.2'
+gem 'rack-attack', '~> 6.6.0'
 gem 'strip_attributes'
 
 # We use 2.3.0.dev for bitzlato client
