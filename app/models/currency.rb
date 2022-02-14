@@ -116,12 +116,31 @@ class Currency < ApplicationRecord
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
 
+  LEGACY_CURRENCIES = %w[usdt usdc].freeze
+
+  def legacy?
+    cc = id.split ID_SEPARATOR
+    cc.count == 2 && LEGACY_CURRENCIES.include?(cc.first)
+  end
+
   def wipe_cache
     Rails.cache.delete_matched('currencies*')
   end
 
   def initialize_defaults
     self.options = {} if options.blank?
+  end
+
+  def token_name
+    tn = id.split(ID_SEPARATOR).first
+    return 'usdt' if tn == 'usdte'
+    return 'usdc' if tn == 'usdce'
+
+    tn
+  end
+
+  def token_currency
+    Currency.find(token_name)
   end
 
   # Allows to dynamically check value of id/code:

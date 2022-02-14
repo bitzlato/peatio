@@ -52,16 +52,11 @@ class InternalTransfer < ApplicationRecord
   end
 
   def credit_currency
-    legacy_currency_transfer? ? modern_currency : currency
-  end
-
-  def modern_currency
-    Currency.find(currency.id.split('-').first)
+    legacy_currency_transfer? ? currency.token_currency : currency
   end
 
   def legacy_currency_transfer?
-    cc = currency.id.split('-')
-    cc.count == 2 && %w[usdt usdc].include?(cc.first)
+    currency.legacy?
   end
 end
 
