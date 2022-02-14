@@ -201,7 +201,7 @@ bundle exec rails grape:save_routes
 bundle exec cap production deploy:check
 scp .env.production app@$PRODUCTION_SERVER:/home/app/peatio/shared/.env
 scp .env.daemons.production app@$PRODUCTION_SERVER:/home/app/peatio/shared/.env.daemons
-bundle exec cap production deploy:check systemd:puma:setup systemd:daemon:setup systemd:amqp_daemon:setup puma:config
+bundle exec cap production deploy:check systemd:puma:setup systemd:daemon:setup systemd:amqp_daemon:setup systemd:market_amqp_daemon:setup puma:config
 ```
 
 ## Getting Involved
