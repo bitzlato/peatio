@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 # This workflow will download a prebuilt Ruby version, install dependencies, and  run linters
-name: Rubocop
+name: Bundler audit and brakeman
 
 on:
   push:
