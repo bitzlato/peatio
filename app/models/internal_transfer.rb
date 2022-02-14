@@ -17,14 +17,22 @@ class InternalTransfer < ApplicationRecord
 
   validates :currency, :amount, :sender, :receiver, :state, presence: true
 
+  validate if: :legacy_currency_transfer? do
+    raise 'Sender and Receiver must be equal for legacy_currency_transfer' unless sender == receiver
+  end
+
+  validate unless: :legacy_currency_transfer? do
+    raise 'Transfers for same Sender and Receiver available only for legacy currencies' if sender == receiver
+  end
+
   # == Scopes ===============================================================
   # == Callbacks ============================================================
 
   before_commit on: :create do
     InternalTransfer.transaction do
       liabilities = [
-        Operations::Liability.debit!(amount: amount, currency: currency, reference: self, member_id: sender_id),
-        Operations::Liability.credit!(amount: amount, currency: currency, reference: self, member_id: receiver_id)
+        Operations::Liability.debit!(amount: amount, currency: debit_currency, reference: self, member_id: sender_id),
+        Operations::Liability.credit!(amount: amount, currency: credit_currency, reference: self, member_id: receiver_id)
       ]
       liabilities.each { |l| Operations.update_legacy_balance(l) }
     end
@@ -37,6 +45,23 @@ class InternalTransfer < ApplicationRecord
 
   def direction(user)
     user == sender ? 'out' : 'in'
+  end
+
+  def debit_currency
+    currency
+  end
+
+  def credit_currency
+    legacy_currency_transfer? ? modern_currency : currency
+  end
+
+  def modern_currency
+    Currency.find(currency.id.split('-').first)
+  end
+
+  def legacy_currency_transfer?
+    cc = currency.id.split('-')
+    cc.count == 2 && %w[usdt usdc].include?(cc.first)
   end
 end
 
