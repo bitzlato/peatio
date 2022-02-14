@@ -36,7 +36,7 @@ set :rbenv_ruby, File.read('.ruby-version').strip
 
 set :conditionally_migrate, true # Only attempt migration if db/migrate changed - not related to Webpacker, but a nice thing
 
-set :db_ignore_tables, %w[liabilities assets expenses revenues]
+set :db_ignore_data_tables, ENV['SKIP_HUGE_TABLES'] ? %w[liabilities assets expenses revenues orders trades] : %w[liabilities assets expenses revenues]
 set :db_local_clean, true
 set :db_remote_clean, false
 

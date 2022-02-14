@@ -721,7 +721,8 @@ CREATE TABLE public.internal_transfers (
     receiver_id bigint NOT NULL,
     state integer DEFAULT 1 NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    credit_currency_id character varying
 );
 
 
@@ -3159,7 +3160,7 @@ ALTER TABLE ONLY public.blockchain_currencies
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -3422,6 +3423,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220131124954'),
 ('20220201162824'),
 ('20220209142904'),
-('20220210175201');
+('20220210175201'),
+('20220214085857');
 
 
