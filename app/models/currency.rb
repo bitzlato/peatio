@@ -116,7 +116,7 @@ class Currency < ApplicationRecord
 
   types.each { |t| define_method("#{t}?") { type == t.to_s } }
 
-  LEGACY_CURRENCIES = %w[usdt usdc].freeze
+  LEGACY_CURRENCIES = %w[usdt usdc usdte usdce].freeze
 
   def legacy?
     cc = id.split ID_SEPARATOR
