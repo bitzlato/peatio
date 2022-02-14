@@ -66,7 +66,7 @@ class Withdrawer
     rescue WalletLowBalance => e
       Peatio::SlackNotifier.notifications.ping(e.message)
       logger.warn e.as_json.merge(withdraw_id: withdraw.id)
-      report_exception e, true, withdraw_id: withdraw.iid
+      report_exception e, true, withdraw_id: withdraw.id
       withdraw.err! e
     rescue Ethereum::Client::InsufficientFunds
       withdraw.fail!
