@@ -23,6 +23,8 @@ class Currency < ApplicationRecord
   has_many :deposits
   has_many :transactions
 
+  belongs_to :merged_token, class_name: 'Currency'
+
   serialize :options, JSON unless Rails.configuration.database_support_json
 
   include Helpers::ReorderPosition
@@ -132,7 +134,10 @@ class Currency < ApplicationRecord
   end
 
   def token_name
-    tn = id.split(ID_SEPARATOR).first
+    cc = id.split ID_SEPARATOR
+    return unless cc.count == 2
+
+    tn = cc.first
     return 'usdt' if tn == 'usdte'
     return 'usdc' if tn == 'usdce'
 

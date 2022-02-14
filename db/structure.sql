@@ -494,7 +494,8 @@ CREATE TABLE public.currencies (
     description text,
     homepage character varying,
     price numeric(36,18) DEFAULT 1 NOT NULL,
-    cc_code character varying
+    cc_code character varying,
+    merged_token_id character varying
 );
 
 
@@ -2349,6 +2350,13 @@ CREATE INDEX index_blockchains_on_status ON public.blockchains USING btree (stat
 
 
 --
+-- Name: index_currencies_on_merged_token_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_currencies_on_merged_token_id ON public.currencies USING btree (merged_token_id);
+
+
+--
 -- Name: index_currencies_on_position; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3141,6 +3149,14 @@ ALTER TABLE ONLY public.members
 
 
 --
+-- Name: currencies fk_rails_e1b50894c6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.currencies
+    ADD CONSTRAINT fk_rails_e1b50894c6 FOREIGN KEY (merged_token_id) REFERENCES public.currencies(id);
+
+
+--
 -- Name: deposit_spreads fk_rails_eef3f5807b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3424,6 +3440,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220201162824'),
 ('20220209142904'),
 ('20220210175201'),
-('20220214085857');
+('20220214085857'),
+('20220214124536');
 
 
