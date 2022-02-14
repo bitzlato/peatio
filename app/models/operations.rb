@@ -32,7 +32,7 @@ module Operations
         expense: Operations::Expense }.fetch(account.type.to_sym)
     end
 
-    # TODO почему это legacy баланс? А какой баланс modern? По-моему неудачное название
+    # TODO: почему это legacy баланс? А какой баланс modern? По-моему неудачное название
     #
     def update_legacy_balance(liability)
       return unless liability.present? || liability.is_a?(Operations::Liability)
