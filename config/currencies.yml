@@ -1,6 +1,6 @@
 production:
   currency_pricer:
-    quote_currency_code: 'usdt-erc20'
+    quote_currency_code: 'usdt'
     vwap_time: '1h'
 sandbox:
   currency_pricer:
