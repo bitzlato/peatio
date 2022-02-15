@@ -3,37 +3,37 @@ production:
     min_volume: 0.0005
     max_volume: 0.001
     price_deviation: 0.001
-    max_spread: 0.015
+    max_spread: 0.011
   - market_symbol: btc_mcrerc20
     min_volume: 0.0005
     max_volume: 0.001
     price_deviation: 0.001
-    max_spread: 0.015
+    max_spread: 0.011
   - market_symbol: eth_btc
     min_volume: 0.0035
     max_volume: 0.015
     price_deviation: 0.001
-    max_spread: 0.015
+    max_spread: 0.011
   - market_symbol: eth_usdt
     min_volume: 0.0035
     max_volume: 0.015
     price_deviation: 0.001
-    max_spread: 0.015
+    max_spread: 0.011
   - market_symbol: usdt_mcrerc20
     min_volume: 15.0
     max_volume: 85.0
     price_deviation: 0.001
-    max_spread: 0.015
+    max_spread: 0.011
   - market_symbol: bnbbep20_usdt
     min_volume: 0.03
     max_volume: 0.1
     price_deviation: 0.001
-    max_spread: 0.015
+    max_spread: 0.011
   - market_symbol: hthrc20_usdt
     min_volume: 0.9
     max_volume: 4.5
     price_deviation: 0.001
-    max_spread: 0.015
+    max_spread: 0.011
   - market_symbol: mdterc20_mcrerc20
     min_volume: 0.2
     max_volume: 4.0
@@ -43,12 +43,12 @@ production:
     min_volume: 5.0
     max_volume: 45.0
     price_deviation: 0.001
-    max_spread: 0.015
+    max_spread: 0.011
   - market_symbol: avax_usdt
     min_volume: 0.25
     max_volume: 1.0
     price_deviation: 0.001
-    max_spread: 0.015
+    max_spread: 0.011
 sandbox:
   - market_symbol: eth_bnb
     min_volume: 0.0005
