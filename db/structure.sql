@@ -871,7 +871,7 @@ CREATE TABLE public.member_groups (
     id bigint NOT NULL,
     key character varying(25) NOT NULL,
     open_orders_limit integer DEFAULT 1 NOT NULL,
-    rates_limits jsonb DEFAULT '{"minit": 100, "second": 10}'::jsonb NOT NULL,
+    rates_limits jsonb DEFAULT '{"minut": 100, "second": 10}'::jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -3183,7 +3183,7 @@ ALTER TABLE ONLY public.blockchain_currencies
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -3451,6 +3451,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220209142904'),
 ('20220210175201'),
 ('20220214085857'),
-('20220214124536');
+('20220214124536'),
+('20220215141005');
 
 
