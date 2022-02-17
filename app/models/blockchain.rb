@@ -105,6 +105,10 @@ class Blockchain < ApplicationRecord
     @contract_addresses ||= Set.new(blockchain_currencies.tokens.map { |bc| normalize_address(bc.contract_address) })
   end
 
+  def whitelisted_addresses
+    Set.new(whitelisted_smart_contracts.active.pluck(:address).map { |a| normalize_address(a) }).freeze
+  end
+
   delegate :active?, to: :status
 
   # The latest block which blockchain worker has processed

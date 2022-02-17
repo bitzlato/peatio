@@ -2,11 +2,12 @@
 
 class EthereumGateway
   class BlockFetcher < AbstractCommand
-    def call(block_number, contract_addresses: nil, follow_addresses: nil, follow_txids: nil)
+    def call(block_number, contract_addresses: nil, follow_addresses: nil, follow_txids: nil, whitelisted_addresses: nil)
       logger.debug("Fetch block #{block_number}")
       @contract_addresses = contract_addresses
       @follow_addresses = follow_addresses
       @follow_txids = follow_txids
+      @whitelisted_addresses = whitelisted_addresses
       block_json = client.json_rpc(:eth_getBlockByNumber, ["0x#{block_number.to_s(16)}", true])
 
       return [] if block_json.blank? || block_json['transactions'].blank?
@@ -30,7 +31,7 @@ class EthereumGateway
           #    The common case is a withdraw from a known smart contract of a major exchange (TODO)
           # 2. Check if the transaction is one of our currencies smart contract
           # 3. Check if the tx is from one of our wallets (to confirm withdrawals)
-          next unless contract_addresses.include?(contract_address) || follow_addresses.include?(from_address) || follow_addresses.intersect?(to_addresses)
+          next unless contract_addresses.include?(contract_address) || follow_addresses.include?(from_address) || follow_addresses.intersect?(to_addresses) || whitelisted_addresses.include?(contract_address)
 
           transactions += build_erc20_transactions(fetch_receipt!(tx.fetch('hash')), tx)
         end
@@ -43,7 +44,7 @@ class EthereumGateway
 
     private
 
-    attr_reader :follow_addresses, :contract_addresses, :follow_txids
+    attr_reader :follow_addresses, :contract_addresses, :follow_txids, :whitelisted_addresses
 
     def build_erc20_transactions(txn_receipt, block_tx)
       super txn_receipt, block_tx, contract_addresses: contract_addresses, follow_addresses: follow_addresses, follow_txids: follow_txids

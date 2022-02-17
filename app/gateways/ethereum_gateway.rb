@@ -135,7 +135,8 @@ class EthereumGateway < AbstractGateway
       .call(block_number,
             contract_addresses: blockchain.contract_addresses,
             follow_addresses: blockchain.follow_addresses,
-            follow_txids: blockchain.follow_txids.presence)
+            follow_txids: blockchain.follow_txids.presence,
+            whitelisted_addresses: blockchain.whitelisted_addresses)
       .map(&method(:monefy_transaction))
   end
 
