@@ -158,11 +158,7 @@ module API
             desc: 'Blockchain currencies'
           }
         ) do |currency, _options|
-          # TODO: rollback after deploying and testing tron mainnnet blockchain
-          currency.blockchain_currencies
-                  .joins(:blockchain)
-                  .where.not(blockchains: { key: 'tron-mainnet'})
-              .as_json(only: %i[blockchain_id withdraw_fee min_deposit_amount])
+          currency.blockchain_currencies.as_json(only: %i[blockchain_id withdraw_fee min_deposit_amount])
         end
       end
     end
