@@ -56,7 +56,7 @@ class TronGateway
       from_address = reformat_encode_address(tx['parameter']['value']['owner_address'])
       to_address = reformat_encode_address(tx['parameter']['value']['to_address'])
 
-      return if !blockchain.follow_addresses.intersect?([from_address, to_address].to_set) && !blockchain.follow_txids.exclude?(txn_receipt.fetch('id'))
+      return if !blockchain.follow_addresses.intersect?([from_address, to_address].to_set) && blockchain.follow_txids.exclude?(txn_receipt.fetch('id'))
 
       { hash: tx_hash['txID'],
         amount: tx['parameter']['value']['amount'],
