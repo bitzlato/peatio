@@ -49,6 +49,11 @@ production:
     max_volume: 1.0
     price_deviation: 0.001
     max_spread: 0.011
+  - market_symbol: trx_usdt
+    min_volume: 250.0
+    max_volume: 1500.0
+    price_deviation: 0.001
+    max_spread: 0.011
 sandbox:
   - market_symbol: eth_bnb
     min_volume: 0.0005
