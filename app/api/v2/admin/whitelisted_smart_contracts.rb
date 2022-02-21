@@ -49,8 +49,9 @@ module API
           success API::V2::Admin::Entities::WhitelistedSmartContract
         end
         params do
-          requires :blockchain_id,
-                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' }
+          requires :blockchain_key,
+                   values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' },
+                   desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:blockchain_key][:desc] }
           requires :address,
                    desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:address][:desc] }
           optional :description,
@@ -63,7 +64,8 @@ module API
         post '/whitelisted_smart_contracts' do
           admin_authorize! :create, ::WhitelistedSmartContract
 
-          whitelisted_address = ::WhitelistedSmartContract.new(declared(params))
+          blockchain = Blockchain.find_by!(key: declared(params)['blockchain_key'])
+          whitelisted_address = ::WhitelistedSmartContract.new(declared(params).except('blockchain_key').merge(blockchain: blockchain))
           if whitelisted_address.save
             present whitelisted_address, with: API::V2::Admin::Entities::WhitelistedSmartContract
           else
@@ -79,9 +81,9 @@ module API
           requires :id,
                    type: { value: Integer, message: 'admin.whitelistedsmartcontract.non_integer_id' },
                    desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:id][:desc] }
-          optional :blockchain_id,
-                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' }
-          # desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:blockchain_id][:desc] }
+          optional :blockchain_key,
+                   values: { value: -> { ::Blockchain.pluck(:key) }, message: 'admin.whitelistedsmartcontract.blockchain_key_doesnt_exist' },
+                   desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:blockchain_key][:desc] }
           optional :description,
                    desc: -> { API::V2::Admin::Entities::WhitelistedSmartContract.documentation[:description][:desc] }
           optional :address,
@@ -92,7 +94,12 @@ module API
         end
         put '/whitelisted_smart_contracts' do
           admin_authorize! :update, ::WhitelistedSmartContract
+
           whitelisted_address = ::WhitelistedSmartContract.find(params[:id])
+          if params['blockchain_key']
+            blockchain = Blockchain.find_by(key: params['blockchain_key'])
+            params.except!('blockchain_key').merge!(blockchain: blockchain)
+          end
           declared_params = declared(params, include_missing: false)
 
           if whitelisted_address.update(declared_params)
@@ -118,9 +125,9 @@ module API
           CSV.parse(params[:file][:tempfile], headers: true, quote_empty: false).each do |row|
             row = row.to_h.compact.symbolize_keys!
             address = row[:address]
-            blockchain_id = row[:blockchain_id]
+            blockchain_id = row[:blockchain_key].present? ? Blockchain.find_by(key: row[:blockchain_key])&.id : nil
             description = row[:description]
-            next if address.blank? || blockchain_id.blank? || ::Blockchain.pluck(:id).exclude?(blockchain_id)
+            next if address.blank? || blockchain_id.blank?
 
             ::WhitelistedSmartContract.create!(description: description, address: address,
                                                blockchain_id: blockchain_id, state: 'active')

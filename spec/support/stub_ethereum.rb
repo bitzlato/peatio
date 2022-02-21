@@ -96,6 +96,12 @@ module EthereumHelpers
       .with(body: request_body.to_json)
       .to_return(body: { id: id, jsonrpc: '2.0', result: "0x#{block_number.to_s(16)}" }.to_json)
   end
+
+  def stub_get_block_by_number(block_number:, transactions:)
+    request_body = /\{"jsonrpc":"2\.0","id":\d+,"method":"eth_getBlockByNumber","params":\["0x#{block_number.to_s(16)}",true\]\}/
+    response_body = { result: { transactions: transactions } }.to_json
+    stub_request(:post, node_uri).with(body: request_body).to_return(body: response_body)
+  end
 end
 
 RSpec.configure { |config| config.include EthereumHelpers }
