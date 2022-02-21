@@ -177,8 +177,12 @@ class BlockchainService
 
       logger.info("Found or created suitable deposit #{deposit.id} for txid #{transaction.id}, amount #{transaction.amount}")
       if deposit.submitted?
+        member = deposit.member
+        skipped_deposits = member.deposits.skipped.where(currency: transaction.amount.currency.currency_record).lock
+        total_skipped_amount = skipped_deposits.sum(&:money_amount)
         min_deposit_amount_money = BlockchainCurrency.find(transaction.amount.currency.blockchain_currency_record.id).min_deposit_amount_money
-        if transaction.amount < min_deposit_amount_money
+
+        if (total_skipped_amount + transaction.amount) < min_deposit_amount_money
           skip_message = "Skipped deposit with txid: #{transaction.hash}"\
                          " to #{transaction.to_address} in block number #{transaction.block_number}"\
                          " because of low amount (#{transaction.amount.format} < #{min_deposit_amount_money.format})"
@@ -188,6 +192,11 @@ class BlockchainService
         else
           logger.info("Accepting deposit #{deposit.id}")
           deposit.accept!
+
+          if skipped_deposits.any?
+            logger.info("Accepting skipped deposits #{skipped_deposits.map(&:id).join(', ')}")
+            skipped_deposits.each(&:accept!)
+          end
         end
       end
     end
