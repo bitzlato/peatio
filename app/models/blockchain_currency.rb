@@ -66,4 +66,11 @@ class BlockchainCurrency < ApplicationRecord
   def subunits
     Math.log(base_factor, 10).round
   end
+
+  def withdraw_fee_range
+    # price_range = FeeUnitPrice.where(blockchain: blockchain).price_range
+    # min_fee = money_currency.to_money_from_units(price_range.begin * gas_limit)
+
+    # TODO
+  end
 end

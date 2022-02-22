@@ -672,6 +672,37 @@ ALTER SEQUENCE public.expenses_id_seq OWNED BY public.expenses.id;
 
 
 --
+-- Name: fee_unit_prices; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.fee_unit_prices (
+    id bigint NOT NULL,
+    blockchain_id bigint NOT NULL,
+    price bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: fee_unit_prices_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.fee_unit_prices_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: fee_unit_prices_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.fee_unit_prices_id_seq OWNED BY public.fee_unit_prices.id;
+
+
+--
 -- Name: gas_refuels; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1722,6 +1753,13 @@ ALTER TABLE ONLY public.expenses ALTER COLUMN id SET DEFAULT nextval('public.exp
 
 
 --
+-- Name: fee_unit_prices id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fee_unit_prices ALTER COLUMN id SET DEFAULT nextval('public.fee_unit_prices_id_seq'::regclass);
+
+
+--
 -- Name: gas_refuels id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2015,6 +2053,14 @@ ALTER TABLE ONLY public.engines
 
 ALTER TABLE ONLY public.expenses
     ADD CONSTRAINT expenses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fee_unit_prices fee_unit_prices_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fee_unit_prices
+    ADD CONSTRAINT fee_unit_prices_pkey PRIMARY KEY (id);
 
 
 --
@@ -2502,6 +2548,13 @@ CREATE INDEX index_expenses_on_currency_id ON public.expenses USING btree (curre
 --
 
 CREATE INDEX index_expenses_on_reference_type_and_reference_id ON public.expenses USING btree (reference_type, reference_id);
+
+
+--
+-- Name: index_fee_unit_prices_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fee_unit_prices_on_blockchain_id ON public.fee_unit_prices USING btree (blockchain_id);
 
 
 --
@@ -3444,6 +3497,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220210175201'),
 ('20220214085857'),
 ('20220214124536'),
-('20220215141005');
+('20220215141005'),
+('20220221123704');
 
 
