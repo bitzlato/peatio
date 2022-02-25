@@ -161,6 +161,17 @@ describe API::V2::Admin::Members, type: :request do
         end
       end
     end
+
+    context 'when member beneficiary references to non-existent blockchain currency' do
+      before do
+        create(:beneficiary, member: member, blockchain_currency_id: 999, state: :active, data: { address: 'address' })
+        api_get "/api/v2/admin/members/#{member.uid}", token: token
+      end
+
+      it 'returns successful status' do
+        expect(response).to be_successful
+      end
+    end
   end
 
   describe 'GET /api/v2/admin/members/groups' do

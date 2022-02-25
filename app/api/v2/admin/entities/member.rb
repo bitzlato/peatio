@@ -70,8 +70,10 @@ module API
               type: 'API::V2::Admin::Entities::Beneficiary',
               is_array: true,
               desc: 'Member Beneficiary.'
-            }, &:beneficiaries
-          )
+            }
+          ) do |m|
+            m.beneficiaries.joins(:blockchain_currency)
+          end
 
           expose(
             :accounts,
