@@ -122,7 +122,7 @@ class Beneficiary < ApplicationRecord
 
   # == Instance Methods =====================================================
 
-  delegate :currency, :currency_id, to: :blockchain_currency, allow_nil: true
+  delegate :currency, :currency_id, to: :blockchain_currency
 
   def as_json_for_event_api
     { user: { uid: member.uid, email: member.email },
