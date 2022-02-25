@@ -84,9 +84,16 @@ describe API::V2::Account::InternalTransfers, type: :request do
     let(:account) { member.get_account(currency) }
     let(:balance) { 1.2 }
 
-    before { account.plus_funds(balance) }
+    before do
+      account.plus_funds(balance)
+      Vault::TOTP.stubs(:validate?).returns(true)
+    end
 
-    before { Vault::TOTP.stubs(:validate?).returns(true) }
+    around do |example|
+      Rack::Attack.enabled = false
+      example.run
+      Rack::Attack.enabled = true
+    end
 
     it 'validates missing params' do
       data.except!(:otp, :amount, :currency, :username_or_uid)
