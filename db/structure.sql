@@ -356,9 +356,9 @@ CREATE TABLE public.blockchain_currencies (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     base_factor bigint NOT NULL,
-    options jsonb,
     withdraw_fee numeric(32,18) DEFAULT 0 NOT NULL,
     min_deposit_amount numeric(32,18) DEFAULT 0 NOT NULL,
+    options jsonb,
     CONSTRAINT blockchain_currencies_contract_address CHECK ((((parent_id IS NOT NULL) AND (contract_address IS NOT NULL)) OR ((parent_id IS NULL) AND (contract_address IS NULL))))
 );
 
@@ -2761,17 +2761,17 @@ CREATE INDEX index_payment_addresses_on_member_id ON public.payment_addresses US
 
 
 --
--- Name: index_payment_addresses_on_member_id_and_blockchain_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_payment_addresses_on_member_id_and_blockchain_id ON public.payment_addresses USING btree (member_id, blockchain_id);
-
-
---
 -- Name: index_payment_addresses_on_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_payment_addresses_on_parent_id ON public.payment_addresses USING btree (parent_id);
+
+
+--
+-- Name: index_payment_addresses_unique_member_blockchain_parent; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_payment_addresses_unique_member_blockchain_parent ON public.payment_addresses USING btree (member_id, blockchain_id, parent_id);
 
 
 --

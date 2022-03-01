@@ -36,8 +36,7 @@ class SolanaGateway
     def build_transaction? tx
       account_keys = tx['transaction']['message']['accountKeys']
       txid = tx['transaction']['signatures'].first
-      @follow_addresses.nil? || @follow_addresses.intersect?(account_keys.to_set) ||
-        (@follow_txids.present? && @follow_txids.include?(txid))
+      @follow_addresses.intersect?(account_keys.to_set) || (@follow_txids.present? && @follow_txids.include?(txid))
     end
 
     def build_transaction(transaction)
@@ -54,7 +53,8 @@ class SolanaGateway
 
       txs = detailed_tx.instructions.each_with_index.map do |instruction, index|
         instruction_data = parse_instruction(instruction, txid)
-        return nil unless (instruction_data.present? and @follow_addresses.intersect?(instruction[:keys].map{|x| x[:pubkey]}.to_set))
+        next unless @follow_addresses.intersect?(instruction[:keys].map{|x| x[:pubkey]}.to_set)
+        next if instruction_data[:contract_address].present? and !instruction_data[:contract_address].in?(blockchain.contract_addresses)
         defaults.merge({
                          amount: instruction_data[:amount],
                          from_addresses: [instruction_data[:from]],
@@ -73,16 +73,16 @@ class SolanaGateway
     def parse_instruction instruction, txid
       keys = instruction[:keys].map{|x| x[:pubkey]}
 
-      parsed_instruction =  case instruction[:program_id]
-                            when Solana::Program::Token::PROGRAM_ID
-                              parse_token_instruction(instruction, txid, keys)
-                            when Solana::Program::System::PROGRAM_ID
-                              parse_system_instruction(instruction, txid, keys)
-                            when Solana::Program::AssociatedToken::PROGRAM_ID
-                              parse_associated_token_instruction(keys)
-                            else
-                              raise Error, "Unknown program #{instruction[:program_id]} in txid #{txid}"
-                            end
+      case instruction[:program_id]
+      when Solana::Program::Token::PROGRAM_ID
+        parse_token_instruction(instruction, txid, keys)
+      when Solana::Program::System::PROGRAM_ID
+        parse_system_instruction(instruction, txid, keys)
+      when Solana::Program::AssociatedToken::PROGRAM_ID
+        parse_associated_token_instruction(keys)
+      else
+        raise Error, "Unknown program #{instruction[:program_id]} in txid #{txid}"
+      end
     end
 
     def parse_token_instruction instruction, txid, keys
