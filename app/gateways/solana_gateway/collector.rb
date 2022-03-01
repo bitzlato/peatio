@@ -55,7 +55,7 @@ class SolanaGateway
       # raise 'Must be secret or blockchain_address' if secret.nil? && blockchain_address.nil?
 
       amounts.filter_map do |contract_address, amount|
-        # raise 'amount must be an Integer' unless amount.is_a? Integer # not money
+        raise 'amount must be Money' unless amount.is_a? Money # not money
 
         # not collectiong native from token_account
         next if payment_address.blockchain_currency.present? and contract_address.nil?
@@ -70,7 +70,7 @@ class SolanaGateway
                         amount: amount,
                         fee_payer_address: native_hot_wallet(amount.currency.currency_record).address,
                         contract_address: contract_address,
-                        signers: signers(payment_address, amount, contract_address)
+                        signers: signers(payment_address, amount)
                       })
         logger.info("Collect transaction created #{transaction.as_json}")
         transaction.txid
@@ -92,12 +92,7 @@ class SolanaGateway
       blockchain.withdraw_wallet_for_currency(currency)
     end
 
-    def signers payment_address, amount, contract_address
-      # if contract_address
-      #   [native_hot_wallet(amount.currency.currency_record).private_key, payment_address.private_key]
-      # else
-      #   [payment_address.private_key]
-      # end
+    def signers payment_address, amount
       parent_address = payment_address.parent ? payment_address.parent : payment_address
 
       [native_hot_wallet(amount.currency.currency_record).private_key, parent_address.private_key]
