@@ -8,7 +8,7 @@ namespace :solana_blockchain do
     ActiveRecord::Base.transaction do
       blockchain = Blockchain.create!({
         key: 'solana-mainnet',
-        name: 'Solana Mainnet',
+        name: 'Solana (SPL)',
         gateway_klass: 'SolanaGateway',
         server: 'https://api.testnet.solana.com',
         height: 38187307,

@@ -120,6 +120,7 @@ class Member < ApplicationRecord
     elsif pa.address.blank?
       pa.enqueue_address_generation
     end
+    pa.create_token_accounts
 
     pa
   end

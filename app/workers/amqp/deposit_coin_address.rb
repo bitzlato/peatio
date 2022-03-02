@@ -38,7 +38,7 @@ module Workers
           payment_address.update!(result.slice(:address, :secret, :details))
         end
         Rails.logger.info { { message: 'Payment address is updated', payment_address_id: payment_address.id, member_id: member.id, blockchain_id: blockchain.id } }
-        payment_address.create_contract_accounts if payment_address.blockchain.client == 'solana'
+        payment_address.create_token_accounts
         payment_address.trigger_address_event if payment_address.address.present?
 
       # Don't re-enqueue this job in case of error.
