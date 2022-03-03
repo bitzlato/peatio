@@ -153,7 +153,7 @@ class PaymentAddress < ApplicationRecord
   end
 
   def create_token_accounts
-    return if blockchain.client != 'solana' or parent.present?
+    return if address.nil? or blockchain.client != 'solana' or parent.present?
     blockchain.blockchain_currencies.tokens.each do |blockchain_currency|
       create_token_account(blockchain_currency)
     end
