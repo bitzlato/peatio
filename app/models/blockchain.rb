@@ -16,8 +16,8 @@ class Blockchain < ApplicationRecord
   has_many :blockchain_currencies, dependent: :destroy
   has_many :currencies, through: :blockchain_currencies
   has_many :payment_addresses
-  has_many :transactions, through: :currencies
-  has_many :deposits, through: :currencies
+  has_many :transactions, dependent: :restrict_with_exception
+  has_many :deposits, dependent: :restrict_with_exception
   has_many :gas_refuels
   has_many :block_numbers
   has_many :nodes, class_name: 'BlockchainNode'
