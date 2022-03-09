@@ -113,13 +113,14 @@ class Member < ApplicationRecord
     raise 'no blockchain' if blockchain.nil?
     raise "We must not build payment address for invoicing blockchains (#{blockchain.key}) member_id=#{id}" if blockchain.enable_invoice?
 
-    pa = PaymentAddress.active.find_by(member: self, blockchain: blockchain)
+    pa = PaymentAddress.active.find_by(member: self, blockchain: blockchain, parent: nil)
 
     if pa.blank?
       pa = payment_addresses.create!(blockchain: blockchain)
     elsif pa.address.blank?
       pa.enqueue_address_generation
     end
+    pa.create_token_accounts
 
     pa
   end

@@ -135,5 +135,19 @@ FactoryBot.define do
       initialize_with         { Blockchain.find_or_create_by(key: key) }
       address_type            { 'tron' }
     end
+
+    trait 'sol-testnet' do
+      key                     { 'sol-testnet' }
+      name                    { 'sol Testnet' }
+      gateway_klass           { SolanaGateway.name }
+      server                  { 'https://api.testnet.solana.com' }
+      height                  { 2_500_000 }
+      min_confirmations       { 6 }
+      explorer_address        { 'https://solscan.org/#/address/\#{address}' }
+      explorer_transaction    { 'https://solscan.org/#/transaction/\#{txid}' }
+      status                  { 'active' }
+      initialize_with         { Blockchain.find_or_create_by(key: key) }
+      address_type            { 'sol' }
+    end
   end
 end

@@ -1,0 +1,57 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.testnet.solana.com/
+    body:
+      encoding: UTF-8
+      string: '{"jsonrpc":"2.0","id":1,"method":"getTokenAccountBalance","params":["Fkuy7uE1LwbrY13jft6F74YYfT8Qyzk5JLFnuY9u1Jkt"]}'
+    headers:
+      User-Agent:
+      - Faraday v1.5.1
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '30'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 20 Feb 2022 15:48:14 GMT
+      X-Ratelimit-Method-Limit:
+      - '30'
+      X-Ratelimit-Method-Remaining:
+      - '29'
+      X-Ratelimit-Rps-Limit:
+      - '50'
+      X-Ratelimit-Rps-Remaining:
+      - '49'
+      X-Ratelimit-Conn-Limit:
+      - '30'
+      X-Ratelimit-Conn-Remaining:
+      - '29'
+      X-Ratelimit-Connrate-Limit:
+      - '40'
+      X-Ratelimit-Connrate-Remaining:
+      - '29'
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+    body:
+      encoding: ASCII-8BIT
+      string: '{"jsonrpc":"2.0","result":{"context":{"slot":119385027},"value":{"amount":"1250000000","decimals":9,"uiAmount":1.25,"uiAmountString":"1.25"}},"id":1}
+
+        '
+  recorded_at: Sun, 20 Feb 2022 15:48:14 GMT
+recorded_with: VCR 6.0.0

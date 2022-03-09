@@ -158,5 +158,26 @@ FactoryBot.define do
       withdraw_limit_72h   { 1 }
       position             { 8 }
     end
+
+    trait :sol do
+      code                 { 'sol' }
+      name                 { 'sol' }
+      type                 { 'coin' }
+      precision            { 9 }
+      withdraw_limit_24h   { 5 }
+      withdraw_limit_72h   { 10 }
+      position             { 9 }
+      options {  }
+    end
+
+    trait :sol_spl do
+      code                 { 'sol-spl' }
+      name                 { 'sol-spl' }
+      type                 { 'coin' }
+      withdraw_limit_24h   { 5 }
+      withdraw_limit_72h   { 10 }
+      position             { 9 }
+      options {  }
+    end
   end
 end

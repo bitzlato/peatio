@@ -15,7 +15,8 @@ module GatewayConcern
     DummyGateway,
     BitcoinGateway,
     EthereumGateway,
-    TronGateway
+    TronGateway,
+    SolanaGateway
   ].map(&:to_s)
 
   CLIENTS = AVAILABLE_GATEWAYS.map { |g| g.remove(GATEWAY_PREFIX).downcase }

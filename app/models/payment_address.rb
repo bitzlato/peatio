@@ -13,9 +13,10 @@ class PaymentAddress < ApplicationRecord
 
   vault_lazy_decrypt!
 
-  after_commit :enqueue_address_generation, on: :create
+  after_commit :enqueue_address_generation, on: :create, unless: :parent_id?
 
   validates :address, uniqueness: { scope: :blockchain_id }, if: :address?
+  validates :blockchain_currency, presence: true, if: :parent_id?
 
   vault_attribute :details, serialize: :json, default: {}
   vault_attribute :secret
@@ -28,6 +29,9 @@ class PaymentAddress < ApplicationRecord
   # TODO: Migrate association from wallet to blockchain and remove Wallet.deposit*
   belongs_to :member
   belongs_to :blockchain
+  belongs_to :parent, class_name: 'PaymentAddress', optional: true
+  has_many :token_addresses, class_name: 'PaymentAddress', foreign_key: :parent_id
+  belongs_to :blockchain_currency, optional: true
 
   aasm :collection_state, namespace: :collection, whiny_transitions: true, requires_lock: true do
     state :none, initial: true
@@ -146,5 +150,18 @@ class PaymentAddress < ApplicationRecord
 
   def fee_wallet_approved?(currency_id)
     BlockchainApproval.where(currency_id: currency_id, blockchain: blockchain, owner_address: address, spender_address: blockchain.fee_wallet&.address).success.any?
+  end
+
+  def create_token_accounts
+    return if address.nil? or blockchain.client != 'solana' or parent.present?
+    blockchain.blockchain_currencies.tokens.each do |blockchain_currency|
+      create_token_account(blockchain_currency)
+    end
+  end
+
+  def create_token_account blockchain_currency
+    return if token_addresses.where(blockchain_currency: blockchain_currency).present?
+    new_address = blockchain.gateway.find_or_create_token_account(address, blockchain_currency.contract_address, blockchain.hot_wallet)
+    PaymentAddress.create(member: member, blockchain: blockchain, parent: self, address: new_address, blockchain_currency: blockchain_currency)
   end
 end
