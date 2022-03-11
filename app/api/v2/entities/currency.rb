@@ -161,7 +161,7 @@ module API
           # TODO: rollback after deploying and testing tron mainnnet blockchain
           currency.blockchain_currencies
                   .joins(:blockchain)
-                  .where.not(blockchains: { key: 'solana-mainnet'})
+                  .where.not(blockchains: { key: %w[solana-mainnet polygon-mainnet] })
                   .as_json(only: %i[blockchain_id withdraw_fee min_deposit_amount])
         end
       end
