@@ -28,6 +28,8 @@ class Withdrawer
   end
 
   def call(withdraw, nonce: nil, gas_factor: nil)
+    raise 'disabled'
+
     withdraw.lock!.transfer!
 
     withdraw.with_lock do
