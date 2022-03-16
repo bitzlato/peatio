@@ -356,9 +356,9 @@ CREATE TABLE public.blockchain_currencies (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     base_factor bigint NOT NULL,
-    options jsonb,
     withdraw_fee numeric(32,18) DEFAULT 0 NOT NULL,
     min_deposit_amount numeric(32,18) DEFAULT 0 NOT NULL,
+    options jsonb,
     CONSTRAINT blockchain_currencies_contract_address CHECK ((((parent_id IS NOT NULL) AND (contract_address IS NOT NULL)) OR ((parent_id IS NULL) AND (contract_address IS NULL))))
 );
 
@@ -2761,17 +2761,17 @@ CREATE INDEX index_payment_addresses_on_member_id ON public.payment_addresses US
 
 
 --
--- Name: index_payment_addresses_on_member_id_and_blockchain_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_payment_addresses_on_member_id_and_blockchain_id ON public.payment_addresses USING btree (member_id, blockchain_id) WHERE (parent_id IS NULL);
-
-
---
 -- Name: index_payment_addresses_on_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_payment_addresses_on_parent_id ON public.payment_addresses USING btree (parent_id);
+
+
+--
+-- Name: index_payment_addresses_unique_member_blockchain_parent; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_payment_addresses_unique_member_blockchain_parent ON public.payment_addresses USING btree (member_id, blockchain_id, parent_id);
 
 
 --
@@ -3101,13 +3101,6 @@ CREATE INDEX index_withdraws_on_tid ON public.withdraws USING btree (tid);
 --
 
 CREATE INDEX index_withdraws_on_type ON public.withdraws USING btree (type);
-
-
---
--- Name: payment_addresses_member_blockchain_parent_blockchain_currency; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX payment_addresses_member_blockchain_parent_blockchain_currency ON public.payment_addresses USING btree (member_id, blockchain_id, parent_id, blockchain_currency_id) WHERE (parent_id IS NOT NULL);
 
 
 --
@@ -3481,7 +3474,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220219203454'),
 ('20220222081707'),
 ('20220223194801'),
-('20220227214453'),
-('20220316142851');
+('20220227214453');
 
 
