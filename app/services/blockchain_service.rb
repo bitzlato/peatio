@@ -178,7 +178,7 @@ class BlockchainService
       logger.info("Found or created suitable deposit #{deposit.id} for txid #{transaction.id}, amount #{transaction.amount}")
       if deposit.submitted?
         member = deposit.member
-        skipped_deposits = member.deposits.skipped.where(currency: transaction.amount.currency.currency_record).lock
+        skipped_deposits = member.deposits.skipped.where(currency: transaction.amount.currency.currency_record, blockchain: blockchain).lock
         total_skipped_amount = skipped_deposits.sum(&:money_amount)
         min_deposit_amount_money = BlockchainCurrency.find(transaction.amount.currency.blockchain_currency_record.id).min_deposit_amount_money
 
