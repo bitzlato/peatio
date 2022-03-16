@@ -66,4 +66,8 @@ class BlockchainCurrency < ApplicationRecord
   def subunits
     Math.log(base_factor, 10).round
   end
+
+  def parent_currency
+    parent ? parent.currency : currency
+  end
 end
