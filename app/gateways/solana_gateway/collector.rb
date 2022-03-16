@@ -84,8 +84,7 @@ class SolanaGateway
 
     def native_hot_wallet currency
       bc = BlockchainCurrency.find_by(blockchain: blockchain, currency: currency)
-      native_currency = bc.parent ? bc.parent.currency : bc.currency
-      blockchain.withdraw_wallet_for_currency(native_currency)
+      blockchain.withdraw_wallet_for_currency(bc.parent_currency)
     end
 
     def currency_hot_wallet currency

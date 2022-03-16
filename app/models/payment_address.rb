@@ -161,7 +161,8 @@ class PaymentAddress < ApplicationRecord
 
   def create_token_account blockchain_currency
     return if token_addresses.where(blockchain_currency: blockchain_currency).present?
-    new_address = blockchain.gateway.find_or_create_token_account(address, blockchain_currency.contract_address, blockchain.hot_wallet)
+    hot_wallet = blockchain.withdraw_wallet_for_currency(blockchain_currency.parent_currency)
+    new_address = blockchain.gateway.find_or_create_token_account(address, blockchain_currency.contract_address, hot_wallet)
     PaymentAddress.create(member: member, blockchain: blockchain, parent: self, address: new_address, blockchain_currency: blockchain_currency)
   end
 end
