@@ -9,7 +9,8 @@ set :puma_threads, [4, 5]
 
 set :markets, %w[
   btc_usdt btc_mcrerc20 eth_btc eth_usdt usdt_mcrerc20
-  bnbbep20_usdt hthrc20_usdt mdterc20_mcrerc20 matic_usdt avax_usdt trx_usdt
+  bnbbep20_usdt hthrc20_usdt mdterc20_mcrerc20
+  matic_usdt avax_usdt trx_usdt bzb_eth
 ]
 
 server ENV['PRODUCTION_SERVER'],
