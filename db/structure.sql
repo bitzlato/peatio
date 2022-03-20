@@ -940,7 +940,7 @@ ALTER SEQUENCE public.member_transfers_id_seq OWNED BY public.member_transfers.i
 
 CREATE TABLE public.members (
     id bigint NOT NULL,
-    email character varying,
+    email public.citext,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     uid character varying(32) NOT NULL,
@@ -3210,7 +3210,7 @@ ALTER TABLE ONLY public.blockchain_currencies
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -3482,6 +3482,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220222081707'),
 ('20220223194801'),
 ('20220227214453'),
-('20220316142851');
+('20220316142851'),
+('20220320195933');
 
 
