@@ -27,6 +27,9 @@ class SolanaGateway
 
       logger.info("Fetching block with slot #{slot_id} finished with #{transactions.count} transactions catched")
       transactions.compact.map{|tx| monefy_transaction(tx)}
+    rescue Solana::Client::SkippedSlotError
+      logger.debug("Slot #{slot_id} was skipped, or missing in long-term storage")
+      return []
     rescue Solana::Client::Error => e
       raise Peatio::Blockchain::ClientError, e
     end

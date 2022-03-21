@@ -74,7 +74,7 @@ class SolanaGateway
     def create_raw_transaction!(from_pubkey:, to_pubkey:, fee_payer:, amount:, signers: [], contract_address:)
       tx = Solana::Tx.new
       if contract_address
-        from_owner_pubkey = token_parent_from_pubkey(from_pubkey, amount)
+        from_owner_pubkey = token_parent_address_from_pubkey(from_pubkey, amount)
         instruction = Solana::Program::Token.transfer_checked_instruction(
           from_pubkey: from_owner_pubkey, from_token_account_pubkey: from_pubkey,
           to_token_account_pubkey: to_pubkey, token_pubkey: contract_address,
@@ -103,8 +103,8 @@ class SolanaGateway
       true
     end
 
-    def token_parent_from_pubkey(from_pubkey, amount)
-      payment_address = blockchain.payment_addresses.where(address: from_pubkey, contract_address: amount.currency.blockchain_currency_record.contract_address).first
+    def token_parent_address_from_pubkey(from_pubkey, amount)
+      payment_address = blockchain.payment_addresses.where(address: from_pubkey, blockchain_currency_id: amount.currency.blockchain_currency_record).first
       return payment_address.parent.address if payment_address
 
       blockchain_currency = amount.currency.blockchain_currency_record
