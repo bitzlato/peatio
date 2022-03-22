@@ -16,7 +16,8 @@ describe ::SolanaGateway::Collector, :solana do
     describe "token account" do
       it 'collects tokens' do
         VCR.use_cassette('solana/collect_token', record: :once) do
-          solana_gateway.collect!(solana_spl_payment_address)
+          result = solana_gateway.collect!(solana_spl_payment_address)
+          expect(result).to eq(['62Fj1NUJu1eNzJ7kF7kZFQpWHpWaHFmB6pV7RRSqDKhCRuucUXgbr1qsR9KfC6vrBVUiiXyUxBDCshmZiPn68WBf'])
         end
       end
     end

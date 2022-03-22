@@ -15,6 +15,7 @@ module Solana
     end
 
     InvalidSeedError = Class.new ResponseError
+    SkippedSlotError = Class.new ResponseError
 
     extend Memoist
 
@@ -30,6 +31,8 @@ module Solana
     def raise_error(error)
       if error['message'].include?('Provided seeds do not result in a valid address')
         raise InvalidSeedError.new(error['code'], error['message'], error['data'])
+      elsif error['message'].include?('was skipped, or missing in long-term storage')
+        raise SkippedSlotError.new(error['code'], error['message'], error['data'])
       else
         raise ResponseError.new(error['code'], error['message'], error['data'])
       end

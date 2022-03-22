@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.shared_context 'solana', solana: true do
-  let!(:sol)                  { create(:currency, :sol, id: :sol) }
-  let!(:sol_spl)              { create(:currency, :'sol_spl', id: :'sol_spl') }
+  let!(:sol)                  { create(:currency, :sol, id: :sol, min_collection_amount: 0.02) }
+  let!(:sol_spl)              { create(:currency, :'sol_spl', id: :'sol_spl', min_collection_amount: 0.02) }
 
   let!(:solana_hot_wallet)     { create(:wallet, :sol_hot, name: 'Solana Hot Wallet') }
   let!(:solana_spl_hot_wallet)     { create(:wallet, :sol_spl_hot, name: 'Solana SPL Hot Wallet') }
