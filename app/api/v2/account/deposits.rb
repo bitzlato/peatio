@@ -8,43 +8,6 @@ module API
       class Deposits < Grape::API
         before { deposits_must_be_permitted! }
 
-        desc 'Create deposit intention',
-             success: API::V2::Entities::Deposit
-        params do
-          requires :blockchain_id,
-                   type: Integer,
-                   values: { value: -> { ::Blockchain.pluck(:id) }, message: 'account.blockchain_id.doesnt_exist' },
-                   desc: 'Blockchain ID.'
-          requires :currency,
-                   type: String,
-                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
-                   desc: 'Currency code',
-                   documentation: { param_type: 'body' }
-          requires :amount,
-                   type: BigDecimal,
-                   desc: 'The deposit amount.'
-        end
-
-        post '/deposits/intention' do
-          blockchain = Blockchain.find(params[:blockchain_id])
-          currency = Currency.find(params[:currency])
-
-          error!({ errors: ['management.currency.deposit_disabled'] }, 422) unless currency.deposit_enabled?
-          error!({ errors: ['management.currency.invoice_disabled'] }, 422) unless blockchain.enable_invoice?
-          error!({ errors: ['account.deposit.invalid_amount'] }, 422) if params[:amount] < BlockchainCurrency.find_by!(blockchain: blockchain, currency: currency).min_deposit_amount
-
-          deposit = Deposit.create!(
-            type: Deposit.name,
-            member: current_user,
-            blockchain: blockchain,
-            currency: currency,
-            amount: params[:amount]
-          )
-          deposit.enqueue_deposit_intention!
-
-          present deposit, with: API::V2::Entities::Deposit
-        end
-
         desc 'Get your deposits history.',
              is_array: true,
              success: API::V2::Entities::Deposit

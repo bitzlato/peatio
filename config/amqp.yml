@@ -82,9 +82,6 @@ queue:
   deposit_coin_address:
     name: peatio.deposit.coin.address
     durable: true
-  deposit_intention:
-    name: peatio.deposit.intention
-    durable: true
   influx_writer:
     name: peatio.trade.writer
   trade_error:
@@ -123,8 +120,6 @@ binding:
     queue: withdraw_coin
   deposit_coin_address:
     queue: deposit_coin_address
-  deposit_intention:
-    queue: deposit_intention
   influx_writer:
     queue: influx_writer
     exchange: trade

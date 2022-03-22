@@ -13,41 +13,6 @@ describe API::V2::Account::Deposits, type: :request do
     Ability.stubs(:user_permissions).returns({ 'member' => { 'read' => %w[Deposit PaymentAddress] } })
   end
 
-  describe 'POST /api/v2/account/deposits/intention' do
-    let(:amount) { 12.1231 }
-    let(:blockchain) { find_or_create(:blockchain, 'btc-testnet', key: 'btc-testnet') }
-    let(:currency) { find_or_create :currency, :btc, id: :btc }
-
-    before do
-      currency.blockchains.find_by!(key: 'btc-testnet').update!(enable_invoice: true)
-    end
-
-    it 'requires authentication' do
-      api_post '/api/v2/account/deposits/intention', params: { amount: 123 }
-      expect(response.code).to eq '401'
-    end
-
-    it 'returns with auth token deposits' do
-      AMQP::Queue.expects(:enqueue).with(:deposit_intention, anything, { persistent: false }).once
-      api_post '/api/v2/account/deposits/intention', token: token, params: { blockchain_id: blockchain.id, currency: currency.id, amount: amount }
-
-      expect(response).to be_successful
-      result = JSON.parse(response.body)
-      expect(result['amount']).to eq amount.to_s
-    end
-
-    it 'returns error when amount less them min_deposit_amount' do
-      AMQP::Queue.expects(:enqueue).with(:deposit_intention, anything, { persistent: false }).never
-
-      BlockchainCurrency.find_by!(blockchain: blockchain, currency: currency).update!(min_deposit_amount: 100)
-
-      api_post '/api/v2/account/deposits/intention', token: token, params: { blockchain_id: blockchain.id, currency: currency.id, amount: amount }
-
-      expect(response.code).to eq '422'
-      expect(response).to include_api_error('account.deposit.invalid_amount')
-    end
-  end
-
   describe 'GET /api/v2/account/deposits' do
     before do
       create(:deposit_btc, member: member, updated_at: 5.days.ago)

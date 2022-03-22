@@ -3210,7 +3210,7 @@ ALTER TABLE ONLY public.blockchain_currencies
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),

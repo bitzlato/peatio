@@ -4,22 +4,17 @@ describe Withdrawer do
   subject { described_class.new }
 
   let(:member) { create(:member, :barong) }
-  let(:currency) { create(:currency, :btc_bz) }
-  let(:blockchain) { create(:blockchain, 'btc-bz-testnet') }
-  let(:withdraw) { create(:btc_bz_withdraw, :with_deposit_liability, currency: currency, blockchain: blockchain).tap(&:accept!).tap(&:process!) }
-  let!(:wallet) { create(:wallet, :btc_bz_hot, blockchain: blockchain) }
+  let(:currency) { find_or_create(:currency, :eth, id: :eth) }
+  let(:blockchain) { create(:blockchain, 'eth-rinkeby') }
+  let(:withdraw) { create(:eth_withdraw, :with_deposit_liability, currency: currency, blockchain: blockchain).tap(&:accept!).tap(&:process!) }
+  let!(:wallet) { create(:wallet, :eth_hot, blockchain: blockchain) }
 
   before do
-    create(:blockchain_currency, blockchain: blockchain, currency: currency)
     BalancesUpdater.any_instance.stubs(:perform)
     Wallet.any_instance.stubs(:can_withdraw_for?).returns(true)
   end
 
   context do
-    before do
-      Bitzlato::Wallet.any_instance.expects(:create_transaction!).returns(transaction)
-    end
-
     context 'errored' do
       let(:transaction) { nil }
 
@@ -41,6 +36,7 @@ describe Withdrawer do
       end
 
       it do
+        EthereumGateway.any_instance.stubs(:create_transaction!).returns(Peatio::Transaction.new(hash: '0x0'))
         subject.call(withdraw)
         expect(withdraw.aasm_state).to eq 'confirming'
       end
