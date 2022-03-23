@@ -18,6 +18,7 @@ class BlockchainCurrency < ApplicationRecord
   validates :min_deposit_amount, :withdraw_fee, numericality: { greater_than_or_equal_to: 0 }
 
   scope :tokens, -> { joins(:currency).merge(Currency.coins).where.not(parent_id: nil) }
+  scope :visible, -> { where(visible: true) }
 
   after_create do
     link_wallets

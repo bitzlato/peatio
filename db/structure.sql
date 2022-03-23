@@ -359,6 +359,7 @@ CREATE TABLE public.blockchain_currencies (
     options jsonb,
     withdraw_fee numeric(32,18) DEFAULT 0 NOT NULL,
     min_deposit_amount numeric(32,18) DEFAULT 0 NOT NULL,
+    visible boolean DEFAULT true NOT NULL,
     CONSTRAINT blockchain_currencies_contract_address CHECK ((((parent_id IS NOT NULL) AND (contract_address IS NOT NULL)) OR ((parent_id IS NULL) AND (contract_address IS NULL))))
 );
 
@@ -3210,7 +3211,7 @@ ALTER TABLE ONLY public.blockchain_currencies
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20180112151205'),
@@ -3483,6 +3484,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220223194801'),
 ('20220227214453'),
 ('20220316142851'),
-('20220320195933');
+('20220320195933'),
+('20220323190452');
 
 
