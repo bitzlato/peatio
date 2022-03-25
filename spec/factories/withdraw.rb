@@ -54,6 +54,15 @@ FactoryBot.define do
   end
 
   factory :eth_withdraw, class: 'Withdraws::Coin' do
+    trait :with_deposit_liability do
+      before(:create) do |withdraw|
+        deposit = create(:deposit, :deposit_eth, member: withdraw.member, amount: withdraw.sum)
+        deposit.accept!
+        deposit.process!
+        deposit.dispatch!
+      end
+    end
+
     currency { Currency.find(:eth) }
     member { create(:member, :level_3) }
     rid { Faker::Blockchain::Ethereum.address }

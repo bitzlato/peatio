@@ -7,7 +7,7 @@ set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:applicatio
 set :markets, %w[eth_bnb]
 
 set :systemd_daemon_instances,
-    %i[bargainer_job blockchain_processor collector currency_pricer gas_price_checker k_line liabilities_compactor payment_address_balancer remove_invoiced_deposits stats_member_pnl ticker wallet_balances swap_order_status_checker]
+    %i[bargainer_job blockchain_processor collector currency_pricer gas_price_checker k_line liabilities_compactor payment_address_balancer stats_member_pnl ticker wallet_balances swap_order_status_checker]
 
 server ENV.fetch('SANDBOX_SERVER'),
        user: fetch(:user),

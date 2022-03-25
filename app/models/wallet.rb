@@ -21,7 +21,7 @@ class Wallet < ApplicationRecord
   ENUMERIZED_KINDS = { deposit: 100, fee: 200, hot: 310, warm: 320, cold: 330, standalone: 400 }.freeze
   enumerize :kind, in: ENUMERIZED_KINDS, scope: true
 
-  SETTING_ATTRIBUTES = %i[uri secret client_uid save_beneficiary beneficiary_prefix].freeze
+  SETTING_ATTRIBUTES = %i[uri secret client_uid beneficiary_prefix].freeze
   STATES = %w[active disabled retired].freeze
   # active - system use active wallets for all user transactions transfers.
   # retired - system use retired wallet only to accept deposits.

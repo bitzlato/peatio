@@ -69,11 +69,9 @@ set :systemd_daemon_instances,
       k_line
       liabilities_compactor
       payment_address_balancer
-      remove_invoiced_deposits
       stale_order_cancellator
       stats_member_pnl
       ticker
-      transfers_polling
       wallet_balances
       swap_order_status_checker
     ]
@@ -82,7 +80,7 @@ set :systemd_daemon_instances,
 set :systemd_amqp_daemon_role, :amqp_daemons
 set :systemd_market_amqp_daemon_role, :market_amqp_daemons
 
-# TODO: На стейджах НЕ запускать deposit_coin_address, withdraw_coin, deposit_intention
+# TODO: На стейджах НЕ запускать deposit_coin_address, withdraw_coin
 #
 set :systemd_amqp_daemon_instances,
     %i[
@@ -90,7 +88,6 @@ set :systemd_amqp_daemon_instances,
       cancel_member_orders
       create_order
       deposit_coin_address
-      deposit_intention
       influx_writer
       trade_completed
       withdraw_coin
