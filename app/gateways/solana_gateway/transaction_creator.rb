@@ -11,7 +11,7 @@ class SolanaGateway
              fee_payer_address:,
              signers:,
              contract_address: nil,
-             subtract_fee: false, **)
+             subtract_fee: false)
 
       raise "amount (#{amount.class}) must be Money (not base units)" unless amount.is_a? Money
       # raise "can't subtract_fee for erc20 transaction" if subtract_fee && contract_address.present?
