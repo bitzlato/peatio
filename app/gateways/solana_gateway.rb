@@ -65,7 +65,7 @@ class SolanaGateway < AbstractGateway
           from_address: from_address,
           to_address: to_address,
           amount: amount,
-          fee_payer_addres: from_address,
+          fee_payer_address: from_address,
           signers: [blockchain_address.private_key],
           contract_address: contract_address,
           # subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee,
