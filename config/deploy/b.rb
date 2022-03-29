@@ -14,7 +14,6 @@ set :systemd_daemon_instances,
       k_line
       liabilities_compactor
       payment_address_balancer
-      remove_invoiced_deposits
       stats_member_pnl
       swap_order_status_checker
       ticker
@@ -28,7 +27,6 @@ set :systemd_amqp_daemon_instances,
       cancel_member_orders
       create_order
       deposit_coin_address
-      deposit_intention
       influx_writer
       trade_completed
       withdraw_coin
