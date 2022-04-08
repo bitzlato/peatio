@@ -25,6 +25,17 @@ describe Workers::AMQP::DepositCoinAddress do
   end
 
   context 'when USE_PRIVATE_KEY is true' do
+    before do
+      Eth::Key
+        .any_instance
+        .expects(:address)
+        .returns(address)
+      Eth::Key
+        .any_instance
+        .expects(:private_hex)
+        .returns('private_hex')
+    end
+
     around do |example|
       ENV['USE_PRIVATE_KEY'] = 'true'
       example.run
@@ -32,7 +43,6 @@ describe Workers::AMQP::DepositCoinAddress do
     end
 
     it 'is passed to blockchain service' do
-      BelomorClient.any_instance.expects(:deposit_address).returns({ currencies: [], address: address, state: 'active', app_key: 'peatio' })
       described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
       expect(subject).to eq address
       payment_address.reload
@@ -47,6 +57,67 @@ describe Workers::AMQP::DepositCoinAddress do
       member.payment_address(ropsten_blockchain).update!(address: blockchain_address.address)
       described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
       expect(payment_address.reload).to have_attributes(address: blockchain_address.address.downcase)
+    end
+  end
+
+  context 'when USE_PRIVATE_KEY is not set' do
+    let(:secret) { PasswordGenerator.generate(64) }
+    let(:create_address_result) do
+      { address: address,
+        secret: secret,
+        details: { label: 'new-label' } }
+    end
+
+    before do
+      ENV.delete('USE_PRIVATE_KEY')
+      EthereumGateway::AddressCreator
+        .any_instance
+        .expects(:call)
+        .returns(create_address_result)
+    end
+
+    it 'is passed to blockchain service' do
+      described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
+      expect(subject).to eq address
+      payment_address.reload
+      expect(payment_address.as_json
+        .deep_symbolize_keys
+        .slice(:address, :secret, :details)).to eq(create_address_result)
+    end
+
+    context 'empty address details' do
+      let(:create_address_result) do
+        { address: address,
+          secret: secret }
+      end
+
+      it 'is passed to blockchain service' do
+        described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
+        expect(subject).to eq address
+        payment_address.reload
+        expect(payment_address.as_json
+          .deep_symbolize_keys
+          .slice(:address, :secret, :details)).to eq(create_address_result.merge(details: {}))
+      end
+    end
+
+    context 'should skip address with details' do
+      let(:create_address_result) do
+        { address: nil,
+          secret: secret,
+          details: {
+            address_id: 'address_id'
+          } }
+      end
+
+      it 'shouldnt create address' do
+        described_class.new.process(member_id: member.id, blockchain_id: blockchain.id)
+        expect(subject).to eq nil
+        payment_address.reload
+        expect(payment_address.as_json
+          .deep_symbolize_keys
+          .slice(:address, :secret, :details)).to eq(create_address_result.merge(details: { address_id: 'address_id' }))
+      end
     end
   end
 end

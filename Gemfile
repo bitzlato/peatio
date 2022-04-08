@@ -123,7 +123,6 @@ Dir.glob File.expand_path('Gemfile.plugin', __dir__) do |file|
   eval_gemfile file
 end
 
-gem 'multiverse', '~> 0.2.2'
 gem 'pg', '~> 1.2'
 
 gem 'http_accept_language', '~> 2.1'

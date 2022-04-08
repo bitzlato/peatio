@@ -44,15 +44,3 @@ archive_db:
   username: <%= ENV.fetch('ARCHIVE_DATABASE_USER', 'root') %>
   password: <%= ENV['ARCHIVE_DATABASE_PASS'] %>
   host: <%= ENV.fetch('ARCHIVE_DATABASE_HOST', '127.0.0.1') %>
-
-belomor_development:
-  <<: *default
-  database: belomor_development
-
-belomor_test:
-  <<: *default
-  database: belomor_test
-
-belomor_production:
-  <<: *default
-  url: <%= ENV['BELOMOR_DATABASE_URL'] %>

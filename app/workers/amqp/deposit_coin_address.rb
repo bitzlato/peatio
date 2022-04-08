@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'belomor_client'
-
 module Workers
   module AMQP
     class DepositCoinAddress < Base
@@ -35,15 +33,7 @@ module Workers
                      { address: blockchain_address.address }
                    else
                      Rails.logger.info { { message: 'Coin deposit address', member_id: member.id, blockchain_id: blockchain.id } }
-                     if %w[ethereum tron].include?(blockchain.client)
-                       deposit_address = BelomorClient.new.deposit_address({ uid: member.uid, email: member.email, blockchain_key: blockchain.key, app_key: 'peatio' })
-                       deposit_address.symbolize_keys!
-                       raise("No result when creating address for #{member.id} #{currency}") unless deposit_address[:address]
-
-                       deposit_address
-                     else
-                       blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
-                     end
+                     blockchain.create_address! || raise("No result when creating adress for #{member.id} #{currency}")
                    end
           payment_address.update!(result.slice(:address, :secret, :details))
         end
