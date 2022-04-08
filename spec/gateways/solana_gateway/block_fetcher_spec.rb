@@ -31,7 +31,7 @@ describe ::SolanaGateway::BlockFetcher, :solana do
       end
     end
 
-    it 'return native transfer' do
+    it 'returns native transfer' do
       VCR.use_cassette('solana/fetch_block_transactions_native_transfer', record: :once) do
         transactions = solana_gateway.fetch_block_transactions(smart_contract_trigger_blocknum)
         expect(transactions).to be_a(Array)

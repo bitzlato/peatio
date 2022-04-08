@@ -54,7 +54,7 @@ class SolanaGateway < AbstractGateway
                           subtract_fee: false, # nil means auto
                           nonce: nil,
                           gas_factor: nil,
-                          meta: {}, **) # rubocop:disable Lint/UnusedMethodArgument
+                          meta: {}, **)
 
     raise 'amount must be a Money' unless amount.is_a? Money
 

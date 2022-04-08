@@ -5,7 +5,7 @@ class SolanaGateway
     Error = Class.new StandardError
 
     # @param amount - in base units (cents)
-    def perform(amount:, # rubocop:disable Metrics/ParameterLists
+    def perform(amount:,
              from_address:,
              to_address:,
              fee_payer_address:,

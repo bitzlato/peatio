@@ -88,6 +88,8 @@ Lint/AmbiguousBlockAssociation:
 Naming/PredicateName:
   Exclude:
     - 'app/gateways/ethereum_gateway/collection_concern.rb'
+    - 'app/gateways/solana_gateway.rb'
+    - 'app/gateways/solana_gateway/collector.rb'
     - 'app/models/order.rb'
     - 'app/models/payment_address.rb'
     - 'config/initializers/is_db_connection_error.rb'
