@@ -33,19 +33,11 @@ class BelomorClient
     @logger = Faraday::Response::Logger.new(Rails.logger) if ENV.key? 'FARADAY_LOGGER'
   end
 
-  def create_blockchain_address(data)
+  def deposit_address(data)
     data = data.merge(application_key: 'peatio')
-    parse_response connection.public_send(:post,'api/management/addresses', JSON.dump(make_jwt(claims.merge data: data)))
+    parse_response connection.public_send(:post,'api/management/deposit_addresses', JSON.dump(make_jwt(claims.merge data: data)))
   rescue WrongResponse => err
-    Rails.logger.error "BelomorClient#create_blockchain_address got error #{err} -> #{err.body} #{err.body.class}"
-    :bad_request
-  end
-
-  def get_blockchain_addresses(data)
-    data = data.merge(application_key: 'peatio')
-    parse_response connection.public_send(:post,'api/management/addresses/get', JSON.dump(make_jwt(claims.merge data: data)))
-  rescue WrongResponse => err
-    Rails.logger.error "BelomorClient#get_blockchain_address got error #{err} -> #{err.body} #{err.body.class}"
+    Rails.logger.error "BelomorClient#create_deposit_address got error #{err} -> #{err.body} #{err.body.class}"
     :bad_request
   end
 
@@ -59,7 +51,7 @@ class BelomorClient
       exp: (Time.now + EXPIRE).to_i,
       jti: SecureRandom.hex(10),
       sub: 'session',
-      iss: 'barong',
+      iss: 'peatio',
       aud: %w[belomor]
     }
   end
