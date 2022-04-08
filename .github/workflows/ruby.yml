@@ -110,6 +110,8 @@ jobs:
       run: bundle exec rake db:create db:migrate
     - name: Seed database
       run: bundle exec rake db:seed
+    - name: Setup belomor database
+      run: DB=belomor bundle exec rails db:test:prepare
     - name: Setup database for parallel_tests
       run: bundle exec rake parallel:create parallel:prepare parallel:migrate
     - name: Run tests

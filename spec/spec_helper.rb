@@ -13,6 +13,7 @@ ENV['MINIMUM_MEMBER_LEVEL_FOR_WITHDRAW'] = '3'
 ENV['MINIMUM_MEMBER_LEVEL_FOR_TRADING'] = '3'
 ENV['JWT_PUBLIC_KEY'] = nil
 ENV['VAULT_ENABLED'] = 'false'
+ENV['BELOMOR_API_URL'] = 'http://belomor.api/'
 
 # We remove lib/peatio.rb from LOAD_PATH because of conflict with peatio gem.
 # lib/peatio.rb is added to LOAD_PATH later after requiring gems.
@@ -75,14 +76,11 @@ RSpec.configure do |config|
   config.before(:suite) do
     FileUtils.rm_rf(File.join(__dir__, 'tmp', 'cache'))
     DatabaseCleaner.clean_with(:truncation)
+    DatabaseCleaner[:active_record, db: BlockchainAddress].clean_with(:truncation)
   end
 
   config.before do
     DatabaseCleaner.strategy = :transaction
-  end
-
-  config.before(:each, clean_database_with_truncation: true) do
-    DatabaseCleaner.strategy = :truncation, { only: %w[orders trades] }
   end
 
   config.append_after do

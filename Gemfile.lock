@@ -405,6 +405,10 @@ GEM
     msgpack (1.4.2)
     multi_json (1.15.0)
     multipart-post (2.1.1)
+    multiverse (0.2.2)
+      activerecord (>= 4.2)
+      activesupport (>= 4.2)
+      railties (>= 4.2)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     mustermann-grape (1.0.1)
@@ -592,8 +596,8 @@ GEM
       activesupport (>= 5.0)
       vault (~> 0.14)
     vcr (6.0.0)
-    webmock (3.12.2)
-      addressable (>= 2.3.6)
+    webmock (3.14.0)
+      addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     websocket-driver (0.7.5)
@@ -681,6 +685,7 @@ DEPENDENCIES
   mocha (~> 1.8)
   money!
   money-tree (~> 0.10)
+  multiverse (~> 0.2.2)
   net-http-persistent (~> 4.0.1)
   parallel_tests
   peatio!
