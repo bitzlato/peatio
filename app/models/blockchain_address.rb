@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BlockchainAddress < BelomorRecord
+class BlockchainAddress < ApplicationRecord
   include Vault::EncryptedModel
   ADDRESS_TYPES = %w[ethereum tron solana].freeze
 
