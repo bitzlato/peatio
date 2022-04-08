@@ -21,7 +21,5 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: Bundler audit
-        run: bin/bundler-audit --update
-      - name: Run brakeman
-        run: bin/brakeman
+      - name: Run rubocop
+        run: bin/rubocop --parallel
