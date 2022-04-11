@@ -81,15 +81,15 @@ class AbstractGateway
     raise 'not implemented'
   end
 
-  def create_transaction!(from_address:,
-                          to_address:,
-                          amount:,
-                          blockchain_address: nil,
-                          contract_address: nil,
-                          subtract_fee: false, # nil means auto
-                          nonce: nil,
-                          gas_factor: nil,
-                          meta: {}) # rubocop:disable Lint/UnusedMethodArgument
+  def create_transaction!(_from_address:,
+                          _to_address:,
+                          _amount:,
+                          _blockchain_address: nil,
+                          _contract_address: nil,
+                          _subtract_fee: false, # nil means auto
+                          _nonce: nil,
+                          _gas_factor: nil,
+                          _meta: {})
     raise 'not implemented'
   end
 
