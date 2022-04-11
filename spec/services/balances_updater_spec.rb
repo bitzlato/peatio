@@ -12,6 +12,12 @@ RSpec.describe BalancesUpdater do
       end
     end
 
+    around do |example|
+      WebMock.disable_net_connect!
+      example.run
+      WebMock.allow_net_connect!
+    end
+
     context 'with address of payment address' do
       let(:payment_address) { create(:eth_payment_address, blockchain: blockchain) }
       let(:address) { payment_address.address }

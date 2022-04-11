@@ -20,7 +20,7 @@ describe 'job.rake' do
       subject.reenable
     end
 
-    it 'call rake task with default time range' do
+    it 'call rake task with default time range', clean_database_with_truncation: true do
       # default values
       min = (Time.now - 1.week).beginning_of_day.to_s(:db)
       max = (Time.now - 6.days).beginning_of_day.to_s(:db)
@@ -35,7 +35,7 @@ describe 'job.rake' do
       expect(Operations::Liability.where(reference_type: 'CompactOrders').count).to eq(result.count)
     end
 
-    it 'call rake task with time range' do
+    it 'call rake task with time range', clean_database_with_truncation: true do
       min = (Time.now - 2.days).beginning_of_day.to_s(:db)
       max = (Time.now - 1.day).beginning_of_day.to_s(:db)
 
