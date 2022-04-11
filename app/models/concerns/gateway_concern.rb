@@ -16,10 +16,11 @@ module GatewayConcern
     BitcoinGateway,
     EthereumGateway,
     TronGateway,
-    SolanaGateway
+    SolanaGateway,
+    BelomorEthereumGateway
   ].map(&:to_s)
 
-  CLIENTS = AVAILABLE_GATEWAYS.map { |g| g.remove(GATEWAY_PREFIX).downcase }
+  CLIENTS = AVAILABLE_GATEWAYS.map { |g| g.remove(GATEWAY_PREFIX).underscore }
 
   included do
     validates :client, presence: true, inclusion: { in: CLIENTS }
