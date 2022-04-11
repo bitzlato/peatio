@@ -70,19 +70,6 @@ class EthereumGateway < AbstractGateway
     end
   end
 
-  def create_private_address!
-    key = Eth::Key.new
-    blockchain_address = BlockchainAddress.create!(address: key.address, address_type: 'ethereum', private_key_hex: key.private_hex)
-
-    { address: blockchain_address.address }
-  end
-
-  def create_personal_address!(secret = nil)
-    AddressCreator
-      .new(client)
-      .call(secret)
-  end
-
   def create_transaction!(from_address:,
                           to_address:,
                           amount:,
@@ -159,6 +146,19 @@ class EthereumGateway < AbstractGateway
   end
 
   private
+
+  def create_private_address!
+    key = Eth::Key.new
+    blockchain_address = BlockchainAddress.create!(address: key.address, address_type: 'ethereum', private_key_hex: key.private_hex)
+
+    { address: blockchain_address.address }
+  end
+
+  def create_personal_address!(secret = nil)
+    AddressCreator
+      .new(client)
+      .call(secret)
+  end
 
   def gas_limits
     blockchain.blockchain_currencies.each_with_object({}) { |bc, agg| agg[bc.contract_address] = bc.gas_limit }
