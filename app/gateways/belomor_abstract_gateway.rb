@@ -8,11 +8,11 @@ class BelomorAbstractGateway < AbstractGateway
   end
 
   def client_version
-    client.client_version['client_version']
+    client.client_version.fetch('client_version')
   end
 
   def latest_block_number
-    client.latest_block_number['latest_block_number']
+    client.latest_block_number.fetch('latest_block_number')
   end
 
   private
