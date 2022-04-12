@@ -27,23 +27,15 @@ class BelomorClient
 
   ALGORITM = 'RS256'
 
-  def initialize(api_url: ENV.fetch('BELOMOR_API_URL'), network_type:)
+  def initialize(api_url: ENV.fetch('BELOMOR_API_URL'), blockchain_key:)
     @api_url = api_url
-    @network_type = network_type
+    @blockchain_key = blockchain_key
     @adapter = Faraday.default_adapter
     @logger = Faraday::Response::Logger.new(Rails.logger) if ENV.key? 'FARADAY_LOGGER'
   end
 
-  def deposit_address(data)
-    data = data.merge(application_key: 'peatio')
-    parse_response connection.public_send(:post,'api/management/deposit_addresses', JSON.dump(make_jwt(claims.merge data: data)))
-  rescue WrongResponse => err
-    Rails.logger.error "BelomorClient#create_deposit_address got error #{err} -> #{err.body} #{err.body.class}"
-    :bad_request
-  end
-
-  def create_address
-    data = { network_type: @network_type }
+  def create_address(owner_id:)
+    data = { blockchain_key: @blockchain_key, owner_id: owner_id }
     parse_response connection.public_send(:post,'api/management/addresses', JSON.dump(make_jwt(claims.merge data: data)))
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#create_address got error #{err} -> #{err.body} #{err.body.class}"
@@ -51,7 +43,7 @@ class BelomorClient
   end
 
   def latest_block_number
-    data = { network_type: @network_type }
+    data = { blockchain_key: @blockchain_key }
     parse_response connection.public_send(:post,'api/management/blockchains/latest_block_number', JSON.dump(make_jwt(claims.merge data: data)))
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#latest_block_number got error #{err} -> #{err.body} #{err.body.class}"

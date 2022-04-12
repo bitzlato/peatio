@@ -2,9 +2,9 @@
 
 require 'belomor_client'
 
-class BelomorAbstractGateway < AbstractGateway
-  def create_address!
-    client.create_address
+class BelomorGateway < AbstractGateway
+  def create_address!(owner_id:)
+    client.create_address(owner_id: owner_id)
   end
 
   def client_version
@@ -18,7 +18,7 @@ class BelomorAbstractGateway < AbstractGateway
   private
 
   def build_client
-    BelomorClient.new(api_url: blockchain.server, network_type: self.class::NETWORK_TYPE)
+    BelomorClient.new(api_url: blockchain.server, blockchain_key: blockchain.key)
   end
 
   ## Stage 2

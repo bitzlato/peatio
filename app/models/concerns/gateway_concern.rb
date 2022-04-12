@@ -17,7 +17,7 @@ module GatewayConcern
     EthereumGateway,
     TronGateway,
     SolanaGateway,
-    BelomorEthereumGateway
+    BelomorGateway
   ].map(&:to_s)
 
   CLIENTS = AVAILABLE_GATEWAYS.map { |g| g.remove(GATEWAY_PREFIX).underscore }
