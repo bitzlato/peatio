@@ -11,13 +11,4 @@ class BlockchainAddress < ApplicationRecord
 
   validates :address_type, presence: true, inclusion: { in: ADDRESS_TYPES }
   validates :address, presence: true, uniqueness: { scope: :address_type }
-
-  def private_key
-    case address_type
-    when 'solana'
-      Solana::Key.new([private_key_hex].pack('H*'))
-    else
-      Eth::Key.new priv: private_key_hex
-    end
-  end
 end

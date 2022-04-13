@@ -15,7 +15,7 @@ class TronGateway
 
       from_address = hot_wallet.address
       to_address = target_address
-      private_key = hot_wallet.blockchain_address.private_key.private_hex
+      private_key = hot_wallet.private_key.private_hex
 
       tx = create_coin_transaction!(from_address: from_address, to_address: to_address,
                                     amount: required_amount.base_units, private_key: private_key)

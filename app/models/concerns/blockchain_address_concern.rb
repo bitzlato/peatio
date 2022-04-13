@@ -9,6 +9,8 @@ module BlockchainAddressConcern
   end
 
   def private_key
-    blockchain_address.try(:private_key)
+    return nil if blockchain_address.nil?
+
+    blockchain.private_key(blockchain_address.private_key_hex)
   end
 end

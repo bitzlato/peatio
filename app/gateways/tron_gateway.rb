@@ -46,6 +46,10 @@ class TronGateway < AbstractGateway
     :tron
   end
 
+  def self.private_key(private_key_hex)
+    Eth::Key.new(priv: private_key_hex)
+  end
+
   private
 
   def fee_limits
