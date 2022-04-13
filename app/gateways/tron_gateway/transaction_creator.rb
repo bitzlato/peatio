@@ -15,7 +15,7 @@ class TronGateway
         from_address: from_address,
         to_address: to_address,
         amount: amount,
-        private_key: blockchain_address.private_key.private_hex
+        private_key: TronGateway.private_key(blockchain_address.private_key_hex).private_hex
       }
 
       if contract_address.present?

@@ -185,7 +185,7 @@ class EthereumGateway
       transaction_count = client.json_rpc(:eth_getTransactionCount, [blockchain_address.address, 'latest']).to_i(16)
       logger.info { { message: 'Transaction count is fetched', blockchain_address_id: blockchain_address.id, transaction_count: transaction_count } }
       tx = Eth::Tx.new(params.merge(nonce: transaction_count))
-      tx.sign(blockchain_address.private_key)
+      tx.sign(EthereumGateway.private_key(blockchain_address.private_key_hex))
       result = client.json_rpc(:eth_sendRawTransaction, [tx.hex])
       @lock_manager.unlock(lock_info)
       result

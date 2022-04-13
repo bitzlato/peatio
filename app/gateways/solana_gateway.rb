@@ -66,7 +66,7 @@ class SolanaGateway < AbstractGateway
           to_address: to_address,
           amount: amount,
           fee_payer_address: from_address,
-          signers: [blockchain_address.private_key],
+          signers: [self.class.private_key(blockchain_address.private_key_hex)],
           contract_address: contract_address,
           # subtract_fee: subtract_fee.nil? ? contract_address.nil? : subtract_fee,
         )
@@ -83,5 +83,9 @@ class SolanaGateway < AbstractGateway
 
   def self.address_type
     :solana
+  end
+
+  def self.private_key(private_key_hex)
+    Solana::Key.new([private_key_hex].pack('H*'))
   end
 end
