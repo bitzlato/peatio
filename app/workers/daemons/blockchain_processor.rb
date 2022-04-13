@@ -4,16 +4,16 @@ module Workers
   module Daemons
     class BlockchainProcessor < Base
       class Runner
-        attr_reader :timestamp, :pid
+        attr_reader :timestamp, :thread
 
         def initialize(blockchain, timestamp)
           @blockchain = blockchain
           @timestamp = timestamp
-          @pid = nil
+          @thread = nil
         end
 
         def start
-          @pid ||= Process.fork do # rubocop:disable Naming/MemoizedInstanceVariableName
+          @thread ||= Thread.new do # rubocop:disable Naming/MemoizedInstanceVariableName
             bc_service = BlockchainService.new(@blockchain)
 
             unless @blockchain.gateway.enable_block_fetching?
@@ -54,7 +54,7 @@ module Workers
         end
 
         def stop
-          Process.kill('HUP', @pid)
+          @thread&.kill
         end
       end
 
