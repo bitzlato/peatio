@@ -26,6 +26,7 @@ class BelomorClient
   end
 
   ALGORITM = 'RS256'
+  APP_KEY = 'peatio'
 
   def initialize(api_url: ENV.fetch('BELOMOR_API_URL'), blockchain_key:)
     @api_url = api_url
@@ -35,7 +36,7 @@ class BelomorClient
   end
 
   def create_address(owner_id:)
-    data = { blockchain_key: @blockchain_key, owner_id: owner_id }
+    data = { blockchain_key: @blockchain_key, owner_id: owner_id, app_key: APP_KEY }
     parse_response connection.public_send(:post,'api/management/addresses', JSON.dump(make_jwt(claims.merge data: data)))
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#create_address got error #{err} -> #{err.body} #{err.body.class}"
@@ -54,6 +55,14 @@ class BelomorClient
     parse_response connection.public_send(:post,'api/management/blockchains/client_version', JSON.dump(make_jwt(claims)))
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#client_version got error #{err} -> #{err.body} #{err.body.class}"
+    :bad_request
+  end
+
+  def address_balances(address)
+    data = { blockchain_key: @blockchain_key, address: address }
+    parse_response connection.public_send(:post,'api/management/address/balances', JSON.dump(make_jwt(claims.merge data: data)))
+  rescue WrongResponse => err
+    Rails.logger.error "BelomorClient#address_balances got error #{err} -> #{err.body} #{err.body.class}"
     :bad_request
   end
 
