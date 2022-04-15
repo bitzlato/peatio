@@ -27,17 +27,43 @@ class BelomorClient
 
   ALGORITM = 'RS256'
 
-  def initialize(api_url: ENV.fetch('BELOMOR_API_URL'))
+  def initialize(api_url: ENV.fetch('BELOMOR_API_URL'), app_key: ENV.fetch('BELOMOR_API_APP_KEY'), blockchain_key:)
     @api_url = api_url
+    @app_key = app_key
+    @blockchain_key = blockchain_key
     @adapter = Faraday.default_adapter
     @logger = Faraday::Response::Logger.new(Rails.logger) if ENV.key? 'FARADAY_LOGGER'
   end
 
-  def deposit_address(data)
-    data = data.merge(application_key: 'peatio')
-    parse_response connection.public_send(:post,'api/management/deposit_addresses', JSON.dump(make_jwt(claims.merge data: data)))
+  def create_address(owner_id:)
+    data = { blockchain_key: @blockchain_key, owner_id: owner_id, app_key: @app_key }
+    parse_response connection.public_send(:post,'api/management/addresses', JSON.dump(make_jwt(claims.merge data: data)))
   rescue WrongResponse => err
-    Rails.logger.error "BelomorClient#create_deposit_address got error #{err} -> #{err.body} #{err.body.class}"
+    Rails.logger.error "BelomorClient#create_address got error #{err} -> #{err.body} #{err.body.class}"
+    :bad_request
+  end
+
+  def latest_block_number
+    data = { app_key: @app_key, blockchain_key: @blockchain_key }
+    parse_response connection.public_send(:post,'api/management/blockchains/latest_block_number', JSON.dump(make_jwt(claims.merge data: data)))
+  rescue WrongResponse => err
+    Rails.logger.error "BelomorClient#latest_block_number got error #{err} -> #{err.body} #{err.body.class}"
+    :bad_request
+  end
+
+  def client_version
+    data = { app_key: @app_key }
+    parse_response connection.public_send(:post,'api/management/blockchains/client_version', JSON.dump(make_jwt(claims.merge data: data)))
+  rescue WrongResponse => err
+    Rails.logger.error "BelomorClient#client_version got error #{err} -> #{err.body} #{err.body.class}"
+    :bad_request
+  end
+
+  def address_balances(address)
+    data = { app_key: @app_key, blockchain_key: @blockchain_key, address: address }
+    parse_response connection.public_send(:post,'api/management/address/get_balances', JSON.dump(make_jwt(claims.merge data: data)))
+  rescue WrongResponse => err
+    Rails.logger.error "BelomorClient#address_balances got error #{err} -> #{err.body} #{err.body.class}"
     :bad_request
   end
 
