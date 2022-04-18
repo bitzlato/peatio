@@ -17,6 +17,7 @@ module Workers
 
           @pid ||= Process.fork do # rubocop:disable Naming/MemoizedInstanceVariableName
             ActiveRecord::Base.establish_connection
+            ActiveRecord::Base.connection.reconnect!
             @blockchain.reload
 
             bc_service = BlockchainService.new(@blockchain)
