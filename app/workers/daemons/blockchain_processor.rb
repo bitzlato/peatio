@@ -50,14 +50,15 @@ module Workers
               rescue StandardError => e
                 report_exception(e, true, blockchain_id: @blockchain.id, block_number: block_id)
                 raise e
-              ensure
-                ActiveRecord::Base.remove_connection
               end
             rescue StandardError => e
               report_exception(e, true, blockchain_id: @blockchain.id) unless e.is_a?(::EthereumGateway::AbstractCommand::NoReceiptFetched)
               Rails.logger.warn { "Error: #{e}. Sleeping for 10 seconds" }
               sleep(10)
             end
+          ensure
+            logger.info { 'Remove connection' }
+            ActiveRecord::Base.remove_connection
           end
 
           ActiveRecord::Base.establish_connection
