@@ -13,8 +13,10 @@ module Workers
         end
 
         def start
+          ActiveRecord::Base.remove_connection
+
           @pid ||= Process.fork do # rubocop:disable Naming/MemoizedInstanceVariableName
-            ActiveRecord::Base.clear_active_connections!
+            ActiveRecord::Base.establish_connection
             @blockchain.reload
 
             bc_service = BlockchainService.new(@blockchain)
@@ -54,6 +56,10 @@ module Workers
               sleep(10)
             end
           end
+
+          ActiveRecord::Base.establish_connection
+
+          @pid
         end
 
         def stop
