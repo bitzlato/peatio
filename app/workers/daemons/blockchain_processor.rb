@@ -49,6 +49,8 @@ module Workers
               rescue StandardError => e
                 report_exception(e, true, blockchain_id: @blockchain.id, block_number: block_id)
                 raise e
+              ensure
+                ActiveRecord::Base.remove_connection
               end
             rescue StandardError => e
               report_exception(e, true, blockchain_id: @blockchain.id) unless e.is_a?(::EthereumGateway::AbstractCommand::NoReceiptFetched)
