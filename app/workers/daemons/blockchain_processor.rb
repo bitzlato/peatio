@@ -18,6 +18,7 @@ module Workers
           @pid ||= Process.fork do
             ActiveRecord::Base.establish_connection
             ActiveRecord::Base.connection.reconnect!
+
             @blockchain.reload
 
             bc_service = BlockchainService.new(@blockchain)
@@ -57,7 +58,7 @@ module Workers
               sleep(10)
             end
           ensure
-            logger.info { 'Remove connection' }
+            Rails.logger.info { 'Remove connection' }
             ActiveRecord::Base.remove_connection
           end
 
