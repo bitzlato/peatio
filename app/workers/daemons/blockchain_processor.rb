@@ -15,7 +15,7 @@ module Workers
         def start
           ActiveRecord::Base.remove_connection
 
-          @pid ||= Process.fork do # rubocop:disable Naming/MemoizedInstanceVariableName
+          @pid ||= Process.fork do
             ActiveRecord::Base.establish_connection
             ActiveRecord::Base.connection.reconnect!
             @blockchain.reload
