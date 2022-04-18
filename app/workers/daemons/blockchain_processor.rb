@@ -4,16 +4,23 @@ module Workers
   module Daemons
     class BlockchainProcessor < Base
       class Runner
-        attr_reader :timestamp, :thread
+        attr_reader :timestamp, :pid
 
         def initialize(blockchain, timestamp)
           @blockchain = blockchain
           @timestamp = timestamp
-          @thread = nil
+          @pid = nil
         end
 
         def start
-          @thread ||= Thread.new do # rubocop:disable Naming/MemoizedInstanceVariableName
+          ActiveRecord::Base.remove_connection
+
+          @pid ||= Process.fork do
+            ActiveRecord::Base.establish_connection
+            ActiveRecord::Base.connection.reconnect!
+
+            @blockchain.reload
+
             bc_service = BlockchainService.new(@blockchain)
 
             unless @blockchain.gateway.enable_block_fetching?
@@ -50,11 +57,18 @@ module Workers
               Rails.logger.warn { "Error: #{e}. Sleeping for 10 seconds" }
               sleep(10)
             end
+          ensure
+            Rails.logger.info { 'Remove connection' }
+            ActiveRecord::Base.remove_connection
           end
+
+          ActiveRecord::Base.establish_connection
+
+          @pid
         end
 
         def stop
-          @thread&.kill
+          Process.kill('HUP', @pid)
         end
       end
 
