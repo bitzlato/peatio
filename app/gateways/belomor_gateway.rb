@@ -16,7 +16,7 @@ class BelomorGateway < AbstractGateway
   end
 
   def load_balances(address)
-    balances = client.address_balances(address).fetch('balances')
+    balances = client.address(address).fetch('balances')
     balances.each do |currency_id, value|
       blockchain_currency = BlockchainCurrency.find_by!(currency_id: currency_id, blockchain: blockchain)
       balances[currency_id] = blockchain_currency.money_currency.to_money_from_decimal(value.to_d)

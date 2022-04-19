@@ -3,7 +3,6 @@ require 'json'
 require 'faraday'
 require 'faraday_middleware'
 require 'openssl'
-require 'jwt-multisig'
 require 'base64'
 
 class BelomorClient
@@ -36,32 +35,30 @@ class BelomorClient
   end
 
   def create_address(owner_id:)
-    data = { blockchain_key: @blockchain_key, owner_id: owner_id, app_key: @app_key }
-    parse_response connection.public_send(:post,'api/management/addresses', JSON.dump(make_jwt(claims.merge data: data)))
+    data = { blockchain_key: @blockchain_key, owner_id: owner_id }
+    parse_response connection.public_send(:post, 'api/management/addresses', data, { 'Authorization' => token })
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#create_address got error #{err} -> #{err.body} #{err.body.class}"
     :bad_request
   end
 
   def latest_block_number
-    data = { app_key: @app_key, blockchain_key: @blockchain_key }
-    parse_response connection.public_send(:post,'api/management/blockchains/latest_block_number', JSON.dump(make_jwt(claims.merge data: data)))
+    parse_response connection.public_send(:get, "api/management/blockchains/#{@blockchain_key}/latest_block_number", nil, { 'Authorization' => token })
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#latest_block_number got error #{err} -> #{err.body} #{err.body.class}"
     :bad_request
   end
 
   def client_version
-    data = { app_key: @app_key }
-    parse_response connection.public_send(:post,'api/management/blockchains/client_version', JSON.dump(make_jwt(claims.merge data: data)))
+    parse_response connection.public_send(:get, 'api/management/blockchains/client_version', nil, { 'Authorization' => token })
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#client_version got error #{err} -> #{err.body} #{err.body.class}"
     :bad_request
   end
 
-  def address_balances(address)
-    data = { app_key: @app_key, blockchain_key: @blockchain_key, address: address }
-    parse_response connection.public_send(:post,'api/management/address/get_balances', JSON.dump(make_jwt(claims.merge data: data)))
+  def address(address)
+    data = { blockchain_key: @blockchain_key }
+    parse_response connection.public_send(:get, "api/management/addresses/#{address}", data, { 'Authorization' => token })
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#address_balances got error #{err} -> #{err.body} #{err.body.class}"
     :bad_request
@@ -76,20 +73,15 @@ class BelomorClient
       iat: Time.now.to_i,
       exp: (Time.now + EXPIRE).to_i,
       jti: SecureRandom.hex(10),
-      sub: 'session',
+      sub: @app_key,
       iss: 'peatio',
       aud: %w[belomor]
     }
   end
 
-  def make_jwt(payload)
-    private_keychain = {
-      peatio: private_key
-    }
-    algorithms = {
-      peatio: ALGORITM
-    }
-    JWT::Multisig.generate_jwt(payload, private_keychain, algorithms)
+  def token
+    jwt = JWT.encode(claims, private_key, ALGORITM)
+    "Bearer #{jwt}"
   end
 
   def parse_response(response)
