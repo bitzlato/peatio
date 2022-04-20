@@ -64,6 +64,8 @@ module Workers
 
           ActiveRecord::Base.establish_connection
 
+          Rails.logger.info { { message: 'Process is forked', process_id: @pid, blockchain_id: @blockchain.id } }
+
           @pid
         end
 
