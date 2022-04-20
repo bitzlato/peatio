@@ -57,6 +57,55 @@ module API
                       .tap { |q| present paginate(q), with: API::V2::Entities::Deposit }
         end
 
+        desc 'Get your deposits history with total.'
+        params do
+          optional :currency,
+                   type: String,
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
+                   desc: 'Currency code'
+          optional :state,
+                   values: { value: ->(v) { (Array.wrap(v) - ::Deposit.aasm.states.map(&:name).map(&:to_s)).blank? }, message: 'account.deposit.invalid_state' },
+                   desc: 'Filter deposits by states.'
+          optional :txid,
+                   type: String,
+                   allow_blank: false,
+                   desc: 'Deposit transaction id.'
+          optional :time_from,
+                   allow_blank: { value: false, message: 'account.deposit.empty_time_from' },
+                   type: { value: Integer, message: 'account.deposit.non_integer_time_from' },
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'
+          optional :time_to,
+                   type: { value: Integer, message: 'account.deposit.non_integer_time_to' },
+                   allow_blank: { value: false, message: 'account.deposit.empty_time_to' },
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'
+          optional :limit,
+                   type: { value: Integer, message: 'account.deposit.non_integer_limit' },
+                   values: { value: 1..100, message: 'account.deposit.invalid_limit' },
+                   default: 100,
+                   desc: 'Number of deposits per page (defaults to 100, maximum is 100).'
+          optional :page,
+                   type: { value: Integer, message: 'account.deposit.non_integer_page' },
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'account.deposit.non_positive_page' },
+                   default: 1,
+                   desc: 'Page number (defaults to 1).'
+        end
+        get '/deposits_t' do
+          user_authorize! :read, ::Deposit
+
+          currency = Currency.find(params[:currency]) if params[:currency].present?
+
+          deposits = current_user.deposits.order(id: :desc)
+                                 .tap { |q| q.where!(currency: currency) if currency }
+                                 .tap { |q| q.where!(txid: params[:txid]) if params[:txid] }
+                                 .tap { |q| q.where!(aasm_state: params[:state]) if params[:state] }
+                                 .tap { |q| q.where!('updated_at >= ?', Time.at(params[:time_from])) if params[:time_from].present? }
+                                 .tap { |q| q.where!('updated_at <= ?', Time.at(params[:time_to])) if params[:time_to].present? }
+          total = deposits.count
+
+          present :data, paginate(deposits), with: API::V2::Entities::Deposit
+          present :total, total
+        end
+
         desc 'Get details of specific deposit.' do
           success API::V2::Entities::Deposit
         end
