@@ -54,6 +54,55 @@ module API
                       .tap { |q| present paginate(q), with: API::V2::Entities::Withdraw }
         end
 
+        desc 'List your withdraws as paginated collection with total.'
+        params do
+          optional :currency,
+                   type: String,
+                   values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
+                   desc: 'Currency code.'
+          optional :limit,
+                   type: { value: Integer, message: 'account.withdraw.non_integer_limit' },
+                   values: { value: 1..100, message: 'account.withdraw.invalid_limit' },
+                   default: 100,
+                   desc: 'Number of withdraws per page (defaults to 100, maximum is 100).'
+          optional :state,
+                   values: { value: ->(v) { (Array.wrap(v) - Withdraw.aasm(:default).states.map(&:to_s)).blank? }, message: 'account.withdraw.invalid_state' },
+                   desc: 'Filter withdrawals by states.'
+          optional :rid,
+                   type: String,
+                   allow_blank: false,
+                   desc: 'Wallet address on the Blockchain.'
+          optional :time_from,
+                   allow_blank: { value: false, message: 'account.withdraw.empty_time_from' },
+                   type: { value: Integer, message: 'account.withdraw.non_integer_time_from' },
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'
+          optional :time_to,
+                   type: { value: Integer, message: 'account.withdraw.non_integer_time_to' },
+                   allow_blank: { value: false, message: 'account.withdraw.empty_time_to' },
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'
+          optional :page,
+                   type: { value: Integer, message: 'account.withdraw.non_integer_page' },
+                   values: { value: ->(p) { p.try(:positive?) }, message: 'account.withdraw.non_positive_page' },
+                   default: 1,
+                   desc: 'Page number (defaults to 1).'
+        end
+        get '/withdraws_t' do
+          user_authorize! :read, ::Withdraw
+
+          currency = Currency.find(params[:currency]) if params[:currency].present?
+
+          withdraws = current_user.withdraws.order(id: :desc)
+                                  .tap { |q| q.where!(currency: currency) if currency }
+                                  .tap { |q| q.where!(aasm_state: params[:state]) if params[:state] }
+                                  .tap { |q| q.where!(rid: params[:rid]) if params[:rid] }
+                                  .tap { |q| q.where!('updated_at >= ?', Time.at(params[:time_from])) if params[:time_from].present? }
+                                  .tap { |q| q.where!('updated_at <= ?', Time.at(params[:time_to])) if params[:time_to].present? }
+          total = withdraws.count
+
+          present :data, paginate(withdraws), with: API::V2::Entities::Withdraw
+          present :total, total
+        end
+
         desc 'Returns withdrawal sums for last 4 hours and 1 month'
         get '/withdraws/sums' do
           user_authorize! :read, ::Withdraw

@@ -38,6 +38,34 @@ module API
             .tap { |q| q.where!('created_at < ?', Time.at(params[:time_to])) if params[:time_to] }
             .tap { |q| present paginate(q, false), with: API::V2::Entities::Trade, expand_members: params[:expand_members] == ENV['EXPAND_MEMBERS_TOKEN'], current_user: current_user }
         end
+
+        desc 'Get your executed trades. Trades are sorted in reverse creation order with total.'
+        params do
+          optional :market,
+                   values: { value: ->(v) { (Array.wrap(v) - ::Market.active.pluck(:symbol)).blank? }, message: 'market.market.doesnt_exist' },
+                   desc: -> { V2::Entities::Market.documentation[:symbol] }
+          optional :market_type,
+                   values: { value: -> { ::Market::TYPES }, message: 'market.market.invalid_market_type' },
+                   desc: -> { V2::Entities::Market.documentation[:type][:desc] },
+                   default: ::Market::DEFAULT_TYPE
+          use :trade_filters
+        end
+        get '/trades_t' do
+          user_authorize! :read, ::Trade
+
+          trades = current_user
+                   .trades
+                   .order(order_param)
+                   .tap { |q| q.where!(market_type: params[:market_type]) }
+                   .tap { |q| q.where!('(taker_id = ? AND taker_type = ?) OR (maker_id = ? AND taker_type = ?)', current_user.id, params[:type], current_user.id, opposite_type_param) if params[:type] }
+                   .tap { |q| q.where!(market: params[:market]) if params[:market] }
+                   .tap { |q| q.where!('created_at >= ?', Time.at(params[:time_from])) if params[:time_from] }
+                   .tap { |q| q.where!('created_at < ?', Time.at(params[:time_to])) if params[:time_to] }
+          total = trades.count
+
+          present :data, paginate(trades, false), with: API::V2::Entities::Trade, expand_members: params[:expand_members] == ENV['EXPAND_MEMBERS_TOKEN'], current_user: current_user
+          present :total, total
+        end
       end
     end
   end
