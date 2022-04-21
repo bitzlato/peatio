@@ -29,6 +29,7 @@
     contract_address: https://ropsten.etherscan.io/token/#{contract_address}
   status:            active
   address_type:      ethereum
+  chain_id: 3
 
 - key:               bsc-testnet
   name:              BSC Testnet

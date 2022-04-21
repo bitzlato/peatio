@@ -24,13 +24,25 @@ class BelomorGateway < AbstractGateway
     balances
   end
 
+  def create_transaction!(from_address:, to_address:, amount:, blockchain_address: nil, contract_address: nil, subtract_fee: false, nonce: nil, gas_factor: nil, meta: {})  # rubocop:disable Lint/UnusedMethodArgument
+    currency_id = BlockchainCurrency.find_by!(blockchain: blockchain, contract_address: contract_address).currency_id
+
+    result = client.create_transaction(from_address: from_address, to_address: to_address, amount: amount, currency_id: currency_id)
+
+    blockchain_currency = BlockchainCurrency.find_by!(blockchain: blockchain, currency_id: result['currency_id'])
+    amount = blockchain_currency.money_currency.to_money_from_decimal(result['amount'].to_d).base_units
+    monefy_transaction(
+      from_address: from_address,
+      to_address: result['address'],
+      amount: amount,
+      hash: result['txid'],
+      contract_address: blockchain_currency.contract_address
+    )
+  end
+
   private
 
   def build_client
     BelomorClient.new(api_url: blockchain.server, blockchain_key: blockchain.key)
   end
-
-  ## Stage 2
-  #
-  def create_transaction!(from_address:, to_address:, amount:, blockchain_address: nil, contract_address: nil, subtract_fee: false, nonce: nil, gas_factor: nil, meta: {}); end
 end

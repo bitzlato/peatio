@@ -16,7 +16,8 @@ class EthereumGateway
     def call(amount:, # rubocop:disable Metrics/ParameterLists
              from_address:,
              to_address:,
-             gas_limit:, secret: nil,
+             gas_limit:,
+             secret: nil,
              blockchain_address: nil,
              nonce: nil,
              contract_address: nil,
@@ -103,8 +104,7 @@ class EthereumGateway
                         value: '0x' + amount.to_s(16),
                         gas: '0x' + gas_limit.to_i.to_s(16),
                         gasPrice: '0x' + gas_price.to_i.to_s(16)
-                      }.compact,
-                       secret])
+                      }.compact, secret])
         else
           raise 'No secret or blockchain_address'
         end

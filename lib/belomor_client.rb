@@ -60,7 +60,15 @@ class BelomorClient
     data = { blockchain_key: @blockchain_key }
     parse_response connection.public_send(:get, "api/management/addresses/#{address}", data, { 'Authorization' => token })
   rescue WrongResponse => err
-    Rails.logger.error "BelomorClient#address_balances got error #{err} -> #{err.body} #{err.body.class}"
+    Rails.logger.error "BelomorClient#address got error #{err} -> #{err.body} #{err.body.class}"
+    :bad_request
+  end
+
+  def create_transaction(from_address:, to_address:, amount:, currency_id:)
+    data = { blockchain_key: @blockchain_key, from_address: from_address, to_address: to_address, amount: amount, currency_id: currency_id }
+    parse_response connection.public_send(:post, 'api/management/transactions', data, { 'Authorization' => token })
+  rescue WrongResponse => err
+    Rails.logger.error "BelomorClient#create_transaction got error #{err} -> #{err.body} #{err.body.class}"
     :bad_request
   end
 
