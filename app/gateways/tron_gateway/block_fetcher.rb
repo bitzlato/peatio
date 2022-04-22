@@ -11,11 +11,6 @@ class TronGateway
       txn_receipts_map = client.json_rpc(path: 'wallet/gettransactioninfobyblocknum', params: { num: block_number })
                                .index_by { |r| r['id'] }
 
-      # Refresh addresses to prevent extra serializations
-      @contract_addresses = blockchain.contract_addresses
-      @follow_addresses = blockchain.follow_addresses
-      @follow_txids = blockchain.follow_txids
-
       result = txs.fetch('transactions', []).each_with_object([]) do |tx, txs_array|
         txn_receipt = txn_receipts_map[tx['txID']]
 

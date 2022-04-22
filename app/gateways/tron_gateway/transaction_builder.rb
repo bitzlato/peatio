@@ -7,18 +7,6 @@ class TronGateway
 
     private
 
-    def contract_addresses
-      @contract_addresses ||= blockchain.contract_addresses
-    end
-
-    def follow_addresses
-      @follow_addresses ||= blockchain.follow_addresses
-    end
-
-    def follow_txids
-      @follow_txids ||= blockchain.follow_txids
-    end
-
     def build_transaction(tx_hash, txn_receipt)
       case tx_hash['raw_data']['contract'][0]['type']
       when 'TransferContract'
@@ -35,8 +23,8 @@ class TronGateway
       to_address       = reformat_encode_address("41#{contract_value['data'][32..71]}")
       contract_address = reformat_encode_address(contract_value['contract_address'])
 
-      return [] unless contract_addresses.include?(contract_address)
-      return [] if !follow_addresses.intersect?([from_address, to_address].to_set) && follow_txids.exclude?(txn_receipt.fetch('id'))
+      return [] unless blockchain.contract_addresses.include?(contract_address)
+      return [] if !blockchain.follow_addresses.intersect?([from_address, to_address].to_set) && blockchain.follow_txids.exclude?(txn_receipt.fetch('id'))
       return [build_invalid_trc20_transaction(tx_hash, txn_receipt)] if trc20_transaction_status(txn_receipt) == 'failed' && txn_receipt.fetch('log', []).blank?
 
       txn_receipt.fetch('log', []).filter_map do |log, index|
@@ -46,8 +34,8 @@ class TronGateway
         from_address = reformat_encode_address("41#{log.fetch('topics')[-2][-40..]}")
         to_address = reformat_encode_address("41#{log.fetch('topics').last[-40..]}")
 
-        next unless contract_addresses.include?(contract_address)
-        next unless follow_addresses.intersect?([from_address, to_address].to_set)
+        next unless blockchain.contract_addresses.include?(contract_address)
+        next unless blockchain.follow_addresses.intersect?([from_address, to_address].to_set)
 
         { hash: txn_receipt.fetch('id'),
           amount: log.fetch('data').hex,
@@ -69,7 +57,7 @@ class TronGateway
       from_address = reformat_encode_address(tx['parameter']['value']['owner_address'])
       to_address = reformat_encode_address(tx['parameter']['value']['to_address'])
 
-      return if !follow_addresses.intersect?([from_address, to_address].to_set) && follow_txids.exclude?(txn_receipt.fetch('id'))
+      return if !blockchain.follow_addresses.intersect?([from_address, to_address].to_set) && blockchain.follow_txids.exclude?(txn_receipt.fetch('id'))
 
       { hash: tx_hash['txID'],
         amount: tx['parameter']['value']['amount'],
