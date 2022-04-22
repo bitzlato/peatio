@@ -34,38 +34,6 @@ class EthereumGateway < AbstractGateway
     AbstractCommand.new(client).client_version
   end
 
-  # Выбирает на адресе монеты которые можно вывести (их баланс больше суммы газа который потребуется для вывода)
-  # Вычисляет сколько нужно газа чтобы их вывести и закидывает его на баланс ардеса с горячего кошелька
-  def refuel_gas!(target_address)
-    target_address = target_address.address if target_address.is_a? PaymentAddress
-
-    coins = collectable_coins target_address
-
-    logger.info("Refuel #{target_address} for coins #{coins.map { |c| c || :native }.join(',')}")
-    transaction = monefy_transaction(
-      EthereumGateway::GasRefueler
-      .new(client)
-      .call(
-        gas_factor: blockchain.client_options[:gas_factor],
-        gas_wallet_address: fee_wallet.address,
-        gas_wallet_secret: fee_wallet.secret,
-        gas_wallet_blockchain_address: fee_wallet.blockchain_address,
-        target_address: target_address,
-        contract_addresses: coins,
-        gas_limits: gas_limits,
-        chain_id: blockchain.chain_id
-      )
-    )
-
-    logger.info("#{target_address} refueled with transaction #{transaction.as_json}")
-
-    transaction
-    # TODO: save GasRefuel record as reference
-  rescue EthereumGateway::GasRefueler::Error => e
-    report_exception e, true, target_address: target_address, blockchain_key: blockchain.key
-    logger.info("Canceled refueling address #{target_address} with #{e}")
-  end
-
   def create_address!(secret = nil)
     if ENV.true?('USE_PRIVATE_KEY')
       create_private_address!
