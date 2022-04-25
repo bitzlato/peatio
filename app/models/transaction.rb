@@ -112,11 +112,6 @@ class Transaction < ApplicationRecord
     raise e
   end
 
-  def refetch!
-    blockchain.service.refetch_and_update_transaction! txid, txout
-    reload
-  end
-
   def failed?
     status == FAIL_STATUS
   end

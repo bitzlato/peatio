@@ -18,18 +18,6 @@ class BlockchainService
     @latest_block_number ||= gateway.latest_block_number
   end
 
-  def update_transactions!
-    blockchain.transactions.pluck(:txid, :txout).each do |txid, txout|
-      unless blockchain.valid_txid? txid
-        logger.info("Transaction address #{txid} is invalid")
-        next
-      end
-      refetch_and_update_transaction!(txid, txout)
-    rescue StandardError => e
-      report_exception e, true, transaction_id: t.id
-    end
-  end
-
   def delete_unknown_transactions!
     txids = blockchain.deposits.pluck(:txid) + blockchain.withdraws.pluck(:txid)
     addresses = blockchain.follow_addresses
@@ -41,18 +29,6 @@ class BlockchainService
       t.destroy!
     end
     destroyed
-  end
-
-  def refetch_and_update_transaction!(txid, txout = nil)
-    monyfied_blockchain_transaction = gateway.fetch_transaction txid, txout
-    if monyfied_blockchain_transaction.nil?
-      t = blockchain.transactions.find_by(txid: txid, txout: txout)
-      report_exception("Unknown transaction #{txid}/#{txout} for #{blockchain.key}", true) if t.present?
-      nil
-    else
-      # TODO: lookup for reference if there are no transaction
-      Transaction.upsert_transaction! monyfied_blockchain_transaction
-    end
   end
 
   def process_block(block_number)

@@ -91,6 +91,9 @@ queue:
   trade_completed:
     name:  peatio.trades.completed
     durable: true
+  belomor_deposits_peatio:
+    name: belomor.deposits.peatio
+    durable: true
 
   # Queue which used by third-party trading engine for updating balances and
   # order submit consuming.
@@ -138,6 +141,8 @@ binding:
     topics: peatio.ranger.cancel_orders
   balances_updating:
     queue: balances_updating
+  deposit_processor:
+    queue: belomor_deposits_peatio
 
 channel:
   order_cancellator:

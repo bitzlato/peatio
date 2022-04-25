@@ -14,6 +14,7 @@ swap_order_status_checker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.r
 balances_updating: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb balances_updating
 cancel_member_orders: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb cancel_member_orders
 create_order: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb create_order
+deposit_processor: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb deposit_processor
 influx_writer: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb influx_writer
 matching: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb matching
 order_cancellator: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb order_cancellator
