@@ -7,11 +7,12 @@ module Workers
         payload.symbolize_keys!
         owner_id = payload[:owner_id].to_s.split(':')
         if owner_id[0] != 'user'
-          Rails.logger.info { { message: 'Deposit message is skipped. It is not user deposit', owner_id: payload[:owner_id] } }
+          Rails.logger.info { { message: 'Deposit message is skipped. It is not user deposit', payload: payload.inspect } }
           return
         end
 
         member = Member.find_by!(uid: owner_id[1])
+        address = payload[:address]
         amount = payload[:amount].to_d
         txid = payload[:txid]
         txout = payload[:txout]
@@ -25,6 +26,7 @@ module Workers
           txid: txid,
           txout: txout
         ) do |d|
+          d.address = address
           d.amount = amount
           d.member = member
         end
