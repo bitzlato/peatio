@@ -31,7 +31,6 @@ class BelomorClient
     @app_key = app_key
     @blockchain_key = blockchain_key
     @adapter = Faraday.default_adapter
-    @logger = Faraday::Response::Logger.new(Rails.logger) if ENV.key? 'FARADAY_LOGGER'
   end
 
   def create_address(owner_id:)
@@ -69,6 +68,14 @@ class BelomorClient
     parse_response connection.public_send(:post, 'api/management/transactions', data, { 'Authorization' => token })
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#create_transaction got error #{err} -> #{err.body} #{err.body.class}"
+    :bad_request
+  end
+
+  def import_address(owner_id:, address:, archived_at:, private_key_hex:, meta: {})
+    data = { blockchain_key: @blockchain_key, owner_id: owner_id, address: address, archived_at: archived_at, private_key_hex: private_key_hex, meta: meta }
+    parse_response connection.public_send(:post, 'api/management/addresses/import', data, { 'Authorization' => token })
+  rescue WrongResponse => err
+    Rails.logger.error "BelomorClient#import_address got error #{err} -> #{err.body} #{err.body.class}"
     :bad_request
   end
 
@@ -110,12 +117,10 @@ class BelomorClient
   # Every time build new connection to have fresh jwt token
   def connection
     Faraday.new url: @api_url, ssl: { verify: false } do |c|
-      c.use Faraday::Response::Logger unless @logger.nil?
       c.headers = {
         'Content-Type' => 'application/json',
         'Accept' => 'application/json'
       }
-      c.request :curl, @logger, :warn if ENV.true?( 'CURL_LOGGER' )
       c.request :json
       c.response :json
       c.adapter @adapter
