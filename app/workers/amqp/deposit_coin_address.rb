@@ -33,7 +33,7 @@ module Workers
                      { address: blockchain_address.address }
                    else
                      Rails.logger.info { { message: 'Coin deposit address', member_id: member.id, blockchain_id: blockchain.id } }
-                     blockchain.create_address!(owner_id: member.uid) || raise("No result when creating adress for #{member.id} #{currency}")
+                     blockchain.create_address!(owner_id: "user:#{member.uid}") || raise("No result when creating adress for #{member.id} #{currency}")
                    end
           payment_address.update!(result.slice(:address, :secret, :details))
         end

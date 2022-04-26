@@ -27,6 +27,7 @@ set :systemd_amqp_daemon_instances,
       cancel_member_orders
       create_order
       deposit_coin_address
+      deposit_processor
       influx_writer
       trade_completed
       withdraw_coin
