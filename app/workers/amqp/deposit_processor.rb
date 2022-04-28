@@ -13,7 +13,10 @@ module Workers
 
         blockchain = Blockchain.find_by!(key: payload[:blockchain_key])
         from_address = payload[:from_address]
-        if from_address.in?(blockchain.wallets_addresses)
+        txid = payload[:txid]
+
+        withdraw_txids = blockchain.withdraws.where.not(txid: nil).confirming.pluck(:txid)
+        if from_address.in?(blockchain.wallets_addresses) && !txid.in?(withdraw_txids)
           Rails.logger.info { { message: 'Gas refueling is skippeed', payload: payload.inspect } }
           return
         end
@@ -21,7 +24,6 @@ module Workers
         member = Member.find_by!(uid: owner_id[1])
         to_address = payload[:to_address]
         amount = payload[:amount].to_d
-        txid = payload[:txid]
         txout = payload[:txout]
         currency = Currency.find(payload[:currency])
         confirmations = payload[:confirmations].to_i
