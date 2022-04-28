@@ -43,7 +43,12 @@ module Workers
           raise "Amounts different #{deposit.id}" unless amount == deposit.amount
 
           Rails.logger.info("Found or created suitable deposit #{deposit.id} for txid #{txid}, amount #{amount}")
-          confirm_deposit(deposit, currency: currency, blockchain: blockchain) if deposit.submitted? && confirmations >= blockchain.min_confirmations
+          if deposit.submitted?
+            accept_deposit(deposit, currency: currency, blockchain: blockchain)
+          elsif deposit.accepted? && confirmations >= blockchain.min_confirmations
+            Rails.logger.info("Dispatch deposit #{deposit.id}, confirmation #{confirmations}>=#{blockchain.min_confirmations}")
+            deposit.dispatch!
+          end
         end
       rescue ActiveRecord::RecordNotFound => e
         report_exception(e, true, payload)
@@ -51,7 +56,7 @@ module Workers
 
       private
 
-      def confirm_deposit(deposit, currency:, blockchain:)
+      def accept_deposit(deposit, currency:, blockchain:)
         member = deposit.member
         skipped_deposits = member.deposits.skipped.where(currency: currency, blockchain: blockchain).lock
         total_skipped_amount = skipped_deposits.sum(&:amount)
