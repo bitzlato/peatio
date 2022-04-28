@@ -113,6 +113,8 @@ class BlockchainService
   end
 
   def update_or_create_deposit(transaction)
+    return if blockchain.key == 'heco-mainnet'
+
     address = PaymentAddress.find_by(blockchain: blockchain, address: transaction.to_address)
 
     # Not deposit address
