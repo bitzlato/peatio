@@ -23,7 +23,7 @@ RSpec.describe Workers::AMQP::DepositProcessor do
         currency: currency.id,
         confirmations: 1
       )
-      expect(Deposit.find_by(blockchain: blockchain, txid: txid)).to have_attributes(currency_id: currency.id, amount: amount, txout: txout, member: member, aasm_state: 'submitted', address: to_address, from_addresses: [from_address])
+      expect(Deposit.find_by(blockchain: blockchain, txid: txid)).to have_attributes(currency_id: currency.id, amount: amount, txout: txout, member: member, aasm_state: 'accepted', address: to_address, from_addresses: [from_address])
     end
   end
 
