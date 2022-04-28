@@ -11,12 +11,18 @@ module Workers
           return
         end
 
+        blockchain = Blockchain.find_by!(key: payload[:blockchain_key])
+        from_address = payload[:from_address]
+        if from_address.in?(blockchain.wallets_addresses)
+          Rails.logger.info { { message: 'Gas refueling is skippeed', payload: payload.inspect } }
+          return
+        end
+
         member = Member.find_by!(uid: owner_id[1])
-        address = payload[:address]
+        to_address = payload[:to_address]
         amount = payload[:amount].to_d
         txid = payload[:txid]
         txout = payload[:txout]
-        blockchain = Blockchain.find_by!(key: payload[:blockchain_key])
         currency = Currency.find(payload[:currency])
         confirmations = payload[:confirmations].to_i
 
@@ -26,8 +32,9 @@ module Workers
           txid: txid,
           txout: txout
         ) do |d|
-          d.address = address
+          d.address = to_address
           d.amount = amount
+          d.from_addresses = [from_address]
           d.member = member
         end
         deposit.with_lock do
