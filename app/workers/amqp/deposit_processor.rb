@@ -14,13 +14,6 @@ module Workers
         blockchain = Blockchain.find_by!(key: payload[:blockchain_key])
         from_address = payload[:from_address]
         txid = payload[:txid]
-
-        withdraw_txids = blockchain.withdraws.where.not(txid: nil).confirming.pluck(:txid)
-        if from_address.in?(blockchain.wallets_addresses) && !txid.in?(withdraw_txids)
-          Rails.logger.info { { message: 'Gas refueling is skippeed', payload: payload.inspect } }
-          return
-        end
-
         member = Member.find_by!(uid: owner_id[1])
         to_address = payload[:to_address]
         amount = payload[:amount].to_d
@@ -43,9 +36,8 @@ module Workers
           raise "Amounts different #{deposit.id}" unless amount == deposit.amount
 
           Rails.logger.info("Found or created suitable deposit #{deposit.id} for txid #{txid}, amount #{amount}")
-          if deposit.submitted?
-            accept_deposit(deposit, currency: currency, blockchain: blockchain)
-          elsif deposit.accepted? && confirmations >= blockchain.min_confirmations
+          accept_deposit(deposit, currency: currency, blockchain: blockchain) if deposit.submitted?
+          if deposit.accepted? && confirmations >= blockchain.min_confirmations
             Rails.logger.info("Dispatch deposit #{deposit.id}, confirmation #{confirmations}>=#{blockchain.min_confirmations}")
             deposit.dispatch!
           end
