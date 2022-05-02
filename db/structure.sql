@@ -1491,7 +1491,8 @@ CREATE TABLE public.wallets (
     enable_invoice boolean DEFAULT false NOT NULL,
     blockchain_id bigint NOT NULL,
     use_as_fee_source boolean DEFAULT false NOT NULL,
-    balance_updated_at timestamp without time zone
+    balance_updated_at timestamp without time zone,
+    parent_id bigint
 );
 
 
@@ -3014,6 +3015,13 @@ CREATE INDEX index_wallets_on_kind ON public.wallets USING btree (kind);
 
 
 --
+-- Name: index_wallets_on_parent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_wallets_on_parent_id ON public.wallets USING btree (parent_id);
+
+
+--
 -- Name: index_wallets_on_status; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3117,6 +3125,14 @@ CREATE UNIQUE INDEX payment_addresses_member_blockchain_parent_blockchain_curren
 
 ALTER TABLE ONLY public.withdraws
     ADD CONSTRAINT fk_rails_34ec868d17 FOREIGN KEY (blockchain_id) REFERENCES public.blockchains(id);
+
+
+--
+-- Name: wallets fk_rails_41b812e675; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wallets
+    ADD CONSTRAINT fk_rails_41b812e675 FOREIGN KEY (parent_id) REFERENCES public.wallets(id);
 
 
 --
@@ -3485,6 +3501,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220227214453'),
 ('20220316142851'),
 ('20220320195933'),
-('20220323190452');
+('20220323190452'),
+('20220501134849');
 
 

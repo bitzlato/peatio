@@ -102,7 +102,7 @@ class Withdrawer
                      amount: withdraw.money_amount,
                      contract_address: contract_address,
                      secret: withdraw_wallet.secret,
-                     blockchain_address: withdraw_wallet.blockchain_address,
+                     blockchain_address: (withdraw_wallet.parent ? withdraw_wallet.parent.blockchain_address : withdraw_wallet.blockchain_address),
                      nonce: nonce,
                      gas_factor: gas_factor,
                      meta: { withdraw_tid: withdraw.tid }

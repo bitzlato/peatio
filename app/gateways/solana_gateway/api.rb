@@ -40,7 +40,11 @@ class SolanaGateway
     end
 
     def get_token_accounts_by_owner owner_pubkey, mint
-      client.json_rpc('getTokenAccountsByOwner', [owner_pubkey, {mint: mint}])
+      client.json_rpc('getTokenAccountsByOwner', [owner_pubkey, {mint: mint}, {encoding: 'jsonParsed'}])
+    end
+
+    def get_account_info pubkey
+      client.json_rpc('getAccountInfo', [pubkey, {encoding: 'jsonParsed'}])
     end
 
     def get_token_account_balance token_account_pubkey

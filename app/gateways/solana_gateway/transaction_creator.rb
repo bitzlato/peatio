@@ -111,8 +111,7 @@ class SolanaGateway
       blockchain_currency = blockchain_currency.parent if blockchain_currency.parent.present?
 
       wallet = blockchain.wallets.where(address: from_pubkey).with_currency(blockchain_currency.currency).first
-
-      return wallet.address if wallet.present?
+      return wallet.parent.address if wallet.present?
     end
   end
 end

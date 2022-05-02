@@ -117,7 +117,8 @@ namespace :solana_blockchain do
                                      name: 'Solana WSOL Hot Wallet',
                                      settings: { 'uri' => 'https://api.testnet.solana.com' },
                                      blockchain: blockchain,
-                                     use_as_fee_source: true
+                                     use_as_fee_source: true,
+                                     parent: hot_wallet
                                    })
       wsol_wallet.currencies = [sol, wsol]
       wsol_wallet.save
@@ -130,7 +131,8 @@ namespace :solana_blockchain do
                                      name: 'Solana USDT Hot Wallet',
                                      settings: { 'uri' => 'https://api.testnet.solana.com' },
                                      blockchain: blockchain,
-                                     use_as_fee_source: true
+                                     use_as_fee_source: true,
+                                     parent: hot_wallet
                                    })
       usdt_wallet.currencies = [sol, usdt]
       usdt_wallet.save
