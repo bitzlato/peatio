@@ -74,10 +74,11 @@ class SolanaGateway
     def create_raw_transaction!(from_pubkey:, to_pubkey:, fee_payer:, amount:, signers: [], contract_address:)
       tx = Solana::Tx.new
       if contract_address
-        from_owner_pubkey = token_parent_address_from_pubkey(from_pubkey, amount)
+        from_owner = token_parent_from_pubkey(from_pubkey, amount)
+        token_account_pubkey = get_token_account_pubkey_from_pubkey(to_pubkey, contract_address, from_owner)
         instruction = Solana::Program::Token.transfer_checked_instruction(
-          from_pubkey: from_owner_pubkey, from_token_account_pubkey: from_pubkey,
-          to_token_account_pubkey: to_pubkey, token_pubkey: contract_address,
+          from_pubkey: from_owner.address, from_token_account_pubkey: from_pubkey,
+          to_token_account_pubkey: token_account_pubkey, token_pubkey: contract_address,
           amount: amount.base_units, decimals: amount.currency.exponent
         )
       else
@@ -103,15 +104,26 @@ class SolanaGateway
       true
     end
 
-    def token_parent_address_from_pubkey(from_pubkey, amount)
+    def token_parent_from_pubkey(from_pubkey, amount)
       payment_address = blockchain.payment_addresses.where(address: from_pubkey, blockchain_currency_id: amount.currency.blockchain_currency_record).first
-      return payment_address.parent.address if payment_address
+      return payment_address.parent if payment_address
 
       blockchain_currency = amount.currency.blockchain_currency_record
       blockchain_currency = blockchain_currency.parent if blockchain_currency.parent.present?
 
       wallet = blockchain.wallets.where(address: from_pubkey).with_currency(blockchain_currency.currency).first
-      return wallet.parent.address if wallet.present?
+      return wallet.parent if wallet.present?
+    end
+
+    def get_token_account_pubkey_from_pubkey(to_pubkey, contract_address, signer)
+      info = api.get_account_info(to_pubkey)
+      if info.dig(:value, :owner) == Solana::Program::Token::PROGRAM_ID
+        to_pubkey
+      else
+        token = gateway.find_or_create_token_account(to_pubkey, contract_address, signer)
+        sleep(30) # wait about 30 blocks
+        token
+      end
     end
   end
 end
