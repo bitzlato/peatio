@@ -40,6 +40,7 @@ class Wallet < ApplicationRecord
   vault_attribute :settings, serialize: :json, default: {}
 
   belongs_to :blockchain
+  belongs_to :parent, class_name: 'Wallet', optional: true
 
   has_and_belongs_to_many :currencies
   has_many :currency_wallets
