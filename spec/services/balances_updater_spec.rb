@@ -32,7 +32,7 @@ RSpec.describe BalancesUpdater do
       let(:wallet) { create :wallet, :eth_hot, name: generate(:wallet_name), balance: { 'eth' => '0.1' } }
       let(:address) { wallet.address }
 
-      it { expect(wallet.currencies).to include(Currency.find('eth')) }
+      it { expect(wallet.currencies.pluck(:id)).to include('eth') }
 
       it 'updates wallet balances' do
         service.perform

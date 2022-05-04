@@ -20,7 +20,7 @@ module API
             desc: 'Currency code in Bitzlato P2P',
             type: String,
             values: -> { ::Currency.pluck(:cc_code).uniq },
-            example: -> { ::Currency.pluck(:cc_code).first || 'BTC' }
+            example: -> { ::Currency.pick(:cc_code) || 'BTC' }
           }
         )
 
