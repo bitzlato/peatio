@@ -68,7 +68,8 @@ module Workers
         end
 
         def stop
-          Process.kill('HUP', @pid)
+          result = Process.kill('HUP', @pid)
+          Rails.logger.info { "Process is hanged up. pid: #{@pid}, result: #{result}, blockchain_id: #{@blockchain.id}" }
         end
       end
 
