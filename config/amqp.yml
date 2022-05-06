@@ -94,6 +94,9 @@ queue:
   belomor_deposits_peatio:
     name: belomor.deposits.peatio
     durable: true
+  belomor_withdrawal_peatio:
+    name: belomor.withdrawal.peatio
+    durable: true
 
   # Queue which used by third-party trading engine for updating balances and
   # order submit consuming.
@@ -143,6 +146,8 @@ binding:
     queue: balances_updating
   deposit_processor:
     queue: belomor_deposits_peatio
+  withdrawal_processor:
+    queue: belomor_withdrawal_peatio
 
 channel:
   order_cancellator:
