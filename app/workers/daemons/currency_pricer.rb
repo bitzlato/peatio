@@ -16,7 +16,7 @@ module Workers
           price = CurrencyServices::Price.new(base_currency: currency, quote_currency: quote_currency).call
           next if price.nil?
 
-          currency.update!(price: price)
+          currency.update_column(:price, price)
         end
       end
     end
