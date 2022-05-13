@@ -101,6 +101,8 @@ class BlockchainService
   attr_reader :withdrawal, :deposit, :fetched_transaction
 
   def dispatch_deposits!(_block_number)
+    return if blockchain.key == 'heco-mainnet'
+
     blockchain
       .deposits
       .accepted
