@@ -27,8 +27,8 @@ RSpec.describe Workers::AMQP::DepositProcessor do
     end
   end
 
-  context 'with confirmations count more or equal than min_confirmations' do
-    it 'acceptes deposit' do
+  context 'when deposit exists and with confirmations count more or equal than min_confirmations' do
+    it 'dispatches deposit' do
       deposit = create(:deposit, :deposit_eth, blockchain: blockchain, currency: currency, txid: txid, txout: txout, amount: amount, member: member, aasm_state: 'submitted')
       described_class.new.process(
         owner_id: "user:#{member.uid}",
@@ -41,26 +41,24 @@ RSpec.describe Workers::AMQP::DepositProcessor do
         currency: currency.id,
         confirmations: 6
       )
-      expect(deposit.reload).to have_attributes(aasm_state: 'accepted')
+      expect(deposit.reload).to have_attributes(aasm_state: 'dispatched')
     end
   end
 
-  context 'when it is a gas refueling' do
-    let(:wallet) { create(:wallet, :eth_hot, blockchain: blockchain, address: from_address) }
-
-    it 'skips deposit' do
+  context 'when deposit does not exist and with confirmations count more or equal than min_confirmations' do
+    it 'creates and dispatches deposit' do
       described_class.new.process(
         owner_id: "user:#{member.uid}",
         to_address: to_address,
-        from_address: wallet.address,
+        from_address: from_address,
         amount: amount.to_s,
         txid: txid,
         txout: txout,
         blockchain_key: blockchain.key,
         currency: currency.id,
-        confirmations: 1
+        confirmations: 6
       )
-      expect(Deposit.find_by(blockchain: blockchain, txid: txid)).to eq nil
+      expect(Deposit.find_by!(blockchain: blockchain, txid: txid)).to have_attributes(aasm_state: 'dispatched')
     end
   end
 end
