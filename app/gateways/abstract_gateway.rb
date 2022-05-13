@@ -52,6 +52,10 @@ class AbstractGateway
     nil
   end
 
+  def blocks_to_process(from_block)
+    from_block..latest_block_number
+  end
+
   def initialize(blockchain)
     @blockchain = blockchain
     @client = build_client

@@ -5,6 +5,7 @@ class SolanaGateway
     attr_reader :client, :blockchain
 
     IDLE_TIMEOUT = 1
+    GET_BLOCKS_DEFAULT_LIMIT = 4
 
     def initialize blockchain
       @blockchain = blockchain
@@ -17,6 +18,10 @@ class SolanaGateway
 
     def latest_block_number
       client.json_rpc('getSlot')
+    end
+
+    def get_blocks_with_limit block_start, blocks_limit=GET_BLOCKS_DEFAULT_LIMIT
+      client.json_rpc('getBlocksWithLimit', [block_start, blocks_limit])
     end
 
     def get_block slot_id

@@ -18,6 +18,10 @@ class BlockchainService
     @latest_block_number ||= gateway.latest_block_number
   end
 
+  def blocks_to_process(from_block)
+    blockchain.gateway.blocks_to_process(from_block)
+  end
+
   def delete_unknown_transactions!
     txids = blockchain.deposits.pluck(:txid) + blockchain.withdraws.pluck(:txid)
     addresses = blockchain.follow_addresses
