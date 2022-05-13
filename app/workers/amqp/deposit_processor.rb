@@ -16,6 +16,13 @@ module Workers
 
         from_address = payload[:from_address]
         txid = payload[:txid]
+
+        withdraw_txids = blockchain.withdraws.where.not(txid: nil).confirming.pluck(:txid)
+        if from_address.in?(blockchain.wallets_addresses) && !txid.in?(withdraw_txids)
+          report_exception('Gas refueling event', true, payload)
+          return
+        end
+
         member = Member.find_by!(uid: owner_id[1])
         to_address = payload[:to_address]
         amount = payload[:amount].to_d
@@ -57,7 +64,7 @@ module Workers
         min_deposit_amount = BlockchainCurrency.find_by!(blockchain: blockchain, currency: currency).min_deposit_amount
 
         if (total_skipped_amount + deposit.amount) < min_deposit_amount
-          skip_message = "Skipped deposit with txid: #{txid} because of low amount (#{deposit.amount} < #{min_deposit_amount})"
+          skip_message = "Skipped deposit ##{deposit.id} because of low amount (#{deposit.amount} < #{min_deposit_amount})"
           Rails.logger.warn skip_message
           deposit.skip!
           deposit.add_error skip_message
