@@ -105,7 +105,7 @@ class BlockchainService
   attr_reader :withdrawal, :deposit, :fetched_transaction
 
   def dispatch_deposits!(_block_number)
-    return if blockchain.key == 'heco-mainnet'
+    return if %w[heco-mainnet avax-mainnet].include?(blockchain.key)
 
     blockchain
       .deposits
@@ -119,7 +119,7 @@ class BlockchainService
   end
 
   def update_or_create_deposit(transaction)
-    return if blockchain.key == 'heco-mainnet'
+    return if %w[heco-mainnet avax-mainnet].include?(blockchain.key)
 
     address = PaymentAddress.find_by(blockchain: blockchain, address: transaction.to_address)
 
