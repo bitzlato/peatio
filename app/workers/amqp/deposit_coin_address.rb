@@ -43,13 +43,15 @@ module Workers
         payment_address.create_token_accounts
         payment_address.trigger_address_event if payment_address.address.present?
 
-        blockchain_address = BlockchainAddress.find_by!(address: payment_address.address, address_type: blockchain.address_type)
-        BelomorClient.new(app_key: 'peatio', blockchain_key: blockchain.key).import_address(
-          owner_id: "user:#{member.uid}",
-          address: payment_address.address,
-          archived_at: payment_address.archived_at.present? ? payment_address.archived_at.to_i : nil,
-          private_key_hex: blockchain_address.private_key_hex
-        )
+        if blockchain.key != 'solana-mainnet'
+          blockchain_address = BlockchainAddress.find_by!(address: payment_address.address, address_type: blockchain.address_type)
+          BelomorClient.new(app_key: 'peatio', blockchain_key: blockchain.key).import_address(
+            owner_id: "user:#{member.uid}",
+            address: payment_address.address,
+            archived_at: payment_address.archived_at.present? ? payment_address.archived_at.to_i : nil,
+            private_key_hex: blockchain_address.private_key_hex
+          )
+        end
 
       # Don't re-enqueue this job in case of error.
       # The system is designed in such way that when user will
