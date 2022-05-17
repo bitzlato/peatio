@@ -94,6 +94,7 @@ set :systemd_amqp_daemon_instances,
       withdraw_coin
       trade_executor
       order_cancellator
+      withdrawal_processor
     ]
 
 set :market_amqp_daemons, %w[matching order_processor]

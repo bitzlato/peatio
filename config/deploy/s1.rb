@@ -30,11 +30,12 @@ set :systemd_amqp_daemon_instances,
       deposit_processor
       influx_writer
       trade_completed
-      withdraw_coin
       trade_executor
       matching
       order_processor
       order_cancellator
+      withdraw_coin
+      withdrawal_processor
     ]
 
 server ENV.fetch('STAGING_SERVER'),
