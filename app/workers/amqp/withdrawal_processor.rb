@@ -32,6 +32,8 @@ module Workers
             elsif payload[:status] == 'success' && payload[:confirmations].to_i >= withdrawal.blockchain.min_confirmations
               withdrawal.success!
               Rails.logger.info { { message: 'Withdrawal is successed', payload: payload.inspect } }
+            else
+              raise 'Unknown withdrawal status'
             end
           end
         rescue StandardError => e
