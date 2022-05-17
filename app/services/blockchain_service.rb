@@ -105,7 +105,7 @@ class BlockchainService
   attr_reader :withdrawal, :deposit, :fetched_transaction
 
   def dispatch_deposits!(_block_number)
-    return if %w[heco-mainnet avax-mainnet].include?(blockchain.key)
+    return if Rails.env.production? && blockchain.key != 'solana-mainnet'
 
     blockchain
       .deposits
@@ -119,7 +119,7 @@ class BlockchainService
   end
 
   def update_or_create_deposit(transaction)
-    return if %w[heco-mainnet avax-mainnet].include?(blockchain.key)
+    return if Rails.env.production? && blockchain.key != 'solana-mainnet'
 
     address = PaymentAddress.find_by(blockchain: blockchain, address: transaction.to_address)
 

@@ -12,8 +12,6 @@ module Workers
         end
 
         blockchain = Blockchain.find_by!(key: payload[:blockchain_key])
-        return if Rails.env.production? && %w[heco-mainnet avax-mainnet].exclude?(blockchain.key)
-
         from_address = payload[:from_address]
         txid = payload[:txid]
 
