@@ -169,7 +169,7 @@ module API
           withdraw.save!
           withdraw.with_lock { withdraw.accept! }
 
-          if withdraw.blockchain.client == 'belomor'
+          if %w[heco-mainnet eth-ropsten].include?(withdraw.blockchain.key)
             BelomorClient.new(blockchain_key: withdraw.blockchain.key).create_withdrawal(
               to_address: withdraw.to_address,
               amount: withdraw.sum,

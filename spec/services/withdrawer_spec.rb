@@ -9,6 +9,12 @@ describe Withdrawer do
   let(:withdraw) { create(:eth_withdraw, :with_deposit_liability, currency: currency, blockchain: blockchain).tap(&:accept!).tap(&:process!) }
   let!(:wallet) { create(:wallet, :eth_hot, blockchain: blockchain) }
 
+  around do |example|
+    ENV['WITHDRAW_ADMIN_APPROVE'] = 'true'
+    example.run
+    ENV.delete('WITHDRAW_ADMIN_APPROVE')
+  end
+
   before do
     BalancesUpdater.any_instance.stubs(:perform)
     Wallet.any_instance.stubs(:can_withdraw_for?).returns(true)
@@ -72,16 +78,6 @@ describe Withdrawer do
     it 'fails withdraw' do
       subject.call(withdraw)
       expect(withdraw.aasm_state).to eq 'errored'
-    end
-  end
-
-  context 'when blockchain uses belomor gateway' do
-    let(:blockchain) { create(:blockchain, 'eth-rinkeby', gateway_klass: BelomorGateway.name) }
-
-    it 'processes withdraw' do
-      BelomorClient.any_instance.stubs(:create_transaction).returns({ 'currency_id' => 'eth', 'amount' => '1.0', 'address' => '0x0', 'txid' => '0x0' })
-      subject.call(withdraw)
-      expect(withdraw.aasm_state).to eq 'confirming'
     end
   end
 

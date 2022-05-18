@@ -63,6 +63,7 @@ FactoryBot.define do
       end
     end
 
+    blockchain { find_or_create(:blockchain, 'eth-rinkeby', key: 'eth-rinkeby') }
     currency { Currency.find(:eth) }
     member { create(:member, :level_3) }
     rid { Faker::Blockchain::Ethereum.address }

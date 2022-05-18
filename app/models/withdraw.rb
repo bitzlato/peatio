@@ -94,7 +94,7 @@ class Withdraw < ApplicationRecord
         end
       end
       after_commit do
-        send_coins! if blockchain.client != 'belomor'
+        send_coins! if %w[heco-mainnet eth-ropsten].exclude?(blockchain.key)
       end
     end
 
