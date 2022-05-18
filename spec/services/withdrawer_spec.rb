@@ -75,6 +75,16 @@ describe Withdrawer do
     end
   end
 
+  context 'when blockchain uses belomor gateway' do
+    let(:blockchain) { create(:blockchain, 'eth-rinkeby', gateway_klass: BelomorGateway.name) }
+
+    it 'processes withdraw' do
+      BelomorClient.any_instance.stubs(:create_transaction).returns({ 'currency_id' => 'eth', 'amount' => '1.0', 'address' => '0x0', 'txid' => '0x0' })
+      subject.call(withdraw)
+      expect(withdraw.aasm_state).to eq 'confirming'
+    end
+  end
+
   # context 'hot wallet does not exist' do
   # before do
   # Wallet.expects(:active)
