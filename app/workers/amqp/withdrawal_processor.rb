@@ -10,7 +10,8 @@ module Workers
         withdrawal.with_lock do
           Rails.logger.info { { message: 'Withdrawal is processed', payload: payload.inspect } }
 
-          if withdrawal.processing?
+          case payload[:status]
+          when 'confirming'
             withdrawal.transfer!
             begin
               raise Busy, 'The withdrawal is being processed by another worker or has already been processed.' unless withdrawal.transfering?
@@ -24,17 +25,16 @@ module Workers
               withdrawal.fail!
               Rails.logger.warn { e.as_json.merge(id: withdrawal.id) }
             end
-          end
-          if withdrawal.confirming?
-            if payload[:status] == 'failed'
-              withdrawal.fail!
-              Rails.logger.info { { message: 'Withdrawal is failed', payload: payload.inspect } }
-            elsif payload[:status] == 'success' && payload[:confirmations].to_i >= withdrawal.blockchain.min_confirmations
-              withdrawal.success!
-              Rails.logger.info { { message: 'Withdrawal is successed', payload: payload.inspect } }
-            else
-              raise 'Unknown withdrawal status'
-            end
+          when 'succeed'
+            withdrawal.success!
+            Rails.logger.info { { message: 'Withdrawal is successed', payload: payload.inspect } }
+          when 'failed'
+            withdrawal.fail!
+            Rails.logger.info { { message: 'Withdrawal is failed', payload: payload.inspect } }
+          when 'errored'
+            raise 'Errored withdrawal status'
+          else
+            raise 'Unsupported withdrawal status'
           end
         rescue StandardError => e
           Rails.logger.warn id: withdrawal.id, message: 'Setting withdrawal state to errored.'
