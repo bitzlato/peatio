@@ -7,7 +7,7 @@ module Workers
         payload.symbolize_keys!
 
         withdrawal = Withdraw.find(payload[:remote_id])
-        witdraw.with_lock do
+        withdrawal.with_lock do
           Rails.logger.info { { message: 'Withdrawal is processed', payload: payload.inspect } }
 
           if withdrawal.processing?
