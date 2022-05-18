@@ -40,6 +40,10 @@ class BelomorGateway < AbstractGateway
     )
   end
 
+  def self.valid_address?(address)
+    EthereumGateway.valid_address?(address) || TronGateway.valid_address?(address)
+  end
+
   private
 
   def build_client
