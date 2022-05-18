@@ -12,6 +12,8 @@ module Workers
 
           case payload[:status]
           when 'confirming'
+            raise 'Incorrect withdrawal event' if payload[:owner_id].split(':').last != withdrawal.member.uid
+
             withdrawal.transfer!
             begin
               raise Busy, 'The withdrawal is being processed by another worker or has already been processed.' unless withdrawal.transfering?
@@ -26,6 +28,8 @@ module Workers
               Rails.logger.warn { e.as_json.merge(id: withdrawal.id) }
             end
           when 'succeed'
+            raise 'Incorrect withdrawal event' if payload[:owner_id].split(':').last != withdrawal.member.uid || payload[:currency] != withdrawal.currency_id || payload[:amount].to_d != withdrawal.sum || payload[:blockchain_key] != withdrawal.blockchain.key
+
             withdrawal.success!
             Rails.logger.info { { message: 'Withdrawal is successed', payload: payload.inspect } }
           when 'failed'

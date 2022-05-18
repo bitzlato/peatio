@@ -13,7 +13,7 @@ RSpec.describe Workers::AMQP::WithdrawalProcessor do
     let(:txid) { '0x0' }
 
     it 'dispatches withdrawal' do
-      described_class.new.process({ 'remote_id' => withdrawal.id, 'status' => 'confirming', 'txid' => txid })
+      described_class.new.process({ 'remote_id' => withdrawal.id, 'status' => 'confirming', 'txid' => txid, 'owner_id' => "user:#{member.uid}" })
       expect(withdrawal.reload).to have_attributes(aasm_state: 'confirming', txid: txid)
     end
   end
@@ -23,7 +23,7 @@ RSpec.describe Workers::AMQP::WithdrawalProcessor do
       withdrawal.transfer!
       withdrawal.update!(txid: '0x0')
       withdrawal.dispatch!
-      described_class.new.process({ 'remote_id' => withdrawal.id, 'status' => 'succeed' })
+      described_class.new.process({ 'remote_id' => withdrawal.id, 'status' => 'succeed', 'owner_id' => "user:#{member.uid}", 'currency' => withdrawal.currency_id, 'amount' => withdrawal.sum.to_s, 'blockchain_key' => withdrawal.blockchain.key })
       expect(withdrawal.reload).to have_attributes(aasm_state: 'succeed', is_locked: false)
     end
   end
