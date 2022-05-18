@@ -94,7 +94,7 @@ class Withdraw < ApplicationRecord
         end
       end
       after_commit do
-        send_coins! if blockchain.key != 'heco-mainnet'
+        send_coins! if blockchain.client != 'belomor'
       end
     end
 

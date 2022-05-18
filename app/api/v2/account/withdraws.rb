@@ -169,7 +169,7 @@ module API
           withdraw.save!
           withdraw.with_lock { withdraw.accept! }
 
-          if withdraw.blockchain.key == 'heco-mainnet'
+          if withdraw.blockchain.client == 'belomor'
             BelomorClient.new(blockchain_key: withdraw.blockchain.key).create_withdrawal(
               to_address: withdraw.to_address,
               amount: withdraw.sum,
