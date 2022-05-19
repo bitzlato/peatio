@@ -28,6 +28,8 @@ class Withdrawer
   end
 
   def call(withdraw, nonce: nil, gas_factor: nil)
+    return if %w[heco-mainnet eth-ropsten].include?(withdraw.blockchain.key)
+
     withdraw.lock!.transfer!
 
     withdraw.with_lock do

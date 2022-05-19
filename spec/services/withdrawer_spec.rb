@@ -9,6 +9,12 @@ describe Withdrawer do
   let(:withdraw) { create(:eth_withdraw, :with_deposit_liability, currency: currency, blockchain: blockchain).tap(&:accept!).tap(&:process!) }
   let!(:wallet) { create(:wallet, :eth_hot, blockchain: blockchain) }
 
+  around do |example|
+    ENV['WITHDRAW_ADMIN_APPROVE'] = 'true'
+    example.run
+    ENV.delete('WITHDRAW_ADMIN_APPROVE')
+  end
+
   before do
     BalancesUpdater.any_instance.stubs(:perform)
     Wallet.any_instance.stubs(:can_withdraw_for?).returns(true)

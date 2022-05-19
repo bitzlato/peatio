@@ -24,7 +24,7 @@ class BelomorGateway < AbstractGateway
     balances
   end
 
-  def create_transaction!(from_address:, to_address:, amount:, blockchain_address: nil, contract_address: nil, subtract_fee: false, nonce: nil, gas_factor: nil, meta: {})  # rubocop:disable Lint/UnusedMethodArgument
+  def create_transaction!(from_address:, to_address:, amount:, secret:, blockchain_address: nil, contract_address: nil, subtract_fee: false, nonce: nil, gas_factor: nil, meta: {})  # rubocop:disable Lint/UnusedMethodArgument
     currency_id = BlockchainCurrency.find_by!(blockchain: blockchain, contract_address: contract_address).currency_id
 
     result = client.create_transaction(from_address: from_address, to_address: to_address, amount: amount, currency_id: currency_id)
@@ -38,6 +38,10 @@ class BelomorGateway < AbstractGateway
       hash: result['txid'],
       contract_address: blockchain_currency.contract_address
     )
+  end
+
+  def self.valid_address?(address)
+    EthereumGateway.valid_address?(address) || TronGateway.valid_address?(address)
   end
 
   private

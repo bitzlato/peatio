@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'belomor_client'
+
 module API
   module V2
     module Account
@@ -166,8 +168,19 @@ module API
             note: params[:note]
           withdraw.save!
           withdraw.with_lock { withdraw.accept! }
-          present withdraw, with: API::V2::Entities::Withdraw
 
+          if %w[heco-mainnet eth-ropsten].include?(withdraw.blockchain.key)
+            BelomorClient.new(blockchain_key: withdraw.blockchain.key).create_withdrawal(
+              to_address: withdraw.to_address,
+              amount: withdraw.sum,
+              currency_id: withdraw.currency_id,
+              owner_id: "user:#{current_user.uid}",
+              remote_id: withdraw.id,
+              meta: { note: withdraw.note }
+            )
+          end
+
+          present withdraw, with: API::V2::Entities::Withdraw
         rescue ::Account::AccountError => e
           report_api_error(e, request)
           error!({ errors: ['account.withdraw.insufficient_balance'] }, 422)

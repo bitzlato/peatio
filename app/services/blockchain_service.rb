@@ -187,6 +187,8 @@ class BlockchainService
   end
 
   def update_or_create_withdraw(transaction)
+    return if %w[heco-mainnet eth-ropsten].include?(blockchain.key)
+
     @withdrawal = blockchain.withdraws.confirming
                             .find_by(currency_id: transaction.currency_id, txid: transaction.hash)
 
