@@ -172,7 +172,7 @@ module API
           if %w[heco-mainnet eth-ropsten].include?(withdraw.blockchain.key)
             BelomorClient.new(blockchain_key: withdraw.blockchain.key).create_withdrawal(
               to_address: withdraw.to_address,
-              amount: withdraw.sum,
+              amount: withdraw.amount,
               currency_id: withdraw.currency_id,
               owner_id: "user:#{current_user.uid}",
               remote_id: withdraw.id,
