@@ -20,6 +20,10 @@ module Peatio
       new ENV.fetch('SLACK_BARGAINER_CHANNEL')
     end
 
+    def self.market_bot
+      new ENV.fetch('SLACK_MARKET_BOT_CHANNEL')
+    end
+
     def self.notifications
       new ENV.fetch('SLACK_NOTIFICATIONS_CHANNEL')
     end
