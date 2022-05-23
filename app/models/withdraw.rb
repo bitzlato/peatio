@@ -94,7 +94,7 @@ class Withdraw < ApplicationRecord
         end
       end
       after_commit do
-        send_coins! if %w[heco-mainnet eth-ropsten].exclude?(blockchain.key)
+        send_coins! if %w[avax-mainnet heco-mainnet eth-ropsten].exclude?(blockchain.key)
       end
     end
 
