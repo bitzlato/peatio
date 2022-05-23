@@ -14,7 +14,6 @@ module Workers
           when 'confirming'
             raise 'Incorrect withdrawal event' if payload[:owner_id].split(':').last != withdrawal.member.uid
 
-            withdrawal.transfer!
             begin
               raise Busy, 'The withdrawal is being processed by another worker or has already been processed.' unless withdrawal.transfering?
               raise Fail, 'The destination address doesn\'t exist.' if withdrawal.rid.blank?

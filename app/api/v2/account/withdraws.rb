@@ -169,17 +169,6 @@ module API
           withdraw.save!
           withdraw.with_lock { withdraw.accept! }
 
-          if %w[avax-mainnet heco-mainnet eth-ropsten].include?(withdraw.blockchain.key)
-            BelomorClient.new(blockchain_key: withdraw.blockchain.key).create_withdrawal(
-              to_address: withdraw.to_address,
-              amount: withdraw.amount,
-              currency_id: withdraw.currency_id,
-              owner_id: "user:#{current_user.uid}",
-              remote_id: withdraw.id,
-              meta: { note: withdraw.note }
-            )
-          end
-
           present withdraw, with: API::V2::Entities::Withdraw
         rescue ::Account::AccountError => e
           report_api_error(e, request)

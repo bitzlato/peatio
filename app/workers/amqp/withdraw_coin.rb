@@ -18,7 +18,20 @@ module Workers
           return
         end
 
-        Withdrawer.new(@logger).call withdraw
+        if %w[avax-mainnet heco-mainnet eth-ropsten].include?(blockchain.key)
+          withdraw.transfer!
+
+          BelomorClient.new(blockchain_key: withdraw.blockchain.key).create_withdrawal(
+            to_address: withdraw.to_address,
+            amount: withdraw.amount,
+            currency_id: withdraw.currency_id,
+            owner_id: "user:#{withdraw.member.uid}",
+            remote_id: withdraw.id,
+            meta: { note: withdraw.note }
+          )
+        else
+          Withdrawer.new(@logger).call withdraw
+        end
 
         # Пока не понимаю что проихсодит с исключениями не указанными тут, поэтому отключил
         # rescue AASM::InvalidTransition => err
