@@ -22,6 +22,6 @@ module TransactionReferences
 
   def update_reference
     self.reference ||= find_reference
-    report_exception "Can't detect transaction reference #{id}", true, id: id, txid: txid if self.reference.nil? && success?
+    # report_exception "Can't detect transaction reference #{id}", true, id: id, txid: txid if self.reference.nil? && success?
   end
 end
