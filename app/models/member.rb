@@ -144,7 +144,7 @@ class Member < ApplicationRecord
   private
 
   def downcase_email
-    self.email = email.try(:downcase)
+    self.email = email.downcase if email.present?
   end
 
   class << self
