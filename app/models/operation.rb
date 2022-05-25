@@ -81,8 +81,8 @@ class Operation < ApplicationRecord
         db_balances = db_balances.group(:currency_id)
                                  .sum('credit - debit')
 
-        Currency.ids.map(&:to_sym).each_with_object({}) do |id, memo|
-          memo[id] = db_balances[id.to_s] || 0
+        Currency.ids.map(&:to_sym).index_with do |id|
+          db_balances[id.to_s] || 0
         end
       else
         where(currency: currency).sum('credit - debit')

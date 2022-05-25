@@ -11,7 +11,7 @@ module Workers
         return if Rails.env.staging?  # Стейджи не имеют доступа в шлюзы
 
         ::Blockchain.active.find_each do |blockchain|
-          max_gas_price = Rails.configuration.blockchains.dig(blockchain.key, 'max_gas_price')
+          max_gas_price = Rails.configuration.blockchains.dig(blockchain.key.to_sym, :max_gas_price)
           next if !blockchain.gateway.is_a?(EthereumGateway) || max_gas_price.nil? || (blockchain.high_transaction_price_at.present? && blockchain.high_transaction_price_at > 5.minutes.ago)
 
           min_threshold = max_gas_price * (1 - THRESHOLD_DEVIATION_RATIO)

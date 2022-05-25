@@ -39,7 +39,7 @@ module CurrencyServices
       end
       return nil if market.nil?
 
-      price = market.vwap(Rails.configuration.currencies['currency_pricer']['vwap_time'])
+      price = market.vwap(Rails.configuration.currencies[:currency_pricer][:vwap_time])
       return nil if price.nil?
 
       is_forward_market ? price : 1.0 / price
