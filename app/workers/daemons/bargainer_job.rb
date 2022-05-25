@@ -16,9 +16,9 @@ module Workers
           return
         end
         Rails.configuration.bargainers.each do |bargainer_config|
-          market = Market.find_by(symbol: bargainer_config.fetch(:market_symbol))
+          market = Market.find_by(symbol: bargainer_config.fetch('market_symbol'))
           if market.nil?
-            Rails.logger.warn { { message: 'Makret is not found', market_symbol: bargainer_config.fetch(:market_symbol), service: 'bargainer' } }
+            Rails.logger.warn { { message: 'Makret is not found', market_symbol: bargainer_config.fetch('market_symbol'), service: 'bargainer' } }
             next
           elsif market.state != 'enabled'
             Rails.logger.warn do
@@ -30,9 +30,9 @@ module Workers
           bargainer.call(
             market: market,
             member: member,
-            volume_range: bargainer_config.fetch(:min_volume)..bargainer_config.fetch(:max_volume),
-            price_deviation: bargainer_config.fetch(:price_deviation),
-            max_spread: bargainer_config.fetch(:max_spread)
+            volume_range: bargainer_config.fetch('min_volume')..bargainer_config.fetch('max_volume'),
+            price_deviation: bargainer_config.fetch('price_deviation'),
+            max_spread: bargainer_config.fetch('max_spread')
           )
         end
 

@@ -13,14 +13,14 @@ gem 'hashie', '~> 3.6.0'
 gem 'hiredis', '~> 0.6.0'
 gem 'kaminari', '~> 1.2.1'
 gem 'puma', '~> 5.0'
-gem 'rails', '~> 6.0.4'
+gem 'rails', '~> 5.2.6'
 gem 'ransack', '~> 2.3.2'
 gem 'rbtree', '~> 0.4.2'
 gem 'redis', '~> 4.1.2', require: ['redis', 'redis/connection/hiredis']
 gem 'redlock', '~> 1.2'
 
 gem 'grape', '~> 1.5', '>= 1.5.3'
-gem 'grape-entity', '~> 0.10.1'
+gem 'grape-entity', '~> 0.9.0'
 gem 'grape_logging', '~> 1.8', '>= 1.8.4'
 gem 'grape-swagger', '~> 1.4'
 gem 'grape-swagger-entity', '~> 0.5.1'
@@ -34,8 +34,11 @@ gem 'faye', '~> 1.4'
 gem 'rack-attack', '~> 6.6.0'
 gem 'strip_attributes'
 
-gem 'jwt', '~> 2.3.0'
+# We use 2.3.0.dev for bitzlato client
+# Fill free to update to rubygem version when it will be released
+gem 'jwt', github: 'jwt/ruby-jwt'
 
+gem 'arel-is-blank', '~> 1.0.0'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'bugsnag'
 gem 'cash-addr', '~> 0.2.0', require: 'cash_addr'
@@ -77,7 +80,7 @@ gem 'money-tree', '~> 0.10'
 gem 'solana', github: 'bitzlato/ruby-solana'
 
 group :development, :test do
-  gem 'bullet'
+  gem 'bullet',       '~> 5.9'
   gem 'bump',         '~> 0.7'
   gem 'faker',        '~> 1.8'
   gem 'grape_on_rails_routes', '~> 0.3.2'

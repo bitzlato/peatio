@@ -6,9 +6,9 @@ module Workers
       @sleep_time = 5.minutes
 
       def process
-        quote_currency = Currency.find_by(id: Rails.configuration.currencies[:currency_pricer][:quote_currency_code])
+        quote_currency = Currency.find_by(id: Rails.configuration.currencies['currency_pricer']['quote_currency_code'])
         if quote_currency.nil?
-          Rails.logger.warn { { message: 'Quote currency is not found', currency_id: Rails.configuration.currencies[:currency_pricer][:quote_currency_code], service: 'currency_pricer' } }
+          Rails.logger.warn { { message: 'Quote currency is not found', currency_id: Rails.configuration.currencies['currency_pricer']['quote_currency_code'], service: 'currency_pricer' } }
           return
         end
 

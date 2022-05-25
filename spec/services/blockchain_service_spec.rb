@@ -66,7 +66,7 @@ describe BlockchainService do
     let!(:currency) { create(:currency, 'usdt') }
     let!(:member) { create(:member) }
     let!(:account) { create(:account, currency: currency, member: member, balance: account_balance) }
-    let(:blockchain_currency) { create(:blockchain_currency, blockchain: blockchain, currency: currency, min_deposit_amount: 100) }
+    let(:blockchain_currency) { create(:blockchain_currency, blockchain: blockchain, currency: currency,  blockchain: blockchain, min_deposit_amount: 100) }
     let!(:payment_address) { create(:payment_address, address: '0x4711269d9c58a81b8dab9f7b847a9fca59cfbbbb', blockchain: blockchain, member: member) }
     let!(:existed_skipped_deposit) do
       create(:deposit, :deposit_eth, aasm_state: :skipped, blockchain: blockchain, currency: currency, member: member, amount: 10, error: 'Skipped deposit')
