@@ -187,7 +187,7 @@ class BlockchainService
   end
 
   def update_or_create_withdraw(transaction)
-    return if %w[avax-mainnet heco-mainnet eth-ropsten].include?(blockchain.key)
+    return if Rails.env.production? && blockchain.key != 'solana-mainnet'
 
     @withdrawal = blockchain.withdraws.confirming
                             .find_by(currency_id: transaction.currency_id, txid: transaction.hash)

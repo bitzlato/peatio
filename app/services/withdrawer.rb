@@ -28,7 +28,7 @@ class Withdrawer
   end
 
   def call(withdraw, nonce: nil, gas_factor: nil)
-    return if %w[avax-mainnet heco-mainnet eth-ropsten].include?(withdraw.blockchain.key)
+    return if Rails.env.production? && blockchain.key != 'solana-mainnet'
 
     withdraw.lock!.transfer!
 

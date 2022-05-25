@@ -169,7 +169,7 @@ module API
           withdraw.save!
           withdraw.with_lock { withdraw.accept! }
 
-          if %w[avax-mainnet heco-mainnet eth-ropsten].include?(withdraw.blockchain.key)
+          if Rails.env.production? && withdraw.blockchain.key != 'solana-mainnet'
             BelomorClient.new(blockchain_key: withdraw.blockchain.key).create_withdrawal(
               to_address: withdraw.to_address,
               amount: withdraw.amount,
