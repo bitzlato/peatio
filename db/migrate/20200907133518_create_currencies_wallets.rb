@@ -4,7 +4,7 @@ class CreateCurrenciesWallets < ActiveRecord::Migration[5.2]
   def change
     reversible do |dir|
       dir.up do
-        create_join_table :currencies, :wallets do |t|
+        create_table :currencies_wallets, id: false do |t| # rubocop:disable Rails/CreateTableWithTimestamps
           t.string :currency_id, index: true
           t.integer :wallet_id, index: true
         end

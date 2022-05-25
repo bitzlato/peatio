@@ -95,8 +95,8 @@ SET default_table_access_method = heap;
 CREATE TABLE public.accounts (
     member_id bigint NOT NULL,
     currency_id character varying(20) NOT NULL,
-    balance numeric(36,18) DEFAULT 0 NOT NULL,
-    locked numeric(36,18) DEFAULT 0 NOT NULL,
+    balance numeric(36,18) DEFAULT 0.0 NOT NULL,
+    locked numeric(36,18) DEFAULT 0.0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -149,8 +149,8 @@ ALTER SEQUENCE public.adjustments_id_seq OWNED BY public.adjustments.id;
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -164,8 +164,8 @@ CREATE TABLE public.assets (
     currency_id character varying NOT NULL,
     reference_type character varying,
     reference_id bigint,
-    debit numeric(36,18) DEFAULT 0 NOT NULL,
-    credit numeric(36,18) DEFAULT 0 NOT NULL,
+    debit numeric(36,18) DEFAULT 0.0 NOT NULL,
+    credit numeric(36,18) DEFAULT 0.0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -357,8 +357,8 @@ CREATE TABLE public.blockchain_currencies (
     updated_at timestamp without time zone NOT NULL,
     base_factor bigint NOT NULL,
     options jsonb,
-    withdraw_fee numeric(32,18) DEFAULT 0 NOT NULL,
-    min_deposit_amount numeric(32,18) DEFAULT 0 NOT NULL,
+    withdraw_fee numeric(32,18) DEFAULT 0.0 NOT NULL,
+    min_deposit_amount numeric(32,18) DEFAULT 0.0 NOT NULL,
     visible boolean DEFAULT true NOT NULL,
     CONSTRAINT blockchain_currencies_contract_address CHECK ((((parent_id IS NOT NULL) AND (contract_address IS NOT NULL)) OR ((parent_id IS NULL) AND (contract_address IS NULL))))
 );
@@ -478,24 +478,24 @@ ALTER SEQUENCE public.blockchains_id_seq OWNED BY public.blockchains.id;
 CREATE TABLE public.currencies (
     id character varying(15) NOT NULL,
     type character varying(30) DEFAULT 'coin'::character varying NOT NULL,
-    withdraw_limit_24h numeric(36,18) DEFAULT 0 NOT NULL,
+    withdraw_limit_24h numeric(36,18) DEFAULT 0.0 NOT NULL,
     options json,
     visible boolean DEFAULT true NOT NULL,
     "precision" smallint DEFAULT 8 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    deposit_fee numeric(36,18) DEFAULT 0 NOT NULL,
+    deposit_fee numeric(36,18) DEFAULT 0.0 NOT NULL,
     icon_url character varying,
-    withdraw_limit_72h numeric(36,18) DEFAULT 0 NOT NULL,
-    min_collection_amount numeric(36,18) DEFAULT 0 NOT NULL,
-    min_withdraw_amount numeric(36,18) DEFAULT 0 NOT NULL,
+    withdraw_limit_72h numeric(36,18) DEFAULT 0.0 NOT NULL,
+    min_collection_amount numeric(36,18) DEFAULT 0.0 NOT NULL,
+    min_withdraw_amount numeric(36,18) DEFAULT 0.0 NOT NULL,
     name character varying,
     "position" integer NOT NULL,
     deposit_enabled boolean DEFAULT true NOT NULL,
     withdrawal_enabled boolean DEFAULT true NOT NULL,
     description text,
     homepage character varying,
-    price numeric(36,18) DEFAULT 1 NOT NULL,
+    price numeric(36,18) DEFAULT 1.0 NOT NULL,
     cc_code character varying,
     merged_token_id character varying
 );
@@ -645,8 +645,8 @@ CREATE TABLE public.expenses (
     currency_id character varying NOT NULL,
     reference_type character varying,
     reference_id bigint,
-    debit numeric(36,18) DEFAULT 0 NOT NULL,
-    credit numeric(36,18) DEFAULT 0 NOT NULL,
+    debit numeric(36,18) DEFAULT 0.0 NOT NULL,
+    credit numeric(36,18) DEFAULT 0.0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -795,8 +795,8 @@ CREATE TABLE public.liabilities (
     member_id bigint,
     reference_type character varying,
     reference_id bigint,
-    debit numeric(36,18) DEFAULT 0 NOT NULL,
-    credit numeric(36,18) DEFAULT 0 NOT NULL,
+    debit numeric(36,18) DEFAULT 0.0 NOT NULL,
+    credit numeric(36,18) DEFAULT 0.0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -835,9 +835,9 @@ CREATE TABLE public.markets (
     engine_id bigint NOT NULL,
     amount_precision smallint DEFAULT 4 NOT NULL,
     price_precision smallint DEFAULT 4 NOT NULL,
-    min_price numeric(36,18) DEFAULT 0 NOT NULL,
-    max_price numeric(36,18) DEFAULT 0 NOT NULL,
-    min_amount numeric(36,18) DEFAULT 0 NOT NULL,
+    min_price numeric(36,18) DEFAULT 0.0 NOT NULL,
+    max_price numeric(36,18) DEFAULT 0.0 NOT NULL,
+    min_amount numeric(36,18) DEFAULT 0.0 NOT NULL,
     "position" integer NOT NULL,
     data json,
     state character varying(32) DEFAULT 'enabled'::character varying NOT NULL,
@@ -1031,12 +1031,12 @@ CREATE TABLE public.orders (
     created_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL,
     ord_type character varying(30) NOT NULL,
-    locked numeric(36,18) DEFAULT 0 NOT NULL,
-    origin_locked numeric(36,18) DEFAULT 0 NOT NULL,
-    funds_received numeric(36,18) DEFAULT 0,
+    locked numeric(36,18) DEFAULT 0.0 NOT NULL,
+    origin_locked numeric(36,18) DEFAULT 0.0 NOT NULL,
+    funds_received numeric(36,18) DEFAULT 0.0,
     trades_count integer DEFAULT 0 NOT NULL,
-    maker_fee numeric(19,18) DEFAULT 0 NOT NULL,
-    taker_fee numeric(19,18) DEFAULT 0 NOT NULL,
+    maker_fee numeric(19,18) DEFAULT 0.0 NOT NULL,
+    taker_fee numeric(19,18) DEFAULT 0.0 NOT NULL,
     uuid uuid DEFAULT gen_random_uuid() NOT NULL,
     remote_id character varying,
     market_type character varying DEFAULT 'spot'::character varying NOT NULL,
@@ -1157,8 +1157,8 @@ CREATE TABLE public.revenues (
     currency_id character varying NOT NULL,
     reference_type character varying,
     reference_id bigint,
-    debit numeric(36,18) DEFAULT 0 NOT NULL,
-    credit numeric(36,18) DEFAULT 0 NOT NULL,
+    debit numeric(36,18) DEFAULT 0.0 NOT NULL,
+    credit numeric(36,18) DEFAULT 0.0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     member_id bigint
@@ -1203,14 +1203,14 @@ CREATE TABLE public.stats_member_pnl (
     member_id bigint NOT NULL,
     pnl_currency_id character varying(20) NOT NULL,
     currency_id character varying(20) NOT NULL,
-    total_credit numeric(50,18) DEFAULT 0,
-    total_credit_fees numeric(50,18) DEFAULT 0,
-    total_debit_fees numeric(50,18) DEFAULT 0,
-    total_debit numeric(50,18) DEFAULT 0,
-    total_credit_value numeric(50,18) DEFAULT 0,
-    total_debit_value numeric(50,18) DEFAULT 0,
-    total_balance_value numeric(50,18) DEFAULT 0,
-    average_balance_price numeric(50,18) DEFAULT 0,
+    total_credit numeric(50,18) DEFAULT 0.0,
+    total_credit_fees numeric(50,18) DEFAULT 0.0,
+    total_debit_fees numeric(50,18) DEFAULT 0.0,
+    total_debit numeric(50,18) DEFAULT 0.0,
+    total_credit_value numeric(50,18) DEFAULT 0.0,
+    total_debit_value numeric(50,18) DEFAULT 0.0,
+    total_balance_value numeric(50,18) DEFAULT 0.0,
+    average_balance_price numeric(50,18) DEFAULT 0.0,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -1326,7 +1326,7 @@ CREATE TABLE public.trades (
     updated_at timestamp(3) without time zone NOT NULL,
     maker_id bigint NOT NULL,
     taker_id bigint NOT NULL,
-    total numeric(36,18) DEFAULT 0 NOT NULL,
+    total numeric(36,18) DEFAULT 0.0 NOT NULL,
     taker_type character varying(20) DEFAULT ''::character varying NOT NULL,
     market_type character varying DEFAULT 'spot'::character varying NOT NULL
 );
@@ -1360,8 +1360,8 @@ CREATE TABLE public.trading_fees (
     id bigint NOT NULL,
     market_id character varying(20) DEFAULT 'any'::character varying NOT NULL,
     "group" character varying(32) DEFAULT 'any'::character varying NOT NULL,
-    maker numeric(7,6) DEFAULT 0 NOT NULL,
-    taker numeric(7,6) DEFAULT 0 NOT NULL,
+    maker numeric(7,6) DEFAULT 0.0 NOT NULL,
+    taker numeric(7,6) DEFAULT 0.0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     market_type character varying DEFAULT 'spot'::character varying NOT NULL
@@ -1399,7 +1399,7 @@ CREATE TABLE public.transactions (
     txid character varying,
     from_address character varying,
     to_address character varying,
-    amount numeric(36,18) DEFAULT 0 NOT NULL,
+    amount numeric(36,18) DEFAULT 0.0 NOT NULL,
     block_number integer,
     txout integer,
     status character varying,
@@ -1483,7 +1483,7 @@ CREATE TABLE public.wallets (
     status character varying(32),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    max_balance numeric(36,18) DEFAULT 0 NOT NULL,
+    max_balance numeric(36,18) DEFAULT 0.0 NOT NULL,
     kind integer NOT NULL,
     settings_encrypted character varying(1024),
     balance jsonb,
@@ -1558,8 +1558,8 @@ CREATE TABLE public.withdraw_limits (
     id bigint NOT NULL,
     "group" character varying(32) DEFAULT 'any'::character varying NOT NULL,
     kyc_level character varying(32) DEFAULT 'any'::character varying NOT NULL,
-    limit_24_hour numeric(36,18) DEFAULT 0 NOT NULL,
-    limit_1_month numeric(36,18) DEFAULT 0 NOT NULL,
+    limit_24_hour numeric(36,18) DEFAULT 0.0 NOT NULL,
+    limit_1_month numeric(36,18) DEFAULT 0.0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
