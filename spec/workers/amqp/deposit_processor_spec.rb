@@ -61,4 +61,25 @@ RSpec.describe Workers::AMQP::DepositProcessor do
       expect(Deposit.find_by!(blockchain: blockchain, txid: txid)).to have_attributes(aasm_state: 'dispatched')
     end
   end
+
+  context 'with skipped deposit, when member receives new deposit' do
+    let!(:skipped_deposit) { create(:deposit, :deposit_eth, blockchain: blockchain, currency: currency, txid: '0xskipped', txout: nil, amount: amount, member: member, aasm_state: 'skipped', block_number: 1) }
+
+    it 'dispatches all deposits' do
+      described_class.new.process(
+        owner_id: "user:#{member.uid}",
+        to_address: to_address,
+        from_address: from_address,
+        amount: amount.to_s,
+        txid: txid,
+        txout: txout,
+        blockchain_key: blockchain.key,
+        currency: currency.id,
+        confirmations: 6,
+        block_number: 2
+      )
+      expect(Deposit.find_by!(blockchain: blockchain, txid: txid)).to have_attributes(aasm_state: 'dispatched')
+      expect(skipped_deposit.reload.aasm_state).to eq 'dispatched'
+    end
+  end
 end

@@ -27,6 +27,7 @@ module Workers
         txout = payload[:txout]
         currency = Currency.find(payload[:currency])
         confirmations = payload[:confirmations].to_i
+        block_number = payload[:block_number].to_i
 
         deposit = Deposits::Coin.find_or_create_by!(
           blockchain_id: blockchain.id,
@@ -36,17 +37,24 @@ module Workers
         ) do |d|
           d.address = to_address
           d.amount = amount
-          d.from_addresses = [from_address]
           d.member = member
+          d.from_addresses = [from_address]
+          d.block_number = block_number
         end
         deposit.with_lock do
           raise "Amounts different #{deposit.id}" unless amount == deposit.amount
 
           Rails.logger.info("Found or created suitable deposit #{deposit.id} for txid #{txid}, amount #{amount}")
           accept_deposit(deposit, currency: currency, blockchain: blockchain) if deposit.submitted?
+
           if deposit.accepted? && confirmations >= blockchain.min_confirmations
             Rails.logger.info("Dispatch deposit #{deposit.id}, confirmation #{confirmations}>=#{blockchain.min_confirmations}")
             deposit.dispatch!
+
+            deposit.member.deposits.accepted.where('block_number <= ?', block_number).lock.find_each do |ad|
+              Rails.logger.info { "Dispatch deposit ##{ad.id}" }
+              ad.dispatch!
+            end
           end
         end
       rescue ActiveRecord::RecordNotFound => e
