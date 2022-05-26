@@ -54,7 +54,6 @@ gem 'net-http-persistent', '~> 4.0.1'
 gem 'peatio', github: 'bitzlato/peatio-core'
 gem 'rack-cors', '~> 1.0.6', require: false
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
-gem 'scout_apm', '~> 2.4', require: false
 gem 'validates_lengths_from_database', '~> 0.7.0'
 gem 'validate_url', '~> 1.0.4'
 gem 'vault', '~> 0.16', require: false
@@ -104,10 +103,10 @@ end
 
 group :test do
   gem 'database_cleaner-active_record'
-  gem 'factory_bot_rails', '~> 5.0', '>= 5.0.2'
+  gem 'factory_bot_rails'
   gem 'mocha', '~> 1.8', require: false
   gem 'rspec-json_expectations'
-  gem 'rspec-rails', '~> 3.8', '>= 3.8.2'
+  gem 'rspec-rails'
   gem 'rspec-retry', '~> 0.6'
   gem 'test-prof', '~> 1.0'
   gem 'timecop', '~> 0.9'
