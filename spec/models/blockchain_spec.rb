@@ -65,4 +65,9 @@ describe Blockchain do
       end.to change(subject, :server).to 'http://geth:8545/'
     end
   end
+
+  describe '#belomor_enabled?' do
+    it { expect(described_class.new(key: 'eth-rinkeby')).to be_belomor_enabled }
+    it { expect(described_class.new(key: 'solana-mainnet')).not_to be_belomor_enabled }
+  end
 end

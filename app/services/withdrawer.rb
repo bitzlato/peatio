@@ -28,7 +28,7 @@ class Withdrawer
   end
 
   def call(withdraw, nonce: nil, gas_factor: nil)
-    return if Rails.env.production? && blockchain.key != 'solana-mainnet'
+    return if Rails.env.production? && blockchain.belomor_enabled?
 
     withdraw.lock!.transfer!
 

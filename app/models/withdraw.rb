@@ -94,7 +94,7 @@ class Withdraw < ApplicationRecord
         end
       end
       after_commit do
-        send_coins! if !Rails.env.production? || blockchain.key == 'solana-mainnet'
+        send_coins!
       end
     end
 
@@ -354,7 +354,21 @@ class Withdraw < ApplicationRecord
   end
 
   def send_coins!
-    AMQP::Queue.enqueue(:withdraw_coin, id: id) if currency.coin?
+    return unless Rails.env.production?
+
+    if blockchain.belomor_enabled?
+      BelomorClient.new(blockchain_key: blockchain.key)
+                   .create_withdrawal(
+                     to_address: to_address,
+                     amount: amount,
+                     currency_id: currency_id,
+                     owner_id: "user:#{member.uid}",
+                     remote_id: id,
+                     meta: { note: note }
+                   )
+    elsif currency.coin?
+      AMQP::Queue.enqueue(:withdraw_coin, id: id)
+    end
   end
 
   def blockchain_currency

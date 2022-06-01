@@ -43,7 +43,7 @@ module Workers
         payment_address.create_token_accounts
         payment_address.trigger_address_event if payment_address.address.present?
 
-        if blockchain.key != 'solana-mainnet'
+        if blockchain.belomor_enabled?
           blockchain_address = BlockchainAddress.find_by!(address: payment_address.address, address_type: blockchain.address_type)
           BelomorClient.new(app_key: 'peatio', blockchain_key: blockchain.key).import_address(
             owner_id: "user:#{member.uid}",
