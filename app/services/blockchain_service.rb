@@ -105,7 +105,7 @@ class BlockchainService
   attr_reader :withdrawal, :deposit, :fetched_transaction
 
   def dispatch_deposits!(_block_number)
-    return if Rails.env.production? && blockchain.key != 'solana-mainnet'
+    return if Rails.env.production? && blockchain.belomor_enabled?
 
     blockchain
       .deposits
@@ -119,7 +119,7 @@ class BlockchainService
   end
 
   def update_or_create_deposit(transaction)
-    return if Rails.env.production? && blockchain.key != 'solana-mainnet'
+    return if Rails.env.production? && blockchain.belomor_enabled?
 
     address = PaymentAddress.find_by(blockchain: blockchain, address: transaction.to_address)
 
@@ -187,7 +187,7 @@ class BlockchainService
   end
 
   def update_or_create_withdraw(transaction)
-    return if Rails.env.production? && blockchain.key != 'solana-mainnet'
+    return if Rails.env.production? && blockchain.belomor_enabled?
 
     @withdrawal = blockchain.withdraws.confirming
                             .find_by(currency_id: transaction.currency_id, txid: transaction.hash)

@@ -7,6 +7,8 @@ class Blockchain < ApplicationRecord
   include BlockchainExploring
   include Vault::EncryptedModel
 
+  BELOMOR_DISABLED = %i[solana-mainnet].freeze
+
   vault_lazy_decrypt!
   vault_attribute :server
 
@@ -107,6 +109,10 @@ class Blockchain < ApplicationRecord
 
   def whitelisted_addresses
     Set.new(whitelisted_smart_contracts.active.pluck(:address).map { |a| normalize_address(a) }).freeze
+  end
+
+  def belomor_enabled?
+    !key.to_sym.in?(BELOMOR_DISABLED)
   end
 
   delegate :active?, to: :status
