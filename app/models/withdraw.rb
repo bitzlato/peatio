@@ -354,7 +354,7 @@ class Withdraw < ApplicationRecord
   end
 
   def send_coins!
-    return unless Rails.env.production?
+    return if Rails.env.test?
 
     if blockchain.belomor_enabled?
       BelomorClient.new(blockchain_key: blockchain.key)

@@ -2,10 +2,11 @@
 
 module Workers
   module AMQP
-    class WithdrawalProcessor < Base
+    class WithdrawalProcessor < BelomorConsumer
       def process(payload)
-        payload.symbolize_keys!
+        verify_payload!(payload)
 
+        payload.symbolize_keys!
         withdrawal = Withdraw.find(payload[:remote_id])
         return if Withdraw::COMPLETED_STATES.include?(withdrawal.aasm_state.to_sym)
 
@@ -52,6 +53,8 @@ module Workers
 
           raise e if is_db_connection_error?(e)
         end
+      rescue IncorrectPayloadError, JWT::DecodeError => e
+        report_exception(e, true, payload)
       end
     end
   end

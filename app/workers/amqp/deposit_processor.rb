@@ -2,8 +2,10 @@
 
 module Workers
   module AMQP
-    class DepositProcessor < Base
+    class DepositProcessor < BelomorConsumer
       def process(payload)
+        verify_payload!(payload)
+
         payload.symbolize_keys!
         owner_id = payload[:owner_id].to_s.split(':')
         if owner_id[0] != 'user'
@@ -57,7 +59,7 @@ module Workers
             end
           end
         end
-      rescue ActiveRecord::RecordNotFound => e
+      rescue ActiveRecord::RecordNotFound, IncorrectPayloadError, JWT::DecodeError => e
         report_exception(e, true, payload)
       end
 
