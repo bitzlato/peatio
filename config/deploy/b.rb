@@ -36,7 +36,7 @@ set :systemd_amqp_daemon_instances,
       order_cancellator
     ]
 
-server ENV.fetch('STAGING_SERVER'),
+server ENV.fetch('STAGING_SERVER_B'),
        user: fetch(:user),
        port: '22',
        roles: %w[app db daemons amqp_daemons].freeze,
