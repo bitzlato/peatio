@@ -5,7 +5,7 @@ set :disallow_pushing, false
 set :application, -> { 'peatio-' + fetch(:stage).to_s }
 set :deploy_to, -> { "/home/#{fetch(:user)}/#{fetch(:stage)}/#{fetch(:application)}" }
 
-set :puma_bind, -> { ["tcp://0.0.0.0:9200", "unix://#{shared_path}/tmp/sockets/puma.sock"] }
+set :puma_bind, -> { ['tcp://0.0.0.0:9200', "unix://#{shared_path}/tmp/sockets/puma.sock"] }
 
 set :systemd_daemon_instances,
     %i[
