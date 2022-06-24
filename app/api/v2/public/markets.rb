@@ -162,7 +162,6 @@ module API
           params do
             requires :market,
                      type: String,
-                     values: { value: -> { ::Market.spot.active.pluck(:symbol) }, message: 'public.market.doesnt_exist' },
                      desc: -> { V2::Entities::Market.documentation[:symbol] }
             optional :period,
                      type: { value: Integer, message: 'public.k_line.non_integer_period' },
