@@ -74,7 +74,8 @@ module Workers
       end
 
       def run
-        @runner_pool = ::Blockchain.active.each_with_object({}) do |b, pool|
+        blockchains = ::Blockchain.active.where.not(key: 'polygon-mainnet')
+        @runner_pool = blockchains.each_with_object({}) do |b, pool|
           next if b.key == 'polygon-mainnet'
 
           max_timestamp = [b.currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
@@ -86,14 +87,14 @@ module Workers
         while running
           begin
             # Stop disabled blockchains runners first.
-            (@runner_pool.keys - ::Blockchain.active.pluck(:key)).each do |b_key|
+            (@runner_pool.keys - blockchains.pluck(:key)).each do |b_key|
               logger.warn { "Stopping the runner for #{b_key} (blockchain is not active anymore)" }
               @runner_pool.delete(b_key).stop
             end
 
             # Recreate active blockchain runners by comparing runner &
             # maximum blockchain & currencies updated_at timestamp.
-            ::Blockchain.active.each do |b|
+            blockchains.each do |b|
               max_timestamp = [b.currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
 
               if @runner_pool[b.key].blank?
