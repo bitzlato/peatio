@@ -6,7 +6,7 @@ default: &default
 
 development:
   <<: *default
-  database: <%= ENV.fetch('INFLUXDB_DATABASE_NAME', "peatio_production") %>
+  database: peatio_development
 
 test:
   <<: *default
