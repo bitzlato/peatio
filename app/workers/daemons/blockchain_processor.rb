@@ -74,7 +74,7 @@ module Workers
       end
 
       def run
-        blockchains = ::Blockchain.active
+        blockchains = ::Blockchain.active.where.not(key: 'polygon-mainnet')
         @runner_pool = blockchains.each_with_object({}) do |b, pool|
           next if b.key == 'polygon-mainnet'
 
