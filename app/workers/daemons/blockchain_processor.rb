@@ -74,10 +74,8 @@ module Workers
       end
 
       def run
-        blockchains = ::Blockchain.active.where.not(key: 'polygon-mainnet')
+        blockchains = ::Blockchain.active.where.not(key: %w[polygon-mainnet bitzlato-mainnet heco-mainnet avax-mainnet])
         @runner_pool = blockchains.each_with_object({}) do |b, pool|
-          next if b.key == 'polygon-mainnet'
-
           max_timestamp = [b.currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
 
           logger.warn { "Creating the runner for #{b.key}" }
