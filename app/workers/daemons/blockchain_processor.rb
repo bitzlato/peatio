@@ -74,7 +74,8 @@ module Workers
       end
 
       def run
-        blockchains = ::Blockchain.active.where.not(key: %w[polygon-mainnet bitzlato-mainnet heco-mainnet avax-mainnet eth-mainnet])
+        blockchains = []
+
         @runner_pool = blockchains.each_with_object({}) do |b, pool|
           max_timestamp = [b.currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
 
