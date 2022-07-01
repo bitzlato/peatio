@@ -9,7 +9,6 @@ set :puma_bind, -> { ['tcp://0.0.0.0:9200', "unix://#{shared_path}/tmp/sockets/p
 
 set :systemd_daemon_instances,
     %i[
-      blockchain_processor
       currency_pricer
       k_line
       liabilities_compactor

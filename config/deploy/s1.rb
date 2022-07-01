@@ -9,7 +9,6 @@ set :puma_bind, -> { ["tcp://0.0.0.0:965#{fetch(:stage)[1].to_i || 9}", "unix://
 
 set :systemd_daemon_instances,
     %i[
-      blockchain_processor
       currency_pricer
       k_line
       liabilities_compactor

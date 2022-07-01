@@ -62,7 +62,6 @@ set :systemd_daemon_role, :daemons
 set :systemd_daemon_instances,
     %i[
       bargainer_job
-      blockchain_processor
       collector
       currency_pricer
       gas_price_checker
