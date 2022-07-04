@@ -16,11 +16,6 @@ module Workers
           return
         end
 
-        unless blockchain.gateway_class.implements?(:create_address!)
-          Rails.logger.warn "Skip deposit coin address for blockchain #{payload}. It does not implement create_address!"
-          return
-        end
-
         payment_address = member.payment_address(blockchain)
         member.with_lock do
           payment_address.lock!

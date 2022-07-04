@@ -77,8 +77,6 @@ queue:
     name: peatio.pusher.market
   pusher_member:
     name: peatio.pusher.member
-  withdraw_coin:
-    name: peatio.withdraw.coin
   deposit_coin_address:
     name: peatio.deposit.coin.address
     durable: true
@@ -120,8 +118,6 @@ binding:
   order_processor:
     queue: order_processor
     exchange: matching
-  withdraw_coin:
-    queue: withdraw_coin
   deposit_coin_address:
     queue: deposit_coin_address
   influx_writer:

@@ -66,9 +66,8 @@ class Wallet < ApplicationRecord
   scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
 
   delegate :key, to: :blockchain, prefix: true
-  delegate :create_address!, :gateway, :native_currency, to: :blockchain
+  delegate :gateway, :native_currency, to: :blockchain
 
-  before_validation :generate_settings, on: :create
   before_validation if: :blockchain do
     self.address = blockchain.normalize_address address if address?
   end
@@ -157,20 +156,6 @@ class Wallet < ApplicationRecord
 
   def address_url
     blockchain&.explore_address_url address
-  end
-
-  def generate_settings
-    return unless address.blank? && settings['uri'].present? && currencies.present?
-
-    result = create_address!.reverse_merge details: {}
-  rescue StandardError => e
-    Rails.logger.info { "Cannot generate wallet address and secret error: #{e.message}" }
-    result = { address: 'changeme', secret: 'changeme' }
-  ensure
-    if result.present?
-      self.address = result.delete(:address)
-      self.settings = settings.merge(result)
-    end
   end
 
   def can_withdraw_for?(withdraw)

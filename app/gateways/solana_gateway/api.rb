@@ -12,14 +12,6 @@ class SolanaGateway
       @client = build_client
     end
 
-    def client_version
-      client.json_rpc('getVersion')['solana-core']
-    end
-
-    def latest_block_number
-      client.json_rpc('getSlot')
-    end
-
     def get_blocks_with_limit block_start, blocks_limit=GET_BLOCKS_DEFAULT_LIMIT
       client.json_rpc('getBlocksWithLimit', [block_start, blocks_limit])
     end
