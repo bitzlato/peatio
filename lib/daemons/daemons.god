@@ -92,10 +92,6 @@ daemon 'amqp:trade_executor',
        script:   'amqp_daemon.rb',
        arguments: %w[ trade_executor ]
 
-daemon 'amqp:withdraw_coin',
-       script:   'amqp_daemon.rb',
-       arguments: %w[ withdraw_coin ]
-
 daemon 'daemon:blockchain',
        script:   'daemons.rb',
        arguments: %w[ blockchain ]

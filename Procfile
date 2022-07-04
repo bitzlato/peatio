@@ -20,6 +20,5 @@ matching: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb matching
 order_cancellator: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb order_cancellator
 order_processor: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb order_processor
 trade_executor: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb trade_executor
-withdraw_coin: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb withdraw_coin
 
 web: bundle exec rails server -b 0.0.0.0 -p 3000

@@ -356,19 +356,15 @@ class Withdraw < ApplicationRecord
   def send_coins!
     return if Rails.env.test? || Rails.env.development?
 
-    if blockchain.belomor_enabled?
-      BelomorClient.new(blockchain_key: blockchain.key)
-                   .create_withdrawal(
-                     to_address: to_address,
-                     amount: amount,
-                     currency_id: currency_id,
-                     owner_id: "user:#{member.uid}",
-                     remote_id: id,
-                     meta: { note: note }
-                   )
-    elsif currency.coin?
-      AMQP::Queue.enqueue(:withdraw_coin, id: id)
-    end
+    BelomorClient.new(blockchain_key: blockchain.key)
+                 .create_withdrawal(
+                   to_address: to_address,
+                   amount: amount,
+                   currency_id: currency_id,
+                   owner_id: "user:#{member.uid}",
+                   remote_id: id,
+                   meta: { note: note }
+                 )
   end
 
   def blockchain_currency

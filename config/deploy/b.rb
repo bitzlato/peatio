@@ -27,7 +27,6 @@ set :systemd_amqp_daemon_instances,
       deposit_coin_address
       influx_writer
       trade_completed
-      withdraw_coin
       trade_executor
       matching
       order_processor

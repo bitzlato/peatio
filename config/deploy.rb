@@ -78,7 +78,7 @@ set :systemd_daemon_instances,
 set :systemd_amqp_daemon_role, :amqp_daemons
 set :systemd_market_amqp_daemon_role, :market_amqp_daemons
 
-# TODO: На стейджах НЕ запускать deposit_coin_address, withdraw_coin
+# TODO: На стейджах НЕ запускать deposit_coin_address
 #
 set :systemd_amqp_daemon_instances,
     %i[
@@ -89,7 +89,6 @@ set :systemd_amqp_daemon_instances,
       deposit_processor
       influx_writer
       trade_completed
-      withdraw_coin
       trade_executor
       order_cancellator
       withdrawal_processor
