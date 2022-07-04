@@ -32,7 +32,6 @@ set :systemd_amqp_daemon_instances,
       matching
       order_processor
       order_cancellator
-      withdraw_coin
       withdrawal_processor
     ]
 
