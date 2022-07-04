@@ -29,29 +29,13 @@ module Workers
             return
           end
 
-          member_addresses = member.payment_addresses.active.joins(:blockchain).where(blockchains: { address_type: blockchain.address_type }).pluck(:address)
-          blockchain_address = BlockchainAddress.find_by(address: member_addresses, address_type: blockchain.address_type)
-          result = if blockchain_address.present?
-                     { address: blockchain_address.address }
-                   else
-                     Rails.logger.info { { message: 'Coin deposit address', member_id: member.id, blockchain_id: blockchain.id } }
-                     blockchain.create_address!(owner_id: "user:#{member.uid}") || raise("No result when creating adress for #{member.id} #{currency}")
-                   end
-          payment_address.update!(result.slice(:address, :secret, :details))
+          Rails.logger.info { { message: 'Coin deposit address', member_id: member.id, blockchain_id: blockchain.id } }
+          result = BelomorClient.new(app_key: 'peatio', blockchain_key: blockchain.key).create_address(owner_id: "user:#{member.uid}")
+          payment_address.update!(address: result['address'])
         end
         Rails.logger.info { { message: 'Payment address is updated', payment_address_id: payment_address.id, member_id: member.id, blockchain_id: blockchain.id } }
         payment_address.create_token_accounts
         payment_address.trigger_address_event if payment_address.address.present?
-
-        if blockchain.belomor_enabled?
-          blockchain_address = BlockchainAddress.find_by!(address: payment_address.address, address_type: blockchain.address_type)
-          BelomorClient.new(app_key: 'peatio', blockchain_key: blockchain.key).import_address(
-            owner_id: "user:#{member.uid}",
-            address: payment_address.address,
-            archived_at: payment_address.archived_at.present? ? payment_address.archived_at.to_i : nil,
-            private_key_hex: blockchain_address.private_key_hex
-          )
-        end
 
       # Don't re-enqueue this job in case of error.
       # The system is designed in such way that when user will

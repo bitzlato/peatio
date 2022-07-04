@@ -32,6 +32,7 @@ jobs:
       MINIMUM_MEMBER_LEVEL_FOR_TRADING: 3
       CI_NODE_TOTAL: ${{ matrix.ci_node_total }}
       CI_NODE_INDEX: ${{ matrix.ci_node_index }}
+      BELOMOR_API_URL: http://localhost
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
