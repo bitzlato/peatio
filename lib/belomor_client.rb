@@ -79,8 +79,8 @@ class BelomorClient
     :bad_request
   end
 
-  def create_withdrawal(to_address:, amount:, currency_id:, owner_id:, remote_id:, meta: {})
-    data = { blockchain_key: @blockchain_key, to_address: to_address, amount: amount, currency_id: currency_id, owner_id: owner_id, remote_id: remote_id, meta: meta }
+  def create_withdrawal(to_address:, amount:, currency_id:, fee:, owner_id:, remote_id:, meta: {})
+    data = { blockchain_key: @blockchain_key, to_address: to_address, amount: amount, currency_id: currency_id, fee: fee, owner_id: owner_id, remote_id: remote_id, meta: meta }
     parse_response connection.public_send(:post, 'api/management/withdraws', data, { 'Authorization' => token })
   rescue WrongResponse => err
     Rails.logger.error "BelomorClient#create_withdrawal got error #{err} -> #{err.body} #{err.body.class}"
