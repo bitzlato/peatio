@@ -1611,7 +1611,8 @@ CREATE TABLE public.withdraws (
     remote_id character varying,
     blockchain_id bigint NOT NULL,
     tx_dump jsonb,
-    is_locked boolean DEFAULT false NOT NULL
+    is_locked boolean DEFAULT false NOT NULL,
+    network_fee numeric(36,18)
 );
 
 
@@ -3502,6 +3503,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220320195933'),
 ('20220323190452'),
 ('20220501134849'),
-('20220715115009');
+('20220715115009'),
+('20220725111821');
 
 

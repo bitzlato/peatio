@@ -133,6 +133,10 @@ module API
                    type: { value: BigDecimal, message: 'account.withdraw.non_decimal_amount' },
                    values: { value: ->(v) { v.try(:positive?) }, message: 'account.withdraw.non_positive_amount' },
                    desc: 'The amount to withdraw.'
+          optional :network_fee,
+                   type: { value: BigDecimal, message: 'account.withdraw.non_decimal_fee' },
+                   values: { value: ->(v) { v.try(:positive?) }, message: 'account.withdraw.non_positive_fee' },
+                   desc: 'The network fee to withdraw.'
           optional :note,
                    type: String,
                    values: { value: ->(v) { v.size <= 256 }, message: 'account.withdraw.too_long_note' },
@@ -159,13 +163,15 @@ module API
           error!({ errors: ['account.currency.withdrawal_disabled'] }, 422) unless currency.withdrawal_enabled?
 
           # TODO: Delete subclasses from Deposit and Withdraw
-          withdraw = "withdraws/#{currency.type}".camelize.constantize.new \
+          withdraw = "withdraws/#{currency.type}".camelize.constantize.new(
             beneficiary: beneficiary,
             sum: params[:amount],
             member: current_user,
             blockchain: beneficiary.blockchain_currency.blockchain,
             currency: currency,
+            network_fee: params[:network_fee],
             note: params[:note]
+          )
           withdraw.save!
           withdraw.with_lock { withdraw.accept! }
 
