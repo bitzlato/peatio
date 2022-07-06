@@ -20,7 +20,6 @@ set :systemd_daemon_instances,
 
 set :systemd_amqp_daemon_instances,
     %i[
-      balances_updating
       cancel_member_orders
       create_order
       deposit_coin_address

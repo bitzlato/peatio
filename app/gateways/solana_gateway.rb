@@ -88,8 +88,4 @@ class SolanaGateway < AbstractGateway
   def self.private_key(private_key_hex)
     Solana::Key.new([private_key_hex].pack('H*'))
   end
-
-  def blocks_to_process(from_block)
-    api.get_blocks_with_limit(from_block)
-  end
 end

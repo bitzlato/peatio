@@ -1,6 +1,4 @@
 bargainer_job: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb bargainer_job
-blockchain_processor: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb blockchain_processor
-collector: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb collector
 currency_pricer: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb currency_pricer
 gas_price_checker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb gas_price_checker
 k_line: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb k_line
@@ -10,7 +8,6 @@ ticker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb ticker
 wallet_balances: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb wallet_balances
 swap_order_status_checker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb swap_order_status_checker
 
-balances_updating: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb balances_updating
 cancel_member_orders: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb cancel_member_orders
 create_order: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb create_order
 deposit_processor: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb deposit_processor
