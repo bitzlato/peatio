@@ -12,7 +12,6 @@ set :systemd_daemon_instances,
       currency_pricer
       k_line
       liabilities_compactor
-      payment_address_balancer
       stats_member_pnl
       swap_order_status_checker
       ticker
