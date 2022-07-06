@@ -66,7 +66,6 @@ set :systemd_daemon_instances,
       gas_price_checker
       k_line
       liabilities_compactor
-      payment_address_balancer
       stale_order_cancellator
       stats_member_pnl
       ticker

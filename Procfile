@@ -5,7 +5,6 @@ currency_pricer: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb currency
 gas_price_checker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb gas_price_checker
 k_line: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb k_line
 liabilities_compactor: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb liabilities_compactor
-payment_address_balancer: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb payment_address_balancer
 stats_member_pnl: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb stats_member_pnl
 ticker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb ticker
 wallet_balances: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb wallet_balances
