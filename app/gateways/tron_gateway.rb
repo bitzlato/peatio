@@ -28,10 +28,4 @@ class TronGateway < AbstractGateway
   def self.private_key(private_key_hex)
     Eth::Key.new(priv: private_key_hex)
   end
-
-  private
-
-  def hot_wallet
-    blockchain.hot_wallet || raise(NoHotWallet)
-  end
 end
