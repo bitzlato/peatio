@@ -81,7 +81,6 @@ set :systemd_market_amqp_daemon_role, :market_amqp_daemons
 #
 set :systemd_amqp_daemon_instances,
     %i[
-      balances_updating
       cancel_member_orders
       create_order
       deposit_coin_address

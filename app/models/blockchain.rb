@@ -62,10 +62,6 @@ class Blockchain < ApplicationRecord
     @follow_txids ||= withdraws.confirming.pluck(:txid)
   end
 
-  def service
-    @blockchain_service ||= BlockchainService.new(self)
-  end
-
   def find_money_currency(contract_address = nil)
     blockchain_currencies.find_by(contract_address: contract_address)&.money_currency ||
       raise("No found currency for '#{contract_address || :nil}' contract address in blockchain '#{key}'")
