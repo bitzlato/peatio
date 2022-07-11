@@ -15,7 +15,6 @@ set :systemd_daemon_instances,
       stats_member_pnl
       swap_order_status_checker
       ticker
-      wallet_balances
     ]
 
 set :systemd_amqp_daemon_instances,
