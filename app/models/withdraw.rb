@@ -122,20 +122,6 @@ class Withdraw < ApplicationRecord
       transitions from: %i[processing], to: :transfering
     end
 
-    # TODO: Move to service
-    # event :load do
-    # transitions from: :accepted, to: :confirming do
-    ## Load event is available only for coin withdrawals.
-    # guard do
-    # currency.coin? && txid?
-    # end
-    # end
-    # after_commit do
-    # tx = currency.blockchain.gateway.fetch_transaction(self)
-    # success! if tx.present? && tx.status.success?
-    # end
-    # end
-
     event :review do
       transitions from: :processing, to: :under_review
     end

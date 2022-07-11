@@ -22,8 +22,6 @@ class PaymentAddress < ApplicationRecord
   vault_attribute :secret
 
   scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
-  scope :with_balances, -> { where 'EXISTS ( SELECT * FROM jsonb_each_text(balances) AS each(KEY,val) WHERE "val"::decimal >= 0)' }
-  scope :collection_required, -> { with_balances.where(collection_state: %i[none pending done]) }
   scope :active, -> { where(archived_at: nil) }
 
   # TODO: Migrate association from wallet to blockchain and remove Wallet.deposit*
@@ -39,42 +37,6 @@ class PaymentAddress < ApplicationRecord
     state :collecting
     state :gas_refueling
     state :done
-
-    event :collect do
-      transitions from: %i[pending none done], to: :collecting do
-        guard do
-          last_transfer_try_at.nil? || last_transfer_try_at < TRANSACTION_SLEEP_MINUTES.minutes.ago
-        end
-      end
-      after do
-        touch :last_transfer_try_at
-      end
-      after_commit do
-        blockchain.gateway.collect! self
-        touch :collected_at
-        done!
-      end
-    end
-
-    event :refuel_gas do
-      transitions from: %i[pending none done], to: :gas_refueling do
-        guard do
-          last_transfer_try_at.nil? || last_transfer_try_at < TRANSACTION_SLEEP_MINUTES.minutes.ago
-        end
-      end
-      after do
-        touch :last_transfer_try_at
-      end
-      after_commit do
-        blockchain.gateway.refuel_gas! self
-        touch :gas_refueled_at
-        done!
-      end
-    end
-
-    event :done do
-      transitions from: %i[collecting gas_refueling], to: :done
-    end
   end
 
   before_validation if: :address do
@@ -117,15 +79,6 @@ class PaymentAddress < ApplicationRecord
     end
   end
 
-  def has_enough_gas_to_collect?
-    blockchain.gateway.has_enough_gas_to_collect? address
-  end
-
-  # Balance reached amount limit to be collected
-  def has_collectable_balances?
-    blockchain.gateway.has_collectable_balances? address
-  end
-
   def transactions
     if address.nil?
       Transaction.none
@@ -146,10 +99,6 @@ class PaymentAddress < ApplicationRecord
 
   def currency
     wallet.native_currency
-  end
-
-  def fee_wallet_approved?(currency_id)
-    BlockchainApproval.where(currency_id: currency_id, blockchain: blockchain, owner_address: address, spender_address: blockchain.fee_wallet&.address).success.any?
   end
 
   def create_token_accounts

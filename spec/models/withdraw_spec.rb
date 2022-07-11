@@ -306,44 +306,6 @@ describe Withdraw do
         end
       end
     end
-    # context :load do
-    # let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
-
-    # subject { create(:btc_withdraw, :with_deposit_liability) }
-
-    # before { subject.accept! }
-
-    # it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
-    # expect { subject.load! }.to raise_error(AASM::InvalidTransition)
-    # end
-
-    # it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
-    # BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
-    # subject.update(txid: txid)
-    # subject.load!
-    # expect(subject.confirming?).to be true
-    # end
-    # end
-
-    # context :load do
-    # let(:txid) { 'a738cb8411e2141f3de43c5f3e7a3aabe71c099bb91d296ded84f0daf29d881c' }
-
-    # subject { create(:btc_withdraw, :with_deposit_liability) }
-
-    # before { subject.accept! }
-
-    # it 'doesn\'t change state after calling #load! when withdrawing coin currency' do
-    # subject.load!
-    # expect(subject.accepted?).to be true
-    # end
-
-    # it 'transitions to :confirming after calling #load! when withdrawing coin currency' do
-    # BlockchainService.any_instance.expects(:fetch_transaction).once.returns(Peatio::Transaction.new)
-    # subject.update(txid: txid)
-    # subject.load!
-    # expect(subject.confirming?).to be true
-    # end
-    # end
 
     context :fail do
       subject { create(:btc_withdraw, :with_deposit_liability) }

@@ -16,15 +16,13 @@ module GatewayConcern
     BitcoinGateway,
     EthereumGateway,
     TronGateway,
-    SolanaGateway,
-    BelomorGateway
+    SolanaGateway
   ].map(&:to_s)
 
   CLIENTS = AVAILABLE_GATEWAYS.map { |g| g.remove(GATEWAY_PREFIX).underscore }
 
   included do
     validates :client, presence: true, inclusion: { in: CLIENTS }
-    delegate :create_address!, to: :gateway
 
     delegate :normalize_address, :normalize_txid, :valid_address?, :valid_txid?, :address_type, :private_key, to: :gateway_class
 

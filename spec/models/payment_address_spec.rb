@@ -71,13 +71,4 @@ describe PaymentAddress do
       end
     end
   end
-
-  context 'collect!' do
-    let!(:pa) { create(:eth_payment_address, blockchain_id: blockchain.id) }
-
-    it do
-      EthereumGateway.any_instance.expects(:collect!)
-      pa.collect!
-    end
-  end
 end

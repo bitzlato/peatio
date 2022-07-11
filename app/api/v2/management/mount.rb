@@ -48,7 +48,6 @@ module API
         mount Management::Currencies
         mount Management::Markets
         mount Management::Beneficiaries
-        mount Management::PaymentAddress
         mount Management::Engines
         mount Management::Wallets
 
