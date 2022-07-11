@@ -22,10 +22,6 @@ class TronGateway
       txid.to_s
     end
 
-    def valid_txid?(txid)
-      txid.to_s.match?(/\A[A-F0-9]{64}\z/i)
-    end
-
     private
 
     def valid_base58_address?(base58address)

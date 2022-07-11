@@ -6,9 +6,7 @@
 # Knows about peatio database models.
 #
 class EthereumGateway < AbstractGateway
-  include NumericHelpers
   extend Concern
-  include BalancesConcern
 
   IDLE_TIMEOUT = 1
 

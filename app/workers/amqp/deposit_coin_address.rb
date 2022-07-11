@@ -29,7 +29,6 @@ module Workers
           payment_address.update!(address: result['address'])
         end
         Rails.logger.info { { message: 'Payment address is updated', payment_address_id: payment_address.id, member_id: member.id, blockchain_id: blockchain.id } }
-        payment_address.create_token_accounts
         payment_address.trigger_address_event if payment_address.address.present?
 
       # Don't re-enqueue this job in case of error.
