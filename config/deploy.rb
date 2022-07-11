@@ -69,7 +69,6 @@ set :systemd_daemon_instances,
       stale_order_cancellator
       stats_member_pnl
       ticker
-      wallet_balances
       swap_order_status_checker
     ]
 
