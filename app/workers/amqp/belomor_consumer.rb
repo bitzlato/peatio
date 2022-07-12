@@ -11,7 +11,7 @@ module Workers
 
       def verify_payload!(payload)
         result = JWT.decode(payload['signature'], public_key, true, { algorithm: JWT_ALGORITHM })
-        raise IncorrectPayloadError if result[0].except('iat', 'exp') != payload.except('signature')
+        raise IncorrectPayloadError if result[0].except('iat', 'exp', 'time') != payload.except('signature', 'time')
       end
 
       def public_key
