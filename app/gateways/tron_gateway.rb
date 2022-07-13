@@ -6,7 +6,6 @@
 class TronGateway < AbstractGateway
   include TronGateway::Encryption
   include TronGateway::AddressNormalizer
-  include TronGateway::BalanceLoader
 
   extend TronGateway::Encryption
   extend TronGateway::AddressNormalizer

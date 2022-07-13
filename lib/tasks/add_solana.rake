@@ -99,46 +99,6 @@ namespace :solana_blockchain do
     end
   end
 
-  task setup: :environment do
-    ActiveRecord::Base.transaction do
-      blockchain = Blockchain.find_by_key!('solana-mainnet')
-      hot_wallet  = blockchain.hot_wallet
-      sol = Currency.find('sol')
-      wsol = Currency.find('wsol')
-      usdt = Currency.find('usdt')
-      wsol_bc = blockchain.blockchain_currencies.find_by!(currency: wsol)
-      usdt_bc = blockchain.blockchain_currencies.find_by!(currency: usdt)
-
-      wsol_address = blockchain.gateway.find_or_create_token_account(hot_wallet.address, wsol_bc.contract_address, blockchain.hot_wallet)
-      wsol_wallet = Wallet.create!({
-                                     address: wsol_address,
-                                     kind: 'hot',
-                                     status: 'active',
-                                     name: 'Solana WSOL Hot Wallet',
-                                     settings: { 'uri' => 'https://api.testnet.solana.com' },
-                                     blockchain: blockchain,
-                                     use_as_fee_source: true,
-                                     parent: hot_wallet
-                                   })
-      wsol_wallet.currencies = [sol, wsol]
-      wsol_wallet.save
-
-      usdt_address = blockchain.gateway.find_or_create_token_account(hot_wallet.address, usdt_bc.contract_address, blockchain.hot_wallet)
-      usdt_wallet = Wallet.create!({
-                                     address: usdt_address,
-                                     kind: 'hot',
-                                     status: 'active',
-                                     name: 'Solana USDT Hot Wallet',
-                                     settings: { 'uri' => 'https://api.testnet.solana.com' },
-                                     blockchain: blockchain,
-                                     use_as_fee_source: true,
-                                     parent: hot_wallet
-                                   })
-      usdt_wallet.currencies = [sol, usdt]
-      usdt_wallet.save
-    end
-  end
-
   task activate: :environment do
     ActiveRecord::Base.transaction do
       blockchain = Blockchain.find_by(key: 'solana-mainnet')

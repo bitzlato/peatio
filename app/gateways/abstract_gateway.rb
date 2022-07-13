@@ -32,16 +32,8 @@ class AbstractGateway
     not_implemented!
   end
 
-  def self.valid_txid?(_txid)
-    not_implemented
-  end
-
   def self.implements?(method_name)
     instance_methods(false).include?(method_name)
-  end
-
-  def self.enable_personal_address_balance?
-    true
   end
 
   def initialize(blockchain)
@@ -65,18 +57,6 @@ class AbstractGateway
 
   def logger
     Rails.logger
-  end
-
-  def kind_of_address(address)
-    if address.is_a?(Enumerable)
-      raise 'multiple addresses' if address.many?
-
-      address = address.first
-    end
-    return :wallet if address.in? blockchain.wallets_addresses
-    return :deposit if address.in? blockchain.deposit_addresses
-
-    :unknown
   end
 
   def build_client

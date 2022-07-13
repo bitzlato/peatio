@@ -5,7 +5,6 @@ k_line: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb k_line
 liabilities_compactor: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb liabilities_compactor
 stats_member_pnl: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb stats_member_pnl
 ticker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb ticker
-wallet_balances: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb wallet_balances
 swap_order_status_checker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb swap_order_status_checker
 
 cancel_member_orders: RAILS_ROOT=. bundle exec ruby ./lib/daemons/amqp_daemon.rb cancel_member_orders

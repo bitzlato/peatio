@@ -242,10 +242,6 @@ class Withdraw < ApplicationRecord
     nil
   end
 
-  def find_appropriate_wallet
-    blockchain.wallets.with_withdraw_currency(currency).take
-  end
-
   def completed?
     aasm_state.in?(COMPLETED_STATES.map(&:to_s))
   end
@@ -263,10 +259,6 @@ class Withdraw < ApplicationRecord
       updated_at: updated_at.iso8601,
       completed_at: completed_at&.iso8601,
       blockchain_txid: txid }
-  end
-
-  def money_amount
-    blockchain_currency.money_currency.to_money_from_decimal amount
   end
 
   def for_notify

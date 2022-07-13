@@ -1,21 +1,10 @@
 # frozen_string_literal: true
 
 class SolanaGateway < AbstractGateway
-  attr_reader :blockchain, :api
-
-  delegate :load_balances, :load_balance, to: :balance_loader
+  attr_reader :blockchain
 
   def initialize(blockchain)
     @blockchain = blockchain
-    @api = Api.new(blockchain)
-  end
-
-  def balance_loader
-    BalanceLoader.new(blockchain)
-  end
-
-  def find_or_create_token_account(owner_address, contract_address, signer)
-    TokenAddressCreator.new(blockchain).find_or_create_token_account(owner_address, contract_address, signer)
   end
 
   def self.valid_address? address

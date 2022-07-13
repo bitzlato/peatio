@@ -169,20 +169,6 @@ class Deposit < ApplicationRecord
     # TODO удалить
   end
 
-  def money_amount
-    blockchain_currency.money_currency.to_money_from_decimal amount
-  end
-
-  def money_amount=(value)
-    raise 'must be Money' unless value.is_a? Money
-
-    self.amount = value.to_d
-  end
-
-  def recorded_transaction
-    blockchain.transactions.find_by(txid: txid, txout: txout)
-  end
-
   def for_notify
     API::V2::Entities::Deposit.represent(self).as_json
   end

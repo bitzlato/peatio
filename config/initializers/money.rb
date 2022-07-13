@@ -21,8 +21,6 @@ class Money
       end
     end
 
-    include NumericHelpers
-
     class << self
       def find!(id)
         find(id) || raise("No #{id} Money::Currency found!")

@@ -67,10 +67,6 @@ class PaymentAddress < ApplicationRecord
     blockchain&.explore_address_url address
   end
 
-  def update_balances!
-    BalancesUpdater.new(blockchain: blockchain, address: address).perform
-  end
-
   def status
     if address.present?
       blockchain.status # active or disabled
@@ -99,21 +95,5 @@ class PaymentAddress < ApplicationRecord
 
   def currency
     wallet.native_currency
-  end
-
-  def create_token_accounts
-    return if address.nil? or blockchain.client != 'solana' or parent.present?
-
-    blockchain.blockchain_currencies.tokens.each do |blockchain_currency|
-      create_token_account(blockchain_currency)
-    end
-  end
-
-  def create_token_account blockchain_currency
-    return if token_addresses.where(blockchain_currency: blockchain_currency).present?
-
-    hot_wallet = blockchain.withdraw_wallet_for_currency(blockchain_currency.parent_currency)
-    new_address = blockchain.gateway.find_or_create_token_account(address, blockchain_currency.contract_address, hot_wallet)
-    PaymentAddress.create(member: member, blockchain: blockchain, parent: self, address: new_address, blockchain_currency: blockchain_currency)
   end
 end
