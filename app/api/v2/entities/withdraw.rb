@@ -30,6 +30,14 @@ module API
         )
 
         expose(
+          :blockchain_key,
+          documentation: {
+            type: String,
+            desc: 'Withdrawal blockchain key.'
+          }
+        ) { |w| w.blockchain.key }
+
+        expose(
           :type,
           documentation: {
             type: String,

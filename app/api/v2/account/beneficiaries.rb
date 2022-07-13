@@ -64,10 +64,14 @@ module API
                      desc: 'Beneficiary currency code.',
                      documentation: { param_type: 'body' },
                      coerce_with: ->(c) { c.downcase }
-            requires :blockchain_id,
+            optional :blockchain_id,
                      type: Integer,
                      values: { value: -> { ::Blockchain.pluck(:id) }, message: 'account.blockchain_id.doesnt_exist' },
                      desc: -> { API::V2::Entities::Beneficiary.documentation[:blockchain_id][:desc] }
+            optional :blockchain_key,
+                     type: String,
+                     values: { value: -> { ::Blockchain.pluck(:key) }, message: 'account.blockchain_key.doesnt_exist' },
+                     desc: -> { API::V2::Entities::Beneficiary.documentation[:blockchain_key][:desc] }
             requires :name,
                      type: String,
                      allow_blank: false,
@@ -87,9 +91,11 @@ module API
             user_authorize! :create, ::Beneficiary
 
             currency = Currency.find(params[:currency_id])
-            blockchain_currency = BlockchainCurrency.find_by!(blockchain_id: params[:blockchain_id], currency: currency)
+            blockchain = Blockchain.find_by(key: params[:blockchain_key]) || Blockchain.find_by(id: params[:blockchain_id])
+            error!({ errors: ['account.blockchain.doesnt_exist'] }, 422) if blockchain.nil?
+            blockchain_currency = blockchain.blockchain_currencies.find_by!(currency: currency)
 
-            declared_params = declared(params).except(:blockchain_id, :currency_id).merge(blockchain_currency_id: blockchain_currency.id)
+            declared_params = declared(params).except(:blockchain_key, :blockchain_id, :currency_id).merge(blockchain_currency_id: blockchain_currency.id)
 
             if !currency.withdrawal_enabled?
               error!({ errors: ['account.currency.withdrawal_disabled'] }, 422)

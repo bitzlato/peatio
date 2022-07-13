@@ -25,9 +25,17 @@ module API
           :blockchain_id,
           documentation: {
             type: Integer,
-            desc: 'Beneficiary blockchain id.'
+            desc: 'Beneficiary blockchain id. (deprecated, use blockchain_key)'
           }
         ) { |b| b.blockchain_currency.blockchain_id }
+
+        expose(
+          :blockchain_key,
+          documentation: {
+            type: String,
+            desc: 'Beneficiary blockchain key.'
+          }
+        ) { |b| b.blockchain_currency.blockchain.key }
 
         expose(
           :uid,
