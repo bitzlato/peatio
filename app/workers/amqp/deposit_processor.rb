@@ -14,7 +14,7 @@ module Workers
         end
 
         blockchain = Blockchain.find_by!(key: payload[:blockchain_key])
-        from_address = payload[:from_address]
+        from_address = payload[:from_address].downcase
         txid = payload[:txid]
 
         withdraw_txids = blockchain.withdraws.where.not(txid: nil).confirming.pluck(:txid)
@@ -24,7 +24,7 @@ module Workers
         end
 
         member = Member.find_by!(uid: owner_id[1])
-        to_address = payload[:to_address]
+        to_address = payload[:to_address].downcase
         amount = payload[:amount].to_d
         txout = payload[:txout]
         currency = Currency.find(payload[:currency])
