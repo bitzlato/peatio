@@ -18,5 +18,6 @@ BlockchainCurrency.create!(blockchain: blockchain, currency: Currency.find('trst
 blockchain = Blockchain.find_by!(key: 'bsc-testnet')
 parent_blockchain_currency = BlockchainCurrency.create!(blockchain: blockchain, currency: Currency.find('bnb-bep20'), base_factor: 1_000_000_000_000_000_000, gas_limit: 21_000)
 BlockchainCurrency.create!(blockchain: blockchain, currency: Currency.find('usdt-bep20'), contract_address: '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd', base_factor: 1_000_000_000_000_000_000, gas_limit: 100_000, parent_id: parent_blockchain_currency.id)
+BlockchainCurrency.create!(blockchain: blockchain, currency: Currency.find('trst'), contract_address: '0x0000000000000000000000000000000000000000', base_factor: 1_000_000, gas_limit: 90_000, parent_id: parent_blockchain_currency.id)
 
 Member.create!(level: 3, role: 'member', uid: 'U123456789', state: :active)

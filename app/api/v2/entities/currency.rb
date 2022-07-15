@@ -158,11 +158,8 @@ module API
             desc: 'Blockchain currencies'
           }
         ) do |currency, _options|
-          # TODO: rollback after deploying and testing tron mainnnet blockchain
-          currency.blockchain_currencies.visible
-                  .joins(:blockchain)
-                  .where.not(blockchains: { key: 'solana-mainnet' })
-                  .as_json(only: %i[blockchain_id withdraw_fee min_deposit_amount])
+          currency.blockchain_currencies.includes(:blockchain).visible
+                  .map { |bc| { blockchain_id: bc.blockchain_id, blockchain_key: bc.blockchain.key, withdraw_fee: bc.withdraw_fee, min_deposit_amount: bc.min_deposit_amount } }
         end
       end
     end

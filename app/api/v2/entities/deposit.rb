@@ -30,6 +30,14 @@ module API
         )
 
         expose(
+          :blockchain_key,
+          documentation: {
+            type: String,
+            desc: 'Deposit blockchain key.'
+          }
+        ) { |d| d.blockchain.key }
+
+        expose(
           :amount,
           format_with: :decimal,
           documentation: {

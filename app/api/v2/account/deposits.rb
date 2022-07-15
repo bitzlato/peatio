@@ -127,15 +127,15 @@ module API
              'If this case you should try again later.',
              success: API::V2::Entities::PaymentAddress
         params do
-          requires :blockchain_id,
-                   type: Integer,
-                   values: { value: -> { ::Blockchain.active.pluck(:id) }, message: 'account.blockchain.doesnt_exist' },
-                   desc: 'Blockchain ID.'
+          requires :blockchain,
+                   type: String,
+                   values: { value: -> { ::Blockchain.active.pluck(:id).map(&:to_s) + ::Blockchain.active.pluck(:key) }, message: 'account.blockchain.doesnt_exist' },
+                   desc: 'Blockchain ID or key.'
         end
-        get '/deposit_address/:blockchain_id', requirements: { blockchain_id: /\d+/ } do
+        get '/deposit_address/:blockchain' do
           user_authorize! :read, ::PaymentAddress
 
-          blockchain = Blockchain.find(params[:blockchain_id])
+          blockchain = Blockchain.find_by(id: params[:blockchain]) || Blockchain.find_by(key: params[:blockchain])
           error!({ errors: ['account.blockchain.no_deposit_address_invoices_only'] }, 422) if blockchain.enable_invoice?
 
           payment_address = current_user.payment_address(blockchain)
