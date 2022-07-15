@@ -8,6 +8,4 @@ class BitzlatoGateway < AbstractGateway
     # https://chat.lgk.one/bitzlato/pl/e4ixc1wyxpy13d84tezdcbfy4a
     address =~ /^[a-z][a-z0-9_]{1,27}$/i
   end
-
-  def build_client; end
 end

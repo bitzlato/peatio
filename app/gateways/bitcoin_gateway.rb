@@ -12,10 +12,4 @@ class BitcoinGateway < AbstractGateway
   def self.normalize_address(address)
     AdequateCryptoAddress.address(address, :btc).address
   end
-
-  private
-
-  def build_client
-    # TODO
-  end
 end

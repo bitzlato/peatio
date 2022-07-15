@@ -12,10 +12,6 @@ module Peatio
     attr_reader :notifier
     delegate :ping, :post, to: :notifier
 
-    def self.gas_price
-      new ENV.fetch('SLACK_GAS_PRICE_CHANNEL')
-    end
-
     def self.bargainer
       new ENV.fetch('SLACK_BARGAINER_CHANNEL')
     end

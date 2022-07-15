@@ -167,7 +167,7 @@ FactoryBot.define do
       withdraw_limit_24h   { 5 }
       withdraw_limit_72h   { 10 }
       position             { 9 }
-      options {  }
+      options {}
     end
 
     trait :sol_spl do
@@ -177,7 +177,7 @@ FactoryBot.define do
       withdraw_limit_24h   { 5 }
       withdraw_limit_72h   { 10 }
       position             { 9 }
-      options {  }
+      options {}
     end
   end
 end

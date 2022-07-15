@@ -29,14 +29,6 @@ module API
         )
 
         expose(
-          :height,
-          documentation: {
-            type: Integer,
-            desc: 'The number of blocks preceding a particular block on blockchain.'
-          }
-        )
-
-        expose(
           :explorer_address,
           documentation: {
             type: String,
@@ -67,16 +59,6 @@ module API
             desc: 'Blockchain status (active/disabled).'
           }
         )
-
-        expose(
-          :is_transaction_price_too_high,
-          documentation: {
-            type: String,
-            desc: 'Transaction price is too high (true/false).'
-          }
-        ) do |blockchain, _options|
-          blockchain.high_transaction_price_at.present?
-        end
       end
     end
   end

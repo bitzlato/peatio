@@ -53,7 +53,6 @@ module Peatio
     config.active_record.schema_format = :sql
 
     config.currencies = config_for(:currencies)
-    config.blockchains = config_for(:blockchains)
     config.bargainers = config_for(:bargainers)
   end
 end
