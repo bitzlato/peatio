@@ -1,6 +1,5 @@
 bargainer_job: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb bargainer_job
 currency_pricer: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb currency_pricer
-gas_price_checker: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb gas_price_checker
 k_line: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb k_line
 liabilities_compactor: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb liabilities_compactor
 stats_member_pnl: RAILS_ROOT=. bundle exec ruby ./lib/daemons/daemons.rb stats_member_pnl
