@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AbstractGateway
-  attr_reader :blockchain, :client
+  attr_reader :blockchain
 
   def self.address_type
     nil
@@ -38,7 +38,6 @@ class AbstractGateway
 
   def initialize(blockchain)
     @blockchain = blockchain
-    @client = build_client
   end
 
   def support_wallet_kind?(_kind)
@@ -54,14 +53,6 @@ class AbstractGateway
   end
 
   private
-
-  def logger
-    Rails.logger
-  end
-
-  def build_client
-    not_implemented!
-  end
 
   def not_implemented!
     raise "not implemented #{self.class}"

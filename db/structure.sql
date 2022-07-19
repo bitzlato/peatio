@@ -444,7 +444,6 @@ CREATE TABLE public.blockchains (
     client_options jsonb DEFAULT '{}'::jsonb NOT NULL,
     height_updated_at timestamp without time zone,
     client_version character varying,
-    high_transaction_price_at timestamp without time zone,
     address_type character varying,
     disable_collection boolean DEFAULT false NOT NULL,
     allowance_enabled boolean DEFAULT false NOT NULL,
@@ -3502,6 +3501,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220316142851'),
 ('20220320195933'),
 ('20220323190452'),
-('20220501134849');
+('20220501134849'),
+('20220715115009');
 
 
