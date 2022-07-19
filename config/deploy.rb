@@ -63,7 +63,6 @@ set :systemd_daemon_instances,
     %i[
       bargainer_job
       currency_pricer
-      gas_price_checker
       k_line
       liabilities_compactor
       stale_order_cancellator
