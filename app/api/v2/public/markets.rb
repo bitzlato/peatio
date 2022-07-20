@@ -188,6 +188,35 @@ module API
               .get_ohlc(params.slice(:limit, :time_from, :time_to).merge(offset: true))
           end
 
+          desc 'Get OHLC(k line) of specific p2p market.'
+          params do
+            requires :market,
+                     type: String,
+                     desc: -> { V2::Entities::Market.documentation[:symbol] }
+            optional :period,
+                     type: { value: Integer, message: 'public.k_line.non_integer_period' },
+                     values: { value: KLineService::AVAILABLE_POINT_PERIODS, message: 'public.k_line.invalid_period' },
+                     default: 1,
+                     desc: "Time period of K line, default to 1. You can choose between #{KLineService::AVAILABLE_POINT_PERIODS.join(', ')}"
+            optional :time_from,
+                     type: { value: Integer, message: 'public.k_line.non_integer_time_from' },
+                     allow_blank: { value: false, c_name: 'k_line' },
+                     desc: 'An integer represents the seconds elapsed since Unix epoch. If set, only k-line data after that time will be returned.'
+            optional :time_to,
+                     type: { value: Integer, message: 'public.k_line.non_integer_time_to' },
+                     allow_blank: { value: false, c_name: 'k_line' },
+                     desc: 'An integer represents the seconds elapsed since Unix epoch. If set, only k-line data till that time will be returned.'
+            optional :limit,
+                     type: { value: Integer, message: 'public.k_line.non_integer_limit' },
+                     values: { value: KLineService::AVAILABLE_POINT_LIMITS, message: 'public.k_line.invalid_limit' },
+                     default: 30,
+                     desc: 'Limit the number of returned data points default to 30. Ignored if time_from and time_to are given.'
+          end
+          get ':market/p2p-k-line', requirements: { market: /[\w.\-]+/ } do
+            KLineService[params[:market], params[:period]]
+              .get_ohlc(params.slice(:limit, :time_from, :time_to).merge(offset: true))
+          end
+
           desc 'Get ticker of all markets (For response doc see /:market/tickers/ response).'
           get '/tickers' do
             Rails.cache.fetch(:markets_tickers, expires_in: 60) do
