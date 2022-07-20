@@ -34,6 +34,7 @@ module Workers
           when 'succeed'
             raise 'Incorrect withdrawal event' if payload[:owner_id].split(':').last != withdrawal.member.uid || payload[:currency] != withdrawal.currency_id || payload[:amount].to_d != withdrawal.amount || payload[:blockchain_key] != withdrawal.blockchain.key
 
+            withdrawal.update!(txid: payload[:txid]) if withdrawal.processing?
             withdrawal.success!
             Rails.logger.info { { message: 'Withdrawal is successed', payload: payload.inspect } }
           when 'failed'

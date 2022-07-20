@@ -29,7 +29,7 @@ RSpec.describe Workers::AMQP::WithdrawalProcessor do
     end
   end
 
-  context 'when event has succeed status' do
+  context 'when withdrawal is in confirming and event has succeed status' do
     let(:data) { { 'remote_id' => withdrawal.id, 'status' => 'succeed', 'owner_id' => "user:#{member.uid}", 'currency' => withdrawal.currency_id, 'amount' => withdrawal.sum.to_s, 'blockchain_key' => withdrawal.blockchain.key } }
 
     it 'successes withdrawal' do
@@ -38,6 +38,16 @@ RSpec.describe Workers::AMQP::WithdrawalProcessor do
       withdrawal.dispatch!
       described_class.new.process(payload)
       expect(withdrawal.reload).to have_attributes(aasm_state: 'succeed', is_locked: false)
+    end
+  end
+
+  context 'when withdrawal is in processing and event has succeed status' do
+    let(:txid) { '0x123' }
+    let(:data) { { 'remote_id' => withdrawal.id, 'status' => 'succeed', 'owner_id' => "user:#{member.uid}", 'currency' => withdrawal.currency_id, 'amount' => withdrawal.sum.to_s, 'blockchain_key' => withdrawal.blockchain.key, 'txid' => txid } }
+
+    it 'successes withdrawal' do
+      described_class.new.process(payload)
+      expect(withdrawal.reload).to have_attributes(aasm_state: 'succeed', is_locked: false, txid: txid)
     end
   end
 end
