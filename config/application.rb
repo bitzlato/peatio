@@ -25,9 +25,6 @@ module Peatio
     #   lib/peatio/aasm/locking.rb => AASM::Locking
     config.eager_load_paths += Dir[Rails.root.join('lib/peatio')]
 
-    # Require Scout.
-    require 'scout_apm' if Rails.env.in?(ENV['SCOUT_ENV'].to_s.split(',').map(&:squish))
-
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading

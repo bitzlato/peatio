@@ -114,11 +114,6 @@ group :test do
   gem 'webmock', '~> 3.5'
 end
 
-# Load gems from Gemfile.plugin.
-Dir.glob File.expand_path('Gemfile.plugin', __dir__) do |file|
-  eval_gemfile file
-end
-
 gem 'pg', '~> 1.2'
 
 gem 'http_accept_language', '~> 2.1'

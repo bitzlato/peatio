@@ -54,16 +54,6 @@ GIT
       guard-compat (~> 1.1)
 
 GIT
-  remote: https://github.com/finfex/bitzlato.git
-  revision: 76760712d4e91654214191d9a1cb652d47c1e03f
-  branch: main
-  specs:
-    bitzlato (0.1.9)
-      faraday (>= 0.17)
-      json (~> 2.0)
-      jwt (~> 2.3.0.dev)
-
-GIT
   remote: https://github.com/seuros/capistrano-puma.git
   revision: 285b45f51d0662e760cc5e75f15614589a2be170
   specs:
@@ -623,7 +613,6 @@ DEPENDENCIES
   amazing_print
   annotate
   base58 (~> 0.2.3)
-  bitzlato!
   bootsnap (>= 1.1.0)
   brakeman
   bugsnag
