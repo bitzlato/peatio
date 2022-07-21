@@ -43,7 +43,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
       it do
         beneficiary_data.except!(:uid)
         request
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(JSON.parse(response.body)['error']).to match(/uid is missing/i)
       end
     end
@@ -51,7 +51,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
     context 'without currency and state' do
       it do
         request
-        expect(response.status).to eq 200
+        expect(response).to have_http_status :ok
         total_for_member = pending_beneficiaries_for_member.count + active_beneficiaries_for_member.count
         expect(response_body.size).to eq total_for_member
       end
@@ -61,7 +61,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
       it do
         beneficiary_data.merge!(currency: :uah)
         request
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/management.currency.doesnt_exist/i)
       end
     end
@@ -74,7 +74,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
       it do
         beneficiary_data.merge!(currency: :btc)
         request
-        expect(response.status).to eq 200
+        expect(response).to have_http_status :ok
         expect(response_body).to be_all { |b| b['currency'] == 'btc' }
       end
 
@@ -86,7 +86,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         it do
           beneficiary_data.merge!(currency: :usd)
           request
-          expect(response.status).to eq 200
+          expect(response).to have_http_status :ok
           expect(response_body).to be_all { |b| b['currency'] == 'usd' }
           expect(usd_beneficiary_for_member.id).to eq response_body.first['id']
           expect(usd_beneficiary_for_member.data[:account_number]).to eq response_body.first['data']['account_number']
@@ -98,7 +98,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
       it do
         beneficiary_data.merge!(state: :invalid)
         request
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to match(/management.beneficiary.invalid_state/i)
       end
     end
@@ -107,7 +107,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
       it do
         beneficiary_data.merge!(state: :pending)
         request
-        expect(response.status).to eq 200
+        expect(response).to have_http_status :ok
         expect(response_body).to be_all { |b| b['state'] == 'pending' }
       end
     end
@@ -120,7 +120,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
       it do
         beneficiary_data.merge!(currency: :btc, state: :active)
         request
-        expect(response.status).to eq 200
+        expect(response).to have_http_status :ok
         expect(response_body).to be_all { |b| b['currency'] == 'btc' && b['state'] == 'active' }
       end
     end
@@ -154,7 +154,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
             it do
               beneficiary_data.except!(rp)
               request
-              expect(response.status).to eq 422
+              expect(response).to have_http_status :unprocessable_entity
               expect(JSON.parse(response.body)['error']).to match(/#{rp} is missing/i)
             end
           end
@@ -165,7 +165,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         it do
           beneficiary_data.merge!(currency: :uah)
           request
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response.body).to match(/management.currency.doesnt_exist/i)
         end
       end
@@ -174,7 +174,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         it do
           beneficiary_data.merge!(name: Faker::Lorem.sentence(500))
           request
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response.body).to match(/management.beneficiary.too_long_name/i)
         end
       end
@@ -183,7 +183,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         it do
           beneficiary_data.merge!(state: 'test')
           request
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response.body).to match(/management.beneficiary.invalid_state/i)
         end
       end
@@ -192,7 +192,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         it do
           beneficiary_data.merge!(description: Faker::Lorem.sentence(500))
           request
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response.body).to match(/management.beneficiary.too_long_description/i)
         end
       end
@@ -201,7 +201,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
         it do
           beneficiary_data.merge!(data: 'data')
           request
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response.body).to match(/management.beneficiary.non_json_data/i)
         end
       end
@@ -211,7 +211,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
           it do
             beneficiary_data[:data][:address] = nil
             request
-            expect(response.status).to eq 422
+            expect(response).to have_http_status :unprocessable_entity
             expect(response.body).to match(/management.beneficiary.missing_address_in_data/i)
           end
         end
@@ -222,7 +222,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
             beneficiary_data[:data][:memo] = :memo
 
             request
-            expect(response.status).to eq 422
+            expect(response).to have_http_status :unprocessable_entity
             expect(response.body).to match(/management.beneficiary.missing_address_in_data/i)
           end
         end
@@ -236,7 +236,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
           it do
             request
-            expect(response.status).to eq 422
+            expect(response).to have_http_status :unprocessable_entity
             expect(response.body).to match(/management.currency.withdrawal_disabled/i)
           end
         end
@@ -248,7 +248,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
           it do
             request
-            expect(response.status).to eq 422
+            expect(response).to have_http_status :unprocessable_entity
             expect(response.body).to match(/management.beneficiary.failed_to_create/i)
           end
         end
@@ -264,7 +264,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
             it do
               request
-              expect(response.status).to eq 422
+              expect(response).to have_http_status :unprocessable_entity
               expect(response.body).to match(/management.beneficiary.duplicate_address/i)
             end
           end
@@ -285,7 +285,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
             it do
               request
-              expect(response.status).to eq 201
+              expect(response).to have_http_status :created
             end
           end
 
@@ -298,7 +298,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
             it do
               request
-              expect(response.status).to eq 201
+              expect(response).to have_http_status :created
 
               result = JSON.parse(response.body)
               expect(Beneficiary.find(result['id']).data['address']).to eq(address)
@@ -336,7 +336,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
             it do
               beneficiary_data[:data].except!(:address)
               request
-              expect(response.status).to eq 201
+              expect(response).to have_http_status :created
               expect(response_body['data']).to eq beneficiary_data[:data].with_indifferent_access
             end
           end
@@ -345,7 +345,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
             it do
               beneficiary_data[:data] = nil
               request
-              expect(response.status).to eq 422
+              expect(response).to have_http_status :unprocessable_entity
               expect(JSON.parse(response.body)['error']).to match(/data is empty/i)
             end
           end
@@ -361,7 +361,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
               it do
                 request
-                expect(response.status).to eq 201
+                expect(response).to have_http_status :created
               end
             end
           end
@@ -378,7 +378,7 @@ describe API::V2::Management::Beneficiaries, type: :request do
 
       it 'creates beneficiary with active state' do
         request
-        expect(response.status).to eq 201
+        expect(response).to have_http_status :created
         id = response_body['id']
         expect(Beneficiary.find(id).state).to eq 'active'
         expect(Beneficiary.find(id).data).to eq response_body['data']

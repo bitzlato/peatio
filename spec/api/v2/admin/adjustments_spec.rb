@@ -86,7 +86,7 @@ describe API::V2::Admin::Adjustments, type: :request do
       it 'validates currency' do
         api_get '/api/v2/admin/adjustments', token: token, params: { currency: 'uah' }
 
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('admin.currency.doesnt_exist')
       end
 

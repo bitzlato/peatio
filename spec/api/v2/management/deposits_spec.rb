@@ -98,7 +98,7 @@ describe API::V2::Management::Deposits, type: :request do
 
     it 'creates new fiat deposit with state «submitted»' do
       request
-      expect(response.status).to eq 201
+      expect(response).to have_http_status :created
       record = Deposit.find_by_tid!(JSON.parse(response.body).fetch('tid'))
       expect(record.amount).to eq 750.77
       expect(record.aasm_state).to eq 'submitted'
@@ -115,7 +115,7 @@ describe API::V2::Management::Deposits, type: :request do
       data.merge!(state: :accepted)
       signers.clear.concat %i[james jeff]
       expect { request }.not_to(change { member.get_account(currency).balance })
-      expect(response.status).to eq 401
+      expect(response).to have_http_status :unauthorized
     end
 
     it 'validates member' do
@@ -272,7 +272,7 @@ describe API::V2::Management::Deposits, type: :request do
       data.merge!(state: :accepted)
       signers.clear.concat %i[james]
       expect { request }.not_to(change { member.get_account(:usd).balance })
-      expect(response.status).to eq 401
+      expect(response).to have_http_status :unauthorized
     end
   end
 end
