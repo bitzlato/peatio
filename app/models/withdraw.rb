@@ -137,7 +137,7 @@ class Withdraw < ApplicationRecord
     end
 
     event :success do
-      transitions from: :confirming, to: :succeed do
+      transitions from: %i[processing confirming], to: :succeed do
         guard do
           currency.fiat? || txid?
         end
