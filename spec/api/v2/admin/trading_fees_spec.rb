@@ -16,7 +16,7 @@ describe API::V2::Admin::TradingFees, type: :request do
     it 'returns all trading fees' do
       api_get '/api/v2/admin/trading_fees', token: token
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(JSON.parse(response.body).length).to eq TradingFee.spot.count
     end
 
@@ -297,7 +297,7 @@ describe API::V2::Admin::TradingFees, type: :request do
         api_post '/api/v2/admin/trading_fees/delete', token: token, params: { id: TradingFee.last.id + 42 }
       end.not_to change(TradingFee, :count)
 
-      expect(response.status).to eq 404
+      expect(response).to have_http_status :not_found
     end
   end
 end

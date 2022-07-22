@@ -110,7 +110,6 @@ group :test do
   gem 'rspec-retry', '~> 0.6'
   gem 'test-prof', '~> 1.0'
   gem 'timecop', '~> 0.9'
-  gem 'vcr', '~> 6.0'
   gem 'webmock', '~> 3.5'
 end
 

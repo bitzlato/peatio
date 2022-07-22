@@ -16,7 +16,7 @@ describe API::V2::Admin::WithdrawLimits, type: :request do
     it 'returns all withdraw limits' do
       api_get '/api/v2/admin/withdraw_limits', token: token
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(JSON.parse(response.body).length).to eq WithdrawLimit.count
     end
 
@@ -240,7 +240,7 @@ describe API::V2::Admin::WithdrawLimits, type: :request do
         api_delete "/api/v2/admin/withdraw_limits/#{WithdrawLimit.last.id + 42}", token: token
       end.not_to change(WithdrawLimit, :count)
 
-      expect(response.status).to eq 404
+      expect(response).to have_http_status :not_found
     end
   end
 end

@@ -28,7 +28,7 @@ class TronGateway
       address_bytes = Base58.base58_to_binary(base58address, :bitcoin)
       signature = address_bytes[-4..]
       address = address_bytes[..20]
-      checksum = (Digest::SHA256.digest(Digest::SHA256.digest(address)))[...4]
+      checksum = Digest::SHA256.digest(Digest::SHA256.digest(address))[...4]
 
       checksum == signature
     end

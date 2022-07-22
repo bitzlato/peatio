@@ -14,7 +14,7 @@ describe API::V2::Public::TradingFees, type: :request do
     it 'returns all trading fees' do
       api_get '/api/v2/public/trading_fees'
 
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(JSON.parse(response.body).length).to eq TradingFee.spot.count
     end
 
