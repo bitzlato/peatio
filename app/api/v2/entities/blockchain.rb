@@ -59,6 +59,8 @@ module API
             desc: 'Blockchain status (active/disabled).'
           }
         )
+
+        expose(:flexible_fee, documentation: { type: String, desc: 'Is flexible fee enabled?' })
       end
     end
   end

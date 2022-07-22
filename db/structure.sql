@@ -447,7 +447,8 @@ CREATE TABLE public.blockchains (
     address_type character varying,
     disable_collection boolean DEFAULT false NOT NULL,
     allowance_enabled boolean DEFAULT false NOT NULL,
-    chain_id integer
+    chain_id integer,
+    flexible_fee boolean DEFAULT false
 );
 
 
@@ -3502,6 +3503,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220320195933'),
 ('20220323190452'),
 ('20220501134849'),
+('20220705142538'),
 ('20220715115009');
 
 

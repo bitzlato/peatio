@@ -339,6 +339,7 @@ class Withdraw < ApplicationRecord
                    to_address: to_address,
                    amount: amount,
                    currency_id: currency_id,
+                   fee: fee,
                    owner_id: "user:#{member.uid}",
                    remote_id: id,
                    meta: { note: note }
