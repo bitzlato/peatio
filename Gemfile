@@ -46,6 +46,7 @@ gem 'email_validator', '~> 1.6.0'
 gem 'env-tweaks', '~> 1.0.0'
 gem 'god', '~> 0.13.7', require: false
 gem 'influxdb', '~> 0.7.0'
+gem "influxer", "~> 1.2"
 gem 'jwt-multisig', '~> 1.0.0'
 gem 'jwt-rack', '~> 0.1.0', require: false
 gem 'memoist', '~> 0.16.0'

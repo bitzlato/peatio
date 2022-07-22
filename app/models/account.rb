@@ -11,6 +11,8 @@ class Account < ApplicationRecord
 
   acts_as_eventable prefix: 'account', on: %i[create update]
 
+  has_metrics # inherits: [:member_id, :currency_id]
+
   ZERO = 0.to_d
 
   validates :member_id, uniqueness: { scope: :currency_id }
@@ -18,6 +20,10 @@ class Account < ApplicationRecord
 
   scope :visible, -> { joins(:currency).merge(Currency.where(visible: true)) }
   scope :ordered, -> { joins(:currency).order(position: :asc) }
+
+  after_commit do
+    metrics.write(balance: balance.to_d, locked: locked.to_d, amount: amount.to_d)
+  end
 
   def as_json_for_event_api
     {
