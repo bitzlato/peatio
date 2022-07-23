@@ -18,12 +18,6 @@ module Workers
         from_address = from_address.downcase if blockchain.address_type == 'ethereum'
         txid = payload[:txid]
 
-        withdraw_txids = blockchain.withdraws.where.not(txid: nil).confirming.pluck(:txid)
-        if from_address.in?(blockchain.wallets_addresses) && !txid.in?(withdraw_txids)
-          report_exception('Gas refueling event', true, payload)
-          return
-        end
-
         member = Member.find_by!(uid: owner_id[1])
         to_address = payload[:to_address]
         to_address = to_address.downcase if blockchain.address_type == 'ethereum'
