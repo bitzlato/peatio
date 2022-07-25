@@ -35,7 +35,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
   context 'without JWT' do
     it do
       get endpoint
-      expect(response.status).to eq 401
+      expect(response).to have_http_status :unauthorized
     end
   end
 
@@ -45,7 +45,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
   context 'without currency and state' do
     it do
       api_get endpoint, token: token
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       total_for_member = pending_beneficiaries_for_member.count + active_beneficiaries_for_member.count
       expect(response_body.size).to eq total_for_member
     end
@@ -53,12 +53,12 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
     context 'pagination' do
       it 'returns paginated result' do
         api_get endpoint, token: token, params: { page: 1, limit: 1 }
-        expect(response.status).to eq 200
+        expect(response).to have_http_status :ok
         result = JSON.parse(response.body)
         expect(result.count).to eq 1
 
         api_get endpoint, token: token, params: { page: 2, limit: 1 }
-        expect(response.status).to eq 200
+        expect(response).to have_http_status :ok
         result = JSON.parse(response.body)
         expect(result.count).to eq 1
       end
@@ -68,7 +68,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
   context 'non-existing currency' do
     it do
       api_get endpoint, params: { currency: :uah }, token: token
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('account.currency.doesnt_exist')
     end
   end
@@ -80,7 +80,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
 
     it do
       api_get endpoint, params: { currency: :btc }, token: token
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(response_body).to be_all { |b| b['currency'] == 'btc' }
     end
   end
@@ -88,7 +88,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
   context 'invalid state' do
     it do
       api_get endpoint, params: { state: :invalid }, token: token
-      expect(response.status).to eq 422
+      expect(response).to have_http_status :unprocessable_entity
       expect(response).to include_api_error('account.beneficiary.invalid_state')
     end
   end
@@ -96,7 +96,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
   context 'existing state' do
     it do
       api_get endpoint, params: { state: :pending }, token: token
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(response_body).to be_all { |b| b['state'] == 'pending' }
     end
   end
@@ -108,7 +108,7 @@ describe API::V2::Account::Beneficiaries, 'GET', type: :request do
 
     it do
       api_get endpoint, params: { currency: :btc, state: :active }, token: token
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(response_body).to be_all { |b| b['currency'] == 'btc' && b['state'] == 'active' }
     end
   end
@@ -147,7 +147,7 @@ describe API::V2::Account::Beneficiaries, 'GET /:id', type: :request do
 
     it do
       api_get endpoint, token: token
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(response_body['id']).to eq pending_beneficiary.id
     end
   end
@@ -159,7 +159,7 @@ describe API::V2::Account::Beneficiaries, 'GET /:id', type: :request do
 
     it do
       api_get endpoint, token: token
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(response_body['id']).to eq active_beneficiary.id
     end
   end
@@ -171,7 +171,7 @@ describe API::V2::Account::Beneficiaries, 'GET /:id', type: :request do
 
     it do
       api_get endpoint, token: token
-      expect(response.status).to eq 200
+      expect(response).to have_http_status :ok
       expect(response_body['id']).to eq fiat_beneficiary.id
       expect(response_body['data']['account_number']).to eq fiat_beneficiary.masked_account_number
     end
@@ -184,7 +184,7 @@ describe API::V2::Account::Beneficiaries, 'GET /:id', type: :request do
 
     it do
       api_get endpoint, token: token
-      expect(response.status).to eq 404
+      expect(response).to have_http_status :not_found
     end
   end
 
@@ -197,7 +197,7 @@ describe API::V2::Account::Beneficiaries, 'GET /:id', type: :request do
 
     it do
       api_get endpoint, token: token
-      expect(response.status).to eq 404
+      expect(response).to have_http_status :not_found
     end
   end
 
@@ -246,7 +246,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
   context 'without JWT' do
     it do
       post endpoint
-      expect(response.status).to eq 401
+      expect(response).to have_http_status :unauthorized
     end
   end
 
@@ -268,7 +268,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         context rp do
           it do
             api_post endpoint, params: beneficiary_data.except(rp), token: token
-            expect(response.status).to eq 422
+            expect(response).to have_http_status :unprocessable_entity
             expect(response).to include_api_error("account.beneficiary.missing_#{rp}")
           end
         end
@@ -278,7 +278,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
     context 'currency doesn\'t exist' do
       it do
         api_post endpoint, params: beneficiary_data.merge(currency: :uah), token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.currency.doesnt_exist')
       end
     end
@@ -286,7 +286,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
     context 'name is too long' do
       it do
         api_post endpoint, params: beneficiary_data.merge(name: Faker::String.random(65)), token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.too_long_name')
       end
     end
@@ -294,7 +294,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
     context 'description is too long' do
       it do
         api_post endpoint, params: beneficiary_data.merge(description: Faker::String.random(256)), token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.too_long_description')
       end
     end
@@ -302,7 +302,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
     context 'data has invalid type' do
       it do
         api_post endpoint, params: beneficiary_data.merge(data: 'data'), token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.non_json_data')
       end
     end
@@ -312,7 +312,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         it do
           beneficiary_data[:data] = { address: nil }.to_json
           api_post endpoint, params: beneficiary_data, token: token
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response).to include_api_error('account.beneficiary.missing_address_in_data')
         end
       end
@@ -321,7 +321,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         it do
           beneficiary_data[:data] = { address: 'wrong address' }.to_json
           api_post endpoint, params: beneficiary_data, token: token
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response).to include_api_error('account.beneficiary.invalid_address')
         end
       end
@@ -331,7 +331,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
           beneficiary_data[:data] = { memo: :memo }.to_json
 
           api_post endpoint, params: beneficiary_data, token: token
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response).to include_api_error('account.beneficiary.missing_address_in_data')
         end
       end
@@ -345,7 +345,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
         it do
           api_post endpoint, params: beneficiary_data, token: token
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response).to include_api_error('account.currency.withdrawal_disabled')
         end
       end
@@ -362,7 +362,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
           it do
             api_post endpoint, params: beneficiary_data, token: token
-            expect(response.status).to eq 422
+            expect(response).to have_http_status :unprocessable_entity
             expect(response).to include_api_error('account.beneficiary.duplicate_address')
           end
         end
@@ -383,7 +383,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
           it do
             api_post endpoint, params: beneficiary_data, token: token
-            expect(response.status).to eq 201
+            expect(response).to have_http_status :created
           end
         end
 
@@ -396,7 +396,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
           it do
             api_post endpoint, params: beneficiary_data, token: token
-            expect(response.status).to eq 201
+            expect(response).to have_http_status :created
 
             result = JSON.parse(response.body)
             expect(Beneficiary.find(result['id']).data['address']).to eq(address)
@@ -437,7 +437,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         it do
           fiat_beneficiary_data[:data].delete(:address)
           api_post endpoint, params: fiat_beneficiary_data, token: token
-          expect(response.status).to eq 201
+          expect(response).to have_http_status :created
           expect(response_body['data']['account_number']).not_to eq fiat_beneficiary_data[:data][:account_number]
         end
       end
@@ -446,7 +446,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
         it do
           fiat_beneficiary_data[:data] = nil
           api_post endpoint, params: fiat_beneficiary_data.except(:data), token: token
-          expect(response.status).to eq 422
+          expect(response).to have_http_status :unprocessable_entity
           expect(response).to include_api_error('account.beneficiary.empty_data')
         end
       end
@@ -463,7 +463,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
           it do
             api_post endpoint, params: fiat_beneficiary_data, token: token
-            expect(response.status).to eq 201
+            expect(response).to have_http_status :created
           end
         end
       end
@@ -479,7 +479,7 @@ describe API::V2::Account::Beneficiaries, 'POST', type: :request do
 
     it 'creates beneficiary with pending state' do
       api_post endpoint, params: beneficiary_data, token: token
-      expect(response.status).to eq 201
+      expect(response).to have_http_status :created
       id = response_body['id']
       expect(Beneficiary.find(id).state).to eq 'pending'
     end
@@ -525,7 +525,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
 
       it do
         api_patch endpoint, params: activation_data.merge(id: :id), token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.non_integer_id')
       end
     end
@@ -537,7 +537,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
 
       it do
         api_patch endpoint, params: activation_data.merge(pin: :pin), token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.non_integer_pin')
       end
     end
@@ -558,7 +558,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     context 'valid pin' do
       it do
         api_patch endpoint, params: activation_data, token: token
-        expect(response.status).to eq 200
+        expect(response).to have_http_status :ok
         expect(response_body['id']).to eq pending_beneficiary.id
         expect(response_body['state']).to eq 'active'
       end
@@ -568,7 +568,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
       it do
         activation_data[:pin] = activation_data[:pin] + 1
         api_patch endpoint, params: activation_data, token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.invalid_pin')
       end
     end
@@ -589,7 +589,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     context 'valid pin' do
       it do
         api_patch endpoint, params: activation_data, token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.cant_activate')
       end
     end
@@ -598,7 +598,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
       it do
         activation_data[:pin] = activation_data[:pin] + 1
         api_patch endpoint, params: activation_data, token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.cant_activate')
       end
     end
@@ -619,7 +619,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     context 'any pin' do
       it do
         api_patch endpoint, params: activation_data, token: token
-        expect(response.status).to eq 404
+        expect(response).to have_http_status :not_found
       end
     end
   end
@@ -641,7 +641,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /activate', type: :request do
     context 'any pin' do
       it do
         api_patch endpoint, params: activation_data, token: token
-        expect(response.status).to eq 404
+        expect(response).to have_http_status :not_found
       end
     end
   end
@@ -669,7 +669,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
 
       it do
         api_patch endpoint, params: resend_data.merge(id: :id), token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.non_integer_id')
       end
     end
@@ -706,14 +706,14 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
       it do
         pending_beneficiary.update(sent_at: 1.minute.ago)
         api_patch endpoint, params: resend_data, token: token
-        expect(response.status).to eq 204
+        expect(response).to have_http_status :no_content
       end
     end
 
     context '1 minute from last request on create or resend not passed' do
       it do
         api_patch endpoint, params: resend_data, token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.cant_resend_within_1_minute')
         expect(response_body.include?('sent_at')).to eq true
       end
@@ -734,7 +734,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
     context '1 minute from last request on create or resend passed' do
       it do
         api_patch endpoint, params: resend_data, token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.cant_resend')
       end
     end
@@ -742,7 +742,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
     context '1 minute from last request on create or resend not passed' do
       it do
         api_patch endpoint, params: resend_data, token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.cant_resend')
       end
     end
@@ -761,7 +761,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
 
     it do
       api_patch endpoint, params: resend_data, token: token
-      expect(response.status).to eq 404
+      expect(response).to have_http_status :not_found
     end
   end
 
@@ -781,7 +781,7 @@ describe API::V2::Account::Beneficiaries, 'PATCH /resend_pin', type: :request do
 
     it do
       api_patch endpoint, params: activation_data, token: token
-      expect(response.status).to eq 404
+      expect(response).to have_http_status :not_found
     end
   end
 end
@@ -809,7 +809,7 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
 
       it do
         api_delete endpoint, token: token
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response).to include_api_error('account.beneficiary.non_integer_id')
       end
     end
@@ -840,7 +840,7 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
 
     it do
       api_delete endpoint, token: token
-      expect(response.status).to eq 204
+      expect(response).to have_http_status :no_content
       expect(response.body).to be_empty
     end
   end
@@ -854,7 +854,7 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
 
     it do
       api_delete endpoint, token: token
-      expect(response.status).to eq 204
+      expect(response).to have_http_status :no_content
       expect(response.body).to be_empty
     end
   end
@@ -868,7 +868,7 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
 
     it do
       api_delete endpoint, token: token
-      expect(response.status).to eq 404
+      expect(response).to have_http_status :not_found
     end
   end
 
@@ -883,7 +883,7 @@ describe API::V2::Account::Beneficiaries, 'DELETE /:id', type: :request do
 
     it do
       api_delete endpoint, token: token
-      expect(response.status).to eq 404
+      expect(response).to have_http_status :not_found
     end
   end
 end
