@@ -333,11 +333,11 @@ describe API::V2::Account::Withdraws, type: :request do
 
       expect(response).to have_http_status(:created)
       record = Withdraw.last
-      expect(record.sum).to eq amount
+      expect(record.sum).to eq amount + blockchain_currency.withdraw_fee
       expect(record.aasm_state).to eq 'accepted'
       expect(record.account).to eq account
-      expect(record.account.balance).to eq(1.2 - amount)
-      expect(record.account.locked).to eq amount
+      expect(record.account.balance).to eq(1.2 - amount - blockchain_currency.withdraw_fee)
+      expect(record.account.locked).to eq amount + blockchain_currency.withdraw_fee
     end
 
     it 'creates new withdraw with note' do
@@ -371,15 +371,15 @@ describe API::V2::Account::Withdraws, type: :request do
     end
 
     context 'with network_fee' do
-      let(:sum) { 0.5 }
+      let(:amount) { 0.5 }
       let(:network_fee) { 0.1 }
 
       it 'calculates fee with network_fee' do
-        api_post '/api/v2/account/withdraws', params: data.merge(amount: sum, network_fee: network_fee), token: token
+        api_post '/api/v2/account/withdraws', params: data.merge(amount: amount, network_fee: network_fee), token: token
 
         expect(Withdraw.last).to have_attributes(
-          sum: sum,
-          amount: sum - (network_fee + blockchain_currency.withdraw_fee),
+          sum: amount + network_fee + blockchain_currency.withdraw_fee,
+          amount: amount,
           fee: network_fee + blockchain_currency.withdraw_fee,
           network_fee: network_fee
         )

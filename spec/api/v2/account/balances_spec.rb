@@ -4,7 +4,7 @@ describe API::V2::Account::Balances, type: :request do
   let(:member) { create(:member, :level_3) }
   let(:deposit_btc) { create(:deposit, :deposit_btc, member: member, amount: 10) }
   let(:deposit_eth) { create(:deposit, :deposit_eth, member: member, amount: 30.5) }
-  let(:withdraw) { create(:btc_withdraw, member: member, sum: 5) }
+  let(:withdraw) { create(:btc_withdraw, member: member, amount: 4.99) }
   let(:token) { jwt_for(member) }
   let(:limit_1_month) { WithdrawLimit.for(kyc_level: member.level, group: member.group).limit_1_month }
   let(:limit_24_hour) { WithdrawLimit.for(kyc_level: member.level, group: member.group).limit_24_hour }
@@ -55,7 +55,7 @@ describe API::V2::Account::Balances, type: :request do
         let!(:member) { create(:member, :level_3, email: nil) }
         let!(:deposit_btc) { create(:deposit, :deposit_btc, member: member, amount: 10) }
         let!(:deposit_eth) { create(:deposit, :deposit_eth, member: member, amount: 30.5) }
-        let!(:withdraw) { create(:btc_withdraw, member: member, sum: 5) }
+        let!(:withdraw) { create(:btc_withdraw, member: member, amount: 4.99) }
         let(:token) { jwt_for(member) }
 
         it 'returns current user balances' do

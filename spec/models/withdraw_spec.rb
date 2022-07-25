@@ -2,7 +2,7 @@
 
 describe Withdraw do
   context 'aasm_state' do
-    subject { create(:usd_withdraw, :with_deposit_liability, sum: 1000) }
+    subject { create(:usd_withdraw, :with_deposit_liability) }
 
     before do
       subject.stubs(:send_withdraw_confirm_email)
@@ -388,26 +388,14 @@ describe Withdraw do
   end
 
   context 'fee is set to fixed value of 10' do
-    let(:withdraw) { create(:usd_withdraw, :with_deposit_liability, sum: 200) }
+    let(:withdraw) { create(:usd_withdraw, :with_deposit_liability, amount: 200) }
 
     before { BlockchainCurrency.any_instance.expects(:withdraw_fee).once.returns(10) }
 
     it 'computes fee' do
+      expect(withdraw.amount).to eql 200.to_d
       expect(withdraw.fee).to eql 10.to_d
-      expect(withdraw.amount).to eql 190.to_d
-    end
-  end
-
-  context 'fee exceeds amount' do
-    let(:member) { create(:member) }
-    let!(:account) { member.get_account(:usd).tap { |x| x.update!(balance: 200.0.to_d) } }
-    let(:withdraw) { build(:usd_withdraw, sum: 200, member: member) }
-
-    before { BlockchainCurrency.any_instance.expects(:withdraw_fee).once.returns(200) }
-
-    it 'fails validation' do
-      expect(withdraw.save).to eq false
-      expect(withdraw.errors[:amount]).to match(['must be greater than 0.0'])
+      expect(withdraw.sum).to eql 210.to_d
     end
   end
 
@@ -473,7 +461,7 @@ describe Withdraw do
         build(:usd_withdraw,
               :with_deposit_liability,
               beneficiary: beneficiary,
-              sum: 10,
+              amount: 10,
               member: beneficiary.member)
       end
 
@@ -484,8 +472,8 @@ describe Withdraw do
     end
   end
 
-  context 'validate min withdrawal sum' do
-    subject { build(:btc_withdraw, sum: 0.1, member: member) }
+  context 'validate min withdrawal amount' do
+    subject { build(:btc_withdraw, amount: 0.1, member: member) }
 
     let(:member) { create(:member) }
     let!(:account) { member.get_account(:btc).tap { |x| x.update!(balance: 1.0.to_d) } }
@@ -498,7 +486,7 @@ describe Withdraw do
 
     it do
       subject.save
-      expect(subject.errors[:sum]).to match(['must be greater than or equal to 0.5'])
+      expect(subject.errors[:amount]).to match(['must be greater than or equal to 0.5'])
     end
   end
 
@@ -513,7 +501,7 @@ describe Withdraw do
         currency: Currency.find(:btc),
         member: member,
         rid: address,
-        sum: 1.0.to_d,
+        amount: 0.5.to_d,
         note: note
     end
 
@@ -548,7 +536,7 @@ describe Withdraw do
     end
 
     let :record do
-      build(:usd_withdraw, :with_deposit_liability, :with_beneficiary, member: member, sum: 0.1234)
+      build(:usd_withdraw, :with_deposit_liability, :with_beneficiary, member: member, amount: 0.1234)
     end
 
     it do
@@ -561,7 +549,7 @@ describe Withdraw do
   context 'verify_limits' do
     let!(:member) { create(:member, group: 'vip-1', level: 1) }
     let!(:withdraw_limit) { create(:withdraw_limit, group: 'vip-1', kyc_level: 1, limit_24_hour: 6, limit_1_month: 10) }
-    let(:withdraw) { create(:btc_withdraw, :with_deposit_liability, member: member, sum: 0.5.to_d) }
+    let(:withdraw) { create(:btc_withdraw, :with_deposit_liability, member: member, amount: 0.5.to_d) }
 
     before do
       Currency.any_instance.unstub(:price)

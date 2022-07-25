@@ -12,7 +12,7 @@ FactoryBot.define do
     # We need to have valid Liability-based balance to spend funds.
     trait :with_deposit_liability do
       before(:create) do |withdraw|
-        deposit = create(:deposit_btc, member: withdraw.member, amount: withdraw.sum)
+        deposit = create(:deposit_btc, member: withdraw.member, amount: 15)
         deposit.accept!
         deposit.process!
         deposit.dispatch!
@@ -33,7 +33,7 @@ FactoryBot.define do
     currency { Currency.find(:btc) }
     member { create(:member, :level_3) }
     rid { Faker::Blockchain::Bitcoin.address }
-    sum { 10.to_d }
+    amount { 10.to_d }
     type { 'Withdraws::Coin' }
   end
 
@@ -56,7 +56,7 @@ FactoryBot.define do
   factory :eth_withdraw, class: 'Withdraws::Coin' do
     trait :with_deposit_liability do
       before(:create) do |withdraw|
-        deposit = create(:deposit, :deposit_eth, member: withdraw.member, amount: withdraw.sum)
+        deposit = create(:deposit, :deposit_eth, member: withdraw.member, amount: 15)
         deposit.accept!
         deposit.process!
         deposit.dispatch!
@@ -67,7 +67,7 @@ FactoryBot.define do
     currency { Currency.find(:eth) }
     member { create(:member, :level_3) }
     rid { Faker::Blockchain::Ethereum.address }
-    sum { 10.to_d }
+    amount { 10.to_d }
     type { 'Withdraws::Coin' }
 
     trait :with_beneficiary do
@@ -85,7 +85,7 @@ FactoryBot.define do
     # We need to have valid Liability-based balance to spend funds.
     trait :with_deposit_liability do
       before(:create) do |withdraw|
-        create(:deposit_usd, member: withdraw.member, amount: withdraw.sum)
+        create(:deposit_usd, member: withdraw.member, amount: 1005)
           .accept!
       end
     end
@@ -104,7 +104,7 @@ FactoryBot.define do
     blockchain { find_or_create(:blockchain, 'dummy', key: 'dummy') }
     currency { Currency.find(:usd) }
     rid { Faker::Bank.iban }
-    sum { 1000.to_d }
+    amount { 1000.to_d }
     type { 'Withdraws::Fiat' }
   end
 end
