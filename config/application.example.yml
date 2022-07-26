@@ -6,7 +6,7 @@ defaults: &defaults
   # (password, port and database are optional).
   REDIS_URL:      redis://localhost:6379
   REDIS_PASSWORD: ~
-  REDIS_CLUSTER:  false
+  REDIS_CLUSTER:  'false'
 
   # Application URL configuration variables.
   URL_HOST:                localhost
@@ -26,9 +26,9 @@ defaults: &defaults
   # Access-Control-Allow-Credentials response header is not supported
   # if the CORS header ‘Access-Control-Allow-Origin’ is ‘*’.
   API_CORS_ALLOW_CREDENTIALS: 'false'
-  # The Access-Control-Max-Age response header indicates how long 
+  # The Access-Control-Max-Age response header indicates how long
   # the results of a preflight request can be cached.
-  # Default value 3600. 
+  # Default value 3600.
   API_CORS_MAX_AGE:           ~
 
   # Configuration variables for Sentry.
