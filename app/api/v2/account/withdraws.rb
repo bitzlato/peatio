@@ -159,15 +159,17 @@ module API
           error!({ errors: ['account.withdraw.invalid_otp'] }, 422) unless Vault::TOTP.validate?(current_user.uid, params[:otp])
 
           currency = Currency.find(params[:currency])
-
           error!({ errors: ['account.currency.withdrawal_disabled'] }, 422) unless currency.withdrawal_enabled?
+
+          blockchain = beneficiary.blockchain_currency.blockchain
+          error!({ errors: ['account.blockchain.blockchain_is_not_active'] }, 422) if blockchain.status != 'active'
 
           # TODO: Delete subclasses from Deposit and Withdraw
           withdraw = "withdraws/#{currency.type}".camelize.constantize.new(
             beneficiary: beneficiary,
             sum: params[:amount],
             member: current_user,
-            blockchain: beneficiary.blockchain_currency.blockchain,
+            blockchain: blockchain,
             currency: currency,
             network_fee: params[:network_fee],
             note: params[:note]
