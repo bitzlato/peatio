@@ -22,12 +22,14 @@ set :systemd_amqp_daemon_instances,
       cancel_member_orders
       create_order
       deposit_coin_address
+      deposit_processor
       influx_writer
       trade_completed
       trade_executor
       matching
       order_processor
       order_cancellator
+      withdrawal_processor
     ]
 
 server ENV.fetch('STAGING_SERVER_B'),
