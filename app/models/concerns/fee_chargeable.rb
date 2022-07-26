@@ -27,7 +27,7 @@ module FeeChargeable
         next unless blockchain_currency
 
         self.sum  ||= 0.to_d
-        self.fee  ||= blockchain_currency.withdraw_fee
+        self.fee  ||= blockchain_currency.withdraw_fee + network_fee.to_d
         self.amount = sum - fee
       end
 

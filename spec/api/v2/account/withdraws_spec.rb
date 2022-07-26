@@ -369,6 +369,22 @@ describe API::V2::Account::Withdraws, type: :request do
         expect(response).to include_api_error('user.ability.not_permitted')
       end
     end
+
+    context 'with network_fee' do
+      let(:sum) { 0.5 }
+      let(:network_fee) { 0.1 }
+
+      it 'calculates fee with network_fee' do
+        api_post '/api/v2/account/withdraws', params: data.merge(amount: sum, network_fee: network_fee), token: token
+
+        expect(Withdraw.last).to have_attributes(
+          sum: sum,
+          amount: sum - (network_fee + blockchain_currency.withdraw_fee),
+          fee: network_fee + blockchain_currency.withdraw_fee,
+          network_fee: network_fee
+        )
+      end
+    end
   end
 
   describe 'GET /withdraws/sums' do

@@ -41,6 +41,7 @@ class Withdraw < ApplicationRecord
   validates :sum,
             presence: true,
             numericality: { greater_than_or_equal_to: ->(withdraw) { withdraw.currency.min_withdraw_amount } }
+  validates :network_fee, allow_blank: true, numericality: { greater_than: 0 }
 
   validate on: :create do
     errors.add(:beneficiary, 'not active') if beneficiary.present? && !beneficiary.active? && !aasm_state.to_sym.in?(COMPLETED_STATES)
@@ -339,6 +340,7 @@ class Withdraw < ApplicationRecord
                    to_address: to_address,
                    amount: amount,
                    currency_id: currency_id,
+                   fee: network_fee,
                    owner_id: "user:#{member.uid}",
                    remote_id: id,
                    meta: { note: note }
