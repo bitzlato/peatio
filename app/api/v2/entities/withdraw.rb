@@ -46,8 +46,7 @@ module API
         ) { |w| w.currency.fiat? ? :fiat : :coin }
 
         expose(
-          :sum,
-          as: :amount,
+          :amount,
           documentation: {
             type: String,
             desc: 'The withdrawal amount'
