@@ -26,17 +26,17 @@ module FeeChargeable
       before_validation on: :create do
         next unless blockchain_currency
 
-        self.sum  ||= 0.to_d
-        self.fee  ||= blockchain_currency.withdraw_fee + network_fee.to_d
-        self.amount = sum - fee
+        self.amount ||= 0.to_d
+        self.fee ||= blockchain_currency.withdraw_fee + network_fee.to_d
+        self.sum = amount + fee
       end
 
-      validates :sum,
+      validates :amount,
                 presence: true,
                 numericality: { greater_than: 0.to_d },
                 precision: { less_than_or_eq_to: ->(w) { w.currency.precision } }
 
-      validates :amount,
+      validates :sum,
                 precision: { less_than_or_eq_to: ->(w) { w.currency.precision } }
 
       validate on: :create do

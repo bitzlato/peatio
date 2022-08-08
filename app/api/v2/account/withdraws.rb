@@ -165,7 +165,7 @@ module API
           # TODO: Delete subclasses from Deposit and Withdraw
           withdraw = "withdraws/#{currency.type}".camelize.constantize.new(
             beneficiary: beneficiary,
-            sum: params[:amount],
+            amount: params[:amount],
             member: current_user,
             blockchain: beneficiary.blockchain_currency.blockchain,
             currency: currency,
