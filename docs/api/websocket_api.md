@@ -34,7 +34,7 @@ You can find a format of these events below in the doc.
 Example of connection to public channel using the [wscat](https://github.com/websockets/wscat):
 
 ```bash
-$ wscat -n -c 'wss://market.bitzlato.com/api/v2/ranger/public?stream=usdeth'
+$ wscat -n -c 'wss://bitzlato.bz/api/v2/ranger/public?stream=usdeth'
 ```
 
 Connection to the private channel requires creating the [API key](https://github.com/bitzlato/peatio/blob/master/docs/api/trading_api.md#how-to-create-api-key). Example of connection on nodejs:
@@ -52,7 +52,7 @@ const signature = crypto
   .digest("hex");
 
 const client = new websocket(
-  "wss://market.bitzlato.com/api/v2/ranger/private?cancel_on_close=1",
+  "wss://bitzlato.bz/api/v2/ranger/private?cancel_on_close=1",
   {
     headers: {
       "X-Auth-Nonce": nonce,
