@@ -15,7 +15,7 @@ module Workers
 
           case payload[:status]
           when 'confirming'
-            raise 'Incorrect withdrawal event' if payload[:owner_id].split(':').last != withdrawal.member.uid
+            raise IncorrectPayloadError if payload[:owner_id].split(':').last != withdrawal.member.uid
 
             withdrawal.process! if withdrawal.errored?
             withdrawal.transfer!
@@ -32,7 +32,7 @@ module Workers
               Rails.logger.warn { e.as_json.merge(id: withdrawal.id) }
             end
           when 'succeed'
-            raise 'Incorrect withdrawal event' if payload[:owner_id].split(':').last != withdrawal.member.uid || payload[:currency] != withdrawal.currency_id || payload[:amount].to_d != withdrawal.amount || payload[:blockchain_key] != withdrawal.blockchain.key
+            raise IncorrectPayloadError if payload[:owner_id].split(':').last != withdrawal.member.uid || payload[:currency] != withdrawal.currency_id || payload[:amount].to_d != withdrawal.amount || payload[:blockchain_key] != withdrawal.blockchain.key
 
             withdrawal.update!(txid: payload[:txid]) if withdrawal.processing?
             withdrawal.success!
@@ -46,6 +46,8 @@ module Workers
           else
             raise 'Unsupported withdrawal status'
           end
+        rescue IncorrectPayloadError => e
+          report_exception(e, true, payload)
         rescue StandardError => e
           Rails.logger.warn id: withdrawal.id, message: 'Setting withdrawal state to errored.'
           report_exception e, true, withdrawal_id: withdrawal.id
