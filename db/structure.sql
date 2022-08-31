@@ -265,46 +265,6 @@ ALTER SEQUENCE public.block_numbers_id_seq OWNED BY public.block_numbers.id;
 
 
 --
--- Name: blockchain_addresses; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.blockchain_addresses (
-    id bigint NOT NULL,
-    address_type character varying NOT NULL,
-    address public.citext NOT NULL,
-    private_key_hex_encrypted character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: COLUMN blockchain_addresses.private_key_hex_encrypted; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.blockchain_addresses.private_key_hex_encrypted IS 'Is must be NOT NULL but vault-rails does not support it';
-
-
---
--- Name: blockchain_addresses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.blockchain_addresses_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: blockchain_addresses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.blockchain_addresses_id_seq OWNED BY public.blockchain_addresses.id;
-
-
---
 -- Name: blockchain_approvals; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -384,45 +344,6 @@ ALTER SEQUENCE public.blockchain_currencies_id_seq OWNED BY public.blockchain_cu
 
 
 --
--- Name: blockchain_nodes; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.blockchain_nodes (
-    id bigint NOT NULL,
-    blockchain_id bigint,
-    client character varying NOT NULL,
-    server_encrypted character varying(1024),
-    latest_block_number bigint,
-    server_touched_at timestamp without time zone,
-    is_public boolean DEFAULT false NOT NULL,
-    has_accounts boolean DEFAULT false NOT NULL,
-    use_for_withdraws boolean DEFAULT false NOT NULL,
-    archived_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: blockchain_nodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.blockchain_nodes_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: blockchain_nodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.blockchain_nodes_id_seq OWNED BY public.blockchain_nodes.id;
-
-
---
 -- Name: blockchains; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -436,7 +357,6 @@ CREATE TABLE public.blockchains (
     status character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    server_encrypted character varying(1024),
     id bigint NOT NULL,
     enable_invoice boolean DEFAULT false NOT NULL,
     explorer_contract_address character varying,
@@ -1074,8 +994,6 @@ CREATE TABLE public.payment_addresses (
     address character varying(95),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    secret_encrypted character varying(255),
-    details_encrypted character varying(1024),
     member_id bigint,
     remote boolean DEFAULT false NOT NULL,
     blockchain_id bigint NOT NULL,
@@ -1484,7 +1402,6 @@ CREATE TABLE public.wallets (
     updated_at timestamp without time zone NOT NULL,
     max_balance numeric(36,18) DEFAULT 0.0 NOT NULL,
     kind integer NOT NULL,
-    settings_encrypted character varying(1024),
     balance jsonb,
     plain_settings json,
     enable_invoice boolean DEFAULT false NOT NULL,
@@ -1665,13 +1582,6 @@ ALTER TABLE ONLY public.block_numbers ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- Name: blockchain_addresses id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blockchain_addresses ALTER COLUMN id SET DEFAULT nextval('public.blockchain_addresses_id_seq'::regclass);
-
-
---
 -- Name: blockchain_approvals id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1683,13 +1593,6 @@ ALTER TABLE ONLY public.blockchain_approvals ALTER COLUMN id SET DEFAULT nextval
 --
 
 ALTER TABLE ONLY public.blockchain_currencies ALTER COLUMN id SET DEFAULT nextval('public.blockchain_currencies_id_seq'::regclass);
-
-
---
--- Name: blockchain_nodes id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blockchain_nodes ALTER COLUMN id SET DEFAULT nextval('public.blockchain_nodes_id_seq'::regclass);
 
 
 --
@@ -1944,14 +1847,6 @@ ALTER TABLE ONLY public.block_numbers
 
 
 --
--- Name: blockchain_addresses blockchain_addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blockchain_addresses
-    ADD CONSTRAINT blockchain_addresses_pkey PRIMARY KEY (id);
-
-
---
 -- Name: blockchain_approvals blockchain_approvals_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1965,14 +1860,6 @@ ALTER TABLE ONLY public.blockchain_approvals
 
 ALTER TABLE ONLY public.blockchain_currencies
     ADD CONSTRAINT blockchain_currencies_pkey PRIMARY KEY (id);
-
-
---
--- Name: blockchain_nodes blockchain_nodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blockchain_nodes
-    ADD CONSTRAINT blockchain_nodes_pkey PRIMARY KEY (id);
 
 
 --
@@ -2287,13 +2174,6 @@ CREATE UNIQUE INDEX index_block_numbers_on_blockchain_id_and_number ON public.bl
 
 
 --
--- Name: index_blockchain_addresses_on_address_and_address_type; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_blockchain_addresses_on_address_and_address_type ON public.blockchain_addresses USING btree (address, address_type);
-
-
---
 -- Name: index_blockchain_approvals_on_blockchain_id_and_txid; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2333,13 +2213,6 @@ CREATE UNIQUE INDEX index_blockchain_currencies_on_blockchain_id_and_currency_id
 --
 
 CREATE INDEX index_blockchain_currencies_on_currency_id ON public.blockchain_currencies USING btree (currency_id);
-
-
---
--- Name: index_blockchain_nodes_on_blockchain_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_blockchain_nodes_on_blockchain_id ON public.blockchain_nodes USING btree (blockchain_id);
 
 
 --
@@ -3160,14 +3033,6 @@ ALTER TABLE ONLY public.blockchain_currencies
 
 
 --
--- Name: blockchain_nodes fk_rails_86c4fbb9f7; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blockchain_nodes
-    ADD CONSTRAINT fk_rails_86c4fbb9f7 FOREIGN KEY (blockchain_id) REFERENCES public.blockchains(id);
-
-
---
 -- Name: blockchain_approvals fk_rails_a26b217d2c; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3503,6 +3368,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220323190452'),
 ('20220501134849'),
 ('20220715115009'),
-('20220725111821');
+('20220725111821'),
+('20220831083335'),
+('20220831084030'),
+('20220831104944');
 
 
