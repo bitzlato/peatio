@@ -14,8 +14,4 @@ class SolanaGateway < AbstractGateway
   def self.address_type
     :solana
   end
-
-  def self.private_key(private_key_hex)
-    Solana::Key.new([private_key_hex].pack('H*'))
-  end
 end

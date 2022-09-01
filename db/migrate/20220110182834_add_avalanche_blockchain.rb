@@ -10,7 +10,6 @@ class AddAvalancheBlockchain < ActiveRecord::Migration[5.2]
                          key: 'avax-mainnet',
                          name: 'Avalanche',
                          gateway_klass: 'EthereumGateway',
-                         server: 'https://api.avax.network/ext/bc/C/rpc',
                          height: 9_399_120,
                          min_confirmations: 6,
                          explorer: {

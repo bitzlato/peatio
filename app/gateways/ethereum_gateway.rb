@@ -16,8 +16,4 @@ class EthereumGateway < AbstractGateway
   def self.address_type
     :ethereum
   end
-
-  def self.private_key(private_key_hex)
-    Eth::Key.new(priv: private_key_hex)
-  end
 end

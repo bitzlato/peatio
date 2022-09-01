@@ -3,12 +3,10 @@
 # Rename to Gateway
 #
 class Blockchain < ApplicationRecord
+  self.ignored_columns = ['server_encrypted']
+
   include GatewayConcern
   include BlockchainExploring
-  include Vault::EncryptedModel
-
-  vault_lazy_decrypt!
-  vault_attribute :server
 
   has_many :wallets
   has_many :whitelisted_smart_contracts
@@ -20,14 +18,12 @@ class Blockchain < ApplicationRecord
   has_many :deposits, dependent: :restrict_with_exception
   has_many :gas_refuels
   has_many :block_numbers
-  has_many :nodes, class_name: 'BlockchainNode'
 
   validates :key, :name, presence: true, uniqueness: true
   validates :status, inclusion: { in: %w[active disabled] }
   validates :height,
             :min_confirmations,
             numericality: { greater_than_or_equal_to: 1, only_integer: true }
-  validates :server, url: { allow_blank: true }
   before_create { self.key = key.strip.downcase }
 
   scope :active, -> { where(status: :active) }

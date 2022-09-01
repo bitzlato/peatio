@@ -7,11 +7,6 @@
   balance:          {}
   max_balance:      0.0
   status:           active
-  settings:
-    #
-    # Geth gateway client settings.
-    uri:          http://127.0.0.1:8545
-    secret:       'changeme'
 
 - name:             Ethereum Hot Wallet
   blockchain_key:   eth-ropsten
@@ -22,11 +17,6 @@
   balance:          {}
   max_balance:      100.0
   status:           active
-  settings:
-    #
-    # Geth gateway client settings.
-    uri:          http://127.0.0.1:8545
-    secret:       'test'
 
 - name:             Ethereum Warm Wallet
   blockchain_key:   eth-ropsten
@@ -37,11 +27,6 @@
   balance:          {}
   max_balance:      1000.0
   status:           active
-  settings:
-    #
-    # Geth gateway client settings.
-    uri:          http://127.0.0.1:8545
-    secret:       'test'
 
 - name:             Ethereum Wallet for paying ERC20 fees
   blockchain_key:   eth-ropsten
@@ -52,11 +37,6 @@
   balance:          {}
   max_balance:      100.0
   status:           active
-  settings:
-    #
-    # Geth gateway client settings.
-    uri:          http://127.0.0.1:8545
-    secret:       'test'
 
 - name:             Bitcoin Deposit Wallet
   blockchain_key:   btc-testnet
@@ -67,10 +47,6 @@
   balance:          {}
   max_balance:      0.0
   status:           active
-  settings:
-    #
-    # Bitcoind gateway client settings.
-    uri:          http://user:password@127.0.0.1:18332
 
 - name:             Bitcoin Hot Wallet
   blockchain_key:   btc-testnet
@@ -81,13 +57,6 @@
   balance:          {}
   max_balance:      0.0
   status:           active
-  settings:
-    #
-    # Bitcoind gateway client settings.
-    uri:          http://user:password@127.0.0.1:18332
-    # skip_deposit_collection - defines if deposit will be collected to
-    # this wallet. Supported values: true | false. By default `false`.
-    skip_deposit_collection: true
 
 - name:             Bitcoin Warm Wallet
   blockchain_key:   btc-testnet
@@ -98,15 +67,9 @@
   balance:          {}
   max_balance:      0.0
   status:           active
-  settings:
-    #
-    # Bitcoind gateway client settings.
-    uri:          http://user:password@127.0.0.1:18332
 
 - name:             BSC Deposit
   blockchain_key:   bsc-testnet
   currency_ids:     bnb-bep20,usdt-bep20
   kind:             deposit
   status:           active
-  settings:
-    uri: http://127.0.0.1:8545

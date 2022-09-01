@@ -28,7 +28,6 @@ namespace :bzb_blockchain do
         kind: 'hot',
         status: 'active',
         name: 'Bitzlato Hot Wallet',
-        settings: { 'uri' => 'http://bzb.local:31018/' },
         blockchain: blockchain,
         use_as_fee_source: true
       })

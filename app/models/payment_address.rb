@@ -2,24 +2,19 @@
 
 # TODO: Rename to DepositAddress
 class PaymentAddress < ApplicationRecord
+  self.ignored_columns = %w[secret_encrypted details_encrypted]
+
   extend PaymentAddressTotals
-  include BlockchainAddressConcern
-  include Vault::EncryptedModel
   include AASM
 
   TRANSACTION_SLEEP_MINUTES = 15
 
   strip_attributes
 
-  vault_lazy_decrypt!
-
   after_commit :enqueue_address_generation, on: :create, unless: :parent_id?
 
   validates :address, uniqueness: { scope: :blockchain_id }, if: :address?
   validates :blockchain_currency, presence: true, if: :parent_id?
-
-  vault_attribute :details, serialize: :json, default: {}
-  vault_attribute :secret
 
   scope :by_address, ->(address) { where('lower(address)=?', address.downcase) }
   scope :active, -> { where(archived_at: nil) }
