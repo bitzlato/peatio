@@ -116,15 +116,6 @@ module API
           requires :kind,
                    values: { value: ::Wallet.kind.values, message: 'admin.wallet.invalid_kind' },
                    desc: -> { API::V2::Admin::Entities::Wallet.documentation[:kind][:desc] }
-          optional :settings, type: JSON,
-                              default: {},
-                              desc: -> { 'Wallet settings (uri, secret)' } do
-            optional :uri,
-                     values: { value: ->(v) { URI.parse(v).is_a?(URI::HTTP) || URI.parse(v).is_a?(URI::HTTPS) }, message: 'admin.wallet.invalid_uri_setting' },
-                     desc: -> { 'Wallet uri setting' }
-            optional :secret,
-                     desc: -> { 'Wallet secret setting' }
-          end
           optional :plain_settings, type: JSON,
                                     default: {},
                                     desc: -> { 'Wallet plain settings (external_wallet_id)' }
@@ -169,21 +160,12 @@ module API
           optional :plain_settings, type: JSON,
                                     default: {},
                                     desc: -> { 'Wallet plain settings (external_wallet_id)' }
-          optional :settings, type: JSON,
-                              desc: -> { 'Wallet settings' } do
-            optional :uri,
-                     values: { value: ->(v) { URI.parse(v).is_a?(URI::HTTP) || URI.parse(v).is_a?(URI::HTTPS) }, message: 'admin.wallet.invalid_uri_setting' },
-                     desc: -> { 'Wallet uri setting' }
-            optional :secret,
-                     desc: -> { 'Wallet secret setting' }
-          end
         end
         post '/wallets/update' do
           admin_authorize! :update, ::Wallet
           wallet = ::Wallet.find(params[:id])
 
           declared_params = declared(params, include_missing: false)
-          declared_params.merge!(settings: params[:settings]) if params[:settings].present?
           if wallet.update(declared_params)
             present wallet, with: API::V2::Admin::Entities::Wallet
           else

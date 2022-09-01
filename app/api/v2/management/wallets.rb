@@ -61,15 +61,6 @@ module API
           requires :kind,
                    values: { value: ::Wallet.kind.values, message: 'management.wallet.invalid_kind' },
                    desc: -> { API::V2::Management::Entities::Wallet.documentation[:kind][:desc] }
-          optional :settings, type: JSON,
-                              default: {},
-                              desc: -> { 'Wallet settings (uri, secret)' } do
-            optional :uri,
-                     values: { value: ->(v) { URI.parse(v).is_a?(URI::HTTP) || URI.parse(v).is_a?(URI::HTTPS) }, message: 'management.wallet.invalid_uri_setting' },
-                     desc: -> { 'Wallet uri setting' }
-            optional :secret,
-                     desc: -> { 'Wallet secret setting' }
-          end
           exactly_one_of :currencies, :currency, message: 'management.wallet.currencies_field_is_missing'
         end
         post '/wallets/new' do
@@ -107,20 +98,11 @@ module API
                    types: [String, Array], coerce_with: ->(c) { Array.wrap(c) },
                    as: :currency_ids,
                    desc: -> { API::V2::Management::Entities::Wallet.documentation[:currencies][:desc] }
-          optional :settings, type: JSON,
-                              desc: -> { 'Wallet settings' } do
-            optional :uri,
-                     values: { value: ->(v) { URI.parse(v).is_a?(URI::HTTP) || URI.parse(v).is_a?(URI::HTTPS) }, message: 'management.wallet.invalid_uri_setting' },
-                     desc: -> { 'Wallet uri setting' }
-            optional :secret,
-                     desc: -> { 'Wallet secret setting' }
-          end
         end
         post '/wallets/update' do
           wallet = ::Wallet.find(params[:id])
 
           declared_params = declared(params, include_missing: false)
-          declared_params.merge!(settings: params[:settings]) if params[:settings].present?
           if wallet.update(declared_params)
             present wallet, with: API::V2::Management::Entities::Wallet
           else

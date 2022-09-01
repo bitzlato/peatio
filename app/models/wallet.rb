@@ -1,15 +1,12 @@
 # frozen_string_literal: true
 
 class Wallet < ApplicationRecord
+  self.ignored_columns = ['settings_encrypted']
+
   extend Enumerize
-  include BlockchainAddressConcern
 
   serialize :balance, JSON unless Rails.configuration.database_support_json
   serialize :plain_settings, JSON unless Rails.configuration.database_support_json
-
-  include Vault::EncryptedModel
-
-  vault_lazy_decrypt!
 
   # We use this attribute values rules for wallet kinds:
   # 1** - for deposit wallets.
@@ -21,23 +18,10 @@ class Wallet < ApplicationRecord
   ENUMERIZED_KINDS = { deposit: 100, fee: 200, hot: 310, warm: 320, cold: 330, standalone: 400 }.freeze
   enumerize :kind, in: ENUMERIZED_KINDS, scope: true
 
-  SETTING_ATTRIBUTES = %i[uri secret client_uid beneficiary_prefix].freeze
   STATES = %w[active disabled retired].freeze
   # active - system use active wallets for all user transactions transfers.
   # retired - system use retired wallet only to accept deposits.
   # disabled - system don't use disabled wallets in user transactions transfers.
-
-  SETTING_ATTRIBUTES.each do |attribute|
-    define_method attribute do
-      settings[attribute.to_s]
-    end
-
-    define_method "#{attribute}=".to_sym do |value|
-      self.settings = settings.merge(attribute.to_s => value)
-    end
-  end
-
-  vault_attribute :settings, serialize: :json, default: {}
 
   belongs_to :blockchain
   belongs_to :parent, class_name: 'Wallet', optional: true
@@ -148,10 +132,6 @@ class Wallet < ApplicationRecord
 
   def gateway_wallet_kind_support
     errors.add(:gateway, "'#{gateway.name}' can't be used as a '#{kind}' wallet") unless gateway.support_wallet_kind?(kind)
-  end
-
-  def to_wallet_api_settings
-    settings.compact.deep_symbolize_keys.merge(address: address)
   end
 
   def address_url

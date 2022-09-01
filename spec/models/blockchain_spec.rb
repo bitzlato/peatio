@@ -37,32 +37,5 @@ describe Blockchain do
       expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Min confirmations must be greater than or equal to 1']
     end
-
-    it 'validates structure of server' do
-      subject.server = 'Wrong URL'
-      expect(subject).not_to be_valid
-      expect(subject.errors.full_messages).to eq ['Server is not a valid URL']
-    end
-
-    it 'saves server in encrypted column' do
-      subject.save
-      expect do
-        subject.server = 'http://parity:8545/'
-        subject.save
-      end.to change(subject, :server_encrypted)
-    end
-
-    it 'does not update server_encrypted before model is saved' do
-      subject.save
-      expect do
-        subject.server = 'http://geth:8545/'
-      end.not_to change(subject, :server_encrypted)
-    end
-
-    it 'updates server field' do
-      expect do
-        subject.server = 'http://geth:8545/'
-      end.to change(subject, :server).to 'http://geth:8545/'
-    end
   end
 end

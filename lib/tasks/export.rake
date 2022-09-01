@@ -104,11 +104,11 @@ namespace :export do
     errors_count = 0
     begin
       CSV.open(args.export_path, 'w') do |csv|
-        csv << %w[uid wallet_name address secret details]
+        csv << %w[uid wallet_name address]
         PaymentAddress.find_each do |address|
           wallet = Wallet.find(address.wallet_id)
           # We save wallet name instead of id because id can change after export/import migration
-          csv << [address.member.uid, wallet.name, address.address, address.secret, address.details]
+          csv << [address.member.uid, wallet.name, address.address]
           count += 1
         rescue StandardError => e
           message = { error: e.message, uid: address.member.uid, wallet_name: address.wallet.name }

@@ -1,7 +1,6 @@
 - key:               bitzlato
   name:              Bitzlato P2P
   gateway_klass:     BitzlatoGateway                 # API client name.
-  server:            http://127.0.0.1:8545
   height:            1
   min_confirmations: 1                      # Minimal confirmations needed for withdraw and deposit confirmation.
   status:            disabled
@@ -9,7 +8,6 @@
 - key:               btc-testnet
   name:              Bitcoin Testnet
   gateway_klass:     BitcoinGateway                 # API client name.
-  server:            http://user:password@127.0.0.1:18332 # Public Bitcoin node endpoint.
   height:            1500000                              # Initial block number from which sync will be started.
   min_confirmations: 6                                    # Minimal confirmations needed for withdraw and deposit confirmation.
   explorer:
@@ -20,7 +18,6 @@
 - key:               eth-ropsten
   name:              Ethereum Ropsten
   gateway_klass:     EthereumGateway                 # API client name.
-  server:            http://127.0.0.1:8545
   height:            11400000                # Initial block number from which sync will be started.
   min_confirmations: 6                      # Minimal confirmations needed for withdraw and deposit confirmation.
   explorer:
@@ -34,7 +31,6 @@
 - key:               bsc-testnet
   name:              BSC Testnet
   gateway_klass:     EthereumGateway
-  server:            http://127.0.0.1:8545
   height:            13300000
   min_confirmations: 6
   explorer:

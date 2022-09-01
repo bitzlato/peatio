@@ -24,7 +24,7 @@ module GatewayConcern
   included do
     validates :client, presence: true, inclusion: { in: CLIENTS }
 
-    delegate :normalize_address, :normalize_txid, :valid_address?, :address_type, :private_key, to: :gateway_class
+    delegate :normalize_address, :normalize_txid, :valid_address?, :address_type, to: :gateway_class
 
     def self.clients
       CLIENTS

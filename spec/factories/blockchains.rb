@@ -12,7 +12,6 @@ FactoryBot.define do
     trait 'bitzlato' do
       key                     { 'bitzlato' }
       name                    { 'bitzlato' }
-      server                  { 'http://127.0.0.1:1' }
       height                  { 2_500_000 }
       min_confirmations       { 6 }
       status                  { 'active' }
@@ -23,7 +22,6 @@ FactoryBot.define do
     trait 'dummy' do
       key                     { 'dummy' }
       name                    { 'dummy' }
-      server                  { 'http://127.0.0.1:1' }
       height                  { 2_500_000 }
       min_confirmations       { 6 }
       explorer_address        { 'https://etherscan.io/address/#{address}' }
@@ -37,7 +35,6 @@ FactoryBot.define do
       key                     { 'eth-rinkeby' }
       name                    { 'Ethereum Rinkeby' }
       gateway_klass { EthereumGateway.name }
-      server                  { 'http://127.0.0.1:8545' }
       height                  { 2_500_000 }
       min_confirmations       { 6 }
       explorer_address        { 'https://etherscan.io/address/#{address}' }
@@ -51,7 +48,6 @@ FactoryBot.define do
       key                     { 'eth-kovan' }
       gateway_klass { EthereumGateway.name }
       name                    { 'Ethereum Kovan' }
-      server                  { 'http://127.0.0.1:8545' }
       height                  { 2_500_000 }
       min_confirmations       { 6 }
       explorer_address        { 'https://kovan.etherscan.io/address/#{address}' }
@@ -64,7 +60,6 @@ FactoryBot.define do
       key                     { 'eth-ropsten' }
       name                    { 'Ethereum Ropsten' }
       gateway_klass { EthereumGateway.name }
-      server                  { 'http://127.0.0.1:8545' }
       height                  { 2_500_000 }
       min_confirmations       { 6 }
       explorer_address        { 'https://ropsten.etherscan.io/address/#{address}' }
@@ -78,7 +73,6 @@ FactoryBot.define do
       key                     { 'bsc-testnet' }
       gateway_klass           { BinanceGateway.name }
       name                    { 'Binance Testnet' }
-      server                  { 'http://127.0.0.1:18332' }
       height                  { 1_350_000 }
       min_confirmations       { 1 }
       explorer_address        { 'https://blockchain.info/address/#{address}' }
@@ -91,7 +85,6 @@ FactoryBot.define do
       key                     { 'btc-testnet' }
       gateway_klass           { BitcoinGateway.name }
       name                    { 'Bitcoin Testnet' }
-      server                  { 'http://127.0.0.1:18332' }
       height                  { 1_350_000 }
       min_confirmations       { 1 }
       explorer_address        { 'https://blockchain.info/address/#{address}' }
@@ -104,7 +97,6 @@ FactoryBot.define do
       key                     { 'btc-bz-testnet' }
       gateway_klass           { BitzlatoGateway.name }
       name                    { 'Bitcoin BZ Testnet' }
-      server                  { 'http://127.0.0.1:18332' }
       height                  { 1 }
       min_confirmations       { 1 }
       explorer_address        { 'https://blockchain.info/address/#{address}' }
@@ -126,7 +118,6 @@ FactoryBot.define do
       key                     { 'tron-testnet' }
       name                    { 'Tron Testnet' }
       gateway_klass           { TronGateway.name }
-      server                  { 'http://127.0.0.1:8090' }
       height                  { 2_500_000 }
       min_confirmations       { 6 }
       explorer_address        { 'https://nile.tronscan.org/#/address/\#{address}' }
@@ -140,7 +131,6 @@ FactoryBot.define do
       key                     { 'sol-testnet' }
       name                    { 'sol Testnet' }
       gateway_klass           { SolanaGateway.name }
-      server                  { 'https://api.testnet.solana.com' }
       height                  { 2_500_000 }
       min_confirmations       { 6 }
       explorer_address        { 'https://solscan.org/#/address/\#{address}' }

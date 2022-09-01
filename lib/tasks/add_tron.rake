@@ -35,7 +35,6 @@ namespace :tron_blockchain do
                       kind: 'hot',
                       status: 'active',
                       name: 'Tron Hot Wallet',
-                      settings: { 'uri' => 'http://localhost:8090' },
                       blockchain: blockchain,
                       use_as_fee_source: true
                     })
