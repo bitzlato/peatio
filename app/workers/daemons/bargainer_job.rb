@@ -3,7 +3,7 @@
 module Workers
   module Daemons
     class BargainerJob < Base
-      TIMEOUT_RANGE = (3.0..10.0).freeze
+      TIMEOUT_RANGE = (50.0..60.0).freeze
 
       def process(timeout_range = TIMEOUT_RANGE)
         Rails.logger.info { 'Start bargainer process' }
