@@ -3,8 +3,6 @@
 # Rename to Gateway
 #
 class Blockchain < ApplicationRecord
-  self.ignored_columns = ['server_encrypted']
-
   include GatewayConcern
   include BlockchainExploring
 

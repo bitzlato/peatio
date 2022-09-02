@@ -2,8 +2,6 @@
 
 # TODO: Rename to DepositAddress
 class PaymentAddress < ApplicationRecord
-  self.ignored_columns = %w[secret_encrypted details_encrypted]
-
   extend PaymentAddressTotals
   include AASM
 

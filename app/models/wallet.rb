@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Wallet < ApplicationRecord
-  self.ignored_columns = ['settings_encrypted']
-
   extend Enumerize
 
   serialize :balance, JSON unless Rails.configuration.database_support_json
