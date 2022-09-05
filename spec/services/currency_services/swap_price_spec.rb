@@ -4,7 +4,7 @@ RSpec.describe CurrencyServices::SwapPrice, swap: true do
   let(:from_currency) { find_or_create(:currency, id: :btc) }
   let(:to_currency) { find_or_create(:currency, id: :usd) }
   let(:market) { Market.find_by(symbol: 'btc_usd') }
-  let(:deviation) { 0.02 }
+  let(:deviation) { CurrencyServices::SwapPrice::PRICE_DEVIATION }
   let(:top_price) { 100.to_d * market.price_precision }
 
   before do

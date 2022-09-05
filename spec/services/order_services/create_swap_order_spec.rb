@@ -3,7 +3,7 @@
 describe OrderServices::CreateSwapOrder, swap: true do
   let(:market) { Market.find_spot_by_symbol('btc_usd') }
   let(:account) { create(:account, :usd, balance: 10.to_d) }
-  let(:reference_price) { 15.1.to_d }
+  let(:reference_price) { 15.0075.to_d }
   let(:member) { account.member }
   let(:service) { described_class.new(member: member) }
   let(:default_params) do
