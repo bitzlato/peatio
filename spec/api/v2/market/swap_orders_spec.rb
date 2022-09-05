@@ -5,7 +5,7 @@ describe API::V2::Market::SwapOrders, type: :request, swap: true do
   let(:level_0_member) { create(:member, :level_0) }
   let(:token) { jwt_for(member) }
   let(:level_0_member_token) { jwt_for(level_0_member) }
-  let(:reference_price) { '10.1'.to_d }
+  let(:reference_price) { '10.001'.to_d }
   let(:swap_config) { Rails.application.config_for(:swap) }
   let(:order_limit) { swap_config['order_limit'] }
   let(:daily_limit) { swap_config['daily_limit'] }
