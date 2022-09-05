@@ -2,7 +2,7 @@
 
 module CurrencyServices
   class SwapPrice
-    PRICE_DEVIATION = '0.02'.to_d
+    PRICE_DEVIATION = '0.005'.to_d
     PRICE_DEVIATION_PRECISION = 2
 
     PriceObject = Struct.new(:from_currency, :to_currency, :request_currency,
