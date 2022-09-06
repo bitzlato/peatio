@@ -36,7 +36,6 @@ class Withdraw < ApplicationRecord
   # TODO: validate rid by blockchain specs
   #
   validates :rid, :aasm_state, presence: true
-  validates :txid, uniqueness: { scope: :currency_id }, if: :txid?
   validates :block_number, allow_blank: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validates :amount,
             presence: true,
