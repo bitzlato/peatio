@@ -2958,13 +2958,6 @@ CREATE INDEX index_withdraws_on_currency_id ON public.withdraws USING btree (cur
 
 
 --
--- Name: index_withdraws_on_currency_id_and_txid; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_withdraws_on_currency_id_and_txid ON public.withdraws USING btree (currency_id, txid);
-
-
---
 -- Name: index_withdraws_on_member_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3262,6 +3255,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210317141836'),
 ('20210414105529'),
 ('20210416125059'),
+('20210417120111'),
 ('20210426083359'),
 ('20210502125244'),
 ('20210512120717'),
@@ -3369,6 +3363,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220501134849'),
 ('20220715115009'),
 ('20220725111821'),
+('20220817081432'),
 ('20220831083335'),
 ('20220831084030'),
 ('20220831104944');
