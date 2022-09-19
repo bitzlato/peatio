@@ -13,21 +13,21 @@ set :markets, %w[
   matic_usdt avax_usdt trx_usdt daierc20_usdt bzb_usdt
 ]
 
-server ENV['PRODUCTION_SERVER'],
+server ENV.fetch('PRODUCTION_SERVER'),
        user: fetch(:user),
        port: '22',
        roles: %w[app].freeze,
        primary: true,
        ssh_options: { forward_agent: true }
 
-#server ENV['PRODUCTION_SERVER2'],
-#       user: fetch(:user),
-#       port: '22',
-#       roles: %w[daemons].freeze,
-#       ssh_options: { forward_agent: true }
+# server ENV['PRODUCTION_SERVER2'],
+#        user: fetch(:user),
+#        port: '22',
+#        roles: %w[daemons].freeze,
+#        ssh_options: { forward_agent: true }
 #
-#server ENV['PRODUCTION_SERVER3'],
-#       user: fetch(:user),
-#       port: '22',
-#       roles: %w[market_amqp_daemons].freeze,
-#       ssh_options: { forward_agent: true }
+# server ENV['PRODUCTION_SERVER3'],
+#        user: fetch(:user),
+#        port: '22',
+#        roles: %w[market_amqp_daemons].freeze,
+#        ssh_options: { forward_agent: true }
