@@ -344,6 +344,9 @@ class Withdraw < ApplicationRecord
                    remote_id: id,
                    meta: { note: note }
                  )
+  rescue StandardError => e
+    report_exception(e)
+    err!(e)
   end
 
   def blockchain_currency
