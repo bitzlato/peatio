@@ -23,7 +23,8 @@ docs
 tmp
 log
 .god
-
+*.sql
+*.sql.gz
 # Ignore bundler config
 /.bundle
 
