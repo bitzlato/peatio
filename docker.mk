@@ -1,7 +1,6 @@
-VERSION=latest
+VERSION ?= latest
 REPO=peatio
-REGISTRY=nexus.lgk.one:5000
-IMAGE_NAME=${REGISTRY}/${REPO}:${VERSION}
+IMAGE_NAME=${DOCKER_REPOSITORY}/${REPO}:${VERSION}
 
 docker-release: docker-build docker-push
 docker-build: check-args
@@ -11,4 +10,7 @@ docker-push: check-args
 check-args:
 ifndef VERSION
 	$(error VERSION is undefined)
+endif
+ifndef DOCKER_REPOSITORY
+	$(error DOCKER_REPOSITORY is undefined)
 endif
