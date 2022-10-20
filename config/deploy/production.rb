@@ -16,14 +16,14 @@ set :markets, %w[
 server ENV['PRODUCTION_SERVER'],
        user: fetch(:user),
        port: '22',
-       roles: %w[db app amqp_daemons].freeze,
+       roles: %w[db app].freeze,
        primary: true,
        ssh_options: { forward_agent: true }
 
 server ENV['PRODUCTION_SERVER2'],
        user: fetch(:user),
        port: '22',
-       roles: %w[daemons].freeze,
+       roles: %w[daemons amqp_daemons].freeze,
        ssh_options: { forward_agent: true }
 
 server ENV['PRODUCTION_SERVER3'],
