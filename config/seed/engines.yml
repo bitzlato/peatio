@@ -8,9 +8,9 @@
   driver:            opendax
   uid:               U123456789
   url:               https://www.opendax.io/api/v2/finex
-  key:               ""
-  secret:            ""
-  data:              {}
+  # key:               ""
+  # secret:            ""
+  # data:              {}
   # The data field for store some special engines metadata
   # Can be used in upstream worker
   # Example for upstream:
