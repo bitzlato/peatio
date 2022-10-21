@@ -32,7 +32,7 @@ class Bargainer
         Rails.logger.error { { message: 'Order creating is failed', side: side, error_message: result.errors.first, market_symbol: market.symbol, service: 'bargainer' } }
       end
     end
-    sleep 0.1
+    sleep 0.12
     cancel_member_orders(member, market)
 
     Rails.logger.info { { message: 'Market trade creating is finished', market_symbol: market.symbol, member_id: member.id, volume: volume, price: price, service: 'bargainer' } }
