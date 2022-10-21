@@ -90,41 +90,12 @@ namespace :seed do
     end
   end
 
-  desc 'Adds missing wallets to database defined at config/seed/wallets.yml.'
-  task wallets: :environment do
-    Wallet.transaction do
-      YAML.load_file(Rails.root.join('config/seed/wallets.yml')).each do |hash|
-        if hash['currency_ids'].is_a?(String)
-          hash['currency_ids'] = hash['currency_ids'].split(',')
-        end
-        wallet = Wallet.find_by(name: hash.fetch('name'))
-        if wallet.present?
-          wallet.update! hash
-        else
-          Wallet.create!(hash)
-        end
-      end
-    end
-  end
-
   desc 'Adds missing trading_fees to database defined at config/seed/trading_fees.yml.'
   task trading_fees: :environment do
     TradingFee.transaction do
       YAML.load_file(Rails.root.join('config/seed/trading_fees.yml')).each do |hash|
         next if TradingFee.exists?(market_id: hash.fetch('market_id'), group: hash.fetch('group'))
         TradingFee.create!(hash)
-      end
-    end
-  end
-
-  desc 'Adds missing whitelisted_smart_contracts to database defined at config/seed/whitelisted_smart_contracts.yml.'
-  task whitelisted_smart_contracts: :environment do
-    WhitelistedSmartContract.transaction do
-      YAML.load_file(Rails.root.join('config/seed/whitelisted_smart_contracts.yml')).each do |hash|
-        blockchain = Blockchain.find_by_key(hash.fetch('blockchain_key'))
-        next if WhitelistedSmartContract.exists?(address: hash.fetch('address'), blockchain: blockchain)
-
-        WhitelistedSmartContract.create!(address: hash.fetch('address'), state: hash.fetch('state'), blockchain: blockchain)
       end
     end
   end
