@@ -1,4 +1,4 @@
-VERSION ?= latest
+VERSION ?= $(shell semver format '%M.%m.%p%s')
 REPO=peatio
 IMAGE_NAME=${DOCKER_REPOSITORY}/${REPO}:${VERSION}
 
