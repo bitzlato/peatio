@@ -22,6 +22,11 @@ module Workers
         to_address = payload[:to_address]
         to_address = to_address.downcase if blockchain.address_type == 'ethereum'
         amount = payload[:amount].to_d
+        if amount.zero?
+          Rails.logger.warn { { message: 'Deposit message is skipped. Amount is zero', payload: payload.inspect } }
+          return
+        end
+
         txout = payload[:txout]
         currency = Currency.find(payload[:currency])
         confirmations = payload[:confirmations].to_i
