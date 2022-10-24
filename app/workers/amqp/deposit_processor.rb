@@ -7,6 +7,11 @@ module Workers
         verify_payload!(payload)
 
         payload.symbolize_keys!
+        if payload[:amount] == '0.0'
+          Rails.logger.warn { { message: 'Deposit message is skipped. Amount is zero', payload: payload.inspect } }
+          return
+        end
+
         owner_id = payload[:owner_id].to_s.split(':')
         if owner_id[0] != 'user'
           Rails.logger.info { { message: 'Deposit message is skipped. It is not user deposit', payload: payload.inspect } }
@@ -22,11 +27,6 @@ module Workers
         to_address = payload[:to_address]
         to_address = to_address.downcase if blockchain.address_type == 'ethereum'
         amount = payload[:amount].to_d
-        if amount.zero?
-          Rails.logger.warn { { message: 'Deposit message is skipped. Amount is zero', payload: payload.inspect } }
-          return
-        end
-
         txout = payload[:txout]
         currency = Currency.find(payload[:currency])
         confirmations = payload[:confirmations].to_i
