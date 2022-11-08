@@ -31,6 +31,8 @@ module Workers
           rescue StandardError => e
             report_exception(e, true, service: self.class.name)
             sleep 30
+          ensure
+            ActiveRecord::Base.connection_pool.disconnect
           end
           wait(self.class.sleep_time.to_i)
         end
