@@ -2324,7 +2324,14 @@ CREATE INDEX index_deposits_on_blockchain_id ON public.deposits USING btree (blo
 -- Name: index_deposits_on_blockchain_id_and_txid; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_deposits_on_blockchain_id_and_txid ON public.deposits USING btree (blockchain_id, txid) WHERE (txid IS NOT NULL);
+CREATE UNIQUE INDEX index_deposits_on_blockchain_id_and_txid ON public.deposits USING btree (blockchain_id, txid) WHERE ((txid IS NOT NULL) AND (txout IS NULL));
+
+
+--
+-- Name: index_deposits_on_blockchain_id_and_txid_and_txout; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_deposits_on_blockchain_id_and_txid_and_txout ON public.deposits USING btree (blockchain_id, txid, txout) WHERE ((txid IS NOT NULL) AND (txout IS NOT NULL));
 
 
 --
@@ -3366,6 +3373,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220817081432'),
 ('20220831083335'),
 ('20220831084030'),
-('20220831104944');
+('20220831104944'),
+('20221116144302');
 
 
