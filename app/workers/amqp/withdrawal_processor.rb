@@ -3,6 +3,8 @@
 module Workers
   module AMQP
     class WithdrawalProcessor < BelomorConsumer
+      class ErroredStatusError < StandardError; end
+
       def process(payload)
         verify_payload!(payload)
 
@@ -42,7 +44,7 @@ module Workers
             withdrawal.fail!
             Rails.logger.info { { message: 'Withdrawal is failed', payload: payload.inspect } }
           when 'errored'
-            raise 'Errored withdrawal status'
+            raise ErroredStatusError, 'Errored withdrawal status'
           else
             raise 'Unsupported withdrawal status'
           end
@@ -50,7 +52,7 @@ module Workers
           report_exception(e, true, payload)
         rescue StandardError => e
           Rails.logger.warn id: withdrawal.id, message: 'Setting withdrawal state to errored.'
-          report_exception e, true, withdrawal_id: withdrawal.id
+          report_exception e, true, withdrawal_id: withdrawal.id unless e.is_a?(ErroredStatusError)
           withdrawal.process! if withdrawal.accepted?
           withdrawal.err!(e) unless withdrawal.errored?
 
