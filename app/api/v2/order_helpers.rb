@@ -40,7 +40,7 @@ module API
             report_exception(error_message)
           end
 
-          error!({ errors: [error_message] }, 422)
+          error!({ errors: [error_message], open_orders_limit: current_user.open_orders_limit }, 422)
         end
       end
 
