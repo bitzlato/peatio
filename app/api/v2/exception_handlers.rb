@@ -24,6 +24,11 @@ module API::V2
           error!({ errors: ['jwt.decode_and_verify'] }, 401)
         end
 
+        rescue_from Member::NotActiveError do |e|
+          Rails.logger.warn { { message: e.message, error: e.inspect } }
+          error!({ errors: ['forbidden'] }, 403)
+        end
+
         rescue_from ActiveRecord::RecordNotFound do |_e|
           error!({ errors: ['record.not_found'] }, 404)
         end

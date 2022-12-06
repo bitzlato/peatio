@@ -3,6 +3,8 @@
 require 'securerandom'
 
 class Member < ApplicationRecord
+  class NotActiveError < StandardError; end
+
   has_many :orders
   has_many :swap_orders, inverse_of: :member
   has_many :accounts
@@ -203,7 +205,7 @@ class Member < ApplicationRecord
       p.fetch(:level).tap { |level| raise(Peatio::Auth::Error, 'Level is blank.') if level.blank? }
       p.fetch(:state).tap do |state|
         raise(Peatio::Auth::Error, 'State is blank.') if state.blank?
-        raise(Peatio::Auth::Error, 'State is not active.') unless state == 'active'
+        raise(NotActiveError, "Member #{p[:uid]} is not active.") unless state == 'active'
       end
     end
 
