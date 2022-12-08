@@ -237,6 +237,18 @@ describe API::V2::Account::Balances, type: :request do
         expect(member.email).not_to eq old_member_email
       end
     end
+
+    context 'when member is not active' do
+      before do
+        member.stubs(:state).returns('pending')
+        api_get '/api/v2/account/balances', { token: jwt_for(member) }
+      end
+
+      it 'returns 403 forbidden' do
+        expect(response).to have_http_status :forbidden
+        expect(response).to include_api_error('forbidden')
+      end
+    end
   end
 
   describe 'GET api/v2/account/balances/:currency' do
