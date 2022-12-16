@@ -50,4 +50,13 @@ RSpec.describe Workers::AMQP::WithdrawalProcessor do
       expect(withdrawal.reload).to have_attributes(aasm_state: 'succeed', is_locked: false, txid: txid)
     end
   end
+
+  context 'when event has errored status' do
+    let(:data) { { 'remote_id' => withdrawal.id, 'status' => 'errored' } }
+
+    it 'transits withdrawal to errored status' do
+      described_class.new.process(payload)
+      expect(withdrawal.reload).to have_attributes(aasm_state: 'errored', error: [{ 'class' => 'Workers::AMQP::WithdrawalProcessor::ErroredStatusError', 'message' => 'Errored withdrawal status' }])
+    end
+  end
 end
