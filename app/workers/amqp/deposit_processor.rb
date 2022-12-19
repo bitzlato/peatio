@@ -29,8 +29,8 @@ module Workers
         amount = payload[:amount].to_d
         txout = payload[:txout]
         currency = Currency.find(payload[:currency])
-        confirmations = payload[:confirmations].to_i
         block_number = payload[:block_number].to_i
+        status = payload[:status]
 
         deposit = Deposits::Coin.find_or_create_by!(
           blockchain_id: blockchain.id,
@@ -50,14 +50,14 @@ module Workers
           Rails.logger.info("Found or created suitable deposit #{deposit.id} for txid #{txid}, amount #{amount}")
           accept_deposit(deposit, currency: currency, blockchain: blockchain) if deposit.submitted?
 
-          if deposit.accepted? && confirmations >= blockchain.min_confirmations
-            Rails.logger.info("Dispatch deposit #{deposit.id}, confirmation #{confirmations}>=#{blockchain.min_confirmations}")
-            deposit.dispatch!
+          if deposit.accepted? && status == 'aml_check'
+            Rails.logger.info { { message: 'Aml check deposit', deposit_id: deposit.id } }
+            deposit.aml_check!
+          end
 
-            deposit.member.deposits.accepted.where('block_number <= ?', block_number).lock.find_each do |ad|
-              Rails.logger.info { "Dispatch deposit ##{ad.id}" }
-              ad.dispatch!
-            end
+          if (deposit.accepted? || deposit.aml_check?) && status == 'succeed'
+            Rails.logger.info { { message: 'Dispatch deposit', deposit_id: deposit.id } }
+            deposit.dispatch!
           end
         end
       rescue ActiveRecord::RecordNotFound, IncorrectPayloadError, JWT::DecodeError => e
@@ -67,12 +67,9 @@ module Workers
       private
 
       def accept_deposit(deposit, currency:, blockchain:)
-        member = deposit.member
-        skipped_deposits = member.deposits.skipped.where(currency: currency, blockchain: blockchain).lock
-        total_skipped_amount = skipped_deposits.sum(&:amount)
         min_deposit_amount = BlockchainCurrency.find_by!(blockchain: blockchain, currency: currency).min_deposit_amount
 
-        if (total_skipped_amount + deposit.amount) < min_deposit_amount
+        if deposit.amount < min_deposit_amount
           skip_message = "Skipped deposit ##{deposit.id} because of low amount (#{deposit.amount} < #{min_deposit_amount})"
           Rails.logger.warn skip_message
           deposit.skip!
@@ -80,11 +77,6 @@ module Workers
         else
           Rails.logger.info("Accepting deposit #{deposit.id}")
           deposit.accept!
-
-          if skipped_deposits.any?
-            Rails.logger.info("Accepting skipped deposits #{skipped_deposits.map(&:id).join(', ')}")
-            skipped_deposits.each(&:accept!)
-          end
         end
       end
     end
