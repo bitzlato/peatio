@@ -42,6 +42,7 @@ class Deposit < ApplicationRecord
     state :canceled
     state :rejected
     state :accepted
+    state :aml_check
     state :skipped
     state :dispatched
     state :errored
@@ -73,8 +74,12 @@ class Deposit < ApplicationRecord
       end
     end
 
+    event :aml_check do
+      transitions from: :accepted, to: :aml_check
+    end
+
     event :dispatch do
-      transitions from: %i[errored accepted], to: :dispatched
+      transitions from: %i[errored accepted aml_check], to: :dispatched
       after do
         if Peatio::App.config.deposit_funds_locked
           account.unlock_funds(amount)

@@ -19,7 +19,7 @@ RSpec.describe Workers::AMQP::DepositProcessor do
     ENV.delete('BELOMOR_JWT_PUBLIC_KEY')
   end
 
-  context 'with confirmations count less than min_confirmations' do
+  context 'with sumbitted event status' do
     let(:data) do
       {
         owner_id: "user:#{member.uid}",
@@ -30,7 +30,7 @@ RSpec.describe Workers::AMQP::DepositProcessor do
         txout: txout,
         blockchain_key: blockchain.key,
         currency: currency.id,
-        confirmations: 1
+        status: 'submitted'
       }.stringify_keys
     end
 
@@ -40,7 +40,7 @@ RSpec.describe Workers::AMQP::DepositProcessor do
     end
   end
 
-  context 'when deposit exists and with confirmations count more or equal than min_confirmations' do
+  context 'when deposit exists and with succeed event status' do
     let(:data) do
       {
         owner_id: "user:#{member.uid}",
@@ -51,7 +51,7 @@ RSpec.describe Workers::AMQP::DepositProcessor do
         txout: txout,
         blockchain_key: blockchain.key,
         currency: currency.id,
-        confirmations: 6
+        status: 'succeed'
       }.stringify_keys
     end
 
@@ -62,7 +62,7 @@ RSpec.describe Workers::AMQP::DepositProcessor do
     end
   end
 
-  context 'when deposit does not exist and with confirmations count more or equal than min_confirmations' do
+  context 'when deposit does not exist and with succeed event status' do
     let(:data) do
       {
         owner_id: "user:#{member.uid}",
@@ -73,7 +73,7 @@ RSpec.describe Workers::AMQP::DepositProcessor do
         txout: txout,
         blockchain_key: blockchain.key,
         currency: currency.id,
-        confirmations: 6
+        status: 'succeed'
       }.stringify_keys
     end
 
@@ -83,8 +83,7 @@ RSpec.describe Workers::AMQP::DepositProcessor do
     end
   end
 
-  context 'with skipped deposit, when member receives new deposit' do
-    let!(:skipped_deposit) { create(:deposit, :deposit_eth, blockchain: blockchain, currency: currency, txid: '0xskipped', txout: nil, amount: amount, member: member, aasm_state: 'skipped', block_number: 1) }
+  context 'with aml_check event status' do
     let(:data) do
       {
         owner_id: "user:#{member.uid}",
@@ -95,15 +94,16 @@ RSpec.describe Workers::AMQP::DepositProcessor do
         txout: txout,
         blockchain_key: blockchain.key,
         currency: currency.id,
-        confirmations: 6,
-        block_number: 2
+        status: 'aml_check'
       }.stringify_keys
     end
 
-    it 'dispatches all deposits' do
+    it 'creates and aml_check deposit' do
+      Peatio::App.config.stubs(:deposit_funds_locked).returns(true)
       described_class.new.process(payload)
-      expect(Deposit.find_by!(blockchain: blockchain, txid: txid)).to have_attributes(aasm_state: 'dispatched')
-      expect(skipped_deposit.reload.aasm_state).to eq 'dispatched'
+      deposit = Deposit.find_by!(blockchain: blockchain, txid: txid)
+      expect(deposit).to have_attributes(aasm_state: 'aml_check')
+      expect(deposit.member.accounts.take.locked).to eq deposit.amount
     end
   end
 
@@ -118,7 +118,7 @@ RSpec.describe Workers::AMQP::DepositProcessor do
         txout: txout,
         blockchain_key: blockchain.key,
         currency: currency.id,
-        confirmations: 6
+        status: 'succeed'
       }.stringify_keys
     end
     let(:payload) { data.merge('signature' => JWT.encode(data.merge(amount: 100.to_s, iat: Time.zone.now.to_i, exp: (Time.zone.now + 60).to_i), OpenSSL::PKey.read(Base64.urlsafe_decode64(private_key)), 'RS256')) }
