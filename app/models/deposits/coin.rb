@@ -12,10 +12,6 @@ module Deposits
       self.txid = blockchain.normalize_txid txid if txid?
       self.address = blockchain.normalize_address address if address?
     end
-
-    def as_json_for_event_api
-      super.merge blockchain_confirmations: confirmations
-    end
   end
 end
 

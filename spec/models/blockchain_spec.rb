@@ -31,11 +31,5 @@ describe Blockchain do
       expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to eq ['Height must be greater than or equal to 1']
     end
-
-    it 'validates min_confirmations should be greater than or equal to 1' do
-      subject.min_confirmations = 0
-      expect(subject).not_to be_valid
-      expect(subject.errors.full_messages).to eq ['Min confirmations must be greater than or equal to 1']
-    end
   end
 end

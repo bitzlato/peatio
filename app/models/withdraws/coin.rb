@@ -14,9 +14,5 @@ module Withdraws
 
       errors.add(:rid, :invalid) unless blockchain.valid_address? rid
     end
-
-    def as_json_for_event_api
-      super.merge blockchain_confirmations: confirmations
-    end
   end
 end
