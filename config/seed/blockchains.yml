@@ -15,15 +15,15 @@
     transaction:     https://testnet.blockchain.info/tx/#{txid}
   status:            disabled
 
-- key:               eth-ropsten
-  name:              Ethereum Ropsten
+- key:               eth-testnet
+  name:              Ethereum Goerli
   gateway_klass:     EthereumGateway                 # API client name.
   height:            11400000                # Initial block number from which sync will be started.
   min_confirmations: 6                      # Minimal confirmations needed for withdraw and deposit confirmation.
   explorer:
-    address:         https://ropsten.etherscan.io/address/#{address}
-    transaction:     https://ropsten.etherscan.io/tx/#{txid}
-    contract_address: https://ropsten.etherscan.io/token/#{contract_address}
+    address:         https://goerli.etherscan.io/address/#{address}
+    transaction:     https://goerli.etherscan.io/tx/#{txid}
+    contract_address: https://goerli.etherscan.io/token/#{contract_address}
   status:            active
   address_type:      ethereum
   chain_id: 3
