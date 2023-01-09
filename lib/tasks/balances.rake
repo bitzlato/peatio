@@ -10,7 +10,7 @@ namespace :balances do
     eth_currency = Currency.find(:eth)
     trst_currency = Currency.find(:trst)
     market = Market.find_by!(symbol: 'trst_eth')
-    blockchain = Blockchain.find_by!(key: 'eth-ropsten')
+    blockchain = Blockchain.find_by!(key: 'eth-testnet')
     eth_blockchain_currency = BlockchainCurrency.find_by!(blockchain: blockchain, currency: eth_currency)
     trst_blockchain_currency = BlockchainCurrency.find_by!(blockchain: blockchain, currency: trst_currency)
 
