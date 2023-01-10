@@ -13,7 +13,6 @@ FactoryBot.define do
       key                     { 'bitzlato' }
       name                    { 'bitzlato' }
       height                  { 2_500_000 }
-      min_confirmations       { 6 }
       status                  { 'active' }
       initialize_with         { Blockchain.find_or_create_by(key: key) }
       gateway_klass           { BitzlatoGateway.name }
@@ -23,7 +22,6 @@ FactoryBot.define do
       key                     { 'dummy' }
       name                    { 'dummy' }
       height                  { 2_500_000 }
-      min_confirmations       { 6 }
       explorer_address        { 'https://etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
       status                  { 'active' }
@@ -36,7 +34,6 @@ FactoryBot.define do
       name                    { 'Ethereum Rinkeby' }
       gateway_klass { EthereumGateway.name }
       height                  { 2_500_000 }
-      min_confirmations       { 6 }
       explorer_address        { 'https://etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://etherscan.io/tx/#{txid}' }
       status                  { 'active' }
@@ -49,7 +46,6 @@ FactoryBot.define do
       gateway_klass { EthereumGateway.name }
       name                    { 'Ethereum Kovan' }
       height                  { 2_500_000 }
-      min_confirmations       { 6 }
       explorer_address        { 'https://kovan.etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://kovan.etherscan.io/tx/#{txid}' }
       status                  { 'active' }
@@ -61,7 +57,6 @@ FactoryBot.define do
       name                    { 'Ethereum Ropsten' }
       gateway_klass { EthereumGateway.name }
       height                  { 2_500_000 }
-      min_confirmations       { 6 }
       explorer_address        { 'https://ropsten.etherscan.io/address/#{address}' }
       explorer_transaction    { 'https://ropsten.etherscan.io/tx/#{txid}' }
       status                  { 'active' }
@@ -74,7 +69,6 @@ FactoryBot.define do
       gateway_klass           { BinanceGateway.name }
       name                    { 'Binance Testnet' }
       height                  { 1_350_000 }
-      min_confirmations       { 1 }
       explorer_address        { 'https://blockchain.info/address/#{address}' }
       explorer_transaction    { 'https://blockchain.info/tx/#{txid}' }
       status                  { 'active' }
@@ -86,7 +80,6 @@ FactoryBot.define do
       gateway_klass           { BitcoinGateway.name }
       name                    { 'Bitcoin Testnet' }
       height                  { 1_350_000 }
-      min_confirmations       { 1 }
       explorer_address        { 'https://blockchain.info/address/#{address}' }
       explorer_transaction    { 'https://blockchain.info/tx/#{txid}' }
       status                  { 'active' }
@@ -98,7 +91,6 @@ FactoryBot.define do
       gateway_klass           { BitzlatoGateway.name }
       name                    { 'Bitcoin BZ Testnet' }
       height                  { 1 }
-      min_confirmations       { 1 }
       explorer_address        { 'https://blockchain.info/address/#{address}' }
       explorer_transaction    { 'https://blockchain.info/tx/#{txid}' }
       status                  { 'active' }
@@ -119,7 +111,6 @@ FactoryBot.define do
       name                    { 'Tron Testnet' }
       gateway_klass           { TronGateway.name }
       height                  { 2_500_000 }
-      min_confirmations       { 6 }
       explorer_address        { 'https://nile.tronscan.org/#/address/\#{address}' }
       explorer_transaction    { 'https://nile.tronscan.org/#/transaction/\#{txid}' }
       status                  { 'active' }
@@ -132,7 +123,6 @@ FactoryBot.define do
       name                    { 'sol Testnet' }
       gateway_klass           { SolanaGateway.name }
       height                  { 2_500_000 }
-      min_confirmations       { 6 }
       explorer_address        { 'https://solscan.org/#/address/\#{address}' }
       explorer_transaction    { 'https://solscan.org/#/transaction/\#{txid}' }
       status                  { 'active' }

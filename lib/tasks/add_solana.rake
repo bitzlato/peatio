@@ -12,7 +12,6 @@ namespace :solana_blockchain do
         gateway_klass: 'SolanaGateway',
         server: 'https://api.testnet.solana.com',
         height: 38187307,
-        min_confirmations: 6,
         explorer: {
           'address' => 'https://solscan.io/address/#{address}',
           'transaction' => 'https://solscan.io/tx/#{txid}',

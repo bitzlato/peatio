@@ -3,6 +3,8 @@
 # Rename to Gateway
 #
 class Blockchain < ApplicationRecord
+  self.ignored_columns = ['min_confirmations']
+
   include GatewayConcern
   include BlockchainExploring
 
@@ -20,7 +22,6 @@ class Blockchain < ApplicationRecord
   validates :key, :name, presence: true, uniqueness: true
   validates :status, inclusion: { in: %w[active disabled] }
   validates :height,
-            :min_confirmations,
             numericality: { greater_than_or_equal_to: 1, only_integer: true }
   before_create { self.key = key.strip.downcase }
 
@@ -61,9 +62,4 @@ class Blockchain < ApplicationRecord
   end
 
   delegate :active?, to: :status
-
-  # The latest block which blockchain worker has processed
-  def processed_height
-    height + min_confirmations
-  end
 end

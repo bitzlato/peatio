@@ -52,16 +52,6 @@ describe Deposit do
     expect(record.tid).to eq record.tid.upcase
   end
 
-  context 'calculates confirmations' do
-    let(:deposit) { create(:deposit_btc) }
-
-    it 'uses height from blockchain by default' do
-      deposit.blockchain.stubs(:processed_height).returns(100)
-      deposit.stubs(:block_number).returns(90)
-      expect(deposit.confirmations).to be(10)
-    end
-  end
-
   context :spread_between_wallets! do
     pending
 

@@ -11,7 +11,6 @@ class AddAvalancheBlockchain < ActiveRecord::Migration[5.2]
                          name: 'Avalanche',
                          gateway_klass: 'EthereumGateway',
                          height: 9_399_120,
-                         min_confirmations: 6,
                          explorer: {
                            'address' => 'https://snowtrace.io/address/#{address}',
                            'transaction' => 'https://snowtrace.io/tx/#{txid}',

@@ -45,14 +45,6 @@ module API
         )
 
         expose(
-          :min_confirmations,
-          documentation: {
-            type: Integer,
-            desc: 'Minimum number of confirmations.'
-          }
-        )
-
-        expose(
           :status,
           documentation: {
             type: String,

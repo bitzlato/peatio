@@ -20,7 +20,6 @@ namespace :tron_blockchain do
                                        gateway_klass: 'TronGateway',
                                        server: 'http://localhost:8090',
                                        height: 38187307,
-                                       min_confirmations: 6,
                                        explorer: {
                                          'address' => 'https://tronscan.org/#/address/#{address}',
                                          'transaction' => 'https://tronscan.org/#/transaction/#{txid}'

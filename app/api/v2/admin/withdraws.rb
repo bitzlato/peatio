@@ -20,9 +20,6 @@ module API
                    desc: -> { API::V2::Admin::Entities::Withdraw.documentation[:blockchain_txid][:desc] }
           optional :tid,
                    desc: -> { API::V2::Admin::Entities::Withdraw.documentation[:tid][:desc] }
-          optional :confirmations,
-                   type: Integer,
-                   desc: -> { API::V2::Admin::Entities::Withdraw.documentation[:confirmations][:desc] }
           optional :rid,
                    desc: -> { API::V2::Admin::Entities::Withdraw.documentation[:rid][:desc] }
           optional :wallet_type,

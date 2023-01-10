@@ -32,7 +32,6 @@
       "height": 597000,
       "explorer_address": "https://blockchain.info/address/#{address}",
       "explorer_transaction": "https://blockchain.info/tx/#{txid}",
-      "min_confirmations": 6,
       "status": "active"
     }
   ],

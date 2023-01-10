@@ -88,15 +88,6 @@ module API
         )
 
         expose(
-          :confirmations,
-          if: ->(withdraw) { withdraw.currency.coin? },
-          documentation: {
-            type: Integer,
-            desc: 'Number of confirmations.'
-          }
-        )
-
-        expose(
           :note,
           documentation: {
             type: String,

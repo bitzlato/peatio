@@ -63,15 +63,6 @@ module API
         )
 
         expose(
-          :confirmations,
-          documentation: {
-            type: Integer,
-            desc: 'Number of deposit confirmations.'
-          },
-          if: ->(deposit) { deposit.currency.coin? }
-        )
-
-        expose(
           :aasm_state,
           as: :state,
           documentation: {

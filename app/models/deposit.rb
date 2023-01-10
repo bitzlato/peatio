@@ -115,16 +115,6 @@ class Deposit < ApplicationRecord
     data&.fetch 'links', []
   end
 
-  def confirmations
-    return 0 if block_number.blank?
-    return blockchain.processed_height - block_number if (blockchain.processed_height - block_number) >= 0
-
-    nil
-  rescue StandardError => e
-    report_exception(e)
-    nil
-  end
-
   def deposit_errors
     Array(error).freeze
   end

@@ -16,7 +16,6 @@ describe API::V2::Management::Entities::Deposit do
       expect(subject.created_at).to eq record.created_at.iso8601
       expect(subject.completed_at).to eq record.completed_at&.iso8601
       expect(subject).not_to respond_to(:blockchain_txid)
-      expect(subject).not_to respond_to(:confirmations)
     end
   end
 
@@ -35,7 +34,6 @@ describe API::V2::Management::Entities::Deposit do
       expect(subject.created_at).to eq record.created_at.iso8601
       expect(subject.completed_at).to eq record.completed_at&.iso8601
       expect(subject.blockchain_txid).to eq record.txid
-      expect(subject.blockchain_confirmations).to eq record.confirmations
     end
   end
 end

@@ -3,10 +3,10 @@ Admin API high privileged API with RBAC.
 
 ## Version: 3.0.0
 
-**Contact information:**  
-Official website: 
-<https://bitzlato.com> 
-support@bitzlato.com   
+**Contact information:**
+Official website:
+<https://bitzlato.com>
+support@bitzlato.com
 
 **License:** <https://github.com/openware/peatio/blob/master/LICENSE.md>
 
@@ -50,7 +50,6 @@ Update blockchain.
 | explorer_transaction | formData | Blockchain explorer transaction template. | No | string |
 | explorer_address | formData | Blockchain explorer address template. | No | string |
 | status | formData | Blockchain status (active/disabled). | No | string |
-| min_confirmations | formData | Minimum number of confirmations. | No | integer |
 
 ##### Responses
 
@@ -77,7 +76,6 @@ Create new blockchain.
 | explorer_address | formData | Blockchain explorer address template. | No | string |
 | server | formData | Blockchain server url | No | string |
 | status | formData | Blockchain status (active/disabled). | No | string |
-| min_confirmations | formData | Minimum number of confirmations. | No | integer |
 
 ##### Responses
 
@@ -1669,7 +1667,6 @@ Get a trade with detailed information.
 | height | integer | The number of blocks preceding a particular block on blockchain. | No |
 | explorer_address | string | Blockchain explorer address template. | No |
 | explorer_transaction | string | Blockchain explorer transaction template. | No |
-| min_confirmations | integer | Minimum number of confirmations. | No |
 | status | string | Blockchain status (active/disabled). | No |
 | created_at | string | Blockchain created time in iso8601 format. | No |
 | updated_at | string | Blockchain updated time in iso8601 format. | No |

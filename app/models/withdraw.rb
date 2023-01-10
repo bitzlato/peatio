@@ -232,16 +232,6 @@ class Withdraw < ApplicationRecord
       sum_1_month + (sum * currency.get_price) <= limits.limit_1_month
   end
 
-  def confirmations
-    return 0 if block_number.blank?
-    return blockchain.processed_height - block_number if (blockchain.processed_height - block_number) >= 0
-
-    nil
-  rescue StandardError => e
-    report_exception(e)
-    nil
-  end
-
   def completed?
     aasm_state.in?(COMPLETED_STATES.map(&:to_s))
   end

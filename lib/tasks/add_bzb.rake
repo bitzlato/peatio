@@ -12,7 +12,6 @@ namespace :bzb_blockchain do
         gateway_klass: 'EthereumGateway',
         server: 'http://bzb.local:31018/',
         height: 1432985,
-        min_confirmations: 6,
         explorer: {
           'address' => 'https://explorer-pos.bzbchain.com/address/#{address}/transactions',
           'transaction' => 'https://explorer-pos.bzbchain.com/tx/#{txid}/internal-transactions',
