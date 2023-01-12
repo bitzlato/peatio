@@ -3,8 +3,6 @@
 # Rename to Gateway
 #
 class Blockchain < ApplicationRecord
-  self.ignored_columns = ['min_confirmations']
-
   include GatewayConcern
   include BlockchainExploring
 

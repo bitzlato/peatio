@@ -353,7 +353,6 @@ CREATE TABLE public.blockchains (
     height bigint NOT NULL,
     explorer_address character varying,
     explorer_transaction character varying,
-    min_confirmations integer DEFAULT 6 NOT NULL,
     status character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
@@ -3373,6 +3372,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220831083335'),
 ('20220831084030'),
 ('20220831104944'),
-('20221116144302');
+('20221116144302'),
+('20230110113126');
 
 
